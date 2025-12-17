@@ -210,12 +210,12 @@ const INTERMediatorLog = {
       }
       debugNode.appendChild(document.createTextNode(
         '============DEBUG INFO on ' + new Date() + '============ '))
-      if (INTERMediatorOnPage.getEditorPath()) {
-        const aLink = document.createElement('a')
-        aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath())
-        aLink.appendChild(document.createTextNode('Definition File Editor'))
-        debugNode.appendChild(aLink)
-      }
+      // if (INTERMediatorOnPage.getEditorPath()) {
+      //   const aLink = document.createElement('a')
+      //   aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath())
+      //   aLink.appendChild(document.createTextNode('Definition File Editor'))
+      //   debugNode.appendChild(aLink)
+      // }
       debugNode.appendChild(document.createElement('hr'))
       for (let i = 0; i < INTERMediatorLog.debugMessages.length; i += 1) {
         const lines = INTERMediatorLog.debugMessages[i].split(IMLib.nl_char)

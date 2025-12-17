@@ -47,6 +47,12 @@ trait Proxy_Auth
         $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
         $this->authStoring = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
+        if (strtolower($this->authStoring) === 'passkey') {
+            $this->authStoring = "credential";
+            $this->isPasskey = true;
+        } else {
+            $this->isPasskey = false;
+        }
 //        $this->authExpired = $options['authentication']['authexpired']
 //            ?? Params::getParameterValue("authExpired", 3600);
 //        $this->realm = $options['authentication']['realm']
@@ -106,7 +112,7 @@ trait Proxy_Auth
      */
     public function authenticationAndAuthorization(): void
     {
-        if($this->bypassAuth) {
+        if ($this->bypassAuth) {
             return;
         }
         $this->dbSettings->setRequireAuthentication(false);

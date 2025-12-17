@@ -1153,4 +1153,39 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
         return [null, null, null];
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getLoginUserInfo(string $userID): array
+    {
+        try {
+            if (!$userID) {
+                throw new Exception("Invalid user ID: {$userID}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $user = $this->authSupportUnifyUsernameAndEmail($userID);
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id,username,realname FROM {$userTable} WHERE username = "
+                . $this->pdoDB->link->quote($user);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No Information Detected for the Log-in User {$userID}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected for the Log-in User {$userID}: {$sql}");
+            }
+            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return [$row['id'], $row['realname']];
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
+        }
+        return [null, null, null];
+    }
 }

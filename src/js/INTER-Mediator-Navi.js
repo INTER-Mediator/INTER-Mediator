@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
- IMLibEventResponder, INTERMediatorLog */
+ IMLibEventResponder, INTERMediatorLog, IMLibAuthentication, IMLibAuthenticationUI */
 /* jshint -W083 */ // Function within a loop
 
 /**
@@ -320,10 +320,10 @@ const IMLibPageNavigation = {
         }
       }
       if (navLabel === null || navLabel[11] !== false) {
-        if (INTERMediatorOnPage.requireAuthentication) {
+        if (IMLibAuthentication.requireAuthentication) {
           node = document.createElement('SPAN')
           navigation.appendChild(node)
-          node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser()))
+          node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[8] + IMLibAuthentication.authUser()))
           node.setAttribute('class', 'IM_NAV_info')
 
           node = document.createElement('SPAN')
@@ -338,7 +338,7 @@ const IMLibPageNavigation = {
           IMLibMouseEventDispatch.setExecute(node.id, function () {
             IMLibQueue.setTask((complete) => {
               complete()
-              INTERMediatorOnPage.logout()
+              IMLibAuthentication.logout()
             }, false, true)
           })
         }
@@ -409,7 +409,7 @@ const IMLibPageNavigation = {
       const isConfirmCapt = isConfirm
       return function (completeTask) {
         try {
-          // await INTERMediatorOnPage.retrieveAuthInfo()
+          // await IMLibAuthentication.retrieveAuthInfo()
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetNameCapt, dataset: []},
             async function (response) {
@@ -443,10 +443,10 @@ const IMLibPageNavigation = {
         } catch (ex) {
           completeTask()
           if (ex.message === '_im_auth_required_') {
-            if (INTERMediatorOnPage.requireAuthentication) {
-              if (!INTERMediatorOnPage.isComplementAuthData()) {
-                INTERMediatorOnPage.clearCredentials()
-                INTERMediatorOnPage.authenticating(function () {
+            if (IMLibAuthentication.requireAuthentication) {
+              if (!IMLibAuthentication.isComplementAuthData()) {
+                IMLibAuthentication.clearCredentials()
+                IMLibAuthenticationUI.authenticating(function () {
                   IMLibPageNavigation.insertRecordFromNavi(targetNameCapt, keyFieldCapt, isConfirmCapt)
                 })
                 INTERMediatorLog.flushMessage()
@@ -486,7 +486,7 @@ const IMLibPageNavigation = {
       return function (completeTask) {
         INTERMediatorOnPage.showProgress()
         try {
-          // await INTERMediatorOnPage.retrieveAuthInfo()
+          // await IMLibAuthentication.retrieveAuthInfo()
           INTERMediator_DBAdapter.db_delete_async(deleteArgs, async () => {
             INTERMediator.pagedAllCount--
             INTERMediator.totalRecordCount--
@@ -557,7 +557,7 @@ const IMLibPageNavigation = {
               }
             }
           }
-          // await INTERMediatorOnPage.retrieveAuthInfo()
+          // await IMLibAuthentication.retrieveAuthInfo()
           INTERMediator_DBAdapter.db_copy_async({
             name: contextDefCapt.name,
             conditions: [{field: contextDefCapt.key, operator: '=', value: keyValueCapt}],
@@ -600,7 +600,7 @@ const IMLibPageNavigation = {
   saveRecordFromNavi: async function (dontUpdate) {
     'use strict'
     INTERMediatorOnPage.showProgress()
-    // await INTERMediatorOnPage.retrieveAuthInfo()
+    // await IMLibAuthentication.retrieveAuthInfo()
     for (let i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
       const context = IMLibContextPool.poolingContexts[i]
       const updateData = context.getModified()
@@ -636,9 +636,9 @@ const IMLibPageNavigation = {
               }, null)
             } catch (ex) {
               if (ex.message === '_im_auth_required_') {
-                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                  INTERMediatorOnPage.clearCredentials()
-                  INTERMediatorOnPage.authenticating((function () {
+                if (IMLibAuthentication.requireAuthentication && !IMLibAuthentication.isComplementAuthData()) {
+                  IMLibAuthentication.clearCredentials()
+                  IMLibAuthenticationUI.authenticating((function () {
                     const qParam = checkQueryParameter
                     return async function () {
                       await INTERMediator_DBAdapter.db_query_async(qParam, null, null)
@@ -674,7 +674,7 @@ const IMLibPageNavigation = {
               if (!window.confirm(INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[1034], [difference]))) {
                 return
               }
-              // await INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+              // await IMLibAuthentication.retrieveAuthInfo(); // This is required. Why?
             }
           }
 
@@ -686,9 +686,9 @@ const IMLibPageNavigation = {
             })
           } catch (ex) {
             if (ex.message === '_im_auth_required_') {
-              if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                INTERMediatorOnPage.clearCredentials()
-                INTERMediatorOnPage.authenticating(function () {
+              if (IMLibAuthentication.requireAuthentication && !IMLibAuthentication.isComplementAuthData()) {
+                IMLibAuthentication.clearCredentials()
+                IMLibAuthenticationUI.authenticating(function () {
                   IMLibPageNavigation.saveRecordFromNavi(dontUpdate)
                 })
                 return
@@ -719,7 +719,7 @@ const IMLibPageNavigation = {
     }
     if (currentContextDef.relation || typeof (currentContextDef.records) === 'undefined' || !currentContextDef.paging || (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
-      buttonNode.setAttribute('class', 'IM_Button_Copy' + (INTERMediatorOnPage.buttonClassCopy ? (' ' + INTERMediatorOnPage.buttonClassCopy) : ''))
+      buttonNode.setAttribute('class', 'IM_Button_Copy' + (IMLibAuthenticationUI.buttonClassCopy ? (' ' + IMLibAuthenticationUI.buttonClassCopy) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[14]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].copy) {
         buttonName = currentContextDef['button-names'].copy
@@ -757,7 +757,7 @@ const IMLibPageNavigation = {
     }
     if (currentContextDef.relation || typeof (currentContextDef.records) === 'undefined' || !currentContextDef.paging || (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
-      buttonNode.setAttribute('class', 'IM_Button_Delete' + (INTERMediatorOnPage.buttonClassDelete ? (' ' + INTERMediatorOnPage.buttonClassDelete) : ''))
+      buttonNode.setAttribute('class', 'IM_Button_Delete' + (IMLibAuthenticationUI.buttonClassDelete ? (' ' + IMLibAuthenticationUI.buttonClassDelete) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[6]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].delete) {
         buttonName = currentContextDef['button-names'].delete
@@ -844,7 +844,7 @@ const IMLibPageNavigation = {
     if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
       if (relationValue.length > 0 || !currentContextDef.paging || currentContextDef.paging === false) {
         const buttonNode = document.createElement('BUTTON')
-        buttonNode.setAttribute('class', 'IM_Button_Insert' + (INTERMediatorOnPage.buttonClassInsert ? (' ' + INTERMediatorOnPage.buttonClassInsert) : ''))
+        buttonNode.setAttribute('class', 'IM_Button_Insert' + (IMLibAuthenticationUI.buttonClassInsert ? (' ' + IMLibAuthenticationUI.buttonClassInsert) : ''))
         let buttonName = INTERMediatorOnPage.getMessages()[5]
         if (currentContextDef['button-names'] && currentContextDef['button-names'].insert) {
           buttonName = currentContextDef['button-names'].insert
@@ -984,7 +984,7 @@ const IMLibPageNavigation = {
     // }
 
     const buttonNode = document.createElement('BUTTON')
-    buttonNode.setAttribute('class', 'IM_Button_Master' + (INTERMediatorOnPage.buttonClassMaster ? (' ' + INTERMediatorOnPage.buttonClassMaster) : ''))
+    buttonNode.setAttribute('class', 'IM_Button_Master' + (IMLibAuthenticationUI.buttonClassMaster ? (' ' + IMLibAuthenticationUI.buttonClassMaster) : ''))
     let buttonName = INTERMediatorOnPage.getMessages()[12]
     if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
       buttonName = currentContextDef['button-names']['navi-detail']
@@ -1465,7 +1465,7 @@ const IMLibPageNavigation = {
 
     function createBackButton(tagName, currentContextDef) {
       const buttonNode = document.createElement(tagName)
-      buttonNode.setAttribute('class', 'IM_Button_BackNavi' + (INTERMediatorOnPage.buttonClassBackNavi ? (' ' + INTERMediatorOnPage.buttonClassBackNavi) : ''))
+      buttonNode.setAttribute('class', 'IM_Button_BackNavi' + (IMLibAuthenticationUI.buttonClassBackNavi ? (' ' + IMLibAuthenticationUI.buttonClassBackNavi) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[13]
       if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
         buttonName = currentContextDef['button-names']['navi-back']
@@ -1584,3 +1584,5 @@ const IMLibPageNavigation = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibPageNavigation
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')
+const IMLibAuthenticationUI = require('../../src/js/INTER-Mediator-AuthUI')

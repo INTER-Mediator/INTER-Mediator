@@ -798,6 +798,7 @@ CREATE TABLE authuser
     sub             VARCHAR(255),
     limitdt         DATETIME,
     initialPassword VARCHAR(30),
+    publicKey       TEXT,
     accessToken     VARCHAR(64),
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,

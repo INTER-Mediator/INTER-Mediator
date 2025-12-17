@@ -443,6 +443,7 @@ CREATE TABLE authuser
     realname     NVARCHAR(20),
     limitdt      DATETIME,
     accessToken  NVARCHAR(64),
+    publicKey       TEXT,
     PRIMARY KEY (id)
 );
 CREATE INDEX authuser_username ON authuser (username);

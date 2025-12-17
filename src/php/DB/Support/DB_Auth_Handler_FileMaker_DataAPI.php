@@ -1062,4 +1062,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         }
         return [null, null, null];
     }
+
+    public function getLoginUserInfo(string $userID): array{
+        return [null, null];
+    }
 }

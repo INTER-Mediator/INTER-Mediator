@@ -7,6 +7,7 @@ module.exports = (mdPage) => {
       expect(await mdPage.getNavigatorStyleDisplay()).not.toBe('none')
       await expect(mdPage.masterTable).toExist()
       expect(await mdPage.getMasterTableStyleDisplay()).not.toBe('none')
+      browser.pause(waiting)
       await expect(mdPage.detailTable).toExist()
       expect(await mdPage.getDetailTableStyleDisplay()).toBe('none')
     });
@@ -69,6 +70,7 @@ module.exports = (mdPage) => {
     })
     it('5-can edit on the detail page and affect to the result of the master page', async () => {
       const buttons = await mdPage.masterButtonMoveToDetail
+      browser.pause(waiting)
       buttons[4].click()
       browser.pause(waiting)
 
@@ -78,6 +80,7 @@ module.exports = (mdPage) => {
       expect(mdPage.detailFieldTown).toHaveValue('大手町（次のビルを除く）')
 
       await expect(mdPage.navigator).toExist()
+      browser.pause(waiting)
       expect(await mdPage.getNavigatorStyleDisplay()).toBe('none')
       await expect(mdPage.masterTable).toExist()
       expect(await mdPage.getMasterTableStyleDisplay()).toBe('none')

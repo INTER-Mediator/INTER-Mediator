@@ -463,6 +463,7 @@ CREATE TABLE authuser
     gender       CHAR(1),
     sub          VARCHAR(255),
     limitdt      TIMESTAMP,
+    publicKey       TEXT,
     accessToken  VARCHAR(64)
 );
 CREATE INDEX authuser_username ON authuser (username);

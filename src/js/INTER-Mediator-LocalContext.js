@@ -11,7 +11,7 @@
 // JSHint support
 /* global INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibUI, IMLibKeyDownEventDispatch,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog, IMLibAuthentication */
 /* jshint -W083 */ // Function within a loop
 
 /**
@@ -81,16 +81,16 @@ const IMLibLocalContext = {
 
   archive: function () {
     'use strict'
-    INTERMediatorOnPage.removeCookie('_im_localcontext')
+    IMLibAuthentication.removeCookie('_im_localcontext')
     let jsonString = JSON.stringify(this.store)
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
         sessionStorage.setItem(IMLibLocalContext.getHostNameForKey(), jsonString)
       } catch (ex) {
-        INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0)
+        IMLibAuthentication.setCookieWorker('_im_localcontext', jsonString, false, 0)
       }
     } else {
-      INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0)
+      IMLibAuthentication.setCookieWorker('_im_localcontext', jsonString, false, 0)
     }
   },
 
@@ -102,10 +102,10 @@ const IMLibLocalContext = {
       try {
         localContext = sessionStorage.getItem(IMLibLocalContext.getHostNameForKey())
       } catch (ex) {
-        localContext = INTERMediatorOnPage.getCookie('_im_localcontext')
+        localContext = IMLibAuthentication.getCookie('_im_localcontext')
       }
     } else {
-      localContext = INTERMediatorOnPage.getCookie('_im_localcontext')
+      localContext = IMLibAuthentication.getCookie('_im_localcontext')
     }
     if (localContext && localContext.length > 0) {
       this.store = JSON.parse(localContext)
@@ -320,4 +320,4 @@ const IMLibLocalContext = {
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibLocalContext
 const INTERMediator = require('../../src/js/INTER-Mediator')
-const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')

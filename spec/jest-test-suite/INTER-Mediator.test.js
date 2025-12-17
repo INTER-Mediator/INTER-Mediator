@@ -6,6 +6,9 @@
 
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')
+const IMLibAuthenticationUI = require('../../src/js/INTER-Mediator-AuthUI')
+
 INTERMediatorOnPage.getDataSources = () => {
   return {}
 }

@@ -74,7 +74,7 @@ class IMLibContext {
       newValue = IMLibElement.getValueFromIMNode(changedObj)
       if (newValue !== null) {
         criteria = contextInfo.record.split('=')
-        // await INTERMediatorOnPage.retrieveAuthInfo()
+        // await IMLibAuthentication.retrieveAuthInfo()
         if (contextInfo.context.isPortal) {
           criteria = contextInfo.context.potalContainingRecordKV.split('=')
           INTERMediator_DBAdapter.db_update_async(
@@ -212,7 +212,7 @@ class IMLibContext {
               if (!warnOthersModifyProc(initialvalue, newValue, currentFieldVal)) {
                 return
               }
-              // await INTERMediatorOnPage.retrieveAuthInfo() // This is required. Why?
+              // await IMLibAuthentication.retrieveAuthInfo() // This is required. Why?
             }
             IMLibContextPool.updateContext(idValueCapt, nodeInfoCapt.target)
             newValue = IMLibElement.getValueFromIMNode(changedObjectCapt)

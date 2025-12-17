@@ -226,4 +226,6 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array;
 
+    public function getLoginUserInfo(string $userID): array;
+
 }

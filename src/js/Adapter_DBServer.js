@@ -15,7 +15,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, IMLibQueue, IMLibCalc, IMLibPageNavigation, INTERMediatorLog,
- IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, JSEncrypt */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, JSEncrypt, IMLibAuthentication, IMLibAuthenticationUI */
 
 /**
  * @fileoverview INTERMediator_DBAdapter class is defined here.
@@ -34,33 +34,34 @@ const INTERMediator_DBAdapter = {
    */
   debugMessage: false,
 
+  /**
+   * Build authentication-related query parameters appended to every server request.
+   * Includes client id, username, hash-based responses, notification id, and timezone offset.
+   * @returns {string} URL-encoded parameter string starting with '&clientid=...'
+   */
   generate_authParams: function () {
     'use strict'
     let authParams = ''
 
-    const user = !!INTERMediatorOnPage.authUser() ? INTERMediatorOnPage.authUser() : (INTERMediatorOnPage.authedUser ?? null)
-    const clientId = !!INTERMediatorOnPage.clientId() ? INTERMediatorOnPage.clientId() : INTERMediatorOnPage.authedClientId
+    const user = !!IMLibAuthentication.authUser() ? IMLibAuthentication.authUser() : (IMLibAuthentication.authedUser ?? null)
+    const clientId = !!IMLibAuthentication.clientId() ? IMLibAuthentication.clientId() : IMLibAuthentication.authedClientId
 
     if (user) {
       authParams = '&clientid=' + encodeURIComponent(clientId)
       authParams += '&authuser=' + encodeURIComponent(user)
-      if ((INTERMediatorOnPage.authHashedPassword() || INTERMediatorOnPage.authHashedPassword2m()
-        || INTERMediatorOnPage.authHashedPassword2()) && INTERMediatorOnPage.authChallenge) {
-        if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword()) {
-          authParams += '&response=' + encodeURIComponent(
-            INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword(), INTERMediatorOnPage.authChallenge))
+      if ((IMLibAuthentication.authHashedPassword() || IMLibAuthentication.authHashedPassword2m() || IMLibAuthentication.authHashedPassword2()) && IMLibAuthentication.authChallenge) {
+        if (IMLibAuthentication.passwordHash < 1.1 && IMLibAuthentication.authHashedPassword()) {
+          authParams += '&response=' + encodeURIComponent(INTERMediatorLib.generateHexHash(IMLibAuthentication.authHashedPassword(), IMLibAuthentication.authChallenge))
         }
-        if (INTERMediatorOnPage.passwordHash < 1.6 && INTERMediatorOnPage.authHashedPassword2m()) {
-          authParams += '&response2m=' + encodeURIComponent(
-            INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword2m(), INTERMediatorOnPage.authChallenge))
+        if (IMLibAuthentication.passwordHash < 1.6 && IMLibAuthentication.authHashedPassword2m()) {
+          authParams += '&response2m=' + encodeURIComponent(INTERMediatorLib.generateHexHash(IMLibAuthentication.authHashedPassword2m(), IMLibAuthentication.authChallenge))
         }
-        if (INTERMediatorOnPage.passwordHash < 2.1 && INTERMediatorOnPage.authHashedPassword2()) {
-          authParams += '&response2=' + encodeURIComponent(
-            INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword2(), INTERMediatorOnPage.authChallenge))
+        if (IMLibAuthentication.passwordHash < 2.1 && IMLibAuthentication.authHashedPassword2()) {
+          authParams += '&response2=' + encodeURIComponent(INTERMediatorLib.generateHexHash(IMLibAuthentication.authHashedPassword2(), IMLibAuthentication.authChallenge))
         }
         if (INTERMediator_DBAdapter.debugMessage) {
-          INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' + INTERMediatorOnPage.authHashedPassword())
-          INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' + INTERMediatorOnPage.authChallenge)
+          INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' + IMLibAuthentication.authHashedPassword())
+          INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' + IMLibAuthentication.authChallenge)
         }
       } else {
         authParams += '&response=dummy'
@@ -73,29 +74,47 @@ const INTERMediator_DBAdapter = {
     return authParams
   },
 
+  /**
+   * Store challenge and salts returned from the server, and optionally passkey challenge.
+   * @param {string|null} challenge Combined challenge + salt hex string from server
+   * @param {string|null} passkeyChallenge Passkey challenge (hex) if present
+   * @param {boolean} isChallenge True if called during challenge phase (keeps challenge for response)
+   * @returns {void}
+   */
   store_challenge: function (challenge, isChallenge) {
     'use strict'
     if (challenge) {
       const len = 48
-      INTERMediatorOnPage.authChallenge = challenge.substr(0, len)
-      INTERMediatorOnPage.authUserHexSalt = challenge.substr(len, len + 8)
-      INTERMediatorOnPage.authUserSalt = String.fromCharCode(parseInt(challenge.substr(len, 2), 16), parseInt(challenge.substr(len + 2, 2), 16), parseInt(challenge.substr(len + 4, 2), 16), parseInt(challenge.substr(len + 6, 2), 16))
+      IMLibAuthentication.authChallenge = challenge.substr(0, len)
+      IMLibAuthentication.authUserHexSalt = challenge.substr(len, len + 8)
+      IMLibAuthentication.authUserSalt = String.fromCharCode(parseInt(challenge.substr(len, 2), 16), parseInt(challenge.substr(len + 2, 2), 16), parseInt(challenge.substr(len + 4, 2), 16), parseInt(challenge.substr(len + 6, 2), 16))
       if (INTERMediator_DBAdapter.debugMessage) {
-        INTERMediatorLog.setDebugMessage('store_challenge/authChallenge=' + INTERMediatorOnPage.authChallenge)
-        INTERMediatorLog.setDebugMessage('store_challenge/authUserHexSalt=' + INTERMediatorOnPage.authUserHexSalt)
-        INTERMediatorLog.setDebugMessage('store_challenge/authUserSalt=' + INTERMediatorOnPage.authUserSalt)
+        INTERMediatorLog.setDebugMessage('store_challenge/authChallenge=' + IMLibAuthentication.authChallenge)
+        INTERMediatorLog.setDebugMessage('store_challenge/authUserHexSalt=' + IMLibAuthentication.authUserHexSalt)
+        INTERMediatorLog.setDebugMessage('store_challenge/authUserSalt=' + IMLibAuthentication.authUserSalt)
       }
     }
-    if (!isChallenge && INTERMediatorOnPage.authStoring === 'credential') {
-      INTERMediatorOnPage.authChallenge = ''
+    if (!isChallenge && IMLibAuthentication.authStoring === 'credential') {
+      IMLibAuthentication.authChallenge = ''
     }
   },
 
+  /**
+   * Log a client-side request being made to the server with parameters.
+   * @param {number} debugMessageNumber Message id for prefix text
+   * @param {string} appPath Server endpoint URL
+   * @param {string} accessURL Access query beginning with 'access='
+   * @param {string} authParams Authentication parameters appended to request
+   */
   logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
     'use strict'
     INTERMediatorLog.setDebugMessage(INTERMediatorOnPage.getMessages()[debugMessageNumber] + 'Accessing:' + decodeURI(appPath) + ', Parameters:' + decodeURI(accessURL + authParams))
   },
 
+  /**
+   * Log a truncated server response and important fields when debug level > 1.
+   * @param {string} responseText Raw response body (JSON string)
+   */
   logging_comResult: function (responseText) {
     let responseTextTrancated
     if (INTERMediatorLog.debugMode > 1) {
@@ -115,26 +134,31 @@ const INTERMediator_DBAdapter = {
         responseTextTrancated = responseText
       }
       INTERMediatorLog.setDebugMessage('responseText=' + responseTextTrancated)
-      INTERMediatorLog.setDebugMessage('Return: resultCount=' + resultCount
-        + ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char
-        + 'Return: requireAuth=' + requireAuth + ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char
-        + 'Return: newRecordKeyValue=' + newRecordKeyValue + ', changePasswordResult=' + changePasswordResult
-        + ', authUser=' + authUser)
+      INTERMediatorLog.setDebugMessage('Return: resultCount=' + resultCount + ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char + 'Return: requireAuth=' + requireAuth + ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char + 'Return: newRecordKeyValue=' + newRecordKeyValue + ', changePasswordResult=' + changePasswordResult + ', authUser=' + authUser)
     }
   },
 
-  /* No return values */
-  server_access_async: async function (accessURL, debugMessageNumber, errorMessageNumber,
-                                       successProc = null, failedProc = null, authAgainProc = null,
-                                       fData = null) {
+  /**
+   * Perform an HTTP POST to the app endpoint, attaching auth params, handling JSON envelope and auth flows.
+   * When fData is provided, auth params are appended to the FormData; otherwise, a urlencoded body is used.
+   * @param {string} accessURL Query string beginning with 'access='
+   * @param {number} debugMessageNumber Message id for logging
+   * @param {number} errorMessageNumber Message id for error logging
+   * @param {function(Object)=} successProc Callback with parsed JSON result on success
+   * @param {function(Error)=} failedProc Callback on failure
+   * @param {function()=} authAgainProc Callback invoked when auth is required to reconstruct
+   * @param {FormData=} fData Optional FormData to send
+   * @returns {Promise<void>}
+   */
+  server_access_async: async function (accessURL, debugMessageNumber, errorMessageNumber, successProc = null, failedProc = null, authAgainProc = null, fData = null) {
     const appPath = INTERMediatorOnPage.getEntryPath()
     const authParams = INTERMediator_DBAdapter.generate_authParams()
     INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
     const headers = new Headers()
     headers.append('X-Requested-With', 'fetch')
     headers.append('X-From', location.href)
-    if (INTERMediatorOnPage.httpuser && INTERMediatorOnPage.httppasswd) {
-      headers.append('Authorization', btoa(`${INTERMediatorOnPage.httpuser}:${INTERMediatorOnPage.httppasswd}`))
+    if (IMLibAuthentication.httpuser && IMLibAuthentication.httppasswd) {
+      headers.append('Authorization', btoa(`${IMLibAuthentication.httpuser}:${IMLibAuthentication.httppasswd}`))
     }
     if (fData) {
       for (const param of authParams.split('&')) {
@@ -165,18 +189,16 @@ const INTERMediator_DBAdapter = {
       INTERMediatorLog.setDebugMessages(jsonObject.debugMessages)
       INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
       if (jsonObject.errorMessages && jsonObject.errorMessages.length > 0) {
-        throw 'Communication Error'
+        throw 'Invalid Data or Communication Error'
       }
       // Logging
       INTERMediator_DBAdapter.logging_comResult(responseText)
       // Store the challenge.
-      INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null,
-        accessURL.match(/access=challenge/)
-        || (INTERMediatorOnPage.isRequired2FA && (accessURL.match(/access=credential/)
-          || accessURL.match(/access=authenticated/))))
+      const isChallenge = accessURL.match(/access=challenge/) || (IMLibAuthenticationUI.isRequired2FA && (accessURL.match(/access=credential/) || accessURL.match(/access=authenticated/)))
+      INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, isChallenge)
       // Store the clientId.
       if (jsonObject.clientid) {
-        INTERMediatorOnPage.clientId(jsonObject.clientid)
+        IMLibAuthentication.clientId(jsonObject.clientid)
         INTERMediatorOnPage.authedClientId = jsonObject.clientid ?? null
       }
       // Store the SAML information if it is SAML authentication.
@@ -186,19 +208,6 @@ const INTERMediator_DBAdapter = {
       // Executing the successProc.
       if (successProc) {
         successProc(jsonObject)
-        /* Original paramater
-        {
-          dbresult: jsonObject.dbresult ?? null,
-          resultCount: jsonObject.resultCount ?? 0,
-          totalCount: jsonObject.totalCount ?? null,
-          newRecordKeyValue: jsonObject.newRecordKeyValue ?? '',
-          newPasswordResult: jsonObject.changePasswordResult ?? null,
-          registeredId: jsonObject.registeredid ?? '',
-          nullAcceptable: jsonObject.usenull,
-          succeed_2FA: jsonObject.succeed_2FA,
-          sortKeys: jsonObject.sortKeys ?? [],
-        }
-         */
       }
       INTERMediatorLog.flushMessage()
     }).catch(reason => {
@@ -213,22 +222,26 @@ const INTERMediator_DBAdapter = {
     })
   },
 
-  // Use this function to extract the result from the server response in the server_access_async method.
+  /**
+   * Extract and persist SAML-related fields from a server response (user, URLs).
+   * @param {Object} jsonObject Parsed JSON response
+   * @returns {void}
+   */
   extractSamlSpecialInfos(jsonObject) {
     if (INTERMediatorOnPage.isSAML) {
       if (jsonObject.samluser) {
-        INTERMediatorOnPage.authUser(jsonObject.samluser)
-        if (INTERMediatorOnPage.authStoring !== 'credential') {
-          INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
-          INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
-          INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
+        IMLibAuthentication.authUser(jsonObject.samluser)
+        if (IMLibAuthentication.authStoring !== 'credential') {
+          IMLibAuthentication.authHashedPassword(jsonObject.temppw)
+          IMLibAuthentication.authHashedPassword2m(jsonObject.temppw)
+          IMLibAuthentication.authHashedPassword2(jsonObject.temppw)
         }
       }
       if (jsonObject.samlloginurl) {
         INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
       }
       if (jsonObject.samllogouturl) {
-        INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+        IMLibAuthenticationUI.logoutURL = jsonObject.samllogouturl
       }
       if (jsonObject.samladditionalfail) {
         IMLibQueue.setTask((complete) => {
@@ -242,14 +255,19 @@ const INTERMediator_DBAdapter = {
   },
 
   // Use this function to extract the result from the server response in the server_access_async method.
+  /**
+   * Handle authentication-required flow and counters based on server response and current access.
+   * @param {string} accessURL Query string used for request
+   * @param {Object} jsonObject Parsed JSON response
+   * @param {function()=} authAgainProc Callback to retry auth-specific flow
+   * @returns {boolean}
+   */
   authenticationChecking: function (accessURL, jsonObject, authAgainProc) {
-    if (accessURL.indexOf('access=changepassword&newpass=') !== 0
-      && accessURL.indexOf('access=authenticated') !== 0
-      && accessURL.indexOf('access=challenge') !== 0) {
+    if (accessURL.indexOf('access=changepassword&newpass=') !== 0 && accessURL.indexOf('access=authenticated') !== 0 && accessURL.indexOf('access=challenge') !== 0) {
       if (jsonObject.requireAuth) {
         INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
-        INTERMediatorOnPage.clearCredentials()
-        if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
+        IMLibAuthentication.clearCredentials()
+        if (IMLibAuthentication.isSAML && !IMLibAuthenticationUI.samlWithBuiltInAuth) {
           if (!jsonObject.samladditionalfail) {
             location.href = INTERMediatorOnPage.loginURL // It might stop here.
           }
@@ -262,53 +280,56 @@ const INTERMediator_DBAdapter = {
         } else if (!accessURL.match(/access=challenge/)) {
           INTERMediator.constructMain() // It might stop here.
         }
-        //return false
         throw 'DoNothingException'
       }
       if (!accessURL.match(/access=challenge/)) {
         INTERMediatorOnPage.authCount = 0
       }
     }
-    INTERMediatorOnPage.authedUser = jsonObject.authUser ?? null
-    INTERMediatorOnPage.succeedCredential = !jsonObject.requireAuth ?? false
+    IMLibAuthenticationUI.authedUser = jsonObject.authUser ?? null
+    IMLibAuthenticationUI.succeedCredential = !jsonObject.requireAuth ?? false
     return true
   },
 
+  /**
+   * Change password for a user by obtaining a challenge, hashing old/new, and posting to server.
+   * @param {string} username
+   * @param {string} oldpassword
+   * @param {string} newpassword
+   * @param {function()=} doSucceed Called on success
+   * @param {function()=} doFail Called on failure
+   * @returns {Promise<void>}
+   */
   changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
     'use strict'
 
     if (!username || !oldpassword) {
       throw new Error('_im_changepw_noparams')
     }
-    INTERMediatorOnPage.authUser(username)
+    IMLibAuthentication.authUser(username)
     if (username !== '' && // No usename and no challenge, get a challenge.
-      (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 48)) {
-      INTERMediatorOnPage.storedHashedPasswordAllClear('need-hash-pls') // Dummy Hash for getting a challenge
+      (IMLibAuthentication.authChallenge === null || IMLibAuthentication.authChallenge.length < 48)) {
+      IMLibAuthentication.storedHashedPasswordAllClear('need-hash-pls') // Dummy Hash for getting a challenge
       await INTERMediator_DBAdapter.getChallenge()
     }
-    INTERMediatorOnPage.storedHashedPasswordAllClear('')
-    if (INTERMediatorOnPage.passwordHash < 1.1) {
-      INTERMediatorOnPage.authHashedPassword(
-        INTERMediatorLib.generatePasswrdHashV1(oldpassword, INTERMediatorOnPage.authUserSalt))
+    IMLibAuthentication.storedHashedPasswordAllClear('')
+    if (IMLibAuthentication.passwordHash < 1.1) {
+      IMLibAuthentication.authHashedPassword(INTERMediatorLib.generatePasswrdHashV1(oldpassword, IMLibAuthentication.authUserSalt))
     }
-    if (INTERMediatorOnPage.passwordHash < 1.6) {
-      INTERMediatorOnPage.authHashedPassword2m(
-        INTERMediatorLib.generatePasswrdHashV2m(oldpassword, INTERMediatorOnPage.authUserSalt))
+    if (IMLibAuthentication.passwordHash < 1.6) {
+      IMLibAuthentication.authHashedPassword2m(INTERMediatorLib.generatePasswrdHashV2m(oldpassword, IMLibAuthentication.authUserSalt))
     }
-    if (INTERMediatorOnPage.passwordHash < 2.1) {
-      INTERMediatorOnPage.authHashedPassword2(
-        INTERMediatorLib.generatePasswrdHashV2(oldpassword, INTERMediatorOnPage.authUserSalt))
+    if (IMLibAuthentication.passwordHash < 2.1) {
+      IMLibAuthentication.authHashedPassword2(INTERMediatorLib.generatePasswrdHashV2(oldpassword, IMLibAuthentication.authUserSalt))
     }
     const params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
-    return INTERMediator_DBAdapter.server_access_async(params, 1029, 1030, (result) => {
+    return INTERMediator_DBAdapter.server_access_async(params, 1029, 1030, (result) => { //successProc of server_access_async
       if (result.changePasswordResult) {
-        if (INTERMediatorOnPage.passwordHash < 1.1) {
-          INTERMediatorOnPage.authHashedPassword(
-            INTERMediatorLib.generatePasswrdHashV1(newpassword, INTERMediatorOnPage.authUserSalt))
+        if (IMLibAuthentication.passwordHash < 1.1) {
+          IMLibAuthentication.authHashedPassword(INTERMediatorLib.generatePasswrdHashV1(newpassword, IMLibAuthentication.authUserSalt))
         }
-        if (INTERMediatorOnPage.passwordHash < 2.1) {
-          INTERMediatorOnPage.authHashedPassword2(
-            INTERMediatorLib.generatePasswrdHashV2(newpassword, INTERMediatorOnPage.authUserSalt))
+        if (IMLibAuthentication.passwordHash < 2.1) {
+          IMLibAuthentication.authHashedPassword2(INTERMediatorLib.generatePasswrdHashV2(newpassword, IMLibAuthentication.authUserSalt))
         }
         if (doSucceed) {
           doSucceed()
@@ -318,51 +339,114 @@ const INTERMediator_DBAdapter = {
           doFail()
         }
       }
-    }, (er) => {
+    }, (er) => { //failedProc of server_access_async
       if (doFail) {
         doFail()
       }
     })
   },
 
+  /**
+   * Request built-in credential verification on server.
+   * @returns {Promise<void>}
+   */
+  getCredential: async function () {
+    'use strict'
+    IMLibAuthenticationUI.succeedCredential = false
+    return INTERMediator_DBAdapter.server_access_async('access=credential', 1048, 1049, function (result) {
+      //IMLibAuthenticationUI.succeedCredential = !result.requireAuth
+      if (!IMLibAuthenticationUI.isRequired2FA) {
+        IMLibAuthentication.clearCredentials()
+      }
+    }, function () {
+      IMLibAuthentication.clearCredentials()
+    }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
+      INTERMediator.constructMain()
+    }))
+  },
+
+  /**
+   * Request 2FA credential verification on server.
+   * @returns {Promise<void>}
+   */
+  getCredential2FA: async function () {
+    'use strict'
+    IMLibAuthenticationUI.succeedCredential = false
+    return INTERMediator_DBAdapter.server_access_async('access=authenticated', 1057, 1058, function (result) {
+      IMLibAuthenticationUI.succeedCredential = result.succeed_2FA
+      if (result.succeed_2FA) {
+        IMLibAuthentication.clearCredentials()
+      }
+    }, function () {
+      IMLibAuthentication.clearCredentials()
+    }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
+      INTERMediator.constructMain()
+    }))
+  },
+
+  /**
+   * Request authentication challenge from server.
+   * @returns {Promise<void>}
+   */
   getChallenge: async function () {
     'use strict'
     return INTERMediator_DBAdapter.server_access_async('access=challenge', 1027, 1028,
       null, null, null)
   },
 
-  getCredential: async function () {
+  /**
+   * Request passkey challenge from server.
+   * @returns {Promise<void>}
+   */
+  getChallengePasskey: async function () {
     'use strict'
-    INTERMediatorOnPage.succeedCredential = false
-    return INTERMediator_DBAdapter.server_access_async('access=credential', 1048, 1049,
-      function (result) {
-        //INTERMediatorOnPage.succeedCredential = !result.requireAuth
-        if (!INTERMediatorOnPage.isRequired2FA) {
-          INTERMediatorOnPage.clearCredentials()
-        }
-      }, function () {
-        INTERMediatorOnPage.clearCredentials()
-      }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
-        INTERMediator.constructMain()
-      }))
+    return INTERMediator_DBAdapter.server_access_async('access=challengePasskey', 1060, 1061,
+      (result) => {// successProc of server_access_async
+        IMLibAuthentication.passkeyChallenge = result.passkeyChallenge
+        IMLibAuthentication.passkeyUserId= result.passkeyUserId
+        IMLibAuthentication.passkeyUserName= result.passkeyUserName
+        IMLibAuthentication.passkeyUserRealname= result.passkeyUserRealname
+      }, (result) => {// failedProc of server_access_async
+        IMLibAuthentication.passkeyChallenge = ''
+      }, null)
   },
 
-  getCredential2FA: async function () {
+  /**
+   * Request server-side passkey registration flow start.
+   * @returns {Promise<void>}
+   */
+  registerPasskey: async function () {
     'use strict'
-    INTERMediatorOnPage.succeedCredential = false
-    return INTERMediator_DBAdapter.server_access_async('access=authenticated', 1057, 1058,
-      function (result) {
-        INTERMediatorOnPage.succeedCredential = result.succeed_2FA
-        if (result.succeed_2FA) {
-          INTERMediatorOnPage.clearCredentials()
-        }
-      }, function () {
-        INTERMediatorOnPage.clearCredentials()
-      }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
-        INTERMediator.constructMain()
-      }))
+    return INTERMediator_DBAdapter.server_access_async('access=registerPasskey', 1062, 1063,
+      (result) => {// successProc of server_access_async
+
+      }, (result) => {// failedProc of server_access_async
+        IMLibAuthentication.passkeyChallenge = ''
+      }, null)
   },
 
+  /**
+   * Request server-side passkey authentication flow.
+   * @returns {Promise<void>}
+   */
+  authPasskey: async function () {
+    'use strict'
+    return INTERMediator_DBAdapter.server_access_async('access=authPasskey', 1064, 1065,
+      (result) => {// successProc of server_access_async
+
+      }, (result) => {// failedProc of server_access_async
+        // IMLibAuthentication.passkeyChallenge = ''
+      }, null)
+  },
+
+  /**
+   * Upload a file with auth params using multipart/form-data.
+   * @param {string} parameters Extra query string starting with '&'
+   * @param {{name?: string, content: Blob|File}} uploadingFile File wrapper (content is Blob or File)
+   * @param {function(Object)=} doItOnFinish Callback with dbresult on success
+   * @param {function()=} exceptionProc Callback on error
+   * @returns {void}
+   */
   uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
     'use strict'
     let myRequest = null
@@ -375,8 +459,8 @@ const INTERMediator_DBAdapter = {
     const headers = new Headers()
     headers.append('X-Requested-With', 'fetch')
     headers.append('X-From', location.href)
-    if (INTERMediatorOnPage.httpuser && INTERMediatorOnPage.httppasswd) {
-      headers.append('Authorization', btoa(`${INTERMediatorOnPage.httpuser}:${INTERMediatorOnPage.httppasswd}`))
+    if (IMLibAuthentication.httpuser && IMLibAuthentication.httppasswd) {
+      headers.append('Authorization', btoa(`${IMLibAuthentication.httpuser}:${IMLibAuthentication.httppasswd}`))
     }
     if (fData) {
       for (const param of authParams.split('&')) {
@@ -396,12 +480,7 @@ const INTERMediator_DBAdapter = {
     }
     fd.append('_im_uploadfile', uploadingFile.content)
     const initParam = {
-      method: "POST",
-      headers: headers,
-      mode: "same-origin",
-      credentials: "include",
-      cache: "no-cache",
-      body: fd
+      method: "POST", headers: headers, mode: "same-origin", credentials: "include", cache: "no-cache", body: fd
     }
 
     fetch(new Request(appPath, initParam)).then((response) => {
@@ -414,14 +493,21 @@ const INTERMediator_DBAdapter = {
     })
   },
 
+  /**
+   * Handle server response after file upload.
+   * @param {string} responseText Raw response text
+   * @param {function(Object)=} doItOnFinish Callback with dbresult on success
+   * @param {function()=} exceptionProc Callback on error
+   * @param {boolean} isErrorDialog If true, suppress dialog on errors
+   * @returns {boolean}
+   */
   uploadFileAfterSucceed: function (responseText, doItOnFinish, exceptionProc, isErrorDialog) {
     'use strict'
     let jsonObject
     try {
       jsonObject = JSON.parse(responseText)
     } catch (ex) {
-      INTERMediatorLog.setErrorMessage(ex, INTERMediatorLib.getInsertedString(
-        INTERMediatorOnPage.getMessages()[1032], ['']))
+      INTERMediatorLog.setErrorMessage(ex, INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[1032], ['']))
       INTERMediatorLog.flushMessage()
       if (exceptionProc) {
         exceptionProc()
@@ -433,10 +519,10 @@ const INTERMediator_DBAdapter = {
     INTERMediatorLog.setDebugMessages(jsonObject.debugMessages)
     INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
     INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, false)
-    INTERMediatorOnPage.clientId(jsonObject.clientid ?? '')
+    IMLibAuthentication.clientId(jsonObject.clientid ?? '')
     if (jsonObject.requireAuth) {
       INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
-      INTERMediatorOnPage.clearCredentials()
+      IMLibAuthentication.clearCredentials()
       if (exceptionProc) {
         exceptionProc()
       }
@@ -470,6 +556,13 @@ const INTERMediator_DBAdapter = {
    uselimit:<true/false whether the limit parameter is set on the query.>
    primaryKeyOnly: true/false
    }
+   */
+  /**
+   * Execute a database read request asynchronously.
+   * @param {Object} args Query args: {name, records, fields, parentkeyvalue, conditions, useoffset, uselimit, primaryKeyOnly, paging}
+   * @param {function(Object)=} successProc Callback with result
+   * @param {function(Error)=} failedProc Callback on failure
+   * @returns {Promise<Object>} Resolves with parsed response object
    */
   db_query_async: async function (args, successProc, failedProc) {
     'use strict'
@@ -516,6 +609,11 @@ const INTERMediator_DBAdapter = {
     })
   },
 
+  /**
+   * Validate db_query arguments.
+   * @param {Object} args
+   * @returns {boolean}
+   */
   db_queryChecking: function (args) {
     'use strict'
     let noError = true
@@ -526,6 +624,11 @@ const INTERMediator_DBAdapter = {
     return noError
   },
 
+  /**
+   * Build query parameter string for a read request.
+   * @param {Object} args
+   * @returns {string}
+   */
   db_queryParameters: function (args) {
     'use strict'
     let index, params, counter, extCount, extCountSort, conditions, conditionSign
@@ -605,6 +708,14 @@ const INTERMediator_DBAdapter = {
   },
 
   // Private method for the db_queryParameters method
+  /**
+   * Append additional criteria to params.
+   * @param {string} params
+   * @param {Object|Object[]|null} criteriaObject Additional criteria object(s)
+   * @param {string[]} conditions Deduplication list
+   * @param {number} extCount Current condition index
+   * @returns {[string, string[], number]} Updated [params, conditions, extCount]
+   */
   parseAdditionalCriteria: function (params, criteriaObject, conditions, extCount) {
     const removeIndices = []
     if (criteriaObject) {
@@ -654,6 +765,13 @@ const INTERMediator_DBAdapter = {
   },
 
   // Private method for the db_queryParameters method
+  /**
+   * Append additional sort parameters to params.
+   * @param {string} params
+   * @param {Object|Object[]|null} sortkeyObject Sort key object(s)
+   * @param {number} extCountSort Current sort index
+   * @returns {[string, number]} Updated [params, extCountSort]
+   */
   parseAdditionalSortParameter: function (params, sortkeyObject, extCountSort) {
     if (sortkeyObject) {
       if (sortkeyObject.field) {
@@ -671,6 +789,14 @@ const INTERMediator_DBAdapter = {
   },
 
   // Private method for the db_queryParameters method
+  /**
+   * Add conditions and sort keys from local context store to params.
+   * @param {Object} args Original query args
+   * @param {string} params Current params
+   * @param {number} extCount Condition index
+   * @param {number} extCountSort Sort index
+   * @returns {[string, number, number]} Updated [params, extCount, extCountSort]
+   */
   parseLocalContext: function (args, params, extCount, extCountSort) {
     const orderFields = {}
     if (INTERMediator.alwaysAddOperationExchange) {
@@ -781,7 +907,7 @@ const INTERMediator_DBAdapter = {
     }
     params = INTERMediator_DBAdapter.db_updateParameters(args)
     if (params) {
-      await INTERMediatorOnPage.retrieveAuthInfo()
+      await IMLibAuthentication.retrieveAuthInfo()
       INTERMediator_DBAdapter.server_access_async(params, 1013, 1014, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
         return function () {
           if (INTERMediator.currentContext === true) {
@@ -858,7 +984,7 @@ const INTERMediator_DBAdapter = {
     }
     params = INTERMediator_DBAdapter.db_deleteParameters(args)
     if (params) {
-      await INTERMediatorOnPage.retrieveAuthInfo()
+      await IMLibAuthentication.retrieveAuthInfo()
       INTERMediator_DBAdapter.server_access_async(params, 1017, 1015, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
         return function () {
           if (INTERMediator.currentContext === true) {
@@ -893,7 +1019,7 @@ const INTERMediator_DBAdapter = {
       paramsFD = INTERMediator_DBAdapter.db_createParametersAsForm(args)
     }
     if (paramsStr) {
-      await INTERMediatorOnPage.retrieveAuthInfo()
+      await IMLibAuthentication.retrieveAuthInfo()
       INTERMediator_DBAdapter.server_access_async(paramsStr, 1018, 1016, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
         return function () {
           if (INTERMediator.currentContext === true) {
@@ -1001,7 +1127,7 @@ const INTERMediator_DBAdapter = {
     'use strict'
     let params = INTERMediator_DBAdapter.db_copyParameters(args)
     if (params) {
-      await INTERMediatorOnPage.retrieveAuthInfo()
+      await IMLibAuthentication.retrieveAuthInfo()
       INTERMediator_DBAdapter.server_access_async(params, 1017, 1015, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
         return function () {
           if (INTERMediator.currentContext === true) {
@@ -1051,10 +1177,10 @@ const INTERMediator_DBAdapter = {
     'use strict'
     let errorNumCapt = errMessageNumber
     return function (myRequest) {
-      if (INTERMediatorOnPage.requireAuthentication) {
-        if (!INTERMediatorOnPage.isComplementAuthData()) {
-          INTERMediatorOnPage.clearCredentials()
-          INTERMediatorOnPage.authenticating(AuthProc)
+      if (IMLibAuthentication.requireAuthentication) {
+        if (!IMLibAuthentication.isComplementAuthData()) {
+          IMLibAuthentication.clearCredentials()
+          IMLibAuthenticationUI.authenticating(AuthProc)
         }
       } else {
         INTERMediatorLog.setErrorMessage('Communication Error', INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[errorNumCapt], ['Communication Error', myRequest.responseText]))
@@ -1068,14 +1194,14 @@ const INTERMediator_DBAdapter = {
       if (entityPkInfo) {
         params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
-      await INTERMediatorOnPage.retrieveAuthInfo()
+      await IMLibAuthentication.retrieveAuthInfo()
       await INTERMediator_DBAdapter.server_access_async(params, 1053, 1054, null, null, null)
     }
   },
 
   mentenance: async function () {
     let params = 'access=maintenance'
-    await INTERMediatorOnPage.retrieveAuthInfo()
+    await IMLibAuthentication.retrieveAuthInfo()
     await INTERMediator_DBAdapter.server_access_async(params, 1056, 1054, null, null, null)
   }
 }
@@ -1085,3 +1211,5 @@ module.exports = INTERMediator_DBAdapter
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
 const INTERMediatorLib = require("../../src/js/INTER-Mediator-Lib")
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')
+const IMLibAuthenticationUI = require('../../src/js/INTER-Mediator-AuthUI')

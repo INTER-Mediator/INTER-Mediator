@@ -160,7 +160,7 @@ const INTERMediatorLib = {
 
   generatePasswordHash: function (password, saltHex = false) {
     let salt = null
-    const shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
+    const shaObj = (IMLibAuthentication.passwordHash > 1.4 || IMLibAuthentication.alwaysGenSHA2)
       ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
       : new jsSHA('SHA-1', 'TEXT')
     if (saltHex) {
@@ -1127,3 +1127,4 @@ const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
 const jsSHA = require('../../node_modules/jssha/dist/sha.js')
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')

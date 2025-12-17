@@ -101,5 +101,9 @@ class CredentialHandler extends ActionHandler
         } else {
             $this->clearAuthenticationCookies();
         }
+        if($proxy->isPasskey) {
+            $challenge = $this->generateAndSaveChallenge($proxy->paramAuthUser ?? "", $proxy->generatedClientID, "&");
+            $proxy->outputOfProcessing['passkeyChallenge'] = "{$challenge}";
+        }
     }
 }

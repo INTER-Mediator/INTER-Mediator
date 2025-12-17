@@ -27,10 +27,10 @@ abstract class ActionHandler
     public function __construct(Proxy $proxy)
     {
         $this->proxy = $proxy;
-        Logger::getInstance()->setDebugMessage("Visitor class generated: " . get_class($this));
+        Logger::getInstance()->setDebugMessage("Action handler class generated: " . get_class($this));
     }
 
-    // Visitor methods
+    // Handler methods
 
     /** Visits the IsAuthAccessing operation.
      * 

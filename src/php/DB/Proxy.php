@@ -180,6 +180,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @var string|null
      */
     public ?string $generatedClientID = null;
+    /** Passkey or not.
+     * @var bool
+     */
+    public bool $isPasskey = false;
 
     /** Constructor.
      * @param bool $testmode

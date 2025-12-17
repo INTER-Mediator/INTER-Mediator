@@ -62,6 +62,8 @@ readFileUntilMark "${imRoot}/node_modules/inter-mediator-queue/index.js" "${imRo
 readFileUntilMark "${imRoot}/node_modules/inter-mediator-expressionparser/index.js" "${imRoot}/src/js/temp.js"
 readFileUntilMark "${imRoot}/src/js/INTER-Mediator.js" "${imRoot}/src/js/temp.js"
 readFileUntilMark "${imRoot}/src/js/INTER-Mediator-Page.js" "${imRoot}/src/js/temp.js"
+readFileUntilMark "${imRoot}/src/js/INTER-Mediator-Auth.js" "${imRoot}/src/js/temp.js"
+readFileUntilMark "${imRoot}/src/js/INTER-Mediator-AuthUI.js" "${imRoot}/src/js/temp.js"
 readFileUntilMark "${imRoot}/src/js/INTER-Mediator-ContextPool.js" "${imRoot}/src/js/temp.js"
 readFileUntilMark "${imRoot}/src/js/INTER-Mediator-Context.js" "${imRoot}/src/js/temp.js"
 readFileUntilMark "${imRoot}/src/js/INTER-Mediator-LocalContext.js" "${imRoot}/src/js/temp.js"
