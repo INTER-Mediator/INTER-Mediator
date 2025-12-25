@@ -82,14 +82,22 @@ let IMLibAuthenticationUI = {
   /** Callback executed after authentication succeeds */
   doAfterAuth: null,
 
+  /** URL of enrollment page (optional) */
   enrollPageURL: null,
+  /** URL of password reset page (optional) */
   resetPageURL: null,
+  /** Use SAML with a built-in authentication flow */
   samlWithBuiltInAuth: false,
 
+  /** Whether current page is for passkey registration UI */
   isPasskeyRegistrationPage: false,
+  /** If true, skip username/password UI and start passkey authentication immediately */
   isPasskeyOnlyOnAuth: false,
+  /** If true, add additional WebAuthn-related attributes/classes to the login form */
   isAddClassAuthn: false,
+  /** If true, omit confirmation UI for passkey (if supported by the flow) */
   isOmitPasskeyConfirm: false,
+  /** Serialized passkey options JSON returned from server */
   passkeyOption: null,
 
   /**
@@ -737,10 +745,20 @@ let IMLibAuthenticationUI = {
     await INTERMediatorOnPage.hideProgress(true)
   },
 
+  /**
+   * Click handler for the passkey button on login panel.
+   * @param {Event} event The click event
+   * @returns {Promise<void>}
+   */
   passkeyButtonClick: async (event) => {
-    await IMLibAuthenticationUI.passkeyAuthentication(doAfterAuth = null)
+    await IMLibAuthenticationUI.passkeyAuthentication(null)
   },
 
+  /**
+   * Start passkey authentication (WebAuthn assertion) flow.
+   * @param {?Function} [doAfterAuth=null] Callback invoked after successful authentication
+   * @returns {Promise<void>}
+   */
   passkeyAuthentication: async (doAfterAuth = null) => {
     await INTERMediator_DBAdapter.getChallengePasskeyCredential()
     if (IMLibAuthenticationUI.passkeyOption) {
@@ -761,12 +779,16 @@ let IMLibAuthenticationUI = {
     }
   },
 
+  /**
+   * Start passkey registration (WebAuthn attestation) flow.
+   * @returns {Promise<void>}
+   */
   passkeyRegistration: async () => {
     await INTERMediator_DBAdapter.getChallengePasskeyRegistration()
     if (IMLibAuthenticationUI.passkeyOption) {
       const obj = JSON.parse(IMLibAuthenticationUI.passkeyOption)
       obj.challenge = Uint8Array.fromBase64(obj.challenge, {alphabet: "base64url"});
-      obj.user.id = obj.user.id = Uint8Array.fromBase64(obj.user.id, {alphabet: "base64url"})
+      obj.user.id = Uint8Array.fromBase64(obj.user.id, {alphabet: "base64url"})
       navigator.credentials.create({publicKey: obj})
         .then(async (info) => {
           await INTERMediator_DBAdapter.registerPasskey(info)
@@ -778,6 +800,10 @@ let IMLibAuthenticationUI = {
     }
   },
 
+  /**
+   * Unregister passkey for current user.
+   * @returns {Promise<void>}
+   */
   passkeyUnregistration: async () => {
     await INTERMediator_DBAdapter.unregisterPasskey()
     location.reload()

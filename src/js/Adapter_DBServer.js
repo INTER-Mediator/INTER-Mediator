@@ -204,7 +204,7 @@ const INTERMediator_DBAdapter = {
         // Store the clientId.
         if (jsonObject.clientid) {
           IMLibAuthentication.clientId(jsonObject.clientid)
-          INTERMediatorOnPage.authedClientId = jsonObject.clientid ?? null
+          IMLibAuthentication.authedClientId = jsonObject.clientid ?? null
         }
         // Store the SAML information if it is SAML authentication.
         this.extractSamlSpecialInfos(jsonObject)
@@ -233,7 +233,7 @@ const INTERMediator_DBAdapter = {
    * @returns {void}
    */
   extractSamlSpecialInfos(jsonObject) {
-    if (INTERMediatorOnPage.isSAML) {
+    if (IMLibAuthentication.isSAML) {
       if (jsonObject.samluser) {
         IMLibAuthentication.authUser(jsonObject.samluser)
         if (IMLibAuthentication.authStoring !== 'credential') {
@@ -243,7 +243,7 @@ const INTERMediator_DBAdapter = {
         }
       }
       if (jsonObject.samlloginurl) {
-        INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
+        IMLibAuthenticationUI.loginURL = jsonObject.samlloginurl
       }
       if (jsonObject.samllogouturl) {
         IMLibAuthenticationUI.logoutURL = jsonObject.samllogouturl
@@ -274,7 +274,7 @@ const INTERMediator_DBAdapter = {
         IMLibAuthentication.clearCredentials()
         if (IMLibAuthentication.isSAML && !IMLibAuthenticationUI.samlWithBuiltInAuth) {
           if (!jsonObject.samladditionalfail) {
-            location.href = INTERMediatorOnPage.loginURL // It might stop here.
+            location.href = IMLibAuthenticationUI.loginURL // It might stop here.
           }
         }
         if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
@@ -288,7 +288,7 @@ const INTERMediator_DBAdapter = {
         throw 'DoNothingException'
       }
       if (!accessURL.match(/access=challenge/)) {
-        INTERMediatorOnPage.authCount = 0
+        IMLibAuthentication.authCount = 0
       }
     }
     IMLibAuthenticationUI.authedUser = jsonObject.authUser ?? null

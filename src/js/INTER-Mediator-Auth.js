@@ -368,8 +368,8 @@ let IMLibAuthentication = {
     const d = new Date()
     d.setTime(d.getTime() + expired * 1000)
     let cookieString = key + '=' + encodeURIComponent(val)
-    if (INTERMediatorOnPage.credentialCookieDomain) {
-      cookieString += `;domain=.${INTERMediatorOnPage.credentialCookieDomain}`
+    if (IMLibAuthentication.credentialCookieDomain) {
+      cookieString += `;domain=.${IMLibAuthentication.credentialCookieDomain}`
       // The dot before the domain name is for matching the PHP's setcookie function's behavior.
     }
     if (isDomain) {
