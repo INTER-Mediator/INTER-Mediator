@@ -33,31 +33,31 @@ abstract class ActionHandler
     // Handler methods
 
     /** Visits the IsAuthAccessing operation.
-     * 
+     *
      * @return bool Result of the operation.
      */
     abstract public function isAuthAccessing(): bool;
 
     /** Visits the CheckAuthentication operation.
-     * 
+     *
      * @return bool Result of the operation.
      */
     abstract public function checkAuthentication(): bool;
 
     /** Visits the CheckAuthorization operation.
-     * 
+     *
      * @return bool Result of the operation.
      */
     abstract public function checkAuthorization(): bool;
 
     /** Visits the DataOperation operation.
-     * 
+     *
      * @return void
      */
     abstract public function dataOperation(): void;
 
     /** Visits the HandleChallenge operation.
-     * 
+     *
      * @return void
      */
     abstract public function handleChallenge(): void;
@@ -80,7 +80,7 @@ abstract class ActionHandler
     protected ?string $stored2FAuth;
 
     /** Prepares and validates authentication for the CheckAuthentication operation.
-     * 
+     *
      * @return bool True if preparation is successful, false otherwise.
      */
     protected function prepareCheckAuthentication(): bool
@@ -134,7 +134,7 @@ abstract class ActionHandler
     }
 
     /** Performs common authentication checks for the CheckAuthentication operation.
-     * 
+     *
      * @return bool True if authentication is successful, false otherwise.
      */
     protected function checkAuthenticationCommon(): bool
@@ -377,20 +377,22 @@ abstract class ActionHandler
     }
 
     /** Generates and saves a challenge for the given user and client ID.
-     * @param string $user The user ID.
-     * @param string $generatedClientID The client ID.
+     * @param null|string $user The user ID.
+     * @param string $clientID The client ID.
      * @param string $prefix The prefix for the challenge.
      * @param string $suffix The suffix for the challenge.
+     * @param string $challenge The challenge which is already generated.
      * @return string The generated challenge.
      */
-    public function generateAndSaveChallenge(string $user, string $generatedClientID, string $prefix, string $suffix = ""): string
+    public function generateAndSaveChallenge(?string $user, string $clientID, string $prefix, string $suffix = "", string $challenge = ""): string
     {
         $proxy = $this->proxy;
-        $generated = IMUtil::generateChallenge();
-        $generatedChallenge = $generated . $suffix;
-        $proxy->saveChallenge($user, $generatedChallenge, $generatedClientID, $prefix);
-        Logger::getInstance()->setDebugMessage("[generateAndSaveChallenge] challenge = {$prefix}{$generatedChallenge}", 2);
-        return $generated;
+        if (!$challenge) {
+            $challenge = IMUtil::generateChallenge();
+        }
+        $proxy->saveChallenge($user, $challenge . $suffix, $clientID, $prefix);
+        Logger::getInstance()->setDebugMessage("[generateAndSaveChallenge] challenge = {$prefix}{$challenge}{$suffix}", 2);
+        return $challenge;
     }
 
     /** Sets a cookie for the given challenge.

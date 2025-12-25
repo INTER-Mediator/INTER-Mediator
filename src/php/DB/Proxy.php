@@ -185,6 +185,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public bool $isPasskey = false;
 
+    public string|null $pubkeyInfo = null;
+
     /** Constructor.
      * @param bool $testmode
      * @param bool $noCache

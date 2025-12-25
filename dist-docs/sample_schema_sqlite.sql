@@ -430,6 +430,7 @@ CREATE TABLE authuser
     sub          TEXT,
     limitdt      DateTime,
     publicKey       TEXT,
+    publicKeyCredentialId TEXT,
     accessToken  TEXT
 );
 

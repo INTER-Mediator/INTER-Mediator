@@ -53,11 +53,6 @@ let IMLibAuthentication = {
   isSAML: false,
   /** @type {Object<string, any>|null} OAuth parameters from server */
   oAuthParams: null,
-  /** @type {string|null} HEX string challenge for WebAuthn */
-  passkeyChallenge: null,
-  passkeyUserId: null,
-  passkeyUserName: null,
-  passkeyUserRealname: null,
 
   /**
    * Current authentication attempt count.

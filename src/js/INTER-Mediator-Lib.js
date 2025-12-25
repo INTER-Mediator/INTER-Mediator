@@ -75,6 +75,25 @@ const INTERMediatorLib = {
     return null
   },
 
+  base64urlEncodeArrayBuffer: (buf) => {
+    const bytes = new Uint8Array(buf);
+
+    // bytes -> binary string
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+
+    // binary string -> base64
+    const base64 = btoa(binary);
+
+    // base64 -> base64url
+    return base64
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+  },
+
   // Refer to: https://qiita.com/amamamaou/items/ef0b797156b324bb4ef3
   isObject: (val) => {
     return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() === 'object'

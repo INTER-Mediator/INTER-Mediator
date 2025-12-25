@@ -2,15 +2,17 @@
 
 namespace INTERMediator\DB\Support\ActionHandlers;
 
-use INTERMediator\IMUtil;
 use INTERMediator\DB\Logger;
+
 
 /**
  * Visitor class for handling challenge-based authentication operations in the Proxy pattern.
  * Implements methods for authentication, authorization, and challenge handling for challenge access.
  */
-class ChallengePasskeyHandler extends ActionHandler
+class ChallengePasskeyRegistrationHandler extends ActionHandler
 {
+    use PasskeySupport;
+
     /** Visits the IsAuthAccessing operation.
      *
      * @return bool Always returns true for challenge access.
@@ -20,9 +22,9 @@ class ChallengePasskeyHandler extends ActionHandler
         return false;
     }
 
-    /** Visits the CheckAuthentication operation for challenge access.
+    /** Visits the CheckAuthentication operation for copy operations.
      *
-     * @return bool Always returns false for challenge access (no authentication is performed).
+     * @return bool True, if authentication succeeds or bypassAuth is enabled, false otherwise.
      */
     public function checkAuthentication(): bool
     {
@@ -30,13 +32,11 @@ class ChallengePasskeyHandler extends ActionHandler
             return true;
         }
         return $this->prepareCheckAuthentication() && $this->checkAuthenticationCommon();
-
-        // DO NOT CALL the prepareCheckAuthentication method for the challenge accessing.
     }
 
-    /** Visits the CheckAuthorization operation for challenge access.
+    /** Visits the CheckAuthorization operation for copy operations.
      *
-     * @return bool Always returns true for challenge access.
+     * @return bool True, if authorization succeeds or bypassAuth is enabled, false otherwise.
      */
     public function checkAuthorization(): bool
     {
@@ -53,11 +53,6 @@ class ChallengePasskeyHandler extends ActionHandler
      */
     public function dataOperation(): void
     {
-        $uid = $this->proxy->dbSettings->getCurrentUser();
-        [$userId, $realName] = $this->proxy->dbClass->authHandler->getLoginUserInfo($uid);
-        $this->proxy->outputOfProcessing['passkeyUserId'] = $userId;
-        $this->proxy->outputOfProcessing['passkeyUserName'] = $uid;
-        $this->proxy->outputOfProcessing['passkeyUserRealname'] = $realName;
     }
 
     /** Visits the HandleChallenge operation to process challenge/response for challenge access.
@@ -66,12 +61,12 @@ class ChallengePasskeyHandler extends ActionHandler
      */
     public function handleChallenge(): void
     {
+        Logger::getInstance()->setDebugMessage("[ChallengePasskeyRegistrationHandler] handleChallenge()", 2);
         if ($this->proxy->bypassAuth) {
             return;
         }
         $this->defaultHandleChallenge();
-        $challengePasskey = $this->generateAndSaveChallenge($this->proxy->paramAuthUser ?? "", IMUtil::generateChallenge(), "$");
-        $this->proxy->outputOfProcessing['passkeyChallenge'] = $challengePasskey;
+        $this->proxy->outputOfProcessing['passkeyOption']
+            = $this->passKeySeriarize($this->publicKeyCredentialCreationOptions($this->proxy->paramAuthUser));
     }
-
 }

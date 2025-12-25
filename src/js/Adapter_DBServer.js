@@ -18,9 +18,6 @@
  IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, JSEncrypt, IMLibAuthentication, IMLibAuthenticationUI */
 
 /**
- * @fileoverview INTERMediator_DBAdapter class is defined here.
- */
-/**
  *
  * Usually you don't have to instantiate this class with the new operator.
  * @constructor
@@ -108,7 +105,9 @@ const INTERMediator_DBAdapter = {
    */
   logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
     'use strict'
-    INTERMediatorLog.setDebugMessage(INTERMediatorOnPage.getMessages()[debugMessageNumber] + 'Accessing:' + decodeURI(appPath) + ', Parameters:' + decodeURI(accessURL + authParams))
+    INTERMediatorLog.setDebugMessage(
+      INTERMediatorOnPage.getMessages()[debugMessageNumber] + 'Accessing:' + decodeURI(appPath)
+      + ', Parameters:' + decodeURI(accessURL + authParams))
   },
 
   /**
@@ -128,7 +127,7 @@ const INTERMediator_DBAdapter = {
       const changePasswordResult = jsonObject.changePasswordResult ?? null
       const authUser = jsonObject.authUser ?? null
 
-      if (responseText.length > 1000) {
+      if (INTERMediatorLog.isTrancateResponseText && responseText.length > 1000) {
         responseTextTrancated = responseText.substring(0, 1000) + ' ...[trancated]'
       } else {
         responseTextTrancated = responseText
@@ -178,48 +177,54 @@ const INTERMediator_DBAdapter = {
       cache: "no-cache",
       body: fData ? fData : (accessURL + authParams)
     }
-    await fetch(appPath, initParam).then((response) => {
-      if (!response.ok) {
-        throw 'Communication Error'
-      }
-      return response.text()
-    }).then((responseText) => {
-      const jsonObject = JSON.parse(responseText)
-      INTERMediatorLog.setErrorMessages(jsonObject.errorMessages, true)
-      INTERMediatorLog.setDebugMessages(jsonObject.debugMessages)
-      INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
-      if (jsonObject.errorMessages && jsonObject.errorMessages.length > 0) {
-        throw 'Invalid Data or Communication Error'
-      }
-      // Logging
-      INTERMediator_DBAdapter.logging_comResult(responseText)
-      // Store the challenge.
-      const isChallenge = accessURL.match(/access=challenge/) || (IMLibAuthenticationUI.isRequired2FA && (accessURL.match(/access=credential/) || accessURL.match(/access=authenticated/)))
-      INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, isChallenge)
-      // Store the clientId.
-      if (jsonObject.clientid) {
-        IMLibAuthentication.clientId(jsonObject.clientid)
-        INTERMediatorOnPage.authedClientId = jsonObject.clientid ?? null
-      }
-      // Store the SAML information if it is SAML authentication.
-      this.extractSamlSpecialInfos(jsonObject)
-      // Authentication checking.
-      this.authenticationChecking(accessURL, jsonObject, authAgainProc)
-      // Executing the successProc.
-      if (successProc) {
-        successProc(jsonObject)
-      }
-      INTERMediatorLog.flushMessage()
-    }).catch(reason => {
-      if (reason === 'DoNothingException') {
-        return
-      }
-      INTERMediatorLog.setErrorMessage('Communication Error: ' + reason)
-      if (failedProc) {
-        failedProc(new Error('_im_communication_error_'))
-      }
-      INTERMediatorLog.flushMessage()
-    })
+    await fetch(appPath, initParam)
+      .then((response) => {
+        if (!response.ok) {
+          throw 'Communication Error'
+        }
+        return response.text()
+      }).then((responseText) => {
+        let jsonObject = null
+        try {
+          jsonObject = JSON.parse(responseText)
+        } catch (e) {
+          throw responseText
+        }
+        INTERMediatorLog.setErrorMessages(jsonObject.errorMessages, true)
+        INTERMediatorLog.setDebugMessages(jsonObject.debugMessages)
+        INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
+        if (jsonObject.errorMessages && jsonObject.errorMessages.length > 0) {
+          throw 'Invalid Data or Communication Error'
+        }
+        // Logging
+        INTERMediator_DBAdapter.logging_comResult(responseText)
+        // Store the challenge.
+        const isChallenge = accessURL.match(/access=challenge/) || (IMLibAuthenticationUI.isRequired2FA && (accessURL.match(/access=credential/) || accessURL.match(/access=authenticated/)))
+        INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, isChallenge)
+        // Store the clientId.
+        if (jsonObject.clientid) {
+          IMLibAuthentication.clientId(jsonObject.clientid)
+          INTERMediatorOnPage.authedClientId = jsonObject.clientid ?? null
+        }
+        // Store the SAML information if it is SAML authentication.
+        this.extractSamlSpecialInfos(jsonObject)
+        // Authentication checking.
+        this.authenticationChecking(accessURL, jsonObject, authAgainProc)
+        // Executing the successProc.
+        if (successProc) {
+          successProc(jsonObject)
+        }
+        INTERMediatorLog.flushMessage()
+      }).catch(reason => {
+        if (reason === 'DoNothingException') {
+          return
+        }
+        INTERMediatorLog.setErrorMessage(`Communication Error: ${reason}`)
+        if (failedProc) {
+          failedProc(new Error('_im_communication_error_'))
+        }
+        INTERMediatorLog.flushMessage()
+      })
   },
 
   /**
@@ -398,16 +403,25 @@ const INTERMediator_DBAdapter = {
    * Request passkey challenge from server.
    * @returns {Promise<void>}
    */
-  getChallengePasskey: async function () {
+  getChallengePasskeyRegistration: async function () {
     'use strict'
-    return INTERMediator_DBAdapter.server_access_async('access=challengePasskey', 1060, 1061,
+    return INTERMediator_DBAdapter.server_access_async('access=challengePasskeyRegistration', 1060, 1061,
       (result) => {// successProc of server_access_async
-        IMLibAuthentication.passkeyChallenge = result.passkeyChallenge
-        IMLibAuthentication.passkeyUserId= result.passkeyUserId
-        IMLibAuthentication.passkeyUserName= result.passkeyUserName
-        IMLibAuthentication.passkeyUserRealname= result.passkeyUserRealname
+        IMLibAuthenticationUI.passkeyOption = result.passkeyOption;
       }, (result) => {// failedProc of server_access_async
-        IMLibAuthentication.passkeyChallenge = ''
+      }, null)
+  },
+
+  /**
+   * Request passkey challenge from server.
+   * @returns {Promise<void>}
+   */
+  getChallengePasskeyCredential: async function () {
+    'use strict'
+    return INTERMediator_DBAdapter.server_access_async('access=challengePasskeyCredential', 1060, 1061,
+      (result) => {// successProc of server_access_async
+        IMLibAuthenticationUI.passkeyOption = result.passkeyOption;
+      }, (result) => {// failedProc of server_access_async
       }, null)
   },
 
@@ -415,28 +429,28 @@ const INTERMediator_DBAdapter = {
    * Request server-side passkey registration flow start.
    * @returns {Promise<void>}
    */
-  registerPasskey: async function () {
+  registerPasskey: async function (response) {
     'use strict'
-    return INTERMediator_DBAdapter.server_access_async('access=registerPasskey', 1062, 1063,
-      (result) => {// successProc of server_access_async
-
-      }, (result) => {// failedProc of server_access_async
-        IMLibAuthentication.passkeyChallenge = ''
-      }, null)
+    const objString = encodeURIComponent(JSON.stringify(response))
+    return INTERMediator_DBAdapter.server_access_async(`access=registerPasskey&pubkeyInfo=${objString}`,
+      1062, 1063, null, null, null)
   },
 
+  unregisterPasskey: async function () {
+    'use strict'
+    return INTERMediator_DBAdapter.server_access_async(`access=unregisterPasskey`,
+      1062, 1063, null, null, null);
+  },
   /**
    * Request server-side passkey authentication flow.
    * @returns {Promise<void>}
    */
-  authPasskey: async function () {
+  authPasskey: async function (response) {
     'use strict'
-    return INTERMediator_DBAdapter.server_access_async('access=authPasskey', 1064, 1065,
-      (result) => {// successProc of server_access_async
-
-      }, (result) => {// failedProc of server_access_async
-        // IMLibAuthentication.passkeyChallenge = ''
-      }, null)
+    const clientId = encodeURIComponent(IMLibAuthentication.clientId())
+    const objString = encodeURIComponent(JSON.stringify(response))
+    const params = `access=authPasskey&clientid=${clientId}&pubkeyInfo=${objString}`
+    return INTERMediator_DBAdapter.server_access_async(params, 1064, 1065, null, null, null);
   },
 
   /**

@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>INTER-Mediator:Passkey Demo</title>
     <script src="../../index.php"></script>
+    <script>
+        INTERMediatorOnPage.doBeforeConstruct = function () {
+            INTERMediatorLog.isTrancateResponseText = true;
+        }
+    </script>
 </head>
 <body>
 <h1>Passkey Registration</h1>

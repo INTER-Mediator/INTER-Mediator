@@ -90,6 +90,7 @@ let IMLibAuthenticationUI = {
   isPasskeyOnlyOnAuth: false,
   isAddClassAuthn: false,
   isOmitPasskeyConfirm: false,
+  passkeyOption: null,
 
   /**
    * Show the login panel and drive the authentication flow.
@@ -108,6 +109,10 @@ let IMLibAuthenticationUI = {
       IMLibAuthenticationUI.authenticationError()
       IMLibAuthentication.logout(false, true)
       INTERMediatorLog.flushMessage()
+      return
+    }
+    if (IMLibAuthenticationUI.isPasskey && IMLibAuthenticationUI.isPasskeyOnlyOnAuth) {
+      IMLibAuthenticationUI.passkeyAuthentication(doAfterAuth)
       return
     }
 
@@ -732,55 +737,50 @@ let IMLibAuthenticationUI = {
     await INTERMediatorOnPage.hideProgress(true)
   },
 
-  passkeyButtonClick: (event) => {
-
+  passkeyButtonClick: async (event) => {
+    await IMLibAuthenticationUI.passkeyAuthentication(doAfterAuth = null)
   },
-  passkeyRegistration: async () => {
-    await INTERMediator_DBAdapter.getChallengePasskey()
-    if (IMLibAuthentication.passkeyChallenge && IMLibAuthentication.passkeyUserId && IMLibAuthentication.passkeyUserName) {
-      const userId = BigInt(IMLibAuthentication.passkeyUserId);
-      const userIdBytes = new Uint8Array(8);
-      for (let i = 0; i < 8; i += 1) {
-        userIdBytes[i] = Number((userId >> BigInt(8 * i)) & 0xFFn);
-      }
 
-      const challengeHex = IMLibAuthentication.passkeyChallenge || '';
-      const challengeBytes = new Uint8Array((challengeHex.match(/.{1,2}/g) || []).map(h => parseInt(h, 16)));
-
-      const options = {
-        publicKey: {
-          challenge: challengeBytes,
-          rp: {name: IMLibAuthentication.realm ?? location.hostname, id: location.hostname},
-          user: {
-            id: userIdBytes,
-            name: IMLibAuthentication.passkeyUserName,
-            displayName: IMLibAuthentication.passkeyUserRealname
-          },
-          pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257},],
-          timeout: 60000,
-          attestation: 'none',
-          //excludeCredentials: [{id: userIdBytes, type: 'public-key', transports: ['internal' , 'hybrid']}],
-        },
-      }
-
-      navigator.credentials.create(options)
-        .then(async (newCredentialInfo) => {
-          const response = newCredentialInfo.response;
-          const clientDataStr = new TextDecoder('utf-8').decode(response.clientDataJSON)
-          const result = JSON.parse(clientDataStr)
-          console.log(result)
-          const clientExtensionsResults = newCredentialInfo.getClientExtensionResults();
-          console.log(clientExtensionsResults)
-          await INTERMediator_DBAdapter.registerPasskey()
+  passkeyAuthentication: async (doAfterAuth = null) => {
+    await INTERMediator_DBAdapter.getChallengePasskeyCredential()
+    if (IMLibAuthenticationUI.passkeyOption) {
+      const obj = JSON.parse(IMLibAuthenticationUI.passkeyOption)
+      obj.challenge = Uint8Array.fromBase64(obj.challenge, {alphabet: "base64url"});
+      navigator.credentials.get({publicKey: obj})
+        .then(async (info) => {
+          await INTERMediator_DBAdapter.authPasskey(info)
+          if (doAfterAuth) {
+            doAfterAuth()
+          } else {
+            location.reload()
+          }
         })
         .catch((err) => {
-          console.error(err)
+          window.alert(err)
+        });
+    }
+  },
+
+  passkeyRegistration: async () => {
+    await INTERMediator_DBAdapter.getChallengePasskeyRegistration()
+    if (IMLibAuthenticationUI.passkeyOption) {
+      const obj = JSON.parse(IMLibAuthenticationUI.passkeyOption)
+      obj.challenge = Uint8Array.fromBase64(obj.challenge, {alphabet: "base64url"});
+      obj.user.id = obj.user.id = Uint8Array.fromBase64(obj.user.id, {alphabet: "base64url"})
+      navigator.credentials.create({publicKey: obj})
+        .then(async (info) => {
+          await INTERMediator_DBAdapter.registerPasskey(info)
+          location.reload()
+        })
+        .catch((err) => {
+          window.alert(err)
         });
     }
   },
 
   passkeyUnregistration: async () => {
-
+    await INTERMediator_DBAdapter.unregisterPasskey()
+    location.reload()
   }
 }
 

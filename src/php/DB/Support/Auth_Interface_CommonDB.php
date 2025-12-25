@@ -68,7 +68,7 @@ interface Auth_Interface_CommonDB
     public function authSupportRemoveOutdatedChallenges(): bool;
 
     /** Retrieves a challenge from the issuedhash authentication table.
-     * @param string $uid The user ID.
+     * @param null|string $uid The user ID.
      * @param string $clientId The client identifier.
      * @param bool $isDelete Whether to delete the challenge after retrieval.
      * @param string $prefix Optional prefix for the challenge.
@@ -76,7 +76,7 @@ interface Auth_Interface_CommonDB
      * @return string|null The challenge string, or null if not found.
      */
     public function authSupportRetrieveChallenge(
-        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): ?string;
+        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): null|string|array;
 
     /** Checks the media token for a user in the issuedhash authentication table.
      * @param string $uid The user ID.
@@ -98,7 +98,7 @@ interface Auth_Interface_CommonDB
      * @param array|null $attrs Optional attributes.
      * @return bool True if successful, false otherwise.
      */
-    public function authSupportCreateUser(string $username, string $hashedpassword, bool $isSAML = false,
+    public function authSupportCreateUser(string      $username, string $hashedpassword, bool $isSAML = false,
                                           string|null $ldapPassword = null, ?array $attrs = null): bool;
 
     /** Changes the password for a user in the authuser authentication table.
@@ -228,4 +228,7 @@ interface Auth_Interface_CommonDB
 
     public function getLoginUserInfo(string $userID): array;
 
+    public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void;
+    public function authSupportRemovePublicKey(string $uid): void;
+    public function authSupportUserInfoFromPublickeyId(string $pkid): array;
 }

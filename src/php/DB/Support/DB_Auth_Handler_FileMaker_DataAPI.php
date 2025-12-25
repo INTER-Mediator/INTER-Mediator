@@ -196,7 +196,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /** Retrieves a challenge for authentication.
-     * @param string $uid User ID.
+     * @param null|string $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
@@ -204,7 +204,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @return string|null Challenge string or null if not found.
      */
     public function authSupportRetrieveChallenge(
-        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): ?string
+        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): null|string|array
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -591,7 +591,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();
-        if (is_null($userTable) ||$username === '') {
+        if (is_null($userTable) || $username === '') {
             return null;
         }
         $this->fmdb->setupFMDataAPIforDB_Alt($userTable, 55555);
@@ -1063,7 +1063,24 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return [null, null, null];
     }
 
-    public function getLoginUserInfo(string $userID): array{
+    public function getLoginUserInfo(string $userID): array
+    {
         return [null, null];
     }
+
+    public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void
+    {
+
+    }
+
+    public function authSupportRemovePublicKey(string $uid): void
+    {
+
+    }
+
+    public function authSupportUserInfoFromPublickeyId(string $pkid): array
+    {
+        return [];
+    }
+
 }

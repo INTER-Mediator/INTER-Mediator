@@ -634,7 +634,7 @@ class IMUtil
      * @param string $passwordHash Password hash type.
      * @return string Client ID.
      */
-    public static function generateClientId(string $prefix, string $passwordHash): string
+    public static function generateClientId(string $prefix = "", string $passwordHash = "0"): string
     {
         if ($passwordHash == "1") {
             return sha1(uniqid($prefix, true));
@@ -753,7 +753,7 @@ class IMUtil
     public static function getActionHandlerClassName(string $access): string
     {
         return "INTERMediator\\DB\\Support\\ActionHandlers\\"
-            . strtoupper(substr($access, 0, 1)) . strtolower(substr($access, 1))
+            . strtoupper(substr($access, 0, 1)) . substr($access, 1)
             . "Handler";
     }
 

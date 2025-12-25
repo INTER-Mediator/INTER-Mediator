@@ -155,7 +155,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Retrieves a challenge for authentication.
-     * @param string $uid User ID.
+     * @param null|string $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
@@ -165,22 +165,26 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @throws Exception
      */
     public function authSupportRetrieveChallenge(
-        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): ?string
+        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): null|string|array
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
             return null;
         }
-        if ($uid < 1) {
-            $uid = 0;
-        }
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return null;
         }
-        $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,hash,expired FROM {$hashTable}"
-            . " WHERE user_id={$uid} AND clienthost={$this->pdoDB->link->quote($clientId)}"
-            . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
-            . " ORDER BY expired DESC";
+        if ($uid) {
+            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,user_id,hash,expired FROM {$hashTable}"
+                . " WHERE user_id={$this->pdoDB->link->quote($uid)} AND clienthost={$this->pdoDB->link->quote($clientId)}"
+                . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
+                . " ORDER BY expired DESC";
+        } else {
+            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,user_id,hash,expired FROM {$hashTable}"
+                . " WHERE clienthost={$this->pdoDB->link->quote($clientId)}"
+                . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
+                . " ORDER BY expired DESC";
+        }
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
@@ -189,6 +193,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
         $justNow = new DateTime();
         $hashValue = '';
+        $userId = '';
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             if ($isDelete) {
                 $sql = "delete from {$hashTable} where id={$row['id']}";
@@ -206,14 +211,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             }
             if ($isMulti && strlen($hashValue) > 0) {
                 $hashValue .= "\n";
+                $userId .= "\n";
             }
             $hashValue .= $prefix === "" ? $row['hash'] : substr($row['hash'], strlen($prefix));
+            $userId .= $row['user_id'];
             $this->logger->setDebugMessage("[authSupportRetrieveChallenge] returns hash value: {$hashValue}");
             if (!$isMulti) {
-                return $hashValue;
+                return $uid ? $hashValue : [$hashValue, $userId];
             }
         }
-        return $hashValue;
+        return $uid ? $hashValue : [$hashValue, $userId];
     }
 
     /** Removes outdated challenges.
@@ -1187,5 +1194,111 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
         }
         return [null, null, null];
+    }
+
+    public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void
+    {
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            if (!$publicKey) {
+                throw new Exception("The public key is empty.");
+            }
+            if (!$publicKeyCredentialId) {
+                throw new Exception("The credential ID of the public key is empty.");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id FROM {$userTable} WHERE id = "
+                . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No user record for {$uid}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
+            }
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} SET "
+                . "publicKey = " . $this->pdoDB->link->quote($publicKey)
+                . ", publicKeyCredentialId = " . $this->pdoDB->link->quote($publicKeyCredentialId)
+                . " WHERE id = " . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            $this->logger->setDebugMessage("[authSupportStorePublicKey] {$sql}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportStorePublicKey] ERROR: {$e->getMessage()}");
+        }
+    }
+
+    public function authSupportRemovePublicKey(string $uid): void
+    {
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id FROM {$userTable} WHERE id = "
+                . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No user record for {$uid}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
+            }
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} "
+                . "SET publicKey = NULL, publicKeyCredentialId = NULL "
+                . "WHERE id = " . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            $this->logger->setDebugMessage("[authSupportRemovePublicKey] {$sql}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportRemovePublicKey] ERROR: {$e->getMessage()}");
+        }
+    }
+
+    public function authSupportUserInfoFromPublickeyId(string $pkid): array
+    {
+        try {
+            if (!$pkid) {
+                throw new Exception("Invalid Public Key ID: {$pkid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id,username,realname,hashedpasswd,publicKey "
+                . "FROM {$userTable} WHERE publicKeyCredentialId = " . $this->pdoDB->link->quote($pkid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                return [];
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected for the Log-in Public Key ID {$pkid}: {$sql}");
+            }
+            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return $row;
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
+        }
+        return [];
     }
 }

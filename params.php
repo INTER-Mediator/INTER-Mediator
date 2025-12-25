@@ -155,7 +155,7 @@ $browserCompatibility = array(
 
 /* Authorization
  * =================== */
-$authStoring = 'passkey'; // 'session-storage' or 'credential' or 'passkey'
+$authStoring = 'credential'; // 'session-storage' or 'credential' or 'passkey'
 $authExpired = 3600;
 $authRealm = 'INTER-Mediator_Samples';
 //$passwordHash = '2';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
@@ -178,6 +178,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$isPasskeyOnlyOnAuth = true;
 //$isAddClassAuthn = true;
 //$isOmitPasskeyConfirm = true;
+$applicationName = "INTER-Mediator Application";
 
 // The 'issuedhash' table for storing challenges of authentication can be using another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
