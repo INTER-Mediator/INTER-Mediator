@@ -40,7 +40,7 @@ trait PasskeySupport
         Logger::getInstance()->setDebugMessage(
             "[createPublicKeyCredentialRequestOptions] for host {$_SERVER["SERVER_NAME"]}", 2);
         if (!$challenge) {
-            $challenge = hex2bin($this->generateAndSaveChallenge($userName ?? "", $clientId, "$", "", $challenge));
+            $challenge = hex2bin($this->generateAndSaveChallenge(null, $clientId, "$", "", $challenge));
         }
         return PublicKeyCredentialRequestOptions::create($challenge,
             userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED
