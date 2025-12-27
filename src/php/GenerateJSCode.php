@@ -374,10 +374,10 @@ class GenerateJSCode
             ?? Params::getParameterValue("isAddClassAuthn", false);
         $this->generateAssignJS("IMLibAuthenticationUI.isAddClassAuthn",
             $isAddClassAuthn ? "true" : "false");
-        $isOmitPasskeyConfirm = $options['authentication']['omit-passkey-confirm-button']
-            ?? Params::getParameterValue("isOmitPasskeyConfirm", false);
-        $this->generateAssignJS("IMLibAuthenticationUI.isOmitPasskeyConfirm",
-            $isOmitPasskeyConfirm ? "true" : "false");
+        $isPasskeyErrorAlerting = $options['authentication']['passkey-error-alerting']
+            ?? Params::getParameterValue("isPasskeyErrorAlerting", false);
+        $this->generateAssignJS("IMLibAuthenticationUI.isPasskeyErrorAlerting",
+            $isPasskeyErrorAlerting ? "true" : "false");
 
         $this->generateAssignJS("IMLibAuthentication.authStoring", $q, $authStoringValue, $q);
         $authExpiredValue = $options['authentication']['authexpired']

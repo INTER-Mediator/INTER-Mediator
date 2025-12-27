@@ -169,6 +169,7 @@ class MessageStrings
         1063 => "Connection Error in registerPasskey=@1@/@2@",
         1064 => "Authentication (Passkey): ",
         1065 => "Connection Error in authPasskey=@1@/@2@",
+        1066 => "The public key for Passkey authentication is not stored",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

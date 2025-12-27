@@ -177,7 +177,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 //$isPasskeyOnlyOnAuth = true;
 //$isAddClassAuthn = true;
-//$isOmitPasskeyConfirm = true;
+//$isPpasskeyErrorAlerting = true;
 $applicationName = "INTER-Mediator Application";
 
 // The 'issuedhash' table for storing challenges of authentication can be using another database.

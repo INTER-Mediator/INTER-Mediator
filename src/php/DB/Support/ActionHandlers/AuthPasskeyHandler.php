@@ -57,8 +57,10 @@ class AuthPasskeyHandler extends ActionHandler
             $requestCSM = $csmFactory->requestCeremony();
             $authenticatorValidator = AuthenticatorAssertionResponseValidator::create($requestCSM);
 
+            // Get the user information.
             $userInfo = $this->proxy->dbClass->authHandler->authSupportUserInfoFromPublickeyId($rowId);
             if (!isset($userInfo['hashedpasswd'])) { // No user bond to the public key.
+                Logger::getInstance()->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1066));
                 return false;
             }
             $this->credential = $userInfo['hashedpasswd'];
@@ -67,6 +69,8 @@ class AuthPasskeyHandler extends ActionHandler
             $creationOption = $this->createPublicKeyCredentialRequestOptions(hex2bin($challenge), $clientId);
             Logger::getInstance()->setDebugMessage(
                 "[AuthPasskeyHandler] creationOption=" . var_export($creationOption, true), 2);
+
+            // Varidating the response.
             try {
                 $publicKeyCredentialSource = $authenticatorValidator->check(
                     $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);

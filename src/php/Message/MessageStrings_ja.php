@@ -104,6 +104,7 @@ class MessageStrings_ja extends MessageStrings
         1063 => "registerPasskey関数での通信エラー=@1@/@2@",
         1064 => "パスキー認証 (Passkey): ",
         1065 => "authPasskey関数での通信エラー=@1@/@2@",
+        1066 => "Passkey認証で利用する公開鍵が保存されていません",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',

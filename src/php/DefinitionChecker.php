@@ -245,7 +245,7 @@ class DefinitionChecker
             'passkey-registration' => 'boolean',
             'passkey-only-on-auth' => 'boolean',
             'add-class-authn' => 'boolean',
-            'omit-passkey-confirm-button' => 'boolean',
+            'passkey-error-alerting' => 'boolean',
         ],
         'media-root-dir' => 'string',
 //        'media-context' => 'string',

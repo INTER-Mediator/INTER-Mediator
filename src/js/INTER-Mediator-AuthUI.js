@@ -96,7 +96,7 @@ let IMLibAuthenticationUI = {
   /** If true, add additional WebAuthn-related attributes/classes to the login form */
   isAddClassAuthn: false,
   /** If true, omit confirmation UI for passkey (if supported by the flow) */
-  isOmitPasskeyConfirm: false,
+  isPasskeyErrorAlerting: false,
   /** Serialized passkey options JSON returned from server */
   passkeyOption: null,
 
@@ -282,7 +282,7 @@ let IMLibAuthenticationUI = {
       }
       if ((IMLibAuthenticationUI.extraButtons && Object.keys(IMLibAuthenticationUI.extraButtons).length > 0)
         || IMLibAuthenticationUI.isOAuthAvailable
-        || (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isPasskeyRegistrationPage)
+        || (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isPasskeyRegistrationPage && !IMLibAuthenticationUI.isAddClassAuthn)
         || (IMLibAuthentication.isSAML && IMLibAuthenticationUI.samlWithBuiltInAuth)) {
         const breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
@@ -356,14 +356,11 @@ let IMLibAuthenticationUI = {
         addingNode.innerHTML = IMLibAuthenticationUI.authPanelExp
         frontPanel.appendChild(addingNode)
       }
-      if (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isPasskeyRegistrationPage) {
+      if (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isPasskeyRegistrationPage && !IMLibAuthenticationUI.isAddClassAuthn) {
         passkeyButton = document.createElement('BUTTON')
         passkeyButton.id = '_im_passkey'
         passkeyButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2034)))
         frontPanel.appendChild(passkeyButton)
-        if (IMLibAuthenticationUI.isAddClassAuthn) {
-          userBox.autocomplete = "webauthn"
-        }
       }
     }
     // Setting event handlers to the buttons on the login panel.
@@ -410,6 +407,10 @@ let IMLibAuthenticationUI = {
       passkeyButton.onclick = function (event) {
         IMLibAuthenticationUI.passkeyButtonClick(event)
       }
+    }
+    if (IMLibAuthenticationUI.isAddClassAuthn) {
+      userBox.autocomplete = "username webauthn"
+      IMLibAuthenticationUI.passkeyButtonClick()
     }
 
     if (IMLibAuthentication.authCount > 0) {
@@ -764,7 +765,11 @@ let IMLibAuthenticationUI = {
     if (IMLibAuthenticationUI.passkeyOption) {
       const obj = JSON.parse(IMLibAuthenticationUI.passkeyOption)
       obj.challenge = Uint8Array.fromBase64(obj.challenge, {alphabet: "base64url"});
-      navigator.credentials.get({publicKey: obj})
+      const options = {publicKey: obj}
+      if (IMLibAuthenticationUI.isAddClassAuthn) {
+        options['mediation'] = 'conditional'
+      }
+      navigator.credentials.get(options)
         .then(async (info) => {
           await INTERMediator_DBAdapter.authPasskey(info)
           if (doAfterAuth) {
@@ -774,7 +779,10 @@ let IMLibAuthenticationUI = {
           }
         })
         .catch((err) => {
-          window.alert(err)
+          console.error(err)
+          if(IMLibAuthenticationUI.isPasskeyErrorAlerting) {
+            window.alert(err)
+          }
         });
     }
   },
@@ -795,7 +803,10 @@ let IMLibAuthenticationUI = {
           location.reload()
         })
         .catch((err) => {
-          window.alert(err)
+          console.error(err)
+          if(IMLibAuthenticationUI.isPasskeyErrorAlerting) {
+            window.alert(err)
+          }
         });
     }
   },
