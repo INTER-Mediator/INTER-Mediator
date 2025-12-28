@@ -11,9 +11,15 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.15 (in Development)
+- Passkey authentication is supported. The $authStoring variable or the "storing" key value have to set the "passkey".
+  The "autofill" UI of passkey authentication is supported by $isAddClassAuthn in params.php file, or 'add-class-authn'
+  key value in definition file.
+- IMLibAuthenticationUI.passkeyRegistration() method for the passkey registering.
+  IMLibAuthenticationUI.passkeyUnregistration() method for the passkey unregistering.
 - In case of affecting the order of records with editing field data, the list is going to update after modification.
 - New prompt for the related table adding are added to /dist-docs/prompts.
 - The new class RESTAPI can publish the Web API from a definition file. The sample usage is in the sample/Sample_API.
+- Largely refactoring of the database and authentication processes.
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 - The default value of the INTERMediatorLog.suppressDebugMessageOnPage is changed from false to true.
