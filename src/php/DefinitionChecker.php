@@ -242,7 +242,6 @@ class DefinitionChecker
             'digits-of-2FA-Code' => 'integer',
             'mail-context-2FA' => 'string',
             'expiring-seconds-2FA' => 'interger',
-            'passkey-registration' => 'boolean',
             'passkey-only-on-auth' => 'boolean',
             'add-class-authn' => 'boolean',
             'passkey-error-alerting' => 'boolean',

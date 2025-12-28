@@ -363,9 +363,6 @@ class GenerateJSCode
             $authStoringValue = 'credential';
             $this->generateAssignJS("IMLibAuthenticationUI.isPasskey", "true");
         }
-        $isPasskeyRegist = $options['authentication']['passkey-registration'] ?? false;
-        $this->generateAssignJS("IMLibAuthenticationUI.isPasskeyRegistrationPage", $isPasskeyRegist ? "true" : "false");
-
         $isPasskeyOnlyOnAuth = $options['authentication']['passkey-only-on-auth']
             ?? Params::getParameterValue("isPasskeyOnlyOnAuth", false);
         $this->generateAssignJS("IMLibAuthenticationUI.isPasskeyOnlyOnAuth",

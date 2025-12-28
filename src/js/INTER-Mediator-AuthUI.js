@@ -89,8 +89,6 @@ let IMLibAuthenticationUI = {
   /** Use SAML with a built-in authentication flow */
   samlWithBuiltInAuth: false,
 
-  /** Whether current page is for passkey registration UI */
-  isPasskeyRegistrationPage: false,
   /** If true, skip username/password UI and start passkey authentication immediately */
   isPasskeyOnlyOnAuth: false,
   /** If true, add additional WebAuthn-related attributes/classes to the login form */
@@ -282,7 +280,7 @@ let IMLibAuthenticationUI = {
       }
       if ((IMLibAuthenticationUI.extraButtons && Object.keys(IMLibAuthenticationUI.extraButtons).length > 0)
         || IMLibAuthenticationUI.isOAuthAvailable
-        || (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isPasskeyRegistrationPage && !IMLibAuthenticationUI.isAddClassAuthn)
+        || (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isAddClassAuthn)
         || (IMLibAuthentication.isSAML && IMLibAuthenticationUI.samlWithBuiltInAuth)) {
         const breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
@@ -356,7 +354,7 @@ let IMLibAuthenticationUI = {
         addingNode.innerHTML = IMLibAuthenticationUI.authPanelExp
         frontPanel.appendChild(addingNode)
       }
-      if (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isPasskeyRegistrationPage && !IMLibAuthenticationUI.isAddClassAuthn) {
+      if (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isAddClassAuthn) {
         passkeyButton = document.createElement('BUTTON')
         passkeyButton.id = '_im_passkey'
         passkeyButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2034)))

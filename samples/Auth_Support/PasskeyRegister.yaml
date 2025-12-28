@@ -13,8 +13,7 @@ contexts:
         expression: if(!publicKey, 'inline-block', 'none')
 options:
   authentication:
-    storing: passkey
-    passkey-registration: true
+    storing: credential
 connection:
   db-class: PDO
 debug: 2
