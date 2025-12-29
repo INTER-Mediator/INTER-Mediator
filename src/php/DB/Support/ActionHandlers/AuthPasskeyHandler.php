@@ -41,8 +41,8 @@ class AuthPasskeyHandler extends ActionHandler
             $publicKeyCredential = $this->passKeyDeserializePublicKeyCredential($this->proxy->pubkeyInfo);
             Logger::getInstance()->setDebugMessage(
                 "[AuthPasskeyHandler] checkAuthentication() type={$publicKeyCredential->type}", 2);
-            Logger::getInstance()->setDebugMessage(
-                "[AuthPasskeyHandler] checkAuthentication() publicKeyCredential-->" . var_export($publicKeyCredential, true), 2);
+//            Logger::getInstance()->setDebugMessage(
+//                "[AuthPasskeyHandler] checkAuthentication() publicKeyCredential-->" . var_export($publicKeyCredential, true), 2);
             $rowId = base64_encode($publicKeyCredential->rawId);
 
             // Retrieve the challenge data stored on the server
@@ -67,15 +67,17 @@ class AuthPasskeyHandler extends ActionHandler
             $this->username = $userInfo['username'];
             $publicKeyCredentialSource = $this->passKeyDeserializePublicKeyCredentialSource($userInfo['publicKey']);
             $creationOption = $this->createPublicKeyCredentialRequestOptions(hex2bin($challenge), $clientId);
-            Logger::getInstance()->setDebugMessage(
-                "[AuthPasskeyHandler] creationOption=" . var_export($creationOption, true), 2);
+//            Logger::getInstance()->setDebugMessage(
+//                "[AuthPasskeyHandler] creationOption=" . var_export($creationOption, true), 2);
 
             // Varidating the response.
             try {
                 $publicKeyCredentialSource = $authenticatorValidator->check(
                     $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);
+//                Logger::getInstance()->setDebugMessage(
+//                    "[AuthPasskeyHandler] publicKeyCredentialSource=" . var_export($publicKeyCredentialSource, true), 2);
                 Logger::getInstance()->setDebugMessage(
-                    "[AuthPasskeyHandler] publicKeyCredentialSource=" . var_export($publicKeyCredentialSource, true), 2);
+                    "[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
                 return true;
             } catch (\Throwable $e) {
                 Logger::getInstance()->setErrorMessage("Passkey Authentication Error: {$e->getMessage()}");

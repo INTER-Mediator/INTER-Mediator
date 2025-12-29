@@ -72,7 +72,12 @@ class RegisterPasskeyHandler extends ActionHandler
             $creationOption = $this->publicKeyCredentialCreationOptions($userName, hex2bin($challenge));
             try {
                 $publicKeyCredentialSource = $responseValidator->check($publicKeyCredential->response, $creationOption, $hostName);
-                $this->storePublicKey($uid, $publicKeyCredentialSource);
+                // Storing passkey data into the "authuser" table.
+                $publicKey = $this->passKeySeriarize($publicKeyCredentialSource);
+                $publicKeyCredentialId = base64_encode($publicKeyCredentialSource->publicKeyCredentialId);
+                $this->proxy->dbClass->authHandler->authSupportStorePublicKey($uid, $publicKey, $publicKeyCredentialId);
+                Logger::getInstance()->setDebugMessage(
+                    "[RegisterPasskeyHandler] *** Passkey registration succeed.***", 2);
             } catch (\Throwable $e) {
                 Logger::getInstance()->setErrorMessage("Passkey Registration Error: {$e->getMessage()}");
             }
@@ -96,23 +101,3 @@ class RegisterPasskeyHandler extends ActionHandler
     }
 
 }
-/*
-  * Example of $publicKeyCredentialSource
-  * \Webauthn\PublicKeyCredentialSource::__set_state(array(
-    'publicKeyCredentialId' => '===binary===',
-    'type' => 'public-key',
-    'transports' => array (0 => 'hybrid', 1 => 'internal',),
-    'attestationType' => 'none',
-    'trustPath' => \Webauthn\TrustPath\EmptyTrustPath::__set_state(array()),
-    'aaguid' => \Symfony\Component\Uid\UuidV4::__set_state(array(
-      'uid' => 'fbfc3007-154e-4ecc-8c0b-6e020557d7bd',
-     )),
-    'credentialPublicKey' => '===binary===',
-    'userHandle' => '1',
-    'counter' => 0,
-    'otherUI' => NULL,
-    'backupEligible' => true,
-    'backupStatus' => true,
-    'uvInitialized' => true,
- ))
-  */

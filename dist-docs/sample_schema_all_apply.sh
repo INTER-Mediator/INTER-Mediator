@@ -12,7 +12,7 @@ psql --quiet -f "${distDocDir}/sample_schema_pgsql.sql" -h localhost test_db
 rm /var/db/im/sample.sq3
 sqlite3 /var/db/im/sample.sq3 < "${distDocDir}/sample_schema_sqlite.sql"
 
-mysql -uroot < "${distDocDir}/../spec/run/additionals_mysql.sql"
-psql --quiet -f "${distDocDir}/../spec/run/additionals_postgresql.sql" -h localhost test_db
-sqlite3 /var/db/im/sample.sq3 < "${distDocDir}/../spec/run/additionals_sqlite.sql"
+#mysql -uroot < "${distDocDir}/../spec/run/additionals_mysql.sql"
+#psql --quiet -f "${distDocDir}/../spec/run/additionals_postgresql.sql" -h localhost test_db
+#sqlite3 /var/db/im/sample.sq3 < "${distDocDir}/../spec/run/additionals_sqlite.sql"
 

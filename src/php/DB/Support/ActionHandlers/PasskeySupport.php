@@ -47,13 +47,6 @@ trait PasskeySupport
         );
     }
 
-    protected function storePublicKey(string $uid, PublicKeyCredentialSource $publicKeyCredentialSource): void
-    {
-        $publicKey = $this->passKeySeriarize($publicKeyCredentialSource);
-        $publicKeyCredentialId = base64_encode($publicKeyCredentialSource->publicKeyCredentialId);
-        $this->proxy->dbClass->authHandler->authSupportStorePublicKey($uid, $publicKey, $publicKeyCredentialId);
-    }
-
     protected function passKeySeriarize(object $option): string
     {
         $attestationStatementSupportManager = AttestationStatementSupportManager::create();
