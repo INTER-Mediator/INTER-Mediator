@@ -31,100 +31,84 @@ class PDO extends DBClass
 {
     use Support\DB_PDO_SQLSupport;
 
-    /**
-     * PDO connection link.
+    /** PDO connection link.
      * @var \PDO|null
      */
     public ?\PDO $link = null;
 
-    /**
-     * Main table record count for the current context.
+    /** Main table record count for the current context.
      * @var int
      */
     private int $mainTableCount = 0;
 
-    /**
-     * Total record count for the main table.
+    /** Total record count for the main table.
      * @var int
      */
     private int $mainTableTotalCount = 0;
 
-    /**
-     * Field information for the current layout.
+    /** Field information for the current layout.
      * @var array|null
      */
     private ?array $fieldInfo = null;
 
-    /**
-     * Whether the setup has already been performed.
+    /** Whether the setup has already been performed.
      * @var bool
      */
     private bool $isAlreadySetup = false;
 
-    /**
-     * Whether updated record is required.
+    /** Whether updated record is required.
      * @var bool
      */
     private bool $isRequiredUpdated = false;
 
-    /**
-     * The most recently updated record.
+    /** The most recently updated record.
      * @var array|null
      */
     private ?array $updatedRecord = null;
 
-    /**
-     * Field name used for soft deletion.
+    /** Field name used for soft deletion.
      * @var string|null
      */
     private ?string $softDeleteField = null;
 
-    /**
-     * Value used for soft deletion.
+    /** Value used for soft deletion.
      * @var string|null
      */
     private ?string $softDeleteValue = null;
 
-    /**
-     * Whether setDataToUpdatedRecord was used.
+    /** Whether setDataToUpdatedRecord was used.
      * @var bool
      */
     private bool $useSetDataToUpdatedRecord = false;
 
-    /**
-     * Whether to follow timezones.
+    /** Whether to follow timezones.
      * @var bool
      */
     private bool $isFollowingTimezones;
 
-    /**
-     * Whether to suppress default values on copy.
+    /** Whether to suppress default values on copy.
      * @var bool
      */
     private bool $isSuppressDVOnCopy;
 
-    /**
-     * Whether to suppress default values on copy for associative arrays.
+    /** Whether to suppress default values on copy for associative arrays.
      * @var bool
      */
     private bool $isSuppressDVOnCopyAssoc;
 
-    /**
-     * Whether to suppress auth target filling on create.
+    /** Whether to suppress auth target filling on create.
      * @var bool
      */
     private bool $isSuppressAuthTargetFillingOnCreate;
 
-    /**
-     * Default timezone string.
+    /** Default timezone string.
      * @var string
      */
     private string $defaultTimezone;
 
     private array $sortKeys = [];
 
-    /**
-     * PDO constructor. Initializes timezone and suppression flags from parameters.
+    /** PDO constructor. Initializes timezone and suppression flags from parameters.
      */
     public function __construct()
     {
@@ -135,8 +119,7 @@ class PDO extends DBClass
         $this->isSuppressAuthTargetFillingOnCreate = Params::getParameterValue("suppressAuthTargetFillingOnCreate", false);
     }
 
-    /**
-     * Returns the updated record.
+    /** Returns the updated record.
      * @return array|null
      */
     public function getUpdatedRecord(): ?array
@@ -144,8 +127,7 @@ class PDO extends DBClass
         return $this->updatedRecord;
     }
 
-    /**
-     * Returns the updated record.
+    /** Returns the updated record.
      * @return array|null
      */
     public function updatedRecord(): ?array
@@ -153,8 +135,7 @@ class PDO extends DBClass
         return $this->updatedRecord;
     }
 
-    /**
-     * Sets the updated record.
+    /** Sets the updated record.
      * @param array $record
      * @return void
      */
@@ -163,8 +144,7 @@ class PDO extends DBClass
         $this->updatedRecord = $record;
     }
 
-    /**
-     * Sets data to the updated record.
+    /** Sets data to the updated record.
      * @param string $field
      * @param string|null $value
      * @param int $index
@@ -176,8 +156,7 @@ class PDO extends DBClass
         $this->useSetDataToUpdatedRecord = true;
     }
 
-    /**
-     * Returns whether setDataToUpdatedRecord was used.
+    /** Returns whether setDataToUpdatedRecord was used.
      * @return bool
      */
     public function getUseSetDataToUpdatedRecord(): bool
@@ -185,8 +164,7 @@ class PDO extends DBClass
         return $this->useSetDataToUpdatedRecord;
     }
 
-    /**
-     * Clears the useSetDataToUpdatedRecord flag.
+    /** Clears the useSetDataToUpdatedRecord flag.
      * @return void
      */
     public function clearUseSetDataToUpdatedRecord(): void
@@ -194,8 +172,7 @@ class PDO extends DBClass
         $this->useSetDataToUpdatedRecord = false;
     }
 
-    /**
-     * Requires the updated record.
+    /** Requires the updated record.
      * @param bool $value
      * @return void
      */
@@ -204,8 +181,7 @@ class PDO extends DBClass
         $this->isRequiredUpdated = $value;
     }
 
-    /**
-     * Activates soft deletion.
+    /** Activates soft deletion.
      * @param string $field
      * @param string $value
      * @return void
@@ -216,8 +192,7 @@ class PDO extends DBClass
         $this->softDeleteValue = $value;
     }
 
-    /**
-     * Stores an error message.
+    /** Stores an error message.
      * @param string $str
      * @return void
      */
@@ -231,8 +206,7 @@ class PDO extends DBClass
         }
     }
 
-    /**
-     * Handles PDO error.
+    /** Handles PDO error.
      * @param string $sql
      * @param $result
      * @return bool
@@ -258,8 +232,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Sets up the database connection.
+    /** Sets up the database connection.
      * @return bool
      */
     public function setupConnection(): bool
@@ -282,8 +255,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Sets up the database handlers.
+    /** Sets up the database handlers.
      * @param string|null $dsn
      * @return void
      */
@@ -301,8 +273,7 @@ class PDO extends DBClass
         $this->notifyHandler = new Support\DB_Notification_Handler_PDO($this);
     }
 
-    /**
-     * Sets up the database connection with a DSN string.
+    /** Sets up the database connection with a DSN string.
      * @param string $dsnString
      * @return bool
      */
@@ -321,8 +292,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Reads data from the database.
+    /** Reads data from the database.
      * @return array|null
      * @throws Exception
      */
@@ -473,8 +443,7 @@ class PDO extends DBClass
         return $sqlResult;
     }
 
-    /**
-     * Returns the count of query result.
+    /** Returns the count of query result.
      * @return int
      */
     public function countQueryResult(): int
@@ -482,8 +451,7 @@ class PDO extends DBClass
         return $this->mainTableCount;
     }
 
-    /**
-     * Returns the total count.
+    /** Returns the total count.
      * @return int
      */
     public function getTotalCount(): int
@@ -491,8 +459,7 @@ class PDO extends DBClass
         return $this->mainTableTotalCount;
     }
 
-    /**
-     * Returns the datetime expression.
+    /** Returns the datetime expression.
      * @param string $datetime
      * @param bool $isToServer
      * @return string
@@ -516,8 +483,7 @@ class PDO extends DBClass
         return $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
     }
 
-    /**
-     * Updates the database.
+    /** Updates the database.
      * @param bool $bypassAuth
      * @return bool
      * @throws Exception
@@ -669,8 +635,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Creates a new record in the database.
+    /** Creates a new record in the database.
      * @param bool $isReplace
      * @return string|null
      * @throws Exception
@@ -807,8 +772,7 @@ class PDO extends DBClass
         return $lastKeyValue;
     }
 
-    /**
-     * Deletes a record from the database.
+    /** Deletes a record from the database.
      * @return bool
      * @throws Exception
      */
@@ -863,8 +827,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Copies a record in the database.
+    /** Copies a record in the database.
      * @return string|null
      * @throws Exception
      */
@@ -957,8 +920,7 @@ class PDO extends DBClass
         return $lastKeyValue;
     }
 
-    /**
-     * Returns the key field of the context.
+    /** Returns the key field of the context.
      * @param array $context
      * @return string
      */
@@ -967,8 +929,7 @@ class PDO extends DBClass
         return $context['key'] ?? $this->specHandler->getDefaultKey();
     }
 
-    /**
-     * Returns the field information.
+    /** Returns the field information.
      * @param string $dataSourceName
      * @return array|null
      */
@@ -977,8 +938,7 @@ class PDO extends DBClass
         return $this->fieldInfo;
     }
 
-    /**
-     * Checks if the value is true.
+    /** Checks if the value is true.
      * @param $d
      * @return bool
      */
@@ -995,8 +955,7 @@ class PDO extends DBClass
         return false;
     }
 
-    /**
-     * Queries for test.
+    /** Queries for test.
      * @param string $table
      * @param array|null $conditions
      * @return array|null
@@ -1032,8 +991,7 @@ class PDO extends DBClass
         return $recordSet;
     }
 
-    /**
-     * Deletes for test.
+    /** Deletes for test.
      * @param string $table
      * @param array|null $conditions
      * @return bool
@@ -1061,8 +1019,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Generates conditions.
+    /** Generates conditions.
      * @param array|null $conditions
      * @return string
      */
@@ -1083,8 +1040,7 @@ class PDO extends DBClass
         return $sql;
     }
 
-    /**
-     * Returns whether a transaction is available.
+    /** Returns whether a transaction is available.
      * @return bool
      */
     public function hasTransaction(): bool
@@ -1092,8 +1048,7 @@ class PDO extends DBClass
         return true;
     }
 
-    /**
-     * Returns whether a transaction is in progress.
+    /** Returns whether a transaction is in progress.
      * @return bool
      */
     public function inTransaction(): bool
@@ -1101,8 +1056,7 @@ class PDO extends DBClass
         return $this->link->inTransaction();
     }
 
-    /**
-     * Begins a transaction.
+    /** Begins a transaction.
      * @return void
      */
     public function beginTransaction(): void
@@ -1110,8 +1064,7 @@ class PDO extends DBClass
         $this->link->beginTransaction();
     }
 
-    /**
-     * Commits a transaction.
+    /** Commits a transaction.
      * @return void
      */
     public function commitTransaction(): void
@@ -1119,8 +1072,7 @@ class PDO extends DBClass
         $this->link->commit();
     }
 
-    /**
-     * Rolls back a transaction.
+    /** Rolls back a transaction.
      * @return void
      */
     public function rollbackTransaction(): void
@@ -1128,8 +1080,7 @@ class PDO extends DBClass
         $this->link->rollBack();
     }
 
-    /**
-     * Returns the result relation.
+    /** Returns the result relation.
      * @param $result
      * @param array $timeFields
      * @return array
@@ -1146,8 +1097,7 @@ class PDO extends DBClass
         return $sqlResult;
     }
 
-    /**
-     * Closes the database operation.
+    /** Closes the database operation.
      * @return void
      */
     public function closeDBOperation(): void
@@ -1155,8 +1105,7 @@ class PDO extends DBClass
         // Do nothing
     }
 
-    /**
-     * Returns the result record.
+    /** Returns the result record.
      * @param array $row
      * @param bool $isFirstRow
      * @param array $timeFields

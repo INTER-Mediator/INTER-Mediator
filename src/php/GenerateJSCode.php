@@ -24,8 +24,7 @@ use INTERMediator\Auth\OAuthAuth;
  */
 class GenerateJSCode
 {
-    /**
-     * GenerateJSCode constructor.
+    /** GenerateJSCode constructor.
      * Starts a session if not started, sets JS headers, and outputs security headers.
      */
     public function __construct()
@@ -40,9 +39,7 @@ class GenerateJSCode
         $util->outputSecurityHeaders();
     }
 
-    /**
-     * Outputs a JavaScript assignment statement.
-     *
+    /** Outputs a JavaScript assignment statement.
      * @param string $variable The JavaScript variable name.
      * @param string $value1 The first value to assign.
      * @param string $value2 Optional additional value.
@@ -56,9 +53,7 @@ class GenerateJSCode
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    /**
-     * Outputs a JavaScript debug message using INTERMediatorLog.setDebugMessage().
-     *
+    /** Outputs a JavaScript debug message using INTERMediatorLog.setDebugMessage().
      * @param string $message The debug message to output.
      * @return void
      */
@@ -69,9 +64,7 @@ class GenerateJSCode
             . str_replace("\n", " ", addslashes($message)) . "{$q});\n";
     }
 
-    /**
-     * Outputs a JavaScript error message using INTERMediatorLog.setErrorMessage().
-     *
+    /** Outputs a JavaScript error message using INTERMediatorLog.setErrorMessage().
      * @param string $message The error message to output.
      * @return void
      */
@@ -82,9 +75,7 @@ class GenerateJSCode
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
-    /**
-     * Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
-     *
+    /** Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
      * @param array|null $dataSource Data source definitions for contexts.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpecification Database specification.
@@ -118,7 +109,6 @@ class GenerateJSCode
         $followingTimezones = Params::getParameterValue("followingTimezones", true);
         $passwordHash = Params::getParameterValue("passwordHash", 1);
         $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", null);
-        $isSAML = Params::getParameterValue("isSAML", null);
         $samlWithBuiltInAuth = Params::getParameterValue("samlWithBuiltInAuth", null);
         $credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', NULL);
         $prohibitDebugMode = Params::getParameterValue('prohibitDebugMode', false);
@@ -134,7 +124,6 @@ class GenerateJSCode
         }
         $serviceServerHost = $serviceServerHost ?? 'localhost';
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
-        $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
         $activateGenerator = Params::getParameterValue("activateGenerator", false);
         $extraButtons = Params::getParameterValue("extraButtons", []);
@@ -182,16 +171,16 @@ class GenerateJSCode
         }
         if (!is_null($oAuth)) {
             $this->generateAssignJS(
-                "INTERMediatorOnPage.isOAuthAvailable", $isOAuthAvailable ? "true" : "false");
-            $this->generateAssignJS("INTERMediatorOnPage.oAuthParams", "[]");
+                "IMLibAuthenticationUI.isOAuthAvailable", $isOAuthAvailable ? "true" : "false");
+            $this->generateAssignJS("IMLibAuthentication.oAuthParams", "[]");
             foreach ($clientOAuthParams as $provider => $info) {
-                $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}]", "[]");
-                $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}AuthButton{$q}]",
+                $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$q}{$provider}{$q}]", "[]");
+                $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$q}{$provider}{$q}][{$q}AuthButton{$q}]",
                     $q, $info['AuthButton'], $q);
-                $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}AuthURL{$q}]",
+                $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$q}{$provider}{$q}][{$q}AuthURL{$q}]",
                     $q, $info['AuthURL'], $q);
                 if (isset($info['Behavior'])) {
-                    $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}Behavior{$q}]",
+                    $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$q}{$provider}{$q}][{$q}Behavior{$q}]",
                         $q, $info['Behavior'], $q);
                 }
             }
@@ -277,7 +266,7 @@ class GenerateJSCode
 
         $isEmailAsUsernae = isset($options['authentication']['email-as-username']) && $options['authentication']['email-as-username'] === true;
         $this->generateAssignJS(
-            "INTERMediatorOnPage.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
+            "IMLibAuthenticationUI.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
 
         $messageClass = IMUtil::getMessageClassInstance();
         $this->generateAssignJS(
@@ -354,52 +343,70 @@ class GenerateJSCode
             }
         }
         $this->generateAssignJS(
-            "INTERMediatorOnPage.requireAuthentication", $boolValue);
+            "IMLibAuthentication.requireAuthentication", $boolValue);
         $this->generateAssignJS(
-            "INTERMediatorOnPage.credentialCookieDomain", $q, ($credentialCookieDomain ?? ''), $q);
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext));
+            "IMLibAuthentication.credentialCookieDomain", $q, ($credentialCookieDomain ?? ''), $q);
+//        $this->generateAssignJS(
+//            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext));
         if (!is_null($enrollPage)) {
-            $this->generateAssignJS("INTERMediatorOnPage.enrollPageURL", $q, $enrollPage, $q);
+            $this->generateAssignJS("IMLibAuthenticationUI.enrollPageURL", $q, $enrollPage, $q);
         }
         if (!is_null($resetPage)) {
-            $this->generateAssignJS("INTERMediatorOnPage.resetPageURL", $q, $resetPage, $q);
+            $this->generateAssignJS("IMLibAuthenticationUI.resetPageURL", $q, $resetPage, $q);
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.extraButtons", IMUtil::arrayToJS($extraButtons));
 
         $authStoringValue = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
-        $this->generateAssignJS("INTERMediatorOnPage.authStoring", $q, $authStoringValue, $q);
+        if (trim(strtolower($authStoringValue)) === 'passkey') {
+            $authStoringValue = 'credential';
+            $this->generateAssignJS("IMLibAuthenticationUI.isPasskey", "true");
+        }
+        $isPasskeyOnlyOnAuth = $options['authentication']['passkey-only-on-auth']
+            ?? Params::getParameterValue("isPasskeyOnlyOnAuth", false);
+        $this->generateAssignJS("IMLibAuthenticationUI.isPasskeyOnlyOnAuth",
+            $isPasskeyOnlyOnAuth ? "true" : "false");
+        $isAddClassAuthn = $options['authentication']['add-class-authn']
+            ?? Params::getParameterValue("isAddClassAuthn", false);
+        $this->generateAssignJS("IMLibAuthenticationUI.isAddClassAuthn",
+            $isAddClassAuthn ? "true" : "false");
+        $isPasskeyErrorAlerting = $options['authentication']['passkey-error-alerting']
+            ?? Params::getParameterValue("isPasskeyErrorAlerting", false);
+        $this->generateAssignJS("IMLibAuthenticationUI.isPasskeyErrorAlerting",
+            $isPasskeyErrorAlerting ? "true" : "false");
+
+        $this->generateAssignJS("IMLibAuthentication.authStoring", $q, $authStoringValue, $q);
         $authExpiredValue = $options['authentication']['authexpired']
             ?? Params::getParameterValue("authExpired", 3600);
-        $this->generateAssignJS("INTERMediatorOnPage.authExpired", intval($authExpiredValue));
+        $this->generateAssignJS("IMLibAuthentication.authExpired", intval($authExpiredValue));
         $realmValue = $options['authentication']['realm']
             ?? Params::getParameterValue("authRealm", '');
-        $this->generateAssignJS("INTERMediatorOnPage.realm", $q, $realmValue, $q);
+        $this->generateAssignJS("IMLibAuthentication.realm", $q, $realmValue, $q);
         $req2FAValue = $options['authentication']['is-required-2FA']
             ?? Params::getParameterValue("isRequired2FA", '');
-        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $req2FAValue ? "true" : "false");
+        $this->generateAssignJS("IMLibAuthenticationUI.isRequired2FA", $req2FAValue ? "true" : "false");
         $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", 4);
-        $this->generateAssignJS("INTERMediatorOnPage.digitsOf2FACode", intval($digitsOf2FACodeValue));
+        $this->generateAssignJS("IMLibAuthenticationUI.digitsOf2FACode", intval($digitsOf2FACodeValue));
 
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(
-                "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);
+                "IMLibAuthenticationUI.passwordPolicy", $q, $passwordPolicy, $q);
         } else if (isset($options["authentication"]["password-policy"])
         ) {
             $this->generateAssignJS(
-                "INTERMediatorOnPage.passwordPolicy", $q, $options["authentication"]["password-policy"], $q);
+                "IMLibAuthenticationUI.passwordPolicy", $q, $options["authentication"]["password-policy"], $q);
         }
         if (isset($options['credit-including'])) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
         }
+        $isSAML = $options['authentication']['is-saml'] ?? Params::getParameterValue("isSAML", null) ?? false;
         $this->generateAssignJS(
             "INTERMediatorOnPage.isSAML", $isSAML ? 'true' : 'false');
         $this->generateAssignJS(
-            "INTERMediatorOnPage.samlWithBuiltInAuth", $samlWithBuiltInAuth ? 'true' : 'false');
+            "IMLibAuthenticationUI.samlWithBuiltInAuth", $samlWithBuiltInAuth ? 'true' : 'false');
 
         // Initial values for local context
         if (!isset($valuesForLocalContext)) {
@@ -424,27 +431,25 @@ class GenerateJSCode
             "{$q}{$serviceServerProtocol}://{$serviceServerHost}:{$serviceServerPort}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);
         $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $followingTimezones ? "true" : "false");
-        $this->generateAssignJS("INTERMediatorOnPage.passwordHash", $passwordHash);
-        $this->generateAssignJS("INTERMediatorOnPage.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
+        $this->generateAssignJS("IMLibAuthentication.passwordHash", $passwordHash);
+        $this->generateAssignJS("IMLibAuthentication.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersionFull", $q, PHP_VERSION, $q);
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersion", PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION);
         if ($activateGenerator) {
             $this->generateAssignJS("INTERMediatorOnPage.activateMaintenanceCall", "true");
         }
 
-        $this->generateAssignJS("INTERMediatorOnPage.authPanelTitle",
+        $this->generateAssignJS("IMLibAuthenticationUI.authPanelTitle",
             $q, Params::getParameterValue('authPanelTitle', ""), $q);
-        $this->generateAssignJS("INTERMediatorOnPage.authPanelTitle2FA", $q,
+        $this->generateAssignJS("IMLibAuthenticationUI.authPanelTitle2FA", $q,
             Params::getParameterValue('authPanelTitle2FA', ""), $q);
-        $this->generateAssignJS("INTERMediatorOnPage.authPanelExp",
+        $this->generateAssignJS("IMLibAuthenticationUI.authPanelExp",
             $q, Params::getParameterValue('authPanelExp', ""), $q);
-        $this->generateAssignJS("INTERMediatorOnPage.authPanelExp2FA",
+        $this->generateAssignJS("IMLibAuthenticationUI.authPanelExp2FA",
             $q, Params::getParameterValue('authPanelExp2FA', ""), $q);
     }
 
-    /**
-     * Combines and returns the contents of required JavaScript files as a string.
-     *
+    /** Combines and returns the contents of required JavaScript files as a string.
      * @param bool $isSocketIO Whether to include Socket.IO script.
      * @return string The combined JavaScript code.
      */
@@ -467,6 +472,8 @@ class GenerateJSCode
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Page.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Auth.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-AuthUI.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-ContextPool.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Context.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-LocalContext.js');
@@ -483,9 +490,7 @@ class GenerateJSCode
         return $content;
     }
 
-    /**
-     * Reads a JavaScript source file, optionally ignoring lines or the rest of the file based on special markers.
-     *
+    /** Reads a JavaScript source file, optionally ignoring lines or the rest of the file based on special markers.
      * @param string $filename The JavaScript file path.
      * @return string The file contents, possibly truncated or with lines removed.
      */

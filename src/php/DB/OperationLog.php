@@ -25,74 +25,60 @@ use INTERMediator\Params;
  */
 class OperationLog
 {
-    /**
-     * Access log level.
+    /** Access log level.
      * @var int
      */
     private int $accessLogLevel;
-    /**
-     * Database class log name.
+    /** Database class log name.
      * @var string|null
      */
     private ?string $dbClassLog;
-    /**
-     * Database user log name.
+    /** Database user log name.
      * @var string|null
      */
     private ?string $dbUserLog;
-    /**
-     * Database password log.
+    /** Database password log.
      * @var string|null
      */
     private ?string $dbPasswordLog;
-    /**
-     * Database DSN log.
+    /** Database DSN log.
      * @var string|null
      */
     private ?string $dbDSNLog;
-    /**
-     * Contexts to record.
+    /** Contexts to record.
      * @var array|null
      */
     private ?array $recordingContexts;
-    /**
-     * Operations to record.
+    /** Operations to record.
      * @var array|null
      */
     private ?array $recordingOperations;
-    /**
-     * Context options.
+    /** Context options.
      * @var array|null
      */
     private ?array $contextOptions;
-    /**
-     * Whether to not record theme.
+    /** Whether to not record theme.
      * @var bool
      */
     private bool $dontRecordTheme;
-    /**
-     * Whether to not record challenge.
+    /** Whether to not record challenge.
      * @var bool
      */
     private bool $dontRecordChallenge;
-    /**
-     * Whether to not record download.
+    /** Whether to not record download.
      * @var bool
      */
     private bool $dontRecordDownload;
-    /**
-     * Whether to not record download without GET.
+    /** Whether to not record download without GET.
      * @var bool
      */
     private bool $dontRecordDownloadNoGet;
-    /**
-     * Access log extension class name.
+    /** Access log extension class name.
      * @var string|null
      */
     private ?string $accessLogExtensionClass;
 
-    /**
-     * Constructor for OperationLog.
+    /** Constructor for OperationLog.
      * @param array|null $options Context options for logging.
      */
     public function __construct(?array $options)
@@ -114,8 +100,7 @@ class OperationLog
         $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
-    /**
-     * Sets an entry in the operation log.
+    /** Sets an entry in the operation log.
      * @param array|null $result Result data for logging.
      * @return void
      * @throws Exception
@@ -193,8 +178,7 @@ class OperationLog
         }
     }
 
-    /**
-     * Converts an array to a string representation.
+    /** Converts an array to a string representation.
      * @param array|null $ar Array to convert.
      * @return string|null String representation of the array.
      */

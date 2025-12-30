@@ -29,7 +29,8 @@
     "symfony/google-mailer": "^7.4.0",
     "symfony/mime": "^7.4.0",
     "symfony/yaml": ">=6.4",
-    "web-token/jwt-framework": ">=3.4"
+    "web-token/jwt-framework": ">=3.4",
+    "web-auth/webauthn-lib": "*"
   },
   "extra": {
     "mouf": {

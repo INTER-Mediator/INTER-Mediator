@@ -429,6 +429,8 @@ CREATE TABLE authuser
     gender       TEXT,
     sub          TEXT,
     limitdt      DateTime,
+    publicKey       TEXT,
+    publicKeyCredentialId TEXT,
     accessToken  TEXT
 );
 

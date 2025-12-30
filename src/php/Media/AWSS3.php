@@ -29,54 +29,44 @@ use INTERMediator\Params;
  */
 class AWSS3 extends UploadingSupport implements DownloadingSupport
 {
-    /**
-     * AWS region for S3 operations.
+    /** AWS region for S3 operations.
      * @var string|null
      */
     private ?string $accessRegion;
-    /**
-     * Root S3 bucket name.
+    /** Root S3 bucket name.
      * @var string|null
      */
     private ?string $rootBucket;
-    /**
-     * ACL to apply to uploaded S3 objects.
+    /** ACL to apply to uploaded S3 objects.
      * @var string|null
      */
     private ?string $applyingACL;
-    /**
-     * Whether secret credentials are supplied directly.
+    /** Whether secret credentials are supplied directly.
      * @var bool
      */
     private bool $isSuppliedSecret;
-    /**
-     * AWS access key for S3.
+    /** AWS access key for S3.
      * @var string|null
      */
     private ?string $s3AccessKey;
-    /**
-     * AWS secret access key for S3.
+    /** AWS secret access key for S3.
      * @var string|null
      */
     private ?string $s3AccessSecret;
-    /**
-     * AWS credentials profile for S3.
+    /** AWS credentials profile for S3.
      * @var string|null
      */
     private ?string $s3AccessProfile;
-    /**
-     * Whether to customize S3 URL format.
+    /** Whether to customize S3 URL format.
      * @var bool
      */
     private bool $s3urlCustomize;
-    /**
-     * The file name of the current file being processed or retrieved.
+    /** The file name of the current file being processed or retrieved.
      * @var string|null
      */
     private ?string $fileName = null;
 
-    /**
-     * AWSS3 constructor. Initializes S3 credentials and configuration from parameters.
+    /** AWSS3 constructor. Initializes S3 credentials and configuration from parameters.
      */
     public function __construct()
     {
@@ -90,9 +80,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
         $this->isSuppliedSecret = $this->s3AccessKey && $this->s3AccessSecret;
     }
 
-    /**
-     * Retrieves the contents of a file from Amazon S3.
-     *
+    /** Retrieves the contents of a file from Amazon S3.
      * @param string $file The file name (unused, for interface compatibility).
      * @param string $target The S3 file path or URL.
      * @param Proxy $dbProxyInstance The database proxy instance.
@@ -121,9 +109,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
         return $content;
     }
 
-    /**
-     * Returns the file name of the last accessed or processed file.
-     *
+    /** Returns the file name of the last accessed or processed file.
      * @param string $file The file path (unused).
      * @return string|null The file name, or null if not set.
      */
@@ -132,9 +118,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
         return $this->fileName;
     }
 
-    /**
-     * Handles file upload processing to Amazon S3.
-     *
+    /** Handles file upload processing to Amazon S3.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
      * @param array|null $options Additional options for processing.

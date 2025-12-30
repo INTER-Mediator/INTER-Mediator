@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext, INTERMediatorLog,
  INTERMediatorLib, INTERMediator_DBAdapter, IMLibCalc, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, IMLibUI, INTERMediatorLog, IMParts_Catalog */
+ IMLibEventResponder, IMLibElement, IMLibUI, INTERMediatorLog, IMParts_Catalog, IMLibAuthentication, IMLibAuthenticationUI */
 /* jshint -W083 */ // Function within a loop
 
 /**
@@ -293,7 +293,7 @@ const INTERMediator = {
 
   initialize: () => {
     'use strict'
-    INTERMediatorOnPage.removeCookie('_im_localcontext')
+    IMLibAuthentication.removeCookie('_im_localcontext')
 
     INTERMediator.additionalCondition = {}
     INTERMediator.additionalSortKey = {}
@@ -475,7 +475,7 @@ const INTERMediator = {
       INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
     }
     IMLibEventResponder.setup()
-    await INTERMediatorOnPage.retrieveAuthInfo()
+    await IMLibAuthentication.retrieveAuthInfo()
     INTERMediator.connectToServiceServer()
 
     if (!IMLibPageNavigation.isKeepOnNaviArray) {
@@ -530,11 +530,11 @@ const INTERMediator = {
       }
     } catch (ex) {
       if (ex.message === '_im_auth_required_') {
-        if (INTERMediatorOnPage.requireAuthentication) {
-          if (!INTERMediatorOnPage.isComplementAuthData()) {
-            INTERMediatorOnPage.clearCredentials()
+        if (IMLibAuthentication.requireAuthentication) {
+          if (!IMLibAuthentication.isComplementAuthData()) {
+            IMLibAuthentication.clearCredentials()
             INTERMediatorOnPage.hideProgress(true)
-            INTERMediatorOnPage.authenticating(
+            IMLibAuthenticationUI.authenticating(
               function () {
                 INTERMediator.constructMain(updateRequiredContext)
               }
@@ -2195,3 +2195,6 @@ module.exports = INTERMediator
 const INTERMediator_DBAdapter = require('../../src/js/Adapter_DBServer')
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')
+const IMLibAuthenticationUI = require('../../src/js/INTER-Mediator-AuthUI')
+

@@ -28,16 +28,12 @@ use INTERMediator\Params;
  */
 class DB_Auth_Handler_PDO extends DB_Auth_Common
 {
-    /**
-     * PDO database handler instance.
-     *
+    /** PDO database handler instance.
      * @var PDO
      */
     protected PDO $pdoDB;
 
-    /**
-     * Constructor.
-     *
+    /** Constructor.
      * @param PDO $parent Parent PDO instance.
      */
     public function __construct(PDO $parent)
@@ -46,16 +42,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $this->pdoDB = $parent;
     }
 
-    /**
-     * Stores a challenge for authentication.
-     *
+    /** Stores a challenge for authentication.
      * @param string|null $uid User ID.
      * @param string $challenge Challenge string.
      * @param string $clientId Client ID.
      * @param string $prefix Prefix for the challenge.
      * @param bool $alwaysInsert Always insert a new challenge, even if one exists.
      * @return void
-     *
      * Using 'issuedhash'.
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void
@@ -123,12 +116,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
-    /**
-     * Checks a media token for authentication.
-     *
+    /** Checks a media token for authentication.
      * @param string $uid User ID.
      * @return ?string Media token or null if not found.
-     *
      * Using 'issuedhash'.
      * @throws Exception
      */
@@ -164,36 +154,37 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Retrieves a challenge for authentication.
-     *
-     * @param string $uid User ID.
+    /** Retrieves a challenge for authentication.
+     * @param null|string $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
      * @param bool $isMulti Retrieve multiple challenges.
      * @return ?string Challenge string or null if not found.
-     *
      * Using 'issuedhash'.
      * @throws Exception
      */
     public function authSupportRetrieveChallenge(
-        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): ?string
+        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): null|string|array
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
             return null;
         }
-        if ($uid < 1) {
-            $uid = 0;
-        }
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return null;
         }
-        $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,hash,expired FROM {$hashTable}"
-            . " WHERE user_id={$uid} AND clienthost={$this->pdoDB->link->quote($clientId)}"
-            . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
-            . " ORDER BY expired DESC";
+        if ($uid) {
+            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,user_id,hash,expired FROM {$hashTable}"
+                . " WHERE user_id={$this->pdoDB->link->quote($uid)} AND clienthost={$this->pdoDB->link->quote($clientId)}"
+                . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
+                . " ORDER BY expired DESC";
+        } else {
+            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,user_id,hash,expired FROM {$hashTable}"
+                . " WHERE clienthost={$this->pdoDB->link->quote($clientId)}"
+                . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
+                . " ORDER BY expired DESC";
+        }
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
@@ -202,6 +193,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
         $justNow = new DateTime();
         $hashValue = '';
+        $userId = '';
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             if ($isDelete) {
                 $sql = "delete from {$hashTable} where id={$row['id']}";
@@ -219,21 +211,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             }
             if ($isMulti && strlen($hashValue) > 0) {
                 $hashValue .= "\n";
+                $userId .= "\n";
             }
             $hashValue .= $prefix === "" ? $row['hash'] : substr($row['hash'], strlen($prefix));
+            $userId .= $row['user_id'];
             $this->logger->setDebugMessage("[authSupportRetrieveChallenge] returns hash value: {$hashValue}");
             if (!$isMulti) {
-                return $hashValue;
+                return $uid ? $hashValue : [$hashValue, $userId];
             }
         }
-        return $hashValue;
+        return $uid ? $hashValue : [$hashValue, $userId];
     }
 
-    /**
-     * Removes outdated challenges.
-     *
+    /** Removes outdated challenges.
      * @return bool True if successful, false otherwise.
-     *
      * Using 'issuedhash'.
      */
     public function authSupportRemoveOutdatedChallenges(): bool
@@ -269,9 +260,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /**
-     * Handles OAuth user authentication.
-     *
+    /** Handles OAuth user authentication.
      * @param array $keyValues Key-value pairs for user authentication.
      * @return ?bool True if user is created, false if user is reused, null on error.
      */
@@ -314,12 +303,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $returnValue;
     }
 
-    /**
-     * Retrieves a hashed password for a user.
-     *
+    /** Retrieves a hashed password for a user.
      * @param string $username Username.
      * @return ?string Hashed password or null if not found.
-     *
      * Using 'authuser'.
      */
     public function authSupportRetrieveHashedPassword(string $username): ?string
@@ -358,16 +344,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Creates a new user.
-     *
+    /** Creates a new user.
      * @param string $username Username.
      * @param string $hashedpassword Hashed password.
      * @param bool $isSAML SAML authentication flag.
      * @param ?string $ldapPassword LDAP password.
      * @param ?array $attrs Additional attributes.
      * @return bool True if successful, false otherwise.
-     *
      * Using 'authuser'.
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
@@ -482,13 +465,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /**
-     * Changes a user's password.
-     *
+    /** Changes a user's password.
      * @param string $username Username.
      * @param string $hashednewpassword New hashed password.
      * @return bool True if successful, false otherwise.
-     *
      * Using 'authuser'.
      */
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool
@@ -517,9 +497,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /**
-     * Gets a user ID from a username.
-     *
+    /** Gets a user ID from a username.
      * @param string $username Username.
      * @return string User ID.
      */
@@ -528,9 +506,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $this->privateGetUserIdFromUsername($username, false);
     }
 
-    /**
-     * Gets a user ID from a username.
-     *
+    /** Gets a user ID from a username.
      * @param string|null $username Username.
      * @return ?string User ID or null if not found.
      */
@@ -539,9 +515,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
-    /**
-     * Gets a user ID from a username.
-     *
+    /** Gets a user ID from a username.
      * @param string|null $username Username.
      * @param bool $isCheckLimit Check limit flag.
      * @return ?string User ID or null if not found.
@@ -573,12 +547,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Gets a group name from a group ID.
-     *
+    /** Gets a group name from a group ID.
      * @param string $groupid Group ID.
      * @return ?string Group name or null if not found.
-     *
      * Using 'authgroup'.
      */
     public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
@@ -601,12 +572,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Gets groups for a user.
-     *
+    /** Gets groups for a user.
      * @param ?string $user User ID or username.
      * @return array Groups for the user.
-     *
      * Using 'authcor'.
      */
     public function authSupportGetGroupsOfUser(?string $user): array
@@ -614,9 +582,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    /**
-     * Gets groups for a user.
-     *
+    /** Gets groups for a user.
      * @param string $user User ID or username.
      * @return ?array Groups for the user or null if not found.
      */
@@ -625,9 +591,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    /**
-     * Gets groups for a user.
-     *
+    /** Gets groups for a user.
      * @param string|null $user User ID or username.
      * @param bool $isCheckLimit Check limit flag.
      * @return ?array Groups for the user or null if not found.
@@ -668,21 +632,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $candidateGroups;
     }
 
-    /**
-     * @var array
+    /** @var array
      */
     private array $belongGroups;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $firstLevel;
 
-    /**
-     * Resolves a group.
-     *
+    /** Resolves a group.
      * @param string|null $groupid Group ID.
      * @return void
-     *
      * Using 'authcor'.
      */
     private function resolveGroup(?string $groupid): void
@@ -718,9 +677,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
-    /**
-     * Checks media privileges.
-     *
+    /** Checks media privileges.
      * @param string $tableName Table name.
      * @param string $targeting Targeting type.
      * @param string $userField User field.
@@ -728,7 +685,6 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $keyField Key field.
      * @param string $keyValue Key value.
      * @return ?array Media privileges or null if not found.
-     *
      * Using any table.
      * @throws Exception
      */
@@ -777,17 +733,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * @var array
+    /** @var array
      */
     private array $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
 
-    /**
-     * Gets a user ID from an email.
-     *
+    /** Gets a user ID from an email.
      * @param string $email Email.
      * @return ?string User ID or null if not found.
-     *
      * Using 'authuser'.
      */
     public function authSupportGetUserIdFromEmail(string $email): ?string
@@ -814,12 +766,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Gets a username from a user ID.
-     *
+    /** Gets a username from a user ID.
      * @param string $userid User ID.
      * @return ?string Username or null if not found.
-     *
      * Using 'authuser'.
      */
     public function authSupportGetUsernameFromUserId(string $userid): ?string
@@ -842,12 +791,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Unifies a username and email.
-     *
+    /** Unifies a username and email.
      * @param string|null $username Username.
      * @return ?string Unified username or null if not found.
-     *
      * Using 'authuser'.
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string
@@ -895,12 +841,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $usernameCandidate;
     }
 
-    /**
-     * Gets an email from a unified username.
-     *
+    /** Gets an email from a unified username.
      * @param string|null $username Unified username.
      * @return ?string Email or null if not found.
-     *
      * Using 'authuser'.
      */
     public function authSupportEmailFromUnifiedUsername(?string $username): ?string
@@ -926,14 +869,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Stores an issued hash for password reset.
-     *
+    /** Stores an issued hash for password reset.
      * @param string $userid User ID.
      * @param string $clienthost Client host.
      * @param string $hash Hash.
      * @return bool True if successful, false otherwise.
-     *
      * Using 'issuedhash'.
      */
     public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
@@ -960,14 +900,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /**
-     * Checks an issued hash for password reset.
-     *
+    /** Checks an issued hash for password reset.
      * @param string $userid User ID.
      * @param string $randdata Random data.
      * @param string $hash Hash.
      * @return bool True if successful, false otherwise.
-     *
      * Using 'issuedhash'.
      */
     public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
@@ -1000,9 +937,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return false;
     }
 
-    /**
-     * Starts user enrollment.
-     *
+    /** Starts user enrollment.
      * @param string $userid User ID.
      * @param string $hash Hash.
      * @return bool True if successful, false otherwise.
@@ -1031,9 +966,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /**
-     * Gets the enrolling user.
-     *
+    /** Gets the enrolling user.
      * @param string $hash Hash.
      * @return ?string Enrolling user ID or null if not found.
      */
@@ -1067,9 +1000,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /**
-     * Activates a user.
-     *
+    /** Activates a user.
      * @param string $userID User ID.
      * @param string|null $password Password.
      * @param string|null $rawPWField Raw password field.
@@ -1118,9 +1049,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $userID;
     }
 
-    /**
-     * Checks if a user is within the SAML limit.
-     *
+    /** Checks if a user is within the SAML limit.
      * @param string $userID User ID.
      * @return bool True if within the limit, false otherwise.
      */
@@ -1160,11 +1089,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return false;
     }
 
-    /**
-     * Checks if SHA256 hash migration is possible.
-     *
+    /** Checks if SHA256 hash migration is possible.
      * @return bool True if possible, false otherwise.
-     *
      * Using 'authuser', 'issuedhash'.
      */
     public function authSupportCanMigrateSHA256Hash(): bool // authuser, issuedhash
@@ -1185,9 +1111,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /**
-     * Unifies a username and email and gets user information.
-     *
+    /** Unifies a username and email and gets user information.
      * @param null|string $userID User ID or username.
      * @return array User information.
      */
@@ -1235,5 +1159,146 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return [$row['id'], $usernameCandidate, $row['hashedpasswd']];
         }
         return [null, null, null];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getLoginUserInfo(string $userID): array
+    {
+        try {
+            if (!$userID) {
+                throw new Exception("Invalid user ID: {$userID}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $user = $this->authSupportUnifyUsernameAndEmail($userID);
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id,username,realname FROM {$userTable} WHERE username = "
+                . $this->pdoDB->link->quote($user);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No Information Detected for the Log-in User {$userID}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected for the Log-in User {$userID}: {$sql}");
+            }
+            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return [$row['id'], $row['realname']];
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
+        }
+        return [null, null, null];
+    }
+
+    public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void
+    {
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            if (!$publicKey) {
+                throw new Exception("The public key is empty.");
+            }
+            if (!$publicKeyCredentialId) {
+                throw new Exception("The credential ID of the public key is empty.");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id FROM {$userTable} WHERE id = "
+                . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No user record for {$uid}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
+            }
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} SET "
+                . "publicKey = " . $this->pdoDB->link->quote($publicKey)
+                . ", publicKeyCredentialId = " . $this->pdoDB->link->quote($publicKeyCredentialId)
+                . " WHERE id = " . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            $this->logger->setDebugMessage("[authSupportStorePublicKey] {$sql}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportStorePublicKey] ERROR: {$e->getMessage()}");
+        }
+    }
+
+    public function authSupportRemovePublicKey(string $uid): void
+    {
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id FROM {$userTable} WHERE id = "
+                . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No user record for {$uid}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
+            }
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} "
+                . "SET publicKey = NULL, publicKeyCredentialId = NULL "
+                . "WHERE id = " . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            $this->logger->setDebugMessage("[authSupportRemovePublicKey] {$sql}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportRemovePublicKey] ERROR: {$e->getMessage()}");
+        }
+    }
+
+    public function authSupportUserInfoFromPublickeyId(string $pkid): array
+    {
+        try {
+            if (!$pkid) {
+                throw new Exception("Invalid Public Key ID: {$pkid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id,username,realname,hashedpasswd,publicKey "
+                . "FROM {$userTable} WHERE publicKeyCredentialId = " . $this->pdoDB->link->quote($pkid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                return [];
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected for the Log-in Public Key ID {$pkid}: {$sql}");
+            }
+            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return $row;
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
+        }
+        return [];
     }
 }

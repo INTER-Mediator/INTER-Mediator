@@ -25,65 +25,52 @@ use Exception;
  */
 class Generator
 {
-    /**
-     * The generator username for database access.
+    /** The generator username for database access.
      * @var string
      */
     private string $generatorUser;
-    /**
-     * The generator password for database access.
+    /** The generator password for database access.
      * @var string
      */
     private string $generatorPassword;
-    /**
-     * Logger instance for logging operations.
+    /** Logger instance for logging operations.
      * @var Logger
      */
     private Logger $logger;
-    /**
-     * PDO link for database connection.
+    /** PDO link for database connection.
      * @var \PDO
      */
     private \PDO $link;
-    /**
-     * Proxy instance for database settings and operations.
+    /** Proxy instance for database settings and operations.
      * @var Proxy
      */
     private Proxy $proxy;
-    /**
-     * DSN elements parsed from the connection string.
+    /** DSN elements parsed from the connection string.
      * @var array
      */
     private array $dsnElements;
-    /**
-     * DSN prefix (e.g., 'mysql').
+    /** DSN prefix (e.g., 'mysql').
      * @var string
      */
     private string $dsnPrefix;
-    /**
-     * Context definition array.
+    /** Context definition array.
      * @var array|null
      */
     private ?array $contextDef;
-    /**
-     * Schema information array.
+    /** Schema information array.
      * @var array
      */
     private array $schemaInfo;
-    /**
-     * Options for generator behavior.
+    /** Options for generator behavior.
      * @var array|null
      */
     private ?array $options;
-    /**
-     * Supported database engines.
+    /** Supported database engines.
      * @var array
      */
     private array $supportDB = ["mysql",/* "pgsql" */];
 
-    /**
-     * Constructor for the Generator class.
-     *
+    /** Constructor for the Generator class.
      * @param Proxy $proxy Proxy instance for DB settings.
      */
     public function __construct(Proxy $proxy)
@@ -106,9 +93,7 @@ class Generator
         }
     }
 
-    /**
-     * Acquire schema information from the database.
-     *
+    /** Acquire schema information from the database.
      * @return array[] The schema information array.
      */
     public function acquire(): array
@@ -149,9 +134,7 @@ class Generator
         return $this->generateDummyData($fieldList);
     }
 
-    /**
-     * Generate the database schema based on the acquired schema information.
-     *
+    /** Generate the database schema based on the acquired schema information.
      * @return void
      * @throws Exception
      */
@@ -253,9 +236,7 @@ class Generator
         }
     }
 
-    /**
-     * Prepare the database for schema generation.
-     *
+    /** Prepare the database for schema generation.
      * @return void
      */
     public function prepareDatabase(): void
@@ -284,9 +265,7 @@ class Generator
         }
     }
 
-    /**
-     * Get the list of databases.
-     *
+    /** Get the list of databases.
      * @return array
      */
     private function getDatabases(): array
@@ -309,9 +288,7 @@ class Generator
         return $dbs;
     }
 
-    /**
-     * Parse the DSN string into elements.
-     *
+    /** Parse the DSN string into elements.
      * @param $dsn
      * @return void
      */
@@ -332,9 +309,7 @@ class Generator
 //        $this->logger->setDebugMessage("[Schema Generator] {$this->dsnPrefix}/" . var_export($this->dsnElements, true), 2);
     }
 
-    /**
-     * Generate the DSN string for database connection.
-     *
+    /** Generate the DSN string for database connection.
      * @param bool $withInitDB
      * @return string
      * @throws Exception
@@ -364,9 +339,7 @@ class Generator
         return $dsn;
     }
 
-    /**
-     * Get the list of tables in the database.
-     *
+    /** Get the list of tables in the database.
      * @return array
      */
     private function getTables(): array
@@ -388,9 +361,7 @@ class Generator
         return $tables;
     }
 
-    /**
-     * Get the information of a table.
-     *
+    /** Get the information of a table.
      * @param string $tableName
      * @return array
      */
@@ -415,9 +386,7 @@ class Generator
         }, $infoResult);
     }
 
-    /**
-     * Get the list of fields for a table.
-     *
+    /** Get the list of fields for a table.
      * @return array
      */
     private function getFieldList(): array
@@ -456,9 +425,7 @@ class Generator
         return $fields;
     }
 
-    /**
-     * Generate dummy data for a table.
-     *
+    /** Generate dummy data for a table.
      * @param array $fieldList
      * @return array[]
      */
@@ -471,9 +438,7 @@ class Generator
         return [$result];
     }
 
-    /**
-     * Decide the field type based on the field name.
-     *
+    /** Decide the field type based on the field name.
      * @param string $field
      * @return string
      */
@@ -518,9 +483,7 @@ class Generator
         return $this->options['default-type'];
     }
 
-    /**
-     * Get the system prepared schema.
-     *
+    /** Get the system prepared schema.
      * @return string
      */
     private function systemPreparedSchema(): string

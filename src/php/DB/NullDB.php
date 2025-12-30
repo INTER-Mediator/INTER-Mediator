@@ -22,8 +22,7 @@ namespace INTERMediator\DB;
 class NullDB extends DBClass
 {
 
-    /**
-     * Read records from the database (no-op).
+    /** Read records from the database (no-op).
      * @return array|null Always returns null.
      */
     public function readFromDB(): ?array
@@ -31,8 +30,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Get the count of query results (no-op).
+    /** Get the count of query results (no-op).
      * @return int Always returns 0.
      */
     public function countQueryResult(): int
@@ -40,8 +38,7 @@ class NullDB extends DBClass
         return 0;
     }
 
-    /**
-     * Get the total count of records (no-op).
+    /** Get the total count of records (no-op).
      * @return int Always returns 0.
      */
     public function getTotalCount(): int
@@ -49,8 +46,7 @@ class NullDB extends DBClass
         return 0;
     }
 
-    /**
-     * Update records in the database (no-op).
+    /** Update records in the database (no-op).
      * @param bool $bypassAuth Whether to bypass authentication.
      * @return bool Always returns false.
      */
@@ -59,8 +55,7 @@ class NullDB extends DBClass
         return false;
     }
 
-    /**
-     * Create a new record in the database (no-op).
+    /** Create a new record in the database (no-op).
      * @param bool $isReplace Whether to replace existing data.
      * @return string|null Always returns null.
      */
@@ -69,8 +64,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Delete a record from the database (no-op).
+    /** Delete a record from the database (no-op).
      * @return bool Always returns false.
      */
     public function deleteFromDB(): bool
@@ -78,8 +72,7 @@ class NullDB extends DBClass
         return false;
     }
 
-    /**
-     * Get field information (no-op).
+    /** Get field information (no-op).
      * @param string $dataSourceName The data source name.
      * @return array|null Always returns null.
      */
@@ -88,8 +81,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Setup the database connection (no-op).
+    /** Setup the database connection (no-op).
      * @return bool Always returns true.
      */
     public function setupConnection(): bool
@@ -97,8 +89,7 @@ class NullDB extends DBClass
         return true;
     }
 
-    /**
-     * Require updated record (no-op).
+    /** Require updated record (no-op).
      * @param bool $value Whether to require updated record.
      * @return void
      */
@@ -106,8 +97,7 @@ class NullDB extends DBClass
     {
     }
 
-    /**
-     * Get the updated record (no-op).
+    /** Get the updated record (no-op).
      * @return array|null Always returns null.
      */
     public function getUpdatedRecord(): ?array
@@ -115,8 +105,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Get the updated record (no-op).
+    /** Get the updated record (no-op).
      * @return array|null Always returns null.
      */
     public function updatedRecord(): ?array
@@ -124,8 +113,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Set the updated record (no-op).
+    /** Set the updated record (no-op).
      * @param array $record The record to set.
      * @return void
      */
@@ -133,8 +121,7 @@ class NullDB extends DBClass
     {
     }
 
-    /**
-     * Soft delete or activate a record (no-op).
+    /** Soft delete or activate a record (no-op).
      * @param string $field The field to update.
      * @param string $value The value to set.
      * @return void
@@ -144,8 +131,7 @@ class NullDB extends DBClass
 
     }
 
-    /**
-     * Copy a record in the database (no-op).
+    /** Copy a record in the database (no-op).
      * @return string|null Always returns null.
      */
     public function copyInDB(): ?string
@@ -153,8 +139,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Setup database handlers (no-op).
+    /** Setup database handlers (no-op).
      * @param string|null $dsn The data source name.
      * @return void
      */
@@ -162,8 +147,7 @@ class NullDB extends DBClass
     {
     }
 
-    /**
-     * Set data to the updated record (no-op).
+    /** Set data to the updated record (no-op).
      * @param string $field The field to update.
      * @param string|null $value The value to set.
      * @param int $index The index of the record.
@@ -173,8 +157,7 @@ class NullDB extends DBClass
     {
     }
 
-    /**
-     * Get whether to use set data to updated record (no-op).
+    /** Get whether to use set data to updated record (no-op).
      * @return bool Always returns false.
      */
     public function getUseSetDataToUpdatedRecord(): bool
@@ -182,16 +165,14 @@ class NullDB extends DBClass
         return false;
     }
 
-    /**
-     * Clear the use set data to updated record flag (no-op).
+    /** Clear the use set data to updated record flag (no-op).
      * @return void
      */
     public function clearUseSetDataToUpdatedRecord(): void
     {
     }
 
-    /**
-     * Query records for testing (no-op).
+    /** Query records for testing (no-op).
      * @param string $table The table to query.
      * @param array|null $conditions The query conditions.
      * @return array|null Always returns null.
@@ -201,8 +182,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /**
-     * Delete records for testing (no-op).
+    /** Delete records for testing (no-op).
      * @param string $table The table to delete from.
      * @param array|null $conditions The delete conditions.
      * @return bool Always returns false.
@@ -212,8 +192,7 @@ class NullDB extends DBClass
         return false;
     }
 
-    /**
-     * Check if a transaction is available (no-op).
+    /** Check if a transaction is available (no-op).
      * @return bool Always returns false.
      */
     public function hasTransaction():bool
@@ -221,8 +200,7 @@ class NullDB extends DBClass
         return false;
     }
 
-    /**
-     * Check if a transaction is in progress (no-op).
+    /** Check if a transaction is in progress (no-op).
      * @return bool Always returns false.
      */
     public function inTransaction():bool
@@ -230,32 +208,28 @@ class NullDB extends DBClass
         return false;
     }
 
-    /**
-     * Begin a transaction (no-op).
+    /** Begin a transaction (no-op).
      * @return void
      */
     public function beginTransaction():void
     {
     }
 
-    /**
-     * Commit a transaction (no-op).
+    /** Commit a transaction (no-op).
      * @return void
      */
     public function commitTransaction():void
     {
     }
 
-    /**
-     * Rollback a transaction (no-op).
+    /** Rollback a transaction (no-op).
      * @return void
      */
     public function rollbackTransaction():void
     {
     }
 
-    /**
-     * Close the database operation (no-op).
+    /** Close the database operation (no-op).
      * @return void
      */
     public function closeDBOperation():void

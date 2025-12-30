@@ -22,13 +22,11 @@ use INTERMediator\Locale\IMLocale;
  */
 class Currency extends NumberBase
 {
-    /**
-     * @var int
+    /** @var int
      */
     private int $d;
 
-    /**
-     * @param int $digits
+    /** @param int $digits
      * @throws Exception
      */
     function __construct(int $digits = 0)
@@ -37,8 +35,7 @@ class Currency extends NumberBase
         $this->d = $digits;
     }
 
-    /**
-     * @param string|null $str
+    /** @param string|null $str
      * @return string
      */
     function converterFromDBtoUser(?string $str):string
@@ -47,8 +44,7 @@ class Currency extends NumberBase
         return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     function converterFromUserToDB(string $str):string

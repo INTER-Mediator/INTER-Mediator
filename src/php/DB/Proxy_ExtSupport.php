@@ -12,44 +12,36 @@ use Exception;
  */
 trait Proxy_ExtSupport
 {
-    /**
-     * Proxy instance for extended operations.
+    /** Proxy instance for extended operations.
      * @var Proxy|null
      */
     private ?Proxy $extProxy = null;
-    /**
-     * Data source for extended operations.
+    /** Data source for extended operations.
      * @var array|null
      */
     private ?array $extDataSource = null;
-    /**
-     * Options for extended operations.
+    /** Options for extended operations.
      * @var array|null
      */
     private ?array $extOptions = null;
-    /**
-     * DB spec for extended operations.
+    /** DB spec for extended operations.
      * @var array|null
      */
     private ?array $extDBSpec = null;
-    /**
-     * Debug level for extended operations.
+    /** Debug level for extended operations.
      * @var int|null
      */
     private ?int $extDebug = 0;
-    /**
-     * Fixed key for operations.
+    /** Fixed key for operations.
      * @var string|null
      */
     private ?string $fixedKey = null;
-    /**
-     * Test mode flag.
+    /** Test mode flag.
      * @var bool
      */
     private bool $testMode = false;
 
-    /**
-     * Get the Proxy instance for extended operations.
+    /** Get the Proxy instance for extended operations.
      * @return Proxy|null
      * @throws Exception
      */
@@ -62,8 +54,7 @@ trait Proxy_ExtSupport
         return $this->extProxy;
     }
 
-    /**
-     * Set the fixed key for operations.
+    /** Set the fixed key for operations.
      * @param string|null $key
      * @return void
      */
@@ -72,8 +63,7 @@ trait Proxy_ExtSupport
         $this->fixedKey = $key;
     }
 
-    /**
-     * Enable test mode.
+    /** Enable test mode.
      * @return void
      */
     public function setTestMode(): void
@@ -81,8 +71,7 @@ trait Proxy_ExtSupport
         $this->testMode = true;
     }
 
-    /**
-     * Initialize the proxy and operation settings.
+    /** Initialize the proxy and operation settings.
      * @param array|null $dataSource
      * @param array|null $options
      * @param array|null $dbSpec
@@ -101,8 +90,7 @@ trait Proxy_ExtSupport
         $this->extDebug = $debug;
     }
 
-    /**
-     * Read records from the database.
+    /** Read records from the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $sort
@@ -122,8 +110,7 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    /**
-     * Update records in the database.
+    /** Update records in the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $data
@@ -143,8 +130,7 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    /**
-     * Create new records in the database.
+    /** Create new records in the database.
      * @param string $target
      * @param array|null $data
      * @param array|null $spec
@@ -162,8 +148,7 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    /**
-     * Delete records from the database.
+    /** Delete records from the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $spec
@@ -181,8 +166,7 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    /**
-     * Copy records from the database.
+    /** Copy records from the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $sort
@@ -195,8 +179,7 @@ trait Proxy_ExtSupport
         return null;
     }
 
-    /**
-     * Check if the target exists in the data source.
+    /** Check if the target exists in the data source.
      * @param string $target
      * @param array|null $spec
      * @return bool
@@ -216,8 +199,7 @@ trait Proxy_ExtSupport
         return $result;
     }
 
-    /**
-     * Initialize the proxy with the target and spec.
+    /** Initialize the proxy with the target and spec.
      * @param string $target
      * @param array|null $spec
      * @return void
@@ -237,8 +219,7 @@ trait Proxy_ExtSupport
         }
     }
 
-    /**
-     * Set up the query for the operation.
+    /** Set up the query for the operation.
      * @param array|null $query
      * @return void
      */
@@ -259,8 +240,7 @@ trait Proxy_ExtSupport
         }
     }
 
-    /**
-     * Set up the sort for the operation.
+    /** Set up the sort for the operation.
      * @param array|null $sort
      * @return void
      */
@@ -280,8 +260,7 @@ trait Proxy_ExtSupport
         }
     }
 
-    /**
-     * Set up the data for the operation.
+    /** Set up the data for the operation.
      * @param array|null $data
      * @return void
      */

@@ -25,43 +25,33 @@ use PDO;
  */
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
-    /**
-     * @var array Table information for schema inspection.
+    /** @var array Table information for schema inspection.
      */
     protected array $tableInfo = array();
-    /**
-     * @var string Field name for column field.
+    /** @var string Field name for column field.
      */
     public string $fieldNameForField = 'Field';
-    /**
-     * @var string Field name for column type.
+    /** @var string Field name for column type.
      */
     protected string $fieldNameForType = 'Type';
-    /**
-     * @var string Field name for nullable property.
+    /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'Null';
-    /**
-     * @var array|string[] List of numeric field types.
+    /** @var array|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
         'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
-    /**
-     * @var array|string[] List of time field types.
+    /** @var array|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-    /**
-     * @var array|string[] List of date field types.
+    /** @var array|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
-    /**
-     * @var array|string[] List of boolean field types.
+    /** @var array|string[] List of boolean field types.
      */
     protected array $booleanFieldTypes = ['boolean', 'bool'];
 
-    /**
-     * Returns the SQL SELECT command for MySQL.
-     *
+    /** Returns the SQL SELECT command for MySQL.
      * @return string SQL SELECT command.
      */
     public function sqlSELECTCommand(): string
@@ -69,9 +59,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
-    /**
-     * Returns the SQL LIMIT command for MySQL.
-     *
+    /** Returns the SQL LIMIT command for MySQL.
      * @param string $param Limit parameter.
      * @return string SQL LIMIT command.
      */
@@ -80,9 +68,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "LIMIT {$param}";
     }
 
-    /**
-     * Returns the SQL OFFSET command for MySQL.
-     *
+    /** Returns the SQL OFFSET command for MySQL.
      * @param string $param Offset parameter.
      * @return string SQL OFFSET command.
      */
@@ -91,9 +77,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "OFFSET {$param}";
     }
 
-    /**
-     * Returns the SQL DELETE command for MySQL.
-     *
+    /** Returns the SQL DELETE command for MySQL.
      * @return string SQL DELETE command.
      */
     public function sqlDELETECommand(): string
@@ -101,9 +85,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "DELETE FROM ";
     }
 
-    /**
-     * Returns the SQL UPDATE command for MySQL.
-     *
+    /** Returns the SQL UPDATE command for MySQL.
      * @return string SQL UPDATE command.
      */
     public function sqlUPDATECommand(): string
@@ -111,9 +93,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "UPDATE IGNORE ";
     }
 
-    /**
-     * Returns the SQL INSERT command for MySQL.
-     *
+    /** Returns the SQL INSERT command for MySQL.
      * @param string $tableRef Table reference.
      * @param string $setClause Set clause.
      * @return string SQL INSERT command.
@@ -123,9 +103,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "INSERT IGNORE INTO {$tableRef} {$setClause}";
     }
 
-    /**
-     * Returns the SQL REPLACE command for MySQL.
-     *
+    /** Returns the SQL REPLACE command for MySQL.
      * @param string $tableRef Table reference.
      * @param string $setClause Set clause.
      * @return string SQL REPLACE command.
@@ -135,9 +113,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    /**
-     * Returns the SQL SET clause for MySQL.
-     *
+    /** Returns the SQL SET clause for MySQL.
      * @param string $tableName Table name.
      * @param array $setColumnNames Set column names.
      * @param string $keyField Key field.
@@ -152,9 +128,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    /**
-     * Returns the date reset value for not-null fields.
-     *
+    /** Returns the date reset value for not-null fields.
      * @return string Date reset value.
      */
     public function dateResetForNotNull(): string
@@ -162,9 +136,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return '1000-01-01';
     }
 
-    /**
-     * Checks if a field is nullable.
-     *
+    /** Checks if a field is nullable.
      * @param mixed $info Field information.
      * @return bool True if the field is nullable, false otherwise.
      */
@@ -173,9 +145,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return $info == 'YES';
     }
 
-    /**
-     * Returns the auto-increment field for a table.
-     *
+    /** Returns the auto-increment field for a table.
      * @param string $tableName Table name.
      * @return string|null Auto-increment field, or null if not found.
      * @throws Exception If an error occurs.
@@ -195,9 +165,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    /**
-     * Returns the SQL command to get table information.
-     *
+    /** Returns the SQL command to get table information.
      * @param string $tableName Table name.
      * @return string SQL command.
      */
@@ -206,9 +174,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
     }
 
-    /**
-     * Returns the field lists for copying data.
-     *
+    /** Returns the field lists for copying data.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
@@ -246,9 +212,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    /**
-     * Returns the quoted entity name.
-     *
+    /** Returns the quoted entity name.
      * @param string $entityName Entity name.
      * @return string|null Quoted entity name, or null if empty.
      */
@@ -268,17 +232,14 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "`{$entityName}`";
     }
 
-    /**
-     * Performs optional operations in setup.
+    /** Performs optional operations in setup.
      */
     public function optionalOperationInSetup(): void
     {
         $this->dbClassObj->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
 
-    /**
-     * Checks if the SHA256 hash can be migrated.
-     *
+    /** Checks if the SHA256 hash can be migrated.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
      * @return array|null Migration result, or null if not applicable.
@@ -327,9 +288,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return $returnValue;
     }
 
-    /**
-     * Handles special error handling for MySQL.
-     *
+    /** Handles special error handling for MySQL.
      *  As far as MySQL goes, in case of raising up the warning of violating constraints of foreign keys.
      *  it happens any kind of warning, but errorCode returns 00000 which means no error. There is no other way
      *  to call SHOW WARNINGS. Other db engines don't do anything here.
@@ -341,7 +300,6 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
      * | Warning | 1452 | Cannot add or update a child row: a foreign key constraint fails (`embryoscope`.`transferembryo`, CONSTRAINT `transferembryo_ibfk_2` FOREIGN KEY (`embryoID`) REFERENCES `embryo` (`embryoID`) ON DELETE CASCADE) |
      * +---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
      * 1 row in set (0.00 sec)
-     *
      * @param string $sql SQL command.
      */
     public function specialErrorHandling(string $sql): void
@@ -369,9 +327,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         }
     }
 
-    /**
-     * Returns the last insert ID.
-     *
+    /** Returns the last insert ID.
      * @param string $seqObject Sequence object.
      * @return string|null Last insert ID, or null if not applicable.
      */
@@ -386,9 +342,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    /**
-     * Returns the SQL command to create a user.
-     *
+    /** Returns the SQL command to create a user.
      * @param string $dbName Database name.
      * @param string $userEntity User entity.
      * @param string $password Password.
@@ -404,9 +358,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             . "SET PASSWORD FOR {$quotedUser} = {$quotedPassword};\n";
     }
 
-    /**
-     * Returns the SQL command to list databases.
-     *
+    /** Returns the SQL command to list databases.
      * @return string SQL command.
      */
     public function sqlLISTDATABASECommand(): string
@@ -414,9 +366,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "SHOW DATABASES;";
     }
 
-    /**
-     * Returns the column name for database list.
-     *
+    /** Returns the column name for database list.
      * @return string Column name.
      */
     public function sqlLISTDATABASEColumn(): string

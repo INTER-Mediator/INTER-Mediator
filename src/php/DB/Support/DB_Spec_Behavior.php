@@ -22,62 +22,46 @@ namespace INTERMediator\DB\Support;
  */
 interface DB_Spec_Behavior
 {
-    /**
-     * Returns the default key name (static method, PHP 5.3+).
-     *
+    /** Returns the default key name (static method, PHP 5.3+).
      * @return string Default key name.
      */
     public static function defaultKey(): string;
 
-    /**
-     * Returns the default key name (instance method, PHP 5.2 compatibility).
-     *
+    /** Returns the default key name (instance method, PHP 5.2 compatibility).
      * @return string Default key name.
      */
     public function getDefaultKey(): string;
 
-    /**
-     * Checks if the given field name is in the provided list of field names.
-     *
+    /** Checks if the given field name is in the provided list of field names.
      * @param string $fname Field name to check.
      * @param array $fieldnames Array of available field names.
      * @return bool True if $fname is in $fieldnames, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool;
 
-    /**
-     * Checks if NULL values are acceptable for this specification.
-     *
+    /** Checks if NULL values are acceptable for this specification.
      * @return bool True if NULL is acceptable, false otherwise.
      */
     public function isNullAcceptable(): bool;
 
-    /**
-     * Checks if this specification supports aggregation functions.
-     *
+    /** Checks if this specification supports aggregation functions.
      * @return bool True if aggregation is supported, false otherwise.
      */
     public function isSupportAggregation(): bool;
 
-    /**
-     * Checks if the given operator does not require a value (e.g., IS NULL).
-     *
+    /** Checks if the given operator does not require a value (e.g., IS NULL).
      * @param string $operator Operator to check.
      * @return bool True if the operator does not require a value, false otherwise.
      */
     public function isOperatorWithoutValue(string $operator): bool;
 
-    /**
-     * Checks if the given operator is a valid/possible operator for this specification.
-     *
+    /** Checks if the given operator is a valid/possible operator for this specification.
      * @param string $operator Operator to check.
      * @return bool True if the operator is valid, false otherwise.
      */
     public function isPossibleOperator(string $operator): bool;
 
-    /**
-     * Checks if the given specifier is a valid order specifier (e.g., ASC, DESC).
-     *
+    /** Checks if the given specifier is a valid order specifier (e.g., ASC, DESC).
      * @param string $specifier Order specifier to check.
      * @return bool True if the specifier is valid, false otherwise.
      */

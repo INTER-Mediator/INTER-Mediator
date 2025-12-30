@@ -27,9 +27,7 @@ use INTERMediator\Params;
  */
 class FileMakerContainer extends UploadingSupport implements DownloadingSupport
 {
-    /**
-     * Retrieves the contents of a file from a FileMaker container field or direct file path.
-     *
+    /** Retrieves the contents of a file from a FileMaker container field or direct file path.
      * @param string $file The file name (unused).
      * @param string $target The file path or FileMaker container URL.
      * @param Proxy $dbProxyInstance The database proxy instance.
@@ -90,9 +88,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
         return $content;
     }
 
-    /**
-     * Returns the base file name from a given file path, removing query parameters if present and decoding spaces.
-     *
+    /** Returns the base file name from a given file path, removing query parameters if present and decoding spaces.
      * @param string $file The file path.
      * @return string|null The base file name.
      */
@@ -106,9 +102,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
         return $fileName;
     }
 
-    /**
-     * Handles file upload processing for FileMaker container fields.
-     *
+    /** Handles file upload processing for FileMaker container fields.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
      * @param array|null $options Additional options for processing.

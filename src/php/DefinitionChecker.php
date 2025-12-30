@@ -25,9 +25,7 @@ namespace INTERMediator;
 class DefinitionChecker
 {
 
-    /**
-     * Checks the main definitions (data source, options, db specification) for invalid or prohibited keywords.
-     *
+    /** Checks the main definitions (data source, options, db specification) for invalid or prohibited keywords.
      * @param array|null $dataSource Data source definitions.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpecification Database specification.
@@ -57,9 +55,7 @@ class DefinitionChecker
         return $allMessage;
     }
 
-    /**
-     * Checks a single definition array against a set of prohibited keywords and types.
-     *
+    /** Checks a single definition array against a set of prohibited keywords and types.
      * @param array|null $definition The definition array to check.
      * @param array $prohibit The prohibited keywords and structure.
      * @return void
@@ -75,9 +71,7 @@ class DefinitionChecker
         $this->moveChildren($definition);
     }
 
-    /**
-     * Recursively traverses the definition items and checks for prohibited or invalid values.
-     *
+    /** Recursively traverses the definition items and checks for prohibited or invalid values.
      * @param mixed $items Items or values to check.
      * @return void
      */
@@ -158,8 +152,7 @@ class DefinitionChecker
         }
     }
 
-    /**
-     * DefinitionChecker constructor.
+    /** DefinitionChecker constructor.
      * Initializes prohibited keyword structures for data sources and messaging.
      */
     function __construct()
@@ -183,20 +176,16 @@ class DefinitionChecker
         );
     }
 
-    /**
-     * @var string Holds the latest error or warning message.
+    /** @var string Holds the latest error or warning message.
      */
     private string $message = '';
-    /**
-     * @var array Path stack for recursive checking.
+    /** @var array Path stack for recursive checking.
      */
     private array $path = [];
-    /**
-     * @var array Currently active prohibited keyword structure.
+    /** @var array Currently active prohibited keyword structure.
      */
     private array $currentProhibit;
-    /**
-     * @var array Prohibited keywords and types for database specification.
+    /** @var array Prohibited keywords and types for database specification.
      */
     private array $prohibitKeywordsForDBSpec = [
         'db-class' => 'string',
@@ -212,8 +201,7 @@ class DefinitionChecker
         'external-db' => ['#' => 'string'],
         'cert-verifying' => 'boolean',
     ];
-    /**
-     * @var array Prohibited keywords and types for options.
+    /** @var array Prohibited keywords and types for options.
      */
     private array $prohibitKeywordsForOption = [
         'separator' => 'string',
@@ -254,6 +242,9 @@ class DefinitionChecker
             'digits-of-2FA-Code' => 'integer',
             'mail-context-2FA' => 'string',
             'expiring-seconds-2FA' => 'interger',
+            'passkey-only-on-auth' => 'boolean',
+            'add-class-authn' => 'boolean',
+            'passkey-error-alerting' => 'boolean',
         ],
         'media-root-dir' => 'string',
 //        'media-context' => 'string',
@@ -285,8 +276,7 @@ class DefinitionChecker
         ],
         'terms' => 'array',
     ];
-    /**
-     * @var array|string[] Prohibited keywords and types for messaging.
+    /** @var array|string[] Prohibited keywords and types for messaging.
      */
     private array $prohibitKeywordsMessaging = [
         'from' => 'string',
@@ -309,8 +299,7 @@ class DefinitionChecker
         'attachment' => 'string',
         'template-context' => 'string',
     ];
-    /**
-     * @var array|array[] Prohibited keywords and types for data sources.
+    /** @var array|array[] Prohibited keywords and types for data sources.
      */
     private array $prohibitKeywordsForDataSource = [
         '*' => [

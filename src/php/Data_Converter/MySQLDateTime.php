@@ -25,17 +25,14 @@ use INTERMediator\Locale\IMLocale;
  */
 class MySQLDateTime
 {
-    /**
-     * @var string
+    /** @var string
      */
     private string $tz = 'Asia/Tokyo'; // Should be custimizable.
-    /**
-     * @var string
+    /** @var string
      */
     private string $fmt;
 
-    /**
-     * @param string $format
+    /** @param string $format
      */
     function __construct(string $format = '')
     {
@@ -44,8 +41,7 @@ class MySQLDateTime
         date_default_timezone_set($this->tz);
     }
 
-    /**
-     * @param ?string $str
+    /** @param ?string $str
      * @return string
      * @throws Exception
      */
@@ -83,8 +79,7 @@ class MySQLDateTime
         return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     function converterFromUserToDB(string $str): ?string

@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog, IMLibAuthentication, IMLibAuthenticationUI */
 /* jshint -W083 */ // Function within a loop
 
 /**
@@ -394,7 +394,7 @@ const IMLibUI = {
             }
           }
 
-          // await INTERMediatorOnPage.retrieveAuthInfo()
+          // await IMLibAuthentication.retrieveAuthInfo()
           INTERMediator_DBAdapter.db_copy_async({
               name: contextDef.name,
               conditions: [{field: contextDef.key, operator: '=', value: keyValueCapt}],
@@ -465,7 +465,7 @@ const IMLibUI = {
         let i, parentKeyValue, deleteSuccessProc, targetRepeaters
         INTERMediatorOnPage.showProgress()
         try {
-          // await INTERMediatorOnPage.retrieveAuthInfo()
+          // await IMLibAuthentication.retrieveAuthInfo()
           deleteSuccessProc = (function () {
             let currentContextCapt2 = currentContextCapt
             let completeTaskCapt = completeTask
@@ -538,9 +538,9 @@ const IMLibUI = {
           }
         } catch (ex) {
           if (ex.message === '_im_auth_required_') {
-            if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-              INTERMediatorOnPage.clearCredentials()
-              INTERMediatorOnPage.authenticating(
+            if (IMLibAuthentication.requireAuthentication && !IMLibAuthentication.isComplementAuthData()) {
+              IMLibAuthentication.clearCredentials()
+              IMLibAuthenticationUI.authenticating(
                 function () {
                   IMLibUI.deleteButton(
                     currentContextCapt, keyFieldCapt, keyValueCapt, false)
@@ -594,7 +594,7 @@ const IMLibUI = {
             }
           }
         }
-        await INTERMediatorOnPage.retrieveAuthInfo()
+        await IMLibAuthentication.retrieveAuthInfo()
         if (isPortal) {
           let targetPortalField, targetPortalValue, existRelated = false
           const relatedRecordSet = []
@@ -1043,3 +1043,5 @@ const IMLibUI = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibUI
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')
+const IMLibAuthenticationUI = require('../../src/js/INTER-Mediator-AuthUI')

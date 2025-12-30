@@ -11,84 +11,68 @@ use INTERMediator\DB\Logger;
  */
 class ServiceServerProxy
 {
-    /**
-     * Host for connecting to the service server, from params.php.
+    /** Host for connecting to the service server, from params.php.
      * @var string
      */
     private string $paramsHost;
-    /**
-     * Port for connecting to the service server, from params.php.
+    /** Port for connecting to the service server, from params.php.
      * @var int
      */
     private int $paramsPort;
-    /**
-     * Whether to boot the service server with installed Node.js, from params.php.
+    /** Whether to boot the service server with installed Node.js, from params.php.
      * @var bool
      */
     private bool $paramsBoot;
-    /**
-     * Whether to prevent using the service server, from params.php.
+    /** Whether to prevent using the service server, from params.php.
      * @var bool
      */
     private bool $dontUse;
-    /**
-     * List of error messages.
+    /** List of error messages.
      * @var array
      */
     private array $errors = [];
-    /**
-     * List of informational messages.
+    /** List of informational messages.
      * @var array
      */
     private array $messages = [];
-    /**
-     * Prefix for log and message headers.
+    /** Prefix for log and message headers.
      * @var string
      */
     private string $messageHead = "[ServiceServerProxy] ";
-    /**
-     * Whether to prevent automatic boot of the service server, from params.php.
+    /** Whether to prevent automatic boot of the service server, from params.php.
      * @var bool
      */
     private bool $dontAutoBoot;
-    /**
-     * Path to the forever log file, from params.php.
+    /** Path to the forever log file, from params.php.
      * @var string|null
      */
     private ?string $foreverLog;
-    /**
-     * Path of a Key file for wss protocol, from params.php.
+    /** Path of a Key file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerKey;  // Path of a Key file for wss protocol
-    /**
-     * Path of Cert file for wss protocol, from params.php.
+    /** Path of Cert file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerCert; // Path of Cert file for wss protocol
-    /**
-     * Path of CA file for wss protocol, from params.php.
+    /** Path of CA file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerCA; // Path of CA file for wss protocol
-    /**
-     * Cached DateTime for server info.
+    /** Cached DateTime for server info.
      * @var DateTime|null
      */
     private ?DateTime $serverInfoCachedDT = null;
-    /**
-     * Whether the server info is cached.
+    /** Whether the server info is cached.
      * @var bool
      */
     private bool $serverInfoCached = false;
-    /**
-     * Singleton instance of ServiceServerProxy.
+    /** Singleton instance of ServiceServerProxy.
      * @var ServiceServerProxy|null
      */
     static private ?ServiceServerProxy $gSSPInstance = null;
 
-    /**
-     * Returns the singleton instance of ServiceServerProxy.
+    /** Returns the singleton instance of ServiceServerProxy.
      * @return ServiceServerProxy|null Singleton instance.
      */
     static public function instance(): ?ServiceServerProxy
@@ -99,8 +83,7 @@ class ServiceServerProxy
         return ServiceServerProxy::$gSSPInstance;
     }
 
-    /**
-     * Constructor of this class. Initializes parameters from params.php.
+    /** Constructor of this class. Initializes parameters from params.php.
      */
     private function __construct()
     {
@@ -116,8 +99,7 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . 'instantiated the ServiceServerProxy class';
     }
 
-    /**
-     * Clears the message array.
+    /** Clears the message array.
      * @return void
      */
     public function clearMessages(): void
@@ -125,8 +107,7 @@ class ServiceServerProxy
         $this->messages = [];
     }
 
-    /**
-     * Clears the error array.
+    /** Clears the error array.
      * @return void
      */
     public function clearErrors(): void
@@ -134,8 +115,7 @@ class ServiceServerProxy
         $this->errors = [];
     }
 
-    /**
-     * Gets the message array.
+    /** Gets the message array.
      * @return array List of messages.
      */
     public function getMessages(): array
@@ -143,8 +123,7 @@ class ServiceServerProxy
         return $this->messages;
     }
 
-    /**
-     * Gets the error array.
+    /** Gets the error array.
      * @return array List of errors.
      */
     public function getErrors(): array
@@ -152,8 +131,7 @@ class ServiceServerProxy
         return $this->errors;
     }
 
-    /**
-     * Checks if the service server is available and starts it if necessary.
+    /** Checks if the service server is available and starts it if necessary.
      * Handles server booting and waiting for activation.
      * @return bool True if the server is available, false otherwise.
      */
@@ -207,8 +185,7 @@ class ServiceServerProxy
         }
     }
 
-    /**
-     * Checks if the Service Server is active and responding.
+    /** Checks if the Service Server is active and responding.
      * @return bool True if the server is active, false otherwise.
      */
     public function isActive(): bool
@@ -243,8 +220,7 @@ class ServiceServerProxy
         return $this->serverInfoCached;
     }
 
-    /**
-     * Calls the service server with the specified path and post-data.
+    /** Calls the service server with the specified path and post-data.
      * @param string $path Path for the server request.
      * @param array|null $postData Data to be sent with the request.
      * @return string|null Response from the server, or null on failure.
@@ -276,8 +252,7 @@ class ServiceServerProxy
         return $result;
     }
 
-    /**
-     * Executes a command on the server.
+    /** Executes a command on the server.
      * @param string $command Command to be executed.
      * @return void
      */
@@ -304,8 +279,7 @@ class ServiceServerProxy
         error_log("Service Server tried to boot: {$command}");
     }
 
-    /**
-     * Checks if the server is startable.
+    /** Checks if the server is startable.
      * @return bool True if the server is startable, false otherwise.
      */
     private function isServerStartable(): bool
@@ -317,8 +291,7 @@ class ServiceServerProxy
         return false;
     }
 
-    /**
-     * Starts the service server.
+    /** Starts the service server.
      * @return void
      */
     private function startServer(): void
@@ -346,8 +319,7 @@ class ServiceServerProxy
         $this->executeCommand("$cmd >> {$logFile} &");
     }
 
-    /**
-     * Validates an expression on the service server.
+    /** Validates an expression on the service server.
      * @param string $expression Expression to be validated.
      * @param array $values Values for the expression.
      * @return bool True if the expression is valid, false otherwise.
@@ -372,8 +344,7 @@ class ServiceServerProxy
         return true;
     }
 
-    /**
-     * Synchronizes data with the service server.
+    /** Synchronizes data with the service server.
      * @param array $channels Channels to be synchronized.
      * @param string $operation Operation to be performed.
      * @param array $data Data to be synchronized.
@@ -392,8 +363,7 @@ class ServiceServerProxy
         return true;
     }
 
-    /**
-     * Gets the version code of the service server.
+    /** Gets the version code of the service server.
      * @return string Version code.
      */
     private function getSSVersionCode(): string

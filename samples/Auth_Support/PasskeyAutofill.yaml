@@ -1,0 +1,22 @@
+contexts:
+  - name: authuser
+    key: id
+    records: 1
+    authentication:
+      all:
+        target: field-user
+        field: username
+    calculation:
+      - field: pkexist
+        expression: if(publicKey, 'inline-block', 'none')
+      - field: pknotexist
+        expression: if(!publicKey, 'inline-block', 'none')
+options:
+  authentication:
+    storing: passkey
+#    passkey-only-on-auth: true
+    add-class-authn: true
+#    passkey-error-alerting: true
+connection:
+  db-class: PDO
+debug: 2

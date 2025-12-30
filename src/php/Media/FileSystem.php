@@ -29,9 +29,7 @@ use INTERMediator\Params;
  */
 class FileSystem extends UploadingSupport implements DownloadingSupport
 {
-    /**
-     * Handles file upload processing, including CSV import if specified.
-     *
+    /** Handles file upload processing, including CSV import if specified.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
      * @param array|null $options Additional options for processing.
@@ -82,9 +80,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         }
     }
 
-    /**
-     * Retrieves the contents of a file from a given target path.
-     *
+    /** Retrieves the contents of a file from a given target path.
      * @param string $file The file name (unused).
      * @param string $target The file path to read.
      * @param Proxy $dbProxyInstance The database proxy instance.
@@ -99,9 +95,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return file_get_contents($target);
     }
 
-    /**
-     * Returns the base file name from a given file path, removing query parameters if present.
-     *
+    /** Returns the base file name from a given file path, removing query parameters if present.
      * @param string $file The file path.
      * @return string|null The base file name.
      */
@@ -115,9 +109,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return $fileName;
     }
 
-    /**
-     * Extracts file name and temporary name from file info array.
-     *
+    /** Extracts file name and temporary name from file info array.
      * @param array $info The file info array.
      * @return array Array containing the file name and temporary file name.
      */
@@ -133,9 +125,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return [$fileInfoName, $fileInfoTemp];
     }
 
-    /**
-     * Outputs an error message and stops further processing.
-     *
+    /** Outputs an error message and stops further processing.
      * @param Proxy $db The database proxy instance.
      * @param bool $noOutput Whether to suppress output.
      * @param string $errorMsg The error message to output.
@@ -152,9 +142,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         }
     }
 
-    /**
-     * Determines the file path and partial path for storing an uploaded file.
-     *
+    /** Determines the file path and partial path for storing an uploaded file.
      * @param Proxy $db The database proxy instance.
      * @param bool $noOutput Whether to suppress output.
      * @param array|null $options Additional options for processing.
@@ -203,9 +191,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return [$result, $filePath, $filePartialPath];
     }
 
-    /**
-     * Justifies and encodes a path component based on the specified mode.
-     *
+    /** Justifies and encodes a path component based on the specified mode.
      * @param string $str The string to justify.
      * @param string|null $mode The encoding mode (default, assjis, asucs4).
      * @return string The justified path component.
@@ -231,9 +217,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return $jStr;
     }
 
-    /**
-     * Handles CSV import operation from an uploaded file.
-     *
+    /** Handles CSV import operation from an uploaded file.
      * @param Proxy $db The database proxy instance.
      * @param array|null $dataSource Data source definition.
      * @param array|null $options Additional options for processing.

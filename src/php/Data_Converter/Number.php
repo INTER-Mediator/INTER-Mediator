@@ -22,17 +22,14 @@ use Exception;
  */
 class Number extends NumberBase
 {
-    /**
-     * @var int
+    /** @var int
      */
     private int $d;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $isZeroNoString = false;
 
-    /**
-     * @param int|bool $digits
+    /** @param int|bool $digits
      * @throws Exception
      */
     function __construct($digits = 0)
@@ -46,8 +43,7 @@ class Number extends NumberBase
         }
     }
 
-    /**
-     * @param ?string $str
+    /** @param ?string $str
      * @return string
      */
     function converterFromDBtoUser(?string $str): string

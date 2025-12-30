@@ -24,14 +24,12 @@ use Exception;
  */
 class TextFile extends DBClass
 {
-    /**
-     * Record count for the current operation.
+    /** Record count for the current operation.
      * @var int
      */
     private int $recordCount;
 
-    /**
-     * Read records from the text file data source.
+    /** Read records from the text file data source.
      * @return array|null Returns an array of records or null on failure.
      * @throws Exception
      */
@@ -140,8 +138,7 @@ class TextFile extends DBClass
         }
     }
 
-    /**
-     * Returns the record count for the current operation.
+    /** Returns the record count for the current operation.
      * @return int
      */
     public function countQueryResult(): int
@@ -149,8 +146,7 @@ class TextFile extends DBClass
         return $this->recordCount;
     }
 
-    /**
-     * Get the WHERE clause for the current operation.
+    /** Get the WHERE clause for the current operation.
      * @param string $currentOperation
      * @param bool $includeContext
      * @param bool $includeExtra
@@ -214,8 +210,7 @@ class TextFile extends DBClass
         return $queryClauseArray;
     }
 
-    /**
-     * Get the SORT clause for the current operation.
+    /** Get the SORT clause for the current operation.
      * @return array
      * @throws Exception
      */
@@ -248,8 +243,7 @@ class TextFile extends DBClass
         return $sortClause;
     }
 
-    /**
-     * Update the database with the current operation.
+    /** Update the database with the current operation.
      * @param bool $bypassAuth
      * @return bool
      */
@@ -258,8 +252,7 @@ class TextFile extends DBClass
         return false;
     }
 
-    /**
-     * Delete records from the database.
+    /** Delete records from the database.
      * @return bool
      */
     public function deleteFromDB(): bool
@@ -267,8 +260,7 @@ class TextFile extends DBClass
         return false;
     }
 
-    /**
-     * Get field information for the specified data source.
+    /** Get field information for the specified data source.
      * @param string $dataSourceName
      * @return array|null
      */
@@ -277,8 +269,7 @@ class TextFile extends DBClass
         return null;
     }
 
-    /**
-     * Set up the database connection.
+    /** Set up the database connection.
      * @return bool
      */
     public function setupConnection(): bool
@@ -286,8 +277,7 @@ class TextFile extends DBClass
         return true;
     }
 
-    /**
-     * Check if the specified operator is valid.
+    /** Check if the specified operator is valid.
      * @param string $operator
      * @return bool
      */
@@ -296,8 +286,7 @@ class TextFile extends DBClass
         return in_array(strtoupper($operator), array('='));
     }
 
-    /**
-     * Check if the specified order specifier is valid.
+    /** Check if the specified order specifier is valid.
      * @param string $specifier
      * @return bool
      */
@@ -306,8 +295,7 @@ class TextFile extends DBClass
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
 
-    /**
-     * Set the updated record flag.
+    /** Set the updated record flag.
      * @param bool $value
      * @return void
      */
@@ -316,8 +304,7 @@ class TextFile extends DBClass
         // TODO: Implement requireUpdatedRecord() method.
     }
 
-    /**
-     * Get the updated record.
+    /** Get the updated record.
      * @return array|null
      */
     public function getUpdatedRecord(): ?array
@@ -325,8 +312,7 @@ class TextFile extends DBClass
         return [];
     }
 
-    /**
-     * Get the updated record.
+    /** Get the updated record.
      * @return array|null
      */
     public function updatedRecord(): ?array
@@ -334,8 +320,7 @@ class TextFile extends DBClass
         return [];
     }
 
-    /**
-     * Set the updated record.
+    /** Set the updated record.
      * @param array $record
      * @return void
      */
@@ -343,8 +328,7 @@ class TextFile extends DBClass
     {
     }
 
-    /**
-     * Create a new record in the database.
+    /** Create a new record in the database.
      * @param bool $isReplace
      * @return string|null
      */
@@ -353,8 +337,7 @@ class TextFile extends DBClass
         return "created";
     }
 
-    /**
-     * Soft delete a record.
+    /** Soft delete a record.
      * @param string $field
      * @param string $value
      * @return void
@@ -363,8 +346,7 @@ class TextFile extends DBClass
     {
     }
 
-    /**
-     * Copy a record in the database.
+    /** Copy a record in the database.
      * @return string|null
      */
     public function copyInDB(): ?string
@@ -372,8 +354,7 @@ class TextFile extends DBClass
         return null;
     }
 
-    /**
-     * Get the total count of records.
+    /** Get the total count of records.
      * @return int
      */
     public function getTotalCount(): int
@@ -381,8 +362,7 @@ class TextFile extends DBClass
         return 0;
     }
 
-    /**
-     * Set up the database handlers.
+    /** Set up the database handlers.
      * @param string|null $dsn
      * @return void
      */
@@ -390,8 +370,7 @@ class TextFile extends DBClass
     {
     }
 
-    /**
-     * Set data to the updated record.
+    /** Set data to the updated record.
      * @param string $field
      * @param string|null $value
      * @param int $index
@@ -401,8 +380,7 @@ class TextFile extends DBClass
     {
     }
 
-    /**
-     * Query the database for testing purposes.
+    /** Query the database for testing purposes.
      * @param string $table
      * @param array|null $conditions
      * @return array|null
@@ -412,8 +390,7 @@ class TextFile extends DBClass
         return null;
     }
 
-    /**
-     * Delete records from the database for testing purposes.
+    /** Delete records from the database for testing purposes.
      * @param string $table
      * @param array|null $conditions
      * @return bool
@@ -423,8 +400,7 @@ class TextFile extends DBClass
         return false;
     }
 
-    /**
-     * Check if a transaction is in progress.
+    /** Check if a transaction is in progress.
      * @return bool
      */
     public function hasTransaction(): bool
@@ -432,8 +408,7 @@ class TextFile extends DBClass
         return false;
     }
 
-    /**
-     * Check if a transaction is in progress.
+    /** Check if a transaction is in progress.
      * @return bool
      */
     public function inTransaction(): bool
@@ -441,32 +416,28 @@ class TextFile extends DBClass
         return false;
     }
 
-    /**
-     * Begin a transaction.
+    /** Begin a transaction.
      * @return void
      */
     public function beginTransaction(): void
     {
     }
 
-    /**
-     * Commit a transaction.
+    /** Commit a transaction.
      * @return void
      */
     public function commitTransaction(): void
     {
     }
 
-    /**
-     * Roll back a transaction.
+    /** Roll back a transaction.
      * @return void
      */
     public function rollbackTransaction(): void
     {
     }
 
-    /**
-     * Get the use set data to updated record flag.
+    /** Get the use set data to updated record flag.
      * @return bool
      */
     public function getUseSetDataToUpdatedRecord(): bool
@@ -474,16 +445,14 @@ class TextFile extends DBClass
         return false;
     }
 
-    /**
-     * Clear the use set data to updated record flag.
+    /** Clear the use set data to updated record flag.
      * @return void
      */
     public function clearUseSetDataToUpdatedRecord(): void
     {
     }
 
-    /**
-     * Close the database operation.
+    /** Close the database operation.
      * @return void
      */
     public function closeDBOperation(): void

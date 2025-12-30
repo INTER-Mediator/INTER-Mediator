@@ -1,8 +1,7 @@
 <?php
 
-namespace INTERMediator\DB\Support\ProxyVisitors;
+namespace INTERMediator\DB\Support\ActionHandlers;
 
-use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
 /**
@@ -15,50 +14,42 @@ use INTERMediator\DB\Logger;
  * @property object $dbClass The database class object (from proxy).
  * @property object $logger The logger object (from proxy).
  */
-class UpdateVisitor extends OperationVisitor
+class UpdateHandler extends ActionHandler
 {
-    /**
-     * Visits the IsAuthAccessing operation.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the IsAuthAccessing operation.
+     * 
      * @return bool Always returns false for update operations (no auth access required).
      */
-    public function visitIsAuthAccessing(OperationElement $e): bool
+    public function isAuthAccessing(): bool
     {
         return false;
     }
 
-    /**
-     * Visits the CheckAuthentication operation for update operations.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the CheckAuthentication operation for update operations.
+     * 
      * @return bool True if authentication succeeds, false otherwise.
      */
-    public function visitCheckAuthentication(OperationElement $e): bool
+    public function checkAuthentication(): bool
     {
-        return $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
+        return $this->prepareCheckAuthentication() && $this->checkAuthenticationCommon();
     }
 
-    /**
-     * Visits the CheckAuthorization operation for update operations.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the CheckAuthorization operation for update operations.
+     * 
      * @return bool True if authorization succeeds, false otherwise.
      */
-    public function visitCheckAuthorization(OperationElement $e): bool
+    public function checkAuthorization(): bool
     {
         $proxy = $this->proxy;
-        return $proxy->authSucceed && $this->checkAuthorization();
+        return $proxy->authSucceed && $this->checkAuthorizationImpl();
     }
 
-    /**
-     * Visits the DataOperation operation to perform the update in the database.
+    /** Visits the DataOperation operation to perform the update in the database.
      * Handles validation, field protection, and updates output after processing.
-     *
-     * @param OperationElement $e The operation element being visited.
+     * 
      * @return void
      */
-    public function visitDataOperation(OperationElement $e): void
+    public function dataOperation(): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start update processing", 2);
         $tableInfo = $this->proxy->dbSettings->getDataSourceTargetArray();
@@ -86,13 +77,11 @@ class UpdateVisitor extends OperationVisitor
         }
     }
 
-    /**
-     * Visits the HandleChallenge operation for update operations.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the HandleChallenge operation for update operations.
+     * 
      * @return void
      */
-    public function visitHandleChallenge(OperationElement $e): void
+    public function handleChallenge(): void
     {
         $this->defaultHandleChallenge();
     }

@@ -28,87 +28,71 @@ use INTERMediator\Params;
  */
 class OAuthAuth
 {
-    /**
-     * Indicates whether the OAuth authentication object is active and properly configured.
+    /** Indicates whether the OAuth authentication object is active and properly configured.
      * When true, the OAuth adapter is initialized and ready to handle authentication.
      * When false, there was an error in initialization or the adapter is not properly configured.
-     *
      * @var bool Status of OAuth authentication process
      */
     public bool $isActive;
 
-    /**
-     * When debug mode is enabled, more detailed messages will be output.
+    /** When debug mode is enabled, more detailed messages will be output.
      * When true, detailed information about the authentication process and error messages will be displayed.
      * The default value is false.
      * @var bool Holds the debug mode status. true=enabled, false=disabled
      */
     public bool $debugMode = false;
-    /**
-     * @var array<string> Stores error messages that occur during the OAuth process
+    /** @var array<string> Stores error messages that occur during the OAuth process
      *           Each array element contains a specific error message as string
      */
     private array $errorMessage = array();
-    /**
-     * @var string JavaScript code to be executed after authentication
+    /** @var string JavaScript code to be executed after authentication
      *            Contains redirection code or other client-side operations
      */
     private string $jsCode = '';
-    /**
-     * @var string
+    /** @var string
      */
     private string $provider;
-    /**
-     * @var bool Controls whether automatic redirection occurs after authentication
+    /** @var bool Controls whether automatic redirection occurs after authentication
      *          When true, redirects to the original page after successful authentication
      */
     private bool $doRedirect = true;
-    /**
-     * @var bool|null
+    /** @var bool|null
      */
     private ?bool $isCreate = null;
-    /**
-     * @var null|ProviderAdapter The OAuth provider adapter instance
+    /** @var null|ProviderAdapter The OAuth provider adapter instance
      *                          Handles provider-specific authentication operations
      */
     private ?ProviderAdapter $providerObj;
-    /**
-     * @var null|array<string, string> User information retrieved from the provider
+    /** @var null|array<string, string> User information retrieved from the provider
      */
     private ?array $userInfo = null;
-    /**
-     * The generated password for OAuth user
+    /** The generated password for OAuth user
      * @var string|null The password string in plain text format
      */
     private ?string $generatedPassword = null;
 
-    /**
-     * @return string
+    /** @return string
      */
     public function oAuthProvider(): string
     {
         return $this->provider;
     }
 
-    /**
-     * @return string
+    /** @return string
      */
     public function javaScriptCode(): string
     {
         return $this->jsCode;
     }
 
-    /**
-     * @return string
+    /** @return string
      */
     public function errorMessages(): string
     {
         return implode(", ", $this->errorMessage);
     }
 
-    /**
-     * Sets whether automatic redirection should occur after authentication. The default value is true.
-     *
+    /** Sets whether automatic redirection should occur after authentication. The default value is true.
      * @param bool $val True to enable automatic redirection, false to disable
      * @return void
      */
@@ -117,17 +101,14 @@ class OAuthAuth
         $this->doRedirect = $val;
     }
 
-    /**
-     * @return bool|null
+    /** @return bool|null
      */
     public function isCreate(): ?bool
     {
         return $this->isCreate;
     }
 
-    /**
-     * Get user information retrieved from the provider
-     *
+    /** Get user information retrieved from the provider
      * @return array<string, string>|null The user information array with the following keys:
      *                    - "username": The username of the user. The value is a string.
      *                    - "realname": The real name of the user. The value is a string.
@@ -146,13 +127,10 @@ class OAuthAuth
         return $this->generatedPassword;
     }
 
-    /**
-     * Constructor
-     *
+    /** Constructor
      *  Initializes the provider adapter. This method creates an instance of the provider adapter and sets the necessary parameters from the configuration.
      *  If the adapter couldn't be created or the parameters are invalid, the method sets the error message and sets the
      *  `isActive` flag to false.
-     *
      * @param string $providerOrState The name of the provider or the state value.
      * @param bool $isProviderName If it's true, $providerOrState is the provider name. The default is false.
      */
@@ -193,9 +171,7 @@ class OAuthAuth
         $this->isActive = true;
     }
 
-    /**
-     * @return string The URL to request the authentication of the user.
-     *
+    /** @return string The URL to request the authentication of the user.
      * Returns the URL to request the authentication of the user. The returned URL is a string.
      */
     public function getAuthRequestURL(): string
@@ -206,14 +182,11 @@ class OAuthAuth
         return "";
     }
 
-    /**
-     * Processes the authentication flow after the user has authorized the client.
-     *
+    /** Processes the authentication flow after the user has authorized the client.
      * This method is called after the user has authorized the client and the client has received the authorization code.
      * It processes the authentication flow and sets the necessary parameters of the class.
      * If the authentication is successful, it sets the `userInfo` property with the user's information.
      * If the authentication fails, it sets the `errorMessage` property with the error message.
-     *
      * @return bool True if the authentication is successful, false otherwise.
      */
     public function afterAuth(): bool
@@ -236,9 +209,7 @@ class OAuthAuth
         return true;
     }
 
-    /**
-     * Handling the OAuth user information to create a local user.
-     *
+    /** Handling the OAuth user information to create a local user.
      * @param string|null $currentUser expecting username in the authuser table.
      * @param string|null $password The password to set for the user. If null, a random password will be generated.
      * @param bool $isSetPassword Whether to set the generated password as initialPassword.

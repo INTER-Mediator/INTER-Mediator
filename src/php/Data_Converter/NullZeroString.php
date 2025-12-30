@@ -21,14 +21,12 @@ namespace INTERMediator\Data_Converter;
 class NullZeroString
 {
     /**
-     *
      */
     public function __construct()
     {
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string|null
      */
     public function converterFromUserToDB(string $str): ?string
@@ -36,8 +34,7 @@ class NullZeroString
         return ($str == '') ? null : $str;
     }
 
-    /**
-     * @param string|null $str
+    /** @param string|null $str
      * @return string
      */
     public function converterFromDBtoUser(?string $str): string

@@ -24,43 +24,33 @@ use Exception;
  */
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
-    /**
-     * @var array Table information for schema inspection.
+    /** @var array Table information for schema inspection.
      */
     protected array $tableInfo = array();
-    /**
-     * @var string Field name for column field.
+    /** @var string Field name for column field.
      */
     public string $fieldNameForField = 'name';
-    /**
-     * @var string Field name for column type.
+    /** @var string Field name for column type.
      */
     protected string $fieldNameForType = 'type';
-    /**
-     * @var string Field name for nullable property.
+    /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'is_nullable';
-    /**
-     * @var array|string[] List of numeric field types.
+    /** @var array|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid',
         'int', 'money', 'numeric', 'real', 'smallint', 'smallmoney', 'tinyint',);
-    /**
-     * @var array|string[] List of time field types.
+    /** @var array|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
-    /**
-     * @var array|string[] List of date field types.
+    /** @var array|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
-    /**
-     * @var array List of boolean field types.
+    /** @var array List of boolean field types.
      */
     protected array $booleanFieldTypes = [];
 
-    /**
-     * Returns the SQL SELECT command for SQL Server.
-     *
+    /** Returns the SQL SELECT command for SQL Server.
      * @return string SQL SELECT command.
      */
     public function sqlSELECTCommand(): string
@@ -68,9 +58,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
-    /**
-     * Returns the SQL LIMIT command for SQL Server.
-     *
+    /** Returns the SQL LIMIT command for SQL Server.
      * @param string $param Limit parameter.
      * @return string SQL LIMIT command.
      */
@@ -79,9 +67,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "LIMIT {$param}";
     }
 
-    /**
-     * Returns the SQL OFFSET command for SQL Server.
-     *
+    /** Returns the SQL OFFSET command for SQL Server.
      * @param string $param Offset parameter.
      * @return string SQL OFFSET command.
      */
@@ -90,9 +76,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "OFFSET {$param}";
     }
 
-    /**
-     * Returns the default date value for not-nullable date fields.
-     *
+    /** Returns the default date value for not-nullable date fields.
      * @return string Default date value.
      */
     public function dateResetForNotNull(): string
@@ -100,9 +84,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return '1000-01-01';
     }
 
-    /**
-     * Returns the SQL ORDER BY command for SQL Server.
-     *
+    /** Returns the SQL ORDER BY command for SQL Server.
      * @param string $sortClause Sort clause.
      * @param string $limit Limit parameter.
      * @param string $offset Offset parameter.
@@ -124,9 +106,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             . (strlen($limit) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
     }
 
-    /**
-     * Returns the SQL DELETE command for SQL Server.
-     *
+    /** Returns the SQL DELETE command for SQL Server.
      * @return string SQL DELETE command.
      */
     public function sqlDELETECommand(): string
@@ -134,9 +114,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "DELETE ";
     }
 
-    /**
-     * Returns the SQL UPDATE command for SQL Server.
-     *
+    /** Returns the SQL UPDATE command for SQL Server.
      * @return string SQL UPDATE command.
      */
     public function sqlUPDATECommand(): string
@@ -144,9 +122,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "UPDATE ";
     }
 
-    /**
-     * Returns the SQL INSERT command for SQL Server.
-     *
+    /** Returns the SQL INSERT command for SQL Server.
      * @param string $tableRef Table reference.
      * @param string $setClause SET clause.
      * @return string SQL INSERT command.
@@ -156,9 +132,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    /**
-     * Returns the SQL SET clause for SQL Server.
-     *
+    /** Returns the SQL SET clause for SQL Server.
      * @param string $tableName Table name.
      * @param array $setColumnNames Column names.
      * @param string $keyField Key field.
@@ -173,9 +147,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    /**
-     * Checks if a field is nullable.
-     *
+    /** Checks if a field is nullable.
      * @param string $info Field information.
      * @return bool True if the field is nullable, false otherwise.
      */
@@ -184,9 +156,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return $info === "0";
     }
 
-    /**
-     * Returns the SQL query to retrieve table information for SQL Server.
-     *
+    /** Returns the SQL query to retrieve table information for SQL Server.
      * @param string $tableName Table name.
      * @return string SQL query.
      */
@@ -198,9 +168,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
     }
 
-    /**
-     * Returns the field lists for copying data.
-     *
+    /** Returns the field lists for copying data.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
@@ -245,9 +213,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    /**
-     * Returns the quoted entity name.
-     *
+    /** Returns the quoted entity name.
      * @param $entityName Entity name.
      * @return string|null Quoted entity name.
      */
@@ -256,16 +222,13 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "{$entityName}";
     }
 
-    /**
-     * Optional operation in setup.
+    /** Optional operation in setup.
      */
     public function optionalOperationInSetup(): void
     {
     }
 
-    /**
-     * Checks if the SHA256 hash can be migrated.
-     *
+    /** Checks if the SHA256 hash can be migrated.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
      * @return array|null Migration result.
@@ -311,9 +274,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return $returnValue;
     }
 
-    /**
-     * Returns the auto-increment field.
-     *
+    /** Returns the auto-increment field.
      * @param $tableName Table name.
      * @return string|null Auto-increment field.
      */
@@ -322,9 +283,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "unknown";
     }
 
-    /**
-     * Returns the SQL LIST DATABASE command for SQL Server.
-     *
+    /** Returns the SQL LIST DATABASE command for SQL Server.
      * @return string SQL LIST DATABASE command.
      */
     public function sqlLISTDATABASECommand(): string
@@ -333,9 +292,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return '';
     }
 
-    /**
-     * Returns the SQL LIST DATABASE column for SQL Server.
-     *
+    /** Returns the SQL LIST DATABASE column for SQL Server.
      * @return string SQL LIST DATABASE column.
      */
     public function sqlLISTDATABASEColumn(): string
@@ -344,9 +301,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return '';
     }
 
-    /**
-     * Returns the SQL CREATE USER command for SQL Server.
-     *
+    /** Returns the SQL CREATE USER command for SQL Server.
      * @param string $dbName Database name.
      * @param string $userEntity User entity.
      * @param string $password Password.

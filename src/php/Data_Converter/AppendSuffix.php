@@ -20,21 +20,18 @@ namespace INTERMediator\Data_Converter;
  */
 class AppendSuffix
 {
-    /**
-     * @var string
+    /** @var string
      */
     private string $appendStr;
 
-    /**
-     * @param string $str
+    /** @param string $str
      */
     function __construct(string $str = '')
     {
         $this->appendStr = $str;
     }
 
-    /**
-     * @param string|null $str
+    /** @param string|null $str
      * @return string
      */
     function converterFromDBtoUser(?string $str): string
@@ -42,8 +39,7 @@ class AppendSuffix
         return $str . $this->appendStr;
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     function converterFromUserToDB(string $str): string

@@ -31,8 +31,7 @@ use INTERMediator\Params;
  */
 trait Proxy_Auth
 {
-    /**
-     * Calling from Proxy::initialize method to initialize parameters for authentication and outholization.
+    /** Calling from Proxy::initialize method to initialize parameters for authentication and outholization.
      * @param array|null $options
      * @return void
      * @throws Exception
@@ -48,6 +47,12 @@ trait Proxy_Auth
         $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
         $this->authStoring = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
+        if (strtolower($this->authStoring) === 'passkey') {
+            $this->authStoring = "credential";
+            $this->isPasskey = true;
+        } else {
+            $this->isPasskey = false;
+        }
 //        $this->authExpired = $options['authentication']['authexpired']
 //            ?? Params::getParameterValue("authExpired", 3600);
 //        $this->realm = $options['authentication']['realm']
@@ -101,18 +106,21 @@ trait Proxy_Auth
         $this->dbSettings->setSAMLAuthSource(Params::getParameterValue('samlAuthSource', null));
         $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
+
+        if (isset($this->PostData['pubkeyInfo'])) {
+            $this->pubkeyInfo = $this->PostData['pubkeyInfo'] ?? null;
+        }
     }
 
-    /**
-     * Calling from Proxy::processing method to cheking the auth infos.
+    /** Calling from Proxy::processing method to cheking the auth infos.
      */
     public function authenticationAndAuthorization(): void
     {
-        if($this->bypassAuth) {
+        if ($this->bypassAuth) {
             return;
         }
         $this->dbSettings->setRequireAuthentication(false);
-        $isAuthAccessing = (new IsAuthAccessingElement())->acceptIsAuthAccessing($this->visitor);
+        $isAuthAccessing = $this->visitor->isAuthAccessing();
         $this->dbSettings->setRequireAuthorization($isAuthAccessing || $this->checkAuthSettings());
         $this->authSucceed = false;
         if ($this->dbSettings->getRequireAuthorization()) { // Authentication required
@@ -120,7 +128,7 @@ trait Proxy_Auth
             if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
-            if ((new CheckAuthenticationElement())->acceptCheckAuthentication($this->visitor)) {
+            if ($this->visitor->checkAuthentication()) {
                 $this->dbSettings->setCurrentUser($this->signedUser);
                 $this->logger->setDebugMessage("[authenticationAndAuthorization] IM-built-in Authentication succeed.");
                 $this->authSucceed = true;
@@ -162,7 +170,7 @@ trait Proxy_Auth
                     }
                 }
             }
-            if (!(new CheckAuthorizationElement())->acceptCheckAuthorization($this->visitor) && $this->authSucceed) {// Checking authorization.
+            if (!$this->visitor->checkAuthorization() && $this->authSucceed) {// Checking authorization.
                 Logger::getInstance()->setDebugMessage(
                     "[authenticationAndAuthorization] Authorization doesn't meet the settings.");
                 $this->accessSetToNothing();  // Not Authenticated!
@@ -189,19 +197,17 @@ trait Proxy_Auth
 //            || $this->access === 'credential' || $this->access === 'authenticated';
 //    }
 
-    /**
-     * @return void
+    /** @return void
      */
     public function accessSetToNothing()
     {
         $this->dbSettings->setRequireAuthentication(true);
         $this->access = "nothing";
-        $visitorClasName = IMUtil::getVisitorClassName($this->access);
+        $visitorClasName = IMUtil::getActionHandlerClassName($this->access);
         $this->visitor = new $visitorClasName($this);
     }
 
-    /**
-     * @param string $username
+    /** @param string $username
      * @param string $password
      * @param bool $isSAML
      * @param ?array $attrs
@@ -216,8 +222,7 @@ trait Proxy_Auth
         return [$returnValue, $hashedPw];
     }
 
-    /**
-     * Calling from Proxy::finishCommunication method to generate cookies.
+    /** Calling from Proxy::finishCommunication method to generate cookies.
      * @return void
      */
     public function handleMediaToken(): void
@@ -245,8 +250,7 @@ trait Proxy_Auth
         }
     }
 
-    /**
-     * @param string|null $username The username as the username field of authuser table.
+    /** @param string|null $username The username as the username field of authuser table.
      * @return string
      */
     public function authSupportGetSalt(?string $username): ?string
@@ -261,8 +265,7 @@ trait Proxy_Auth
         return null;
     }
 
-    /**
-     * @param string|null $username
+    /** @param string|null $username
      * @param string $challenge
      * @param string $clientId
      * @param string $prefix
@@ -279,8 +282,7 @@ trait Proxy_Auth
 
 // This method is just used to authenticate with database user
 
-    /**
-     * @param string $challenge
+    /** @param string $challenge
      * @param string $clientId
      * @return bool
      */
@@ -296,8 +298,7 @@ trait Proxy_Auth
 //        return $returnValue;
 //    }
 
-    /**
-     * @param string $user
+    /** @param string $user
      * @param string $token
      * @return bool
      */
@@ -318,8 +319,7 @@ trait Proxy_Auth
         return $returnValue;
     }
 
-    /**
-     * @param string|null $s1
+    /** @param string|null $s1
      * @param string|null $s2
      * @param string|null $s3
      * @return string

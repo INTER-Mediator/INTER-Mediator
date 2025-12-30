@@ -61,81 +61,62 @@ use Symfony\Component\Mime\Address;
  */
 class OME
 {
-    /**
-     * @var int The byte width for automatic line breaks in the email body.
+    /** @var int The byte width for automatic line breaks in the email body.
      */
     private int $bodyWidth = 74;
-    /**
-     * @var string The character encoding used for the email.
+    /** @var string The character encoding used for the email.
      */
     private string $mailEncoding = "UTF-8";
-    /**
-     * @var string The email body content.
+    /** @var string The email body content.
      */
     private string $body = '';
-    /**
-     * @var string|null The MIME type of the email body (e.g., 'text/html').
+    /** @var string|null The MIME type of the email body (e.g., 'text/html').
      */
     private ?string $bodyType = '';
-    /**
-     * @var string The subject of the email.
+    /** @var string The subject of the email.
      */
     private string $subject = '';
-    /**
-     * @var string The recipient(s) in the To field.
+    /** @var string The recipient(s) in the To field.
      */
     private string $toField = '';
-    /**
-     * @var string The recipient(s) in the Cc field.
+    /** @var string The recipient(s) in the Cc field.
      */
     private string $ccField = '';
-    /**
-     * @var string The recipient(s) in the Bcc field.
+    /** @var string The recipient(s) in the Bcc field.
      */
     private string $bccField = '';
-    /**
-     * @var string The sender address in the From field.
+    /** @var string The sender address in the From field.
      */
     private string $fromField = '';
-    /**
-     * @var string Additional email headers.
+    /** @var string Additional email headers.
      */
     private string $extHeaders = '';
-    /**
-     * @var string Stores the latest error message.
+    /** @var string Stores the latest error message.
      */
     private string $errorMessage = '';
-    /**
-     * @var string Additional parameters for the sendmail command.
+    /** @var string Additional parameters for the sendmail command.
      */
     private string $sendmailParam = '';
-    /**
-     * @var string Temporary storage for template contents.
+    /** @var string Temporary storage for template contents.
      */
     private string $tmpContents = '';
-    /**
-     * @var array List of file paths for attachments.
+    /** @var array List of file paths for attachments.
      */
     private array $attachments = [];
-    /**
-     * @var array|null SMTP connection information.
+    /** @var array|null SMTP connection information.
      */
     private ?array $smtpInfo = null;
-    /**
-     * @var bool Whether to set the current date in the email header.
+    /** @var bool Whether to set the current date in the email header.
      */
     private bool $isSetCurrentDateToHead = false;
-    /**
-     * @var bool Whether to use the sendmail parameter.
+    /** @var bool Whether to use the sendmail parameter.
      */
     private bool $isUseSendmailParam = false;
-    /**
-     * @var int Milliseconds to wait after sending mail.
+    /** @var int Milliseconds to wait after sending mail.
      */
     private int $waitMS;
 
-    /**
-     * The constructor of the OME class
+    /** The constructor of the OME class
      * Initializes encoding and wait time.
      */
     function __construct()
@@ -144,8 +125,7 @@ class OME
         $this->waitMS = Params::getParameterValue("waitAfterMail", 20);
     }
 
-    /**
-     * Returns the latest error message.
+    /** Returns the latest error message.
      * @return string Error message in Japanese.
      */
     public function getErrorMessage(): string
@@ -153,8 +133,7 @@ class OME
         return $this->errorMessage;
     }
 
-    /**
-     * Sets SMTP connection information.
+    /** Sets SMTP connection information.
      * @param array $info SMTP configuration array.
      */
     public function setSmtpInfo(array $info): void
@@ -162,8 +141,7 @@ class OME
         $this->smtpInfo = $info;
     }
 
-    /**
-     * Sets the mail encoding.
+    /** Sets the mail encoding.
      * @param string $info Encoding name.
      */
     public function setMailEncoding(string $info): void
@@ -171,24 +149,21 @@ class OME
         $this->mailEncoding = $info;
     }
 
-    /**
-     * Enables setting the current date in the header.
+    /** Enables setting the current date in the header.
      */
     public function setCurrentDateToHead(): void
     {
         $this->isSetCurrentDateToHead = true;
     }
 
-    /**
-     * Enables using the sendmail parameter.
+    /** Enables using the sendmail parameter.
      */
     public function useSendMailParam(): void
     {
         $this->isUseSendmailParam = true;
     }
 
-    /**
-     * Sets the email body, replacing any existing content.
+    /** Sets the email body, replacing any existing content.
      * @param string $str The body content.
      * @param ?string $type MIME type of the body (optional).
      */
@@ -198,8 +173,7 @@ class OME
         $this->bodyType = $type;
     }
 
-    /**
-     * Gets the email body content.
+    /** Gets the email body content.
      * @return string The current body content.
      */
     public function getBody(): string
@@ -207,8 +181,7 @@ class OME
         return $this->body;
     }
 
-    /**
-     * Appends content to the email body.
+    /** Appends content to the email body.
      * @param string $str The string to append.
      */
     public function appendBody(string $str): void
@@ -216,8 +189,7 @@ class OME
         $this->body .= $str;
     }
 
-    /**
-     * Sets the subject of the email.
+    /** Sets the subject of the email.
      * @param string $str The subject string.
      */
     public function setSubject(string $str): void
@@ -225,8 +197,7 @@ class OME
         $this->subject = $str;
     }
 
-    /**
-     * Gets the subject of the email.
+    /** Gets the subject of the email.
      * @return string The subject string.
      */
     public function getSubject(): string
@@ -234,8 +205,7 @@ class OME
         return $this->subject;
     }
 
-    /**
-     * Sets an extra header (other than Subject, To, From, Cc, Bcc).
+    /** Sets an extra header (other than Subject, To, From, Cc, Bcc).
      * @param string $field Header field name.
      * @param string $value Header value.
      */
@@ -244,8 +214,7 @@ class OME
         $this->extHeaders = "$field: $value\n";
     }
 
-    /**
-     * Sets additional parameters for the sendmail command.
+    /** Sets additional parameters for the sendmail command.
      * @param string $param Parameter string for mb_send_mail.
      */
     public function setSendMailParam(string $param): void
@@ -268,8 +237,7 @@ class OME
         return array(trim($addr), '');
     }
 
-    /**
-     * Checks if the email address is valid.
+    /** Checks if the email address is valid.
      * @param ?string $address The email address to check.
      * @return bool True if the address is valid, false otherwise.
      */
@@ -288,8 +256,7 @@ class OME
         }
     }
 
-    /**
-     * Sets the From field with the sender's address and name.
+    /** Sets the From field with the sender's address and name.
      * @param string $address The sender's email address.
      * @param ?string $name The sender's name (optional).
      * @param bool $isSetToParam Whether to set the sender's address as the Return-Path (optional).
@@ -314,8 +281,7 @@ class OME
         return false;
     }
 
-    /**
-     * Gets the From field.
+    /** Gets the From field.
      * @return string The sender's email address and name.
      */
     public function getFromField(): string
@@ -323,8 +289,7 @@ class OME
         return $this->fromField;
     }
 
-    /**
-     * Sets the To field with the recipient's address and name.
+    /** Sets the To field with the recipient's address and name.
      * @param string $address The recipient's email address.
      * @param ?string $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
@@ -345,8 +310,7 @@ class OME
         return false;
     }
 
-    /**
-     * Gets the To field.
+    /** Gets the To field.
      * @return string The recipient's email address and name.
      */
     public function getToField(): string
@@ -354,8 +318,7 @@ class OME
         return $this->toField;
     }
 
-    /**
-     * Appends the To field with the recipient's address and name.
+    /** Appends the To field with the recipient's address and name.
      * @param string $address The recipient's email address.
      * @param ?string $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
@@ -379,8 +342,7 @@ class OME
         return false;
     }
 
-    /**
-     * Gets the Cc field.
+    /** Gets the Cc field.
      * @return string The recipient's email address and name.
      */
     public function getCcField(): string
@@ -388,8 +350,7 @@ class OME
         return $this->ccField;
     }
 
-    /**
-     * Sets the Cc field with the recipient's address and name.
+    /** Sets the Cc field with the recipient's address and name.
      * @param string $address The recipient's email address.
      * @param ?string $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
@@ -409,8 +370,7 @@ class OME
         return false;
     }
 
-    /**
-     * Appends the Cc field with the recipient's address and name.
+    /** Appends the Cc field with the recipient's address and name.
      * @param string $address The recipient's email address.
      * @param ?string $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
@@ -434,8 +394,7 @@ class OME
         return false;
     }
 
-    /**
-     * Gets the Bcc field.
+    /** Gets the Bcc field.
      * @return string The recipient's email address and name.
      */
     public function getBccField(): string
@@ -443,8 +402,7 @@ class OME
         return $this->bccField;
     }
 
-    /**
-     * Sets the Bcc field with the recipient's address and name.
+    /** Sets the Bcc field with the recipient's address and name.
      * @param string $address The recipient's email address.
      * @param ?string $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
@@ -464,8 +422,7 @@ class OME
         return false;
     }
 
-    /**
-     * Appends the Bcc field with the recipient's address and name.
+    /** Appends the Bcc field with the recipient's address and name.
      * @param string $address The recipient's email address.
      * @param ?string $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
@@ -489,8 +446,7 @@ class OME
         return false;
     }
 
-    /**
-     * Sets a template file for the email body.
+    /** Sets a template file for the email body.
      * @param string $tfile The path to the template file.
      * @return bool True if the file is loaded successfully, false otherwise.
      */
@@ -505,8 +461,7 @@ class OME
         return false;
     }
 
-    /**
-     * Sets a template string for the email body.
+    /** Sets a template string for the email body.
      * @param string $str The template string.
      */
     public function setTemplateAsString(string $str): void
@@ -514,8 +469,7 @@ class OME
         $this->tmpContents = $str;
     }
 
-    /**
-     * Inserts data into the template and sets the email body.
+    /** Inserts data into the template and sets the email body.
      * @param array $ar The data to insert into the template.
      * @return bool True if the insertion is successful, false otherwise.
      */
@@ -537,8 +491,7 @@ class OME
         return $returnValue;
     }
 
-    /**
-     * Sets the byte width for automatic line breaks in the email body.
+    /** Sets the byte width for automatic line breaks in the email body.
      * @param int $bytes The byte width.
      */
     public function setBodyWidth(int $bytes): void
@@ -546,8 +499,7 @@ class OME
         $this->bodyWidth = $bytes;
     }
 
-    /**
-     * Checks if a string contains control characters.
+    /** Checks if a string contains control characters.
      * @param string $str The string to check.
      * @return bool True if the string contains control characters, false otherwise.
      */
@@ -556,8 +508,7 @@ class OME
         return mb_ereg_match("/[[:cntrl:]]/", $str);
     }
 
-    /**
-     * Adds an attachment to the email.
+    /** Adds an attachment to the email.
      * @param string $fpath The path to the attachment file.
      */
     public function addAttachment(string $fpath): void
@@ -565,8 +516,7 @@ class OME
         $this->attachments[] = $fpath;
     }
 
-    /**
-     * Sends the email.
+    /** Sends the email.
      * @return bool True if the email is sent successfully, false otherwise.
      * @throws TransportExceptionInterface
      */
@@ -750,8 +700,7 @@ class OME
         return $result;
     }
 
-    /**
-     * Divides a string into lines with a maximum byte width.
+    /** Divides a string into lines with a maximum byte width.
      * @param string $str The string to divide.
      * @return string The divided string.
      */
@@ -800,8 +749,7 @@ class OME
         return $devidedStr;
     } // End of function devideWithLimitingWidth()
 
-    /**
-     * Unifies CRLF to LF.
+    /** Unifies CRLF to LF.
      * @param string $str The string to unify.
      * @return string The unified string.
      */
@@ -811,8 +759,7 @@ class OME
         return str_replace("\n", "\r\n", $strUnifiedLF);
     }
 
-    /**
-     * Checks if a character is a space.
+    /** Checks if a character is a space.
      * @param string $str The character to check.
      * @return bool True if the character is a space, false otherwise.
      */
@@ -826,8 +773,7 @@ class OME
         return False;
     } // End of isSpace()
 
-    /**
-     * Checks if a character is a word element.
+    /** Checks if a character is a word element.
      * @param string $str The character to check.
      * @return bool True if the character is a word element, false otherwise.
      */
@@ -844,8 +790,7 @@ class OME
         return False;
     } // End of function isWordElement()
 
-    /**
-     * Checks if a character is Japanese.
+    /** Checks if a character is Japanese.
      * @param string $str The character to check.
      * @return bool True if the character is Japanese, false otherwise.
      */
@@ -856,8 +801,7 @@ class OME
         return False;
     } // End of function isJapanese()
 
-    /**
-     * Checks if a character is a Japanese line top inhibit character.
+    /** Checks if a character is a Japanese line top inhibit character.
      * @param string $str The character to check.
      * @return bool True, if the character is a Japanese line, top inhibits character, false otherwise.
      */
@@ -898,8 +842,7 @@ class OME
         return False;
     } // End of function isInhibitLineTopChar
 
-    /**
-     * Checks if a character is a Japanese line end inhibit character.
+    /** Checks if a character is a Japanese line end inhibit character.
      * @param string $str The character to check.
      * @return bool True, if the character is a Japanese line end inhibit character, false otherwise.
      */
@@ -925,8 +868,7 @@ class OME
         return False;
     } // End of function isInhibitLineEndChar
 
-    /**
-     * Encodes a string for use in email headers.
+    /** Encodes a string for use in email headers.
      * @param string $str The string to encode.
      * @param bool $isSeparateLine Whether to separate lines.
      * @return string The encoded string.

@@ -31,15 +31,12 @@ use INTERMediator\IMUtil;
  */
 class FacebookAdapter extends ProviderAdapter
 {
-    /**
-     * Initializes the Facebook OAuth adapter
+    /** Initializes the Facebook OAuth adapter
      * Facebook OAuth アダプターを初期化
-     *
      * Sets the provider name and configures endpoint URLs for:
      * - OAuth dialog
      * - Access token retrieval
      * - User information retrieval
-     *
      * プロバイダー名と以下のエンドポイントURLを設定:
      * - OAuth ダイアログ
      * - アクセストークン取得
@@ -53,10 +50,8 @@ class FacebookAdapter extends ProviderAdapter
         $this->getInfoURL = "https://graph.facebook.com/me";
     }
 
-    /**
-     * Configures the adapter for testing purposes
+    /** Configures the adapter for testing purposes
      * テスト目的のためのアダプター設定
-     *
      * @return ProviderAdapter Returns the current adapter instance for method chaining
      *                        メソッドチェーン用の現在のアダプターインスタンスを返す
      */
@@ -65,10 +60,8 @@ class FacebookAdapter extends ProviderAdapter
         return $this;
     }
 
-    /**
-     * Validates the OAuth authentication process and credentials
+    /** Validates the OAuth authentication process and credentials
      * OAuth認証プロセスと認証情報を検証
-     *
      * @return bool True if validation succeeds, false otherwise
      *              検証が成功した場合はtrue、それ以外はfalse
      */
@@ -77,10 +70,8 @@ class FacebookAdapter extends ProviderAdapter
         return $this->validate_impl(true);
     }
 
-    /**
-     * Generates the Facebook OAuth authorization URL with state parameter
+    /** Generates the Facebook OAuth authorization URL with state parameter
      * ステートパラメータを含むFacebook OAuth認証URLを生成
-     *
      * @return string Complete authorization URL with state, redirect URI, and client ID
      *                ステート、リダイレクトURI、クライアントIDを含む完全な認証URL
      */
@@ -95,10 +86,8 @@ class FacebookAdapter extends ProviderAdapter
             . '&state=' . urlencode($state);
     }
 
-    /**
-     * Retrieves user information after successful OAuth authentication
+    /** Retrieves user information after successful OAuth authentication
      * OAuth認証成功後にユーザー情報を取得
-     *
      * @return array Array containing username and realname of authenticated user
      *               認証されたユーザーのユーザー名と実名を含む配列
      * @throws Exception When state validation fails or token acquisition fails

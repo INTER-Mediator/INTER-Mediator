@@ -28,22 +28,17 @@ use INTERMediator\DB\Settings;
  */
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
-    /**
-     * @var Settings|null Reference to the Settings object for DB configuration.
+    /** @var Settings|null Reference to the Settings object for DB configuration.
      */
     protected ?Settings $dbSettings = null;
-    /**
-     * @var DBClass|null Reference to the parent DBClass instance.
+    /** @var DBClass|null Reference to the parent DBClass instance.
      */
     protected ?DBClass $dbClass = null;
-    /**
-     * @var Logger|null Logger instance for debug and error messages.
+    /** @var Logger|null Logger instance for debug and error messages.
      */
     protected ?Logger $logger = null;
 
-    /**
-     * Constructor.
-     *
+    /** Constructor.
      * @param DBClass|null $parent Parent DBClass instance for context.
      */
     public function __construct(?DBClass $parent)
@@ -57,9 +52,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         }
     }
 
-    /**
-     * Returns an array of operation aliases for a given operation.
-     *
+    /** Returns an array of operation aliases for a given operation.
      * @param string $operation The operation type.
      * @return array Operation aliases.
      */
@@ -78,9 +71,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $operations;
     }
 
-    /**
-     * Returns the authorization field for a given operation.
-     *
+    /** Returns the authorization field for a given operation.
      * @param string $operation The operation type.
      * @return string|null The authorization field or null if not found.
      */
@@ -101,9 +92,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoField;
     }
 
-    /**
-     * Returns the authorization target for a given operation.
-     *
+    /** Returns the authorization target for a given operation.
      * @param string $operation The operation type.
      * @return string|null The authorization target or null if not found.
      */
@@ -124,9 +113,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoTarget;
     }
 
-    /**
-     * Returns the no-set value for authorization for a given operation.
-     *
+    /** Returns the no-set value for authorization for a given operation.
      * @param string $operation The operation type.
      * @return string|null The no-set value or null if not found.
      */
@@ -147,9 +134,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoNoSet;
     }
 
-    /**
-     * Returns an array of authorized users for a given operation.
-     *
+    /** Returns an array of authorized users for a given operation.
      * @param string|null $operation The operation type or null for all operations.
      * @return array Authorized users.
      */
@@ -173,9 +158,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return array_values(array_unique($usersArray));
     }
 
-    /**
-     * Returns an array of authorized groups for a given operation.
-     *
+    /** Returns an array of authorized groups for a given operation.
      * @param string|null $operation The operation type or null for all operations.
      * @return array Authorized groups.
      */

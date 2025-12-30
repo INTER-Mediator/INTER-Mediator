@@ -28,13 +28,11 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
  */
 class SendMail extends MessagingProvider
 {
-    /**
-     * @var bool Determines if compatibility mode (legacy email sending) is enabled.
+    /** @var bool Determines if compatibility mode (legacy email sending) is enabled.
      */
     private bool $isCompatible;
 
-    /**
-     * SendMail constructor.
+    /** SendMail constructor.
      * Initializes compatibility mode from parameters.
      */
     public function __construct()
@@ -42,10 +40,8 @@ class SendMail extends MessagingProvider
         $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", false);
     }
 
-    /**
-     * Sends emails based on the provided parameters and result set.
+    /** Sends emails based on the provided parameters and result set.
      * Handles both legacy and new email architectures, supports attachments and storing sent mail data.
-     *
      * @param Proxy $dbProxy A Proxy class's instance for logging and settings.
      * @param array $sendMailParam Parameters for email sending (recipients, subject, body, etc.).
      * @param array $result Result set from database operations.

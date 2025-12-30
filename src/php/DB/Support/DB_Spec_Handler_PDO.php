@@ -24,14 +24,11 @@ use INTERMediator\DB\DBClass;
  */
 class DB_Spec_Handler_PDO implements DB_Spec_Behavior
 {
-    /**
-     * @var DBClass|null Reference to the associated DBClass object.
+    /** @var DBClass|null Reference to the associated DBClass object.
      */
     public ?DBClass $dbClassObj = null;
 
-    /**
-     * Generates a handler instance based on DSN for a specific PDO backend.
-     *
+    /** Generates a handler instance based on DSN for a specific PDO backend.
      * @param DBClass|null $dbObj Reference to DBClass object.
      * @param string $dsn Data Source Name (DSN) string.
      * @return DB_Spec_Handler_PDO|null Handler instance for the backend, or null if not supported.
@@ -61,9 +58,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return null;
     }
 
-    /**
-     * Returns the default key name for PDO-based backends (static method).
-     *
+    /** Returns the default key name for PDO-based backends (static method).
      * @return string Default key name.
      */
     public static function defaultKey(): string
@@ -71,9 +66,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return "id";
     }
 
-    /**
-     * Returns the default key name for PDO-based backends (instance method).
-     *
+    /** Returns the default key name for PDO-based backends (instance method).
      * @return string Default key name.
      */
     public function getDefaultKey(): string
@@ -81,9 +74,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return "id";
     }
 
-    /**
-     * Checks if aggregation is supported (always true for PDO-based backends).
-     *
+    /** Checks if aggregation is supported (always true for PDO-based backends).
      * @return bool True (aggregation supported).
      */
     public function isSupportAggregation(): bool
@@ -91,9 +82,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return true;
     }
 
-    /**
-     * Checks if the given field name is in the provided list of field names.
-     *
+    /** Checks if the given field name is in the provided list of field names.
      * @param string $fname Field name to check.
      * @param array $fieldnames Array of available field names.
      * @return bool True if $fname is in $fieldnames, false otherwise.
@@ -103,9 +92,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return in_array($fname, $fieldnames);
     }
 
-    /**
-     * Checks if NULL values are acceptable (always true for PDO-based backends).
-     *
+    /** Checks if NULL values are acceptable (always true for PDO-based backends).
      * @return bool True (NULL acceptable).
      */
     public function isNullAcceptable(): bool
@@ -113,9 +100,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return true;
     }
 
-    /**
-     * Checks if the given operator does not require a value (e.g., IS NULL).
-     *
+    /** Checks if the given operator does not require a value (e.g., IS NULL).
      * @param string $operator Operator to check.
      * @return bool True if the operator does not require a value, false otherwise.
      */
@@ -127,9 +112,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         ));
     }
 
-    /**
-     * Checks if the given operator is valid for PDO-based backends.
-     *
+    /** Checks if the given operator is valid for PDO-based backends.
      * @param string $operator Operator to check.
      * @return bool True if the operator is valid, false otherwise.
      */
@@ -180,9 +163,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         ));
     }
 
-    /**
-     * Checks if the given specifier is a valid order specifier for PDO-based backends.
-     *
+    /** Checks if the given specifier is a valid order specifier for PDO-based backends.
      * @param string $specifier Order specifier to check.
      * @return bool True if the specifier is valid, false otherwise.
      */

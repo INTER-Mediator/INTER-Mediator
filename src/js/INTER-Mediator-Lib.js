@@ -75,6 +75,25 @@ const INTERMediatorLib = {
     return null
   },
 
+  base64urlEncodeArrayBuffer: (buf) => {
+    const bytes = new Uint8Array(buf);
+
+    // bytes -> binary string
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+
+    // binary string -> base64
+    const base64 = btoa(binary);
+
+    // base64 -> base64url
+    return base64
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+  },
+
   // Refer to: https://qiita.com/amamamaou/items/ef0b797156b324bb4ef3
   isObject: (val) => {
     return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() === 'object'
@@ -160,7 +179,7 @@ const INTERMediatorLib = {
 
   generatePasswordHash: function (password, saltHex = false) {
     let salt = null
-    const shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
+    const shaObj = (IMLibAuthentication.passwordHash > 1.4 || IMLibAuthentication.alwaysGenSHA2)
       ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
       : new jsSHA('SHA-1', 'TEXT')
     if (saltHex) {
@@ -430,8 +449,7 @@ const INTERMediatorLib = {
     }
     return null
 
-    /**
-     * Check the pair of nodes in argument is valid for repeater/enclosure.
+    /** Check the pair of nodes in argument is valid for repeater/enclosure.
      */
 
     function isRepeaterOfEnclosure(repeater, enclosure) {
@@ -1128,3 +1146,4 @@ const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
 const jsSHA = require('../../node_modules/jssha/dist/sha.js')
+const IMLibAuthentication = require('../../src/js/INTER-Mediator-Auth')

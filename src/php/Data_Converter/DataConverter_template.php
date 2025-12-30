@@ -34,8 +34,7 @@ class DataConverter_template
 {
     // "Data Converter Class" name must have the prefix "DataConverter_".
 
-    /**
-     * This method converts to the data on a web browser from the data on database.
+    /** This method converts to the data on a web browser from the data on database.
      * Requires to show the data on database.
      * @param ?string $str This parameter is the data on database.
      * @return string The data for display on a web browser.
@@ -45,8 +44,7 @@ class DataConverter_template
         return $str;
     }
 
-    /**
-     * This method converts to the data for database from the data a user entered.
+    /** This method converts to the data for database from the data a user entered.
      * Requires to store to database.
      * @param string $str The data a user entered.
      * @return string The data for database

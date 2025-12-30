@@ -19,9 +19,7 @@ use Exception;
 use DateTime;
 use DateInterval;
 use INTERMediator\DB\Support\Proxy_Auth;
-use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
-use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
-use INTERMediator\DB\Support\ProxyVisitors\OperationVisitor;
+use INTERMediator\DB\Support\ActionHandlers\ActionHandler;
 use INTERMediator\DB\Support\StopOperationException;
 use INTERMediator\IMUtil;
 use INTERMediator\Locale\IMLocale;
@@ -38,189 +36,158 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 {
     use Proxy_Auth;
 
-    /**
-     * DBClass instance for authentication DB context.
+    /** DBClass instance for authentication DB context.
      * @var DBClass|null
      */
     public ?DBClass $authDbClass = null; // for issuedhash context
-    /**
-     * User expanded object.
+    /** User expanded object.
      * @var object|null
      */
     private ?object $userExpanded = null;
-    /**
-     * Output of processing.
+    /** Output of processing.
      * @var array|null
      */
     public ?array $outputOfProcessing = null;
-    /**
-     * Auth user parameter.
+    /** Auth user parameter.
      * @var string|null
      */
     public ?string $paramAuthUser = null;
-    /**
-     * Hashed password.
+    /** Hashed password.
      * @var string|null
      */
     public ?string $hashedPassword = null;
-    /**
-     * Response parameter.
+    /** Response parameter.
      * @var string|null
      */
     public ?string $paramResponse = null;
-    /**
-     * Response2m parameter.
+    /** Response2m parameter.
      * @var string|null
      */
     public ?string $paramResponse2m = null;
-    /**
-     * Response2 parameter.
+    /** Response2 parameter.
      * @var string|null
      */
     public ?string $paramResponse2 = null;
-    /**
-     * Credential string.
+    /** Credential string.
      * @var string|null
      */
     public ?string $credential = null;
-    /**
-     * Credential for 2FA.
+    /** Credential for 2FA.
      * @var string|null
      */
     public ?string $credential2FA = null;
-    /**
-     * Authentication success flag.
+    /** Authentication success flag.
      * @var bool
      */
     public bool $authSucceed = false;
-    /**
-     * Client ID.
+    /** Client ID.
      * @var string|null
      */
     public ?string $clientId;
-    /**
-     * Password hash.
+    /** Password hash.
      * @var string|null
      */
     public ?string $passwordHash;
-    /**
-     * Always generate SHA2 flag.
+    /** Always generate SHA2 flag.
      * @var bool
      */
     private bool $alwaysGenSHA2;
-    /**
-     * Original access string.
+    /** Original access string.
      * @var string
      */
     private string $originalAccess;
-    /**
-     * Client sync available flag.
+    /** Client sync available flag.
      * @var bool
      */
     public bool $clientSyncAvailable;
-    /**
-     * Ignore post flag.
+    /** Ignore post flag.
      * @var bool
      */
     private bool $ignorePost = false;
-    /**
-     * Post data.
+    /** Post data.
      * @var array|null
      */
     public ?array $PostData;
-    /**
-     * Access string.
+    /** Access string.
      * @var string
      */
     public string $access;
-    /**
-     * Access log level.
+    /** Access log level.
      * @var int
      */
     private int $accessLogLevel;
-    /**
-     * Result for log.
+    /** Result for log.
      * @var array
      */
     private array $result4Log = [];
-    /**
-     * Stop notify and messaging flag.
+    /** Stop notify and messaging flag.
      * @var bool
      */
     private bool $isStopNotifyAndMessaging = false;
-    /**
-     * Suppress media token flag.
+    /** Suppress media token flag.
      * @var bool
      */
     public bool $suppressMediaToken = false;
-    /**
-     * Migrate SHA1 to 2 flag.
+    /** Migrate SHA1 to 2 flag.
      * @var bool
      */
     public bool $migrateSHA1to2;
-    /**
-     * Credential cookie domain.
+    /** Credential cookie domain.
      * @var string|null
      */
     public ?string $credentialCookieDomain;
-    /**
-     * Activate generator flag.
+    /** Activate generator flag.
      * @var bool
      */
     public bool $activateGenerator;
-    /**
-     * Auth storing string.
+    /** Auth storing string.
      * @var string
      */
     public string $authStoring;
-    /**
-     * Required 2FA flag.
+    /** Required 2FA flag.
      * @var bool
      */
     public bool $required2FA;
-    /**
-     * Digits of 2FA code.
+    /** Digits of 2FA code.
      * @var int
      */
     public int $digitsOf2FACode;
-    /**
-     * Mail context for 2FA.
+    /** Mail context for 2FA.
      * @var string
      */
     public string $mailContext2FA;
-    /**
-     * Code for 2FA.
+    /** Code for 2FA.
      * @var string
      */
     public string $code2FA = "";
-    /**
-     * Operation visitor.
-     * @var OperationVisitor
+    /** Operation visitor.
+     * @var ActionHandler
      */
-    private OperationVisitor $visitor;
-    /**
-     * Bypass auth flag.
+    private ActionHandler $visitor;
+    /** Bypass auth flag.
      * @var bool
      */
     public bool $bypassAuth;
-    /**
-     * Ignore files flag.
+    /** Ignore files flag.
      * @var bool
      */
     public bool $ignoreFiles;
-    /**
-     * Signed user.
+    /** Signed user.
      * @var string|null
      */
     public ?string $signedUser = "";
-    /**
-     * Generated client ID.
+    /** Generated client ID.
      * @var string|null
      */
     public ?string $generatedClientID = null;
+    /** Passkey or not.
+     * @var bool
+     */
+    public bool $isPasskey = false;
 
-    /**
-     * Constructor.
+    public string|null $pubkeyInfo = null;
+
+    /** Constructor.
      * @param bool $testmode
      * @param bool $noCache
      */
@@ -244,8 +211,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Set client ID for test.
+    /** Set client ID for test.
      * @param string $cid
      * @return void
      */
@@ -254,8 +220,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->clientId = $cid;
     }
 
-    /**
-     * Set hashed password for test.
+    /** Set hashed password for test.
      * @param string $hpw
      * @return void
      */
@@ -264,8 +229,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->hashedPassword = $hpw;
     }
 
-    /**
-     * Set param response for test.
+    /** Set param response for test.
      * @param $res
      * @return void
      */
@@ -280,8 +244,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Get default key.
+    /** Get default key.
      * @return string|null
      */
     public static function defaultKey(): ?string
@@ -290,8 +253,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /**
-     * Get default key.
+    /** Get default key.
      * @return string|null
      */
     public function getDefaultKey(): ?string
@@ -299,8 +261,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass->specHandler->getDefaultKey();
     }
 
-    /**
-     * Set stop notify and messaging.
+    /** Set stop notify and messaging.
      * @return void
      */
     public function setStopNotifyAndMessaging(): void
@@ -308,8 +269,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->isStopNotifyAndMessaging = true;
     }
 
-    /**
-     * Add output data.
+    /** Add output data.
      * @param string $key
      * @param $value
      * @return void
@@ -331,8 +291,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Export output data as JSON.
+    /** Export output data as JSON.
      * @return void
      */
     public function exportOutputDataAsJSON(): void
@@ -349,8 +308,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         echo $jsonString;
     }
 
-    /**
-     * Export output data as Jason.
+    /** Export output data as Jason.
      * @return void
      */
     public function exportOutputDataAsJason(): void
@@ -358,8 +316,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->exportOutputDataAsJSON();
     }
 
-    /**
-     * Get result for log.
+    /** Get result for log.
      * @return array|null
      */
     public function getResultForLog(): ?array
@@ -389,8 +346,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->result4Log;
     }
 
-    /**
-     * Read from DB.
+    /** Read from DB.
      * @return array|null
      */
     public function readFromDB(): ?array
@@ -466,8 +422,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $result;
     }
 
-    /**
-     * Count query result.
+    /** Count query result.
      * @return int
      */
     public function countQueryResult(): int
@@ -484,8 +439,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $result;
     }
 
-    /**
-     * Get total count.
+    /** Get total count.
      * @return int
      */
     public function getTotalCount(): int
@@ -502,8 +456,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $result;
     }
 
-    /**
-     * Update DB.
+    /** Update DB.
      * @param bool $bypassAuth
      * @return bool
      */
@@ -587,8 +540,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $resultOfUpdate;
     }
 
-    /**
-     * Create in DB.
+    /** Create in DB.
      * @param bool $isReplace
      * @return string|null
      */
@@ -668,8 +620,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $resultOfCreate;
     }
 
-    /**
-     * Delete from DB.
+    /** Delete from DB.
      * @return bool
      */
     public function deleteFromDB(): bool
@@ -731,8 +682,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $result;
     }
 
-    /**
-     * Copy in DB.
+    /** Copy in DB.
      * @return string|null
      */
     public function copyInDB(): ?string
@@ -791,8 +741,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $resultOfCopy;
     }
 
-    /**
-     * Get field info.
+    /** Get field info.
      * @param string $dataSourceName
      * @return array|null
      */
@@ -801,8 +750,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass ? $this->dbClass->getFieldInfo($dataSourceName) : null;
     }
 
-    /**
-     * Ignore post.
+    /** Ignore post.
      * @return void
      */
     public function ignoringPost()
@@ -810,8 +758,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->ignorePost = true;
     }
 
-    /**
-     * Ignore post.
+    /** Ignore post.
      * @return void
      */
     public function ignorePost()
@@ -819,8 +766,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->ignorePost = true;
     }
 
-    /**
-     * Initialize.
+    /** Initialize.
      * @param array|null $dataSource
      * @param array|null $options
      * @param array|null $dbSpec
@@ -1019,8 +965,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return true;
     }
 
-    /**
-     * Processing request.
+    /** Processing request.
      * @param string|null $access
      * @param bool $bypassAuth
      * @param bool $ignoreFiles
@@ -1039,15 +984,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage("[processingRequest] decided access={$this->access}", 2);
         $this->access = $this->aggregationJudgement($this->access);
 
-        $visitorClasName = IMUtil::getVisitorClassName($this->access);
+        $visitorClasName = IMUtil::getActionHandlerClassName($this->access);
         $this->visitor = new $visitorClasName($this);
         $this->authenticationAndAuthorization(); // Calling the method in the Support\Proxy_Auth trait.
-        (new DataOperationElement())->acceptDataOperation($this->visitor);
+        $this->visitor->dataOperation();
         $this->checkIrrelevantFields($this->access); // Working only for debug mode.
     }
 
-    /**
-     * Finish communication.
+    /** Finish communication.
      * @param bool $notFinish
      */
     function finishCommunication(bool $notFinish = false): void
@@ -1059,7 +1003,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->addOutputData('sortKeys', $this->dbClass->getSortKeys());
         }
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
-            (new HandleChallengeElement())->acceptHandleChallenge($this->visitor);
+            $this->visitor->handleChallenge();
             $this->handleMediaToken(); // Calling the method in the Support\Proxy_Auth trait.
         }
         $this->outputOfProcessing['clientid'] = $this->generatedClientID;
@@ -1071,8 +1015,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->clearLogs();
     }
 
-    /**
-     * Get database result.
+    /** Get database result.
      * @return array|null
      */
     public function getDatabaseResult(): ?array
@@ -1083,8 +1026,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /**
-     * Get database result count.
+    /** Get database result count.
      * @return int
      */
     public function getDatabaseResultCount(): int
@@ -1095,8 +1037,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return 0;
     }
 
-    /**
-     * Get database total count.
+    /** Get database total count.
      * @return int
      */
     public function getDatabaseTotalCount(): int
@@ -1107,8 +1048,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return 0;
     }
 
-    /**
-     * Get database new record key.
+    /** Get database new record key.
      * @return string|null
      */
     public function getDatabaseNewRecordKey(): ?string
@@ -1119,8 +1059,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /**
-     * Change password.
+    /** Change password.
      * @param string $username
      * @param string $newpassword
      * @return bool
@@ -1130,8 +1069,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass->authHandler->authSupportChangePassword($username, $newpassword);
     }
 
-    /**
-     * Reset password sequence start.
+    /** Reset password sequence start.
      * @param string $email
      * @return array|null
      */
@@ -1153,8 +1091,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /**
-     * Reset password sequence return back.
+    /** Reset password sequence return back.
      * @param string|null $username
      * @param string|null $email
      * @param string $randdata
@@ -1184,8 +1121,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return false;
     }
 
-    /**
-     * User enrollment start.
+    /** User enrollment start.
      * @param string $userID
      * @return string
      */
@@ -1196,8 +1132,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $hash;
     }
 
-    /**
-     * User enrollment activate user.
+    /** User enrollment activate user.
      * @param string $challenge
      * @param string $password
      * @param string|null $rawPWField
@@ -1214,8 +1149,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $rawPWField, $password);
     }
 
-    /**
-     * Check irrelevant fields.
+    /** Check irrelevant fields.
      * @param string $access
      */
     public function checkIrrelevantFields(string $access): void
@@ -1250,8 +1184,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Check validation.
+    /** Check validation.
      * @return bool
      */
     public function checkValidation(): bool
@@ -1285,8 +1218,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return !$inValid;
     }
 
-    /**
-     * Setup connection.
+    /** Setup connection.
      * @return bool
      */
     public function setupConnection(): bool
@@ -1294,8 +1226,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return false;
     }
 
-    /**
-     * Setup handlers.
+    /** Setup handlers.
      * @param string|null $dsn
      */
     public function setupHandlers(?string $dsn = null): void
@@ -1303,8 +1234,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         // TODO: Implement setupHandlers() method.
     }
 
-    /**
-     * Soft delete activate.
+    /** Soft delete activate.
      * @param string $field
      * @param string $value
      */
@@ -1315,8 +1245,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Require updated record.
+    /** Require updated record.
      * @param bool $value
      */
     public function requireUpdatedRecord(bool $value): void
@@ -1326,8 +1255,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Get updated record.
+    /** Get updated record.
      * @return array|null
      */
     public function getUpdatedRecord(): ?array
@@ -1338,8 +1266,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /**
-     * Updated record.
+    /** Updated record.
      * @return array|null
      */
     public function updatedRecord(): ?array
@@ -1347,8 +1274,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->getUpdatedRecord();
     }
 
-    /**
-     * Set updated record.
+    /** Set updated record.
      * @param array $record
      */
     public function setUpdatedRecord(array $record): void
@@ -1356,8 +1282,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbClass->setUpdatedRecord($record);
     }
 
-    /**
-     * Set data to updated record.
+    /** Set data to updated record.
      * @param string $field
      * @param string|null $value
      * @param int $index
@@ -1367,8 +1292,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
     }
 
-    /**
-     * Get use set data to updated record.
+    /** Get use set data to updated record.
      * @return bool
      */
     public function getUseSetDataToUpdatedRecord(): bool
@@ -1379,8 +1303,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return false;
     }
 
-    /**
-     * Clear use set data to updated record.
+    /** Clear use set data to updated record.
      */
     public function clearUseSetDataToUpdatedRecord(): void
     {
@@ -1389,8 +1312,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    /**
-     * Query for test.
+    /** Query for test.
      * @param string $table
      * @param array|null $conditions
      * @return array|null
@@ -1400,8 +1322,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /**
-     * Delete for test.
+    /** Delete for test.
      * @param string $table
      * @param array|null $conditions
      * @return bool
@@ -1411,8 +1332,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return false;
     }
 
-    /**
-     * Has transaction.
+    /** Has transaction.
      * @return bool
      */
     public function hasTransaction(): bool
@@ -1420,8 +1340,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass->hasTransaction();
     }
 
-    /**
-     * In transaction.
+    /** In transaction.
      * @return bool
      */
     public function inTransaction(): bool
@@ -1429,40 +1348,35 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass->inTransaction();
     }
 
-    /**
-     * Begin transaction.
+    /** Begin transaction.
      */
     public function beginTransaction(): void
     {
         $this->dbClass->beginTransaction();
     }
 
-    /**
-     * Commit transaction.
+    /** Commit transaction.
      */
     public function commitTransaction(): void
     {
         $this->dbClass->commitTransaction();
     }
 
-    /**
-     * Rollback transaction.
+    /** Rollback transaction.
      */
     public function rollbackTransaction(): void
     {
         $this->dbClass->rollbackTransaction();
     }
 
-    /**
-     * Close DB operation.
+    /** Close DB operation.
      */
     public function closeDBOperation(): void
     {
         $this->dbClass->closeDBOperation();
     }
 
-    /**
-     * Normalized condition.
+    /** Normalized condition.
      * @param array $condition
      * @return null|array
      * @throws Exception
@@ -1472,8 +1386,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         throw new Exception("Don't use normalizedCondition method on DBClass instance without FileMaker ones.");
     }
 
-    /**
-     * Aggregation judgement.
+    /** Aggregation judgement.
      * @param string $access
      * @return string
      */

@@ -23,16 +23,14 @@ use INTERMediator\DB\Proxy;
  */
 interface DownloadingSupport
 {
-    /**
-     * @param string $file
+    /** @param string $file
      * @param string $target
      * @param Proxy $dbProxyInstance
      * @return string
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string;
 
-    /**
-     * @param string $file
+    /** @param string $file
      * @return string|null
      */
     public function getFileName(string $file): ?string;

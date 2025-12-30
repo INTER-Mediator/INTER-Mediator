@@ -25,73 +25,52 @@ use INTERMediator\DB\Proxy;
  */
 class MediaAccess
 {
-    /**
-     * Content disposition for the media file (inline or attachment).
-     *
+    /** Content disposition for the media file (inline or attachment).
      * @var string
      */
     private string $disposition = "inline";    // default disposition.
-    /**
-     * Target key field extracted from the request (set by analyzeTarget).
-     *
+    /** Target key field extracted from the request (set by analyzeTarget).
      * @var string|null
      */
     private ?string $targetKeyField;    // set with the analyzeTarget method.
-    /**
-     * Target key value extracted from the request (set by analyzeTarget).
-     *
+    /** Target key value extracted from the request (set by analyzeTarget).
      * @var string|null
      */
     private ?string $targetKeyValue;  // set with the analyzeTarget method.
-    /**
-     * Target context name extracted from the request (set by analyzeTarget).
-     *
+    /** Target context name extracted from the request (set by analyzeTarget).
      * @var string|null
      */
     private ?string $targetContextName = null;  // set with the analyzeTarget method.
-    /**
-     * Authenticated user from cookie (set by checkAuthentication).
-     *
+    /** Authenticated user from cookie (set by checkAuthentication).
      * @var string|null
      */
     private ?string $cookieUser = null;    // set with the checkAuthentication method.
-    /**
-     * Access log level setting.
-     *
+    /** Access log level setting.
      * @var int
      */
     private int $accessLogLevel;
-    /**
-     * Output message array for logging.
-     *
+    /** Output message array for logging.
      * @var array
      */
     private array $outputMessage = [];
-    /**
-     * Whether an exception was thrown during processing.
-     *
+    /** Whether an exception was thrown during processing.
      * @var bool
      */
     private bool $thrownException = false;
 
-    /**
-     * Database proxy instance for DB operations.
-     *
+    /** Database proxy instance for DB operations.
      * @var Proxy|null
      */
     private ?Proxy $dbProxyInstance = null;
 
-    /**
-     * MediaAccess constructor. Initializes access log level.
+    /** MediaAccess constructor. Initializes access log level.
      */
     public function __construct()
     {
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
-    /**
-     * Gets the result message array for access logging.
-     *
+    /** Gets the result message array for access logging.
      * @return array Output message array for logging.
      */
     public function getResultForLog(): array
@@ -104,9 +83,7 @@ class MediaAccess
         return $this->outputMessage;
     }
 
-    /**
-     * Sets the content disposition to attachment (download).
-     *
+    /** Sets the content disposition to attachment (download).
      * @return void
      */
     public function asAttachment(): void
@@ -114,9 +91,7 @@ class MediaAccess
         $this->disposition = "attachment";
     }
 
-    /**
-     * Handles error logging and sets error messages in the logger.
-     *
+    /** Handles error logging and sets error messages in the logger.
      * @param string $message Error message to log.
      * @return void
      */
@@ -126,10 +101,8 @@ class MediaAccess
         $this->dbProxyInstance->logger->setErrorMessage($message);
     }
 
-    /**
-     * Main processing method for serving media files.
+    /** Main processing method for serving media files.
      * Handles authentication, authorization, and file delivery.
-     *
      * @param Proxy $dbProxyInstance Database proxy instance.
      * @param array|null $options Options for media access.
      * @param string $file Requested file path or URL.
@@ -252,9 +225,7 @@ class MediaAccess
         }
     }
 
-    /**
-     * Determines the class name for media processing based on the URL scheme.
-     *
+    /** Determines the class name for media processing based on the URL scheme.
      * @param bool $isURL Whether the target is a URL.
      * @param string $target Target URL or file path.
      * @return string Class name for media processing.
@@ -278,9 +249,7 @@ class MediaAccess
         return "INTERMediator\\Media\\{$className}";
     }
 
-    /**
-     * Checks if the target URL has a known schema.
-     *
+    /** Checks if the target URL has a known schema.
      * @param string $file Target URL or file path.
      * @return bool Whether the target URL has a known schema.
      */
@@ -295,9 +264,7 @@ class MediaAccess
         return false;
     }
 
-    /**
-     * Exits the script with an error code and sets the corresponding HTTP header.
-     *
+    /** Exits the script with an error code and sets the corresponding HTTP header.
      * @param int $code Error code (204, 401, or 500).
      * @throws Exception Always thrown.
      */
@@ -322,9 +289,7 @@ class MediaAccess
         throw new Exception('Respond HTTP Error.');
     }
 
-    /**
-     * Checks if the target URL is a FileMaker media URL and adjusts it accordingly.
-     *
+    /** Checks if the target URL is a FileMaker media URL and adjusts it accordingly.
      * @param Proxy $dbProxyInstance Database proxy instance.
      * @param string $file Target URL or file path.
      * @param bool $isURL Whether the target is a URL.
@@ -363,9 +328,7 @@ class MediaAccess
         return array($file, $isURL);
     }
 
-    /**
-     * Checks the authentication and authorization for media access.
-     *
+    /** Checks the authentication and authorization for media access.
      * @param Proxy $dbProxyInstance Database proxy instance.
      * @param array|null $options Options for media access.
      * @return string Authentication result ('context_auth', 'no_auth', 'field_user', 'field_group').
@@ -422,9 +385,7 @@ class MediaAccess
         return 'context_auth';
     }
 
-    /**
-     * Analyzes the target URL and extracts context name and key fields.
-     *
+    /** Analyzes the target URL and extracts context name and key fields.
      * @param string $target Target URL or file path.
      * @return bool Whether the target URL contains context name and key fields.
      */
@@ -461,9 +422,7 @@ class MediaAccess
         return $result;
     }
 
-    /**
-     * Outputs the image content with proper headers and security settings.
-     *
+    /** Outputs the image content with proper headers and security settings.
      * @param string $content Image content.
      * @return void
      */

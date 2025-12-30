@@ -27,9 +27,7 @@ use INTERMediator\Params;
 class MessageStrings
 {
 
-    /**
-     * Retrieves the terms for the current language, optionally merging with provided options.
-     *
+    /** Retrieves the terms for the current language, optionally merging with provided options.
      * @param array|null $options Optional array of additional terms to merge.
      * @return array The merged terms for the current language.
      */
@@ -51,9 +49,7 @@ class MessageStrings
         return $termList;
     }
 
-    /**
-     * Retrieves the message strings for the current language, optionally merging with alternative messages.
-     *
+    /** Retrieves the message strings for the current language, optionally merging with alternative messages.
      * @return array<int, string> The list of message strings indexed by message code.
      */
     public function getMessages(): array
@@ -74,9 +70,7 @@ class MessageStrings
         return $this->messages;
     }
 
-    /**
-     * Retrieves a specific message string with optional placeholder replacements.
-     *
+    /** Retrieves a specific message string with optional placeholder replacements.
      * @param int $num The message code to retrieve.
      * @param array|null $appending Optional array of values to replace placeholders (e.g., @1@) in the message.
      * @return string The message string with placeholders replaced.
@@ -94,8 +88,7 @@ class MessageStrings
         return $msg;
     }
 
-    /**
-     * @var array<int, string> List of message strings indexed by message code.
+    /** @var array<int, string> List of message strings indexed by message code.
      */
     public array $messages = array(
         1 => 'Record #',
@@ -170,6 +163,13 @@ class MessageStrings
         1057 => "Two Factor Authentication: ",
         1058 => "Connection Error in getCredential=@1@/@2@",
         1059 => "The \$oAuth variable in the params.php file has wrong setting values",
+        1060 => "Get Challenge (Passkey): ",
+        1061 => "Connection Error in getChallengePasskey=@1@/@2@",
+        1062 => "Registration (Passkey): ",
+        1063 => "Connection Error in registerPasskey=@1@/@2@",
+        1064 => "Authentication (Passkey): ",
+        1065 => "Connection Error in authPasskey=@1@/@2@",
+        1066 => "The public key for Passkey authentication is not stored",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
@@ -202,6 +202,8 @@ class MessageStrings
         2031 => 'The code has to be entered, or the digit of the code is invalid.',
         2032 => 'The code doesn\'t match.',
         2033 => "Any mail template for telling the CODE doesn't exsist. So you can't get the CODE, you failed 2FA.",
+        2034 => "Login and Register Passkey",
+        2035 => "Passkey Authentication",
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
         3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",

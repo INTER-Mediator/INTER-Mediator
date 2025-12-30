@@ -21,9 +21,7 @@ namespace INTERMediator\Locale;
  */
 class IMLocaleCurrencyTable
 {
-    /**
-     * Returns the currency code corresponding to a given locale code.
-     *
+    /** Returns the currency code corresponding to a given locale code.
      * @param string $localeCode The locale code (e.g., 'en_US', 'ja_JP', 'FR').
      * @return string The ISO currency code (e.g., 'USD', 'JPY').
      */
@@ -43,9 +41,7 @@ class IMLocaleCurrencyTable
         return IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($localeCode)];
     }
 
-    /**
-     * Returns the currency code corresponding to a given country code.
-     *
+    /** Returns the currency code corresponding to a given country code.
      * @param string $cCode The country code (e.g., 'US', 'JP', 'FR').
      * @return string The ISO currency code (e.g., 'USD', 'JPY').
      */
@@ -62,12 +58,10 @@ class IMLocaleCurrencyTable
         return IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($cCode)];
     }
 
-    /*
-     * refers
+    /* refers
      * https://www.ups.com/worldshiphelp/WS15/JPN/AppHelp/Codes/Country_Territory_and_Currency_Codes.htm
      */
-    /**
-     * Static table mapping country codes to ISO currency codes.
+    /** Static table mapping country codes to ISO currency codes.
      * @var array|string[]
      */
     private static array $localeCurrencyTable = array(

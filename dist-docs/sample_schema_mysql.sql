@@ -787,24 +787,26 @@ CREATE TABLE registeredpks
 
 CREATE TABLE authuser
 (
-    id              INT AUTO_INCREMENT,
-    username        VARCHAR(64),
-    hashedpasswd    VARCHAR(72),
-    realname        VARCHAR(100),
-    email           VARCHAR(100),
-    address         VARCHAR(200),
-    birthdate       CHAR(8),
-    gender          CHAR(1),
-    sub             VARCHAR(255),
-    limitdt         DATETIME,
-    initialPassword VARCHAR(30),
-    accessToken     VARCHAR(64),
+    id                    INT AUTO_INCREMENT, # Primary key field for this table
+    username              VARCHAR(100),       # The username which user enters, This should be unique
+    hashedpasswd          VARCHAR(72),        # The hash of password
+    realname              VARCHAR(100),       # The real name
+    email                 VARCHAR(100),       # The email address
+    address               VARCHAR(200),       # The real address
+    birthdate             CHAR(8),            # My Number Card
+    gender                CHAR(1),            # My Number Card
+    sub                   VARCHAR(255),       # For OAuth2, My Number Card
+    limitdt               DATETIME,           # The limit for continuing authentication on SAML/OAuth2
+    initialPassword       VARCHAR(30),        # Storing for the initial password
+    publicKey             TEXT,               # For Passkey Authentication
+    publicKeyCredentialId TEXT,               # For Passkey Authentication
+    accessToken           VARCHAR(64),        #For API, the length depends on your implementation.
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
   COLLATE utf8mb4_unicode_ci
   ENGINE = InnoDB;
 
-CREATE INDEX authuser_username
+CREATE UNIQUE INDEX authuser_username
     ON authuser (username);
 CREATE INDEX authuser_email
     ON authuser (email);

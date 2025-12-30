@@ -24,45 +24,35 @@ use Exception;
  */
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
-    /**
-     * @var array Table information for schema inspection.
+    /** @var array Table information for schema inspection.
      */
     protected array $tableInfo = array();
-    /**
-     * @var string Field name for column field.
+    /** @var string Field name for column field.
      */
     public string $fieldNameForField = 'column_name';
-    /**
-     * @var string Field name for column type.
+    /** @var string Field name for column type.
      */
     protected string $fieldNameForType = 'data_type';
-    /**
-     * @var string Field name for nullable property.
+    /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'is_nullable';
-    /**
-     * @var array|string[] List of numeric field types.
+    /** @var array|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = ['smallint', 'integer', 'bigint', 'decimal', 'numeric',
         'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',];
-    /**
-     * @var array|string[] List of time field types.
+    /** @var array|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'datetime without time zone',
         'time', 'time without time zone', 'timestamp', 'timestamp without time zone'];
-    /**
-     * @var array|string[] List of date field types.
+    /** @var array|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'datetime without time zone',
         'date', 'date without time zone', 'timestamp', 'timestamp without time zone',];
-    /**
-     * @var array|string[] List of boolean field types.
+    /** @var array|string[] List of boolean field types.
      */
     protected array $booleanFieldTypes = ['boolean'];
 
-    /**
-     * Returns the SQL SELECT command for PostgreSQL.
-     *
+    /** Returns the SQL SELECT command for PostgreSQL.
      * @return string SQL SELECT command.
      */
     public function sqlSELECTCommand(): string
@@ -70,9 +60,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
-    /**
-     * Returns the SQL LIMIT command for PostgreSQL.
-     *
+    /** Returns the SQL LIMIT command for PostgreSQL.
      * @param string $param Limit parameter.
      * @return string SQL LIMIT command.
      */
@@ -81,9 +69,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "LIMIT {$param}";
     }
 
-    /**
-     * Returns the SQL OFFSET command for PostgreSQL.
-     *
+    /** Returns the SQL OFFSET command for PostgreSQL.
      * @param string $param Offset parameter.
      * @return string SQL OFFSET command.
      */
@@ -92,9 +78,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "OFFSET {$param}";
     }
 
-    /**
-     * Returns the SQL DELETE command for PostgreSQL.
-     *
+    /** Returns the SQL DELETE command for PostgreSQL.
      * @return string SQL DELETE command.
      */
     public function sqlDELETECommand(): string
@@ -102,9 +86,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "DELETE FROM ";
     }
 
-    /**
-     * Returns the SQL UPDATE command for PostgreSQL.
-     *
+    /** Returns the SQL UPDATE command for PostgreSQL.
      * @return string SQL UPDATE command.
      */
     public function sqlUPDATECommand(): string
@@ -112,9 +94,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "UPDATE ";
     }
 
-    /**
-     * Returns the SQL INSERT command for PostgreSQL.
-     *
+    /** Returns the SQL INSERT command for PostgreSQL.
      * @param string $tableRef Table reference.
      * @param string $setClause SET clause.
      * @return string SQL INSERT command.
@@ -124,9 +104,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    /**
-     * Returns the SQL SET clause for PostgreSQL.
-     *
+    /** Returns the SQL SET clause for PostgreSQL.
      * @param string $tableName Table name.
      * @param array $setColumnNames Column names.
      * @param string $keyField Key field.
@@ -141,9 +119,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    /**
-     * Returns the date reset value for not-null fields.
-     *
+    /** Returns the date reset value for not-null fields.
      * @return string Date reset value.
      */
     public function dateResetForNotNull(): string
@@ -151,9 +127,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return '1000-01-01';
     }
 
-    /**
-     * Checks if a field is nullable.
-     *
+    /** Checks if a field is nullable.
      * @param string $info Field information.
      * @return bool True if the field is nullable, false otherwise.
      */
@@ -162,9 +136,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $info === 'YES';
     }
 
-    /**
-     * Returns the auto-increment field for a table.
-     *
+    /** Returns the auto-increment field for a table.
      * @param string $tableName Table name.
      * @return string|null Auto-increment field, or null if not found.
      * @throws Exception
@@ -184,9 +156,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    /**
-     * Returns the SQL to retrieve table information.
-     *
+    /** Returns the SQL to retrieve table information.
      * @param string $tableName Table name.
      * @return string SQL to retrieve table information.
      */
@@ -207,9 +177,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $sql;
     }
 
-    /**
-     * Returns the field lists for a copy operation.
-     *
+    /** Returns the field lists for a copy operation.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
@@ -247,9 +215,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    /**
-     * Sets a value for a field.
-     *
+    /** Sets a value for a field.
      * @param string $value Value.
      * @param array $row Field information.
      * @return string Set value.
@@ -262,9 +228,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $this->dbClassObj->link->quote($value);
     }
 
-    /**
-     * Returns the quoted entity name.
-     *
+    /** Returns the quoted entity name.
      * @param string $entityName Entity name.
      * @return string|null Quoted entity name, or null if not found.
      */
@@ -282,16 +246,13 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $q . str_replace($q, $q . $q, $entityName) . $q;
     }
 
-    /**
-     * Optional operation in setup.
+    /** Optional operation in setup.
      */
     public function optionalOperationInSetup(): void
     {
     }
 
-    /**
-     * Checks if the auth support can migrate SHA256 hash.
-     *
+    /** Checks if the auth support can migrate SHA256 hash.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
      * @return array|null Migration result, or null if not applicable.
@@ -337,9 +298,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $returnValue;
     }
 
-    /**
-     * Returns the SQL for numeric to like operation.
-     *
+    /** Returns the SQL for numeric to like operation.
      * @param string $field Field.
      * @param string $value Value.
      * @return string SQL for numeric to like operation.
@@ -349,9 +308,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "CAST({$field} AS TEXT) LIKE {$value}";
     }
 
-    /**
-     * Returns the SQL to create a user.
-     *
+    /** Returns the SQL to create a user.
      * @param string $dbName Database name.
      * @param string $userEntity User entity.
      * @param string $password Password.
@@ -369,9 +326,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             . "GRANT ALL PRIVILEGES ON SCHEMA {$quotedDB} TO {$justUsername};";
     }
 
-    /**
-     * Returns the SQL to list databases.
-     *
+    /** Returns the SQL to list databases.
      * @return string SQL to list databases.
      */
     public function sqlLISTDATABASECommand(): string
@@ -379,9 +334,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "SELECT datname, datdba, encoding, datcollate, datctype FROM pg_database;";
     }
 
-    /**
-     * Returns the column name for database list.
-     *
+    /** Returns the column name for database list.
      * @return string Column name for database list.
      */
     public function sqlLISTDATABASEColumn(): string

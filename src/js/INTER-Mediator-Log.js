@@ -64,6 +64,7 @@ const INTERMediatorLog = {
    */
   warningMessagePrevent: false,
 
+  isTrancateResponseText: false,
   /**
    * Add a debug message with the specified level.
    * @param message The message strings.
@@ -144,6 +145,29 @@ const INTERMediatorLog = {
     }
   },
 
+  isHTML: function (str) {
+    'use strict'
+    if (typeof str !== 'string') {
+      return false
+    }
+    const s = str.trim()
+    if (s.length === 0) {
+      return false
+    }
+
+    // Quick reject: no tag-like chars
+    if (!/[<>]/.test(s)) {
+      return false
+    }
+
+    // Parse as HTML and see if it produces any element nodes
+    const tpl = document.createElement('template')
+    tpl.innerHTML = s
+
+    // If there's at least one element node, treat it as HTML
+    return Array.from(tpl.content.childNodes).some(n => n.nodeType === Node.ELEMENT_NODE)
+  },
+
   flushMessage: function () {
     'use strict'
     if (INTERMediatorLog.errorMessageByAlert) {
@@ -167,12 +191,18 @@ const INTERMediatorLog = {
         '============ERROR MESSAGE on ' + new Date() + '============'))
       debugNode.appendChild(document.createElement('hr'))
       for (let i = 0; i < INTERMediatorLog.errorMessages.length; i += 1) {
-        const lines = INTERMediatorLog.errorMessages[i].split(IMLib.nl_char)
-        for (let j = 0; j < lines.length; j++) {
-          if (j > 0) {
-            debugNode.appendChild(document.createElement('br'))
+        if (INTERMediatorLog.isHTML(INTERMediatorLog.errorMessages[i])) {
+          const boxnode = document.createElement('div')
+          boxnode.innerHTML = INTERMediatorLog.errorMessages[i]
+          debugNode.appendChild(boxnode)
+        } else {
+          const lines = INTERMediatorLog.errorMessages[i].split(IMLib.nl_char)
+          for (let j = 0; j < lines.length; j++) {
+            if (j > 0) {
+              debugNode.appendChild(document.createElement('br'))
+            }
+            debugNode.appendChild(document.createTextNode(lines[j]))
           }
-          debugNode.appendChild(document.createTextNode(lines[j]))
         }
         debugNode.appendChild(document.createElement('hr'))
       }
@@ -210,12 +240,12 @@ const INTERMediatorLog = {
       }
       debugNode.appendChild(document.createTextNode(
         '============DEBUG INFO on ' + new Date() + '============ '))
-      if (INTERMediatorOnPage.getEditorPath()) {
-        const aLink = document.createElement('a')
-        aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath())
-        aLink.appendChild(document.createTextNode('Definition File Editor'))
-        debugNode.appendChild(aLink)
-      }
+      // if (INTERMediatorOnPage.getEditorPath()) {
+      //   const aLink = document.createElement('a')
+      //   aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath())
+      //   aLink.appendChild(document.createTextNode('Definition File Editor'))
+      //   debugNode.appendChild(aLink)
+      // }
       debugNode.appendChild(document.createElement('hr'))
       for (let i = 0; i < INTERMediatorLog.debugMessages.length; i += 1) {
         const lines = INTERMediatorLog.debugMessages[i].split(IMLib.nl_char)

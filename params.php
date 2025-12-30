@@ -94,11 +94,11 @@ $webServerName = array('');
 /* Customize the X-Frame-Options header
  *
  * Possible values are "SAMEORIGIN", "DENY", "ALLOW-FROM <uri>" or ""
- * For "" string, the X-Frame-Options header won't be included in headers.
+ * For "" string; the X-Frame-Options header won't be included in headers.
  * If you don't specify the $xFrameOptions variable, the header will be included
- * with value "SAMEORIGIN".
+ * with the value "SAMEORIGIN".
  */
-//$xFrameOptions = "SAMEORIGIN";
+$xFrameOptions = "SAMEORIGIN";
 
 /* Customize the Content-Security-Policy header
  *
@@ -111,7 +111,7 @@ $webServerName = array('');
 /* Append the Access-Control-Allow-Origin header
  * This header will be appended for another server url than the origin.
  */
-//$accessControlAllowOrigin = "http://localhost:9000";
+$accessControlAllowOrigin = "http://localhost:9000";
 
 /* Browser Compatibility Check:
  * ===================
@@ -139,15 +139,15 @@ $browserCompatibility = array(
 //);
 // $waitAfterMail = 20; // Wait after send email with smtp server. Unit is Millisecond.
 
-// Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
+// Sending email features compatibility with INTER-Mediator v5 unless the 'template-context' key isn't specified.
 //$sendMailCompatibilityMode = false; // default is false (Until Ver.9 the default value was true.)
 
 // Error/Warning/Debug messages can write to the PHP's error log. The default values are false
 //$errorMessageLogging = false;
 //$warningMessageLogging = true; // All messages are going to write error log.
-//$debugMessageLogging = 'INTERMediator\DB'; // Messages from specified namespace are going to write error log.
+//$debugMessageLogging = 'INTERMediator\DB'; // Messages from a specified namespace are going to write an error log.
 
-// Slack posting token and channel. You must create the Slack App permitting 'chat:write:bot' and generate OAuth2 token.
+// Slack posting token and channel. You must create the Slack App permitting 'chat:write:bot' and generate an OAuth2 token.
 //$slackParameters = [
 //    "token" => 'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
 //    "channel" => 'message-posting-test',
@@ -155,7 +155,7 @@ $browserCompatibility = array(
 
 /* Authorization
  * =================== */
-$authStoring = 'credential'; // 'session-storage' or 'credential'
+$authStoring = 'credential'; // 'session-storage' or 'credential' or 'passkey'
 $authExpired = 3600;
 $authRealm = 'INTER-Mediator_Samples';
 //$passwordHash = '2';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
@@ -175,6 +175,11 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$authPanelExp= "温泉に行こう";  // Auth Panel's explanations
 //$authPanelExp2FA= null; // 2FA Auth Panel's explanations
 
+//$isPasskeyOnlyOnAuth = true;
+//$isAddClassAuthn = true;
+//$isPpasskeyErrorAlerting = true;
+$applicationName = "INTER-Mediator Application";
+
 // The 'issuedhash' table for storing challenges of authentication can be using another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
@@ -182,7 +187,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 //$defaultGroupName = "users"; // For the user who doesn't belong to any group, this group automatically attaches to such a user
 
-// An enrollment page and a password reset page are going to show on login panel.
+// An enrollment page and a password-reset page are going to show on login panel.
 //$resetPage = '...url...';
 //$enrollPage = '...url...';
 
@@ -262,7 +267,7 @@ $foreverLog = '/tmp/nodemon.log';
 /* Operation Log
  * ===================
  * the table named 'operationlog' is required.
- * The schema of the table describes in dist-docs/sample_schema_*.txt files. */
+ * The schema of the table is described in dist-docs/sample_schema_*.txt files. */
 $accessLogLevel = false;    // false: No logging, 1: without data, 2: with data
 /*
 $dbClassLog = $dbClass;
@@ -270,7 +275,7 @@ $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
 $dbPasswordLog = $dbPassword;
 $recordingContexts = null; // null: record all context, or an array of context names you want to record.
-$recordingOperations = null; // null: record all operations, or an array of operation names you want to record.
+$recordingOperations = null; // null: record all operations or an array of operation names you want to record.
 $dontRecordTheme = false;
 $dontRecordChallenge = false;
 $dontRecordDownload = false;
@@ -309,7 +314,7 @@ $mediaRootDir = "/tmp"; // Supposed to macOS
 
 /* Importing CSV file.
  * ===================
- The field names list can place on the first line of the original csv file. */
+ The field names list can be placed on the first line of the original csv file. */
 //$import1stLine = 'num1 ,num2 ,num3 ,dt1, vc1, vc2, vc3, text1, text2,'; // Field names list
 //$importSkipLines = 3; // Skipping lines from the start of csv file.
 //$importFormat = "TSV";  // or "TSV", the default is "CSV".
@@ -335,7 +340,7 @@ $mediaRootDir = "/tmp"; // Supposed to macOS
 $messages['default'][9999] = "Changed";
 $messages['ja'][9999] = "変更した";
 
-/* Initial values for local context with their keys. */
+/* Initial values for the local context with their keys. */
 //$valuesForLocalContext = array(
 //    "pagetitle" => "INTER-Mediator samples",
 //    "copyright" => "INTER-Mediator Directive Committee",
@@ -352,7 +357,7 @@ $defaultTimezone = 'Asia/Tokyo';
 $followingTimezones = true;
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
-$appLocale = "ja_JP";   // Locale for application has to be specified the language_country code.
+$appLocale = "ja_JP";   // Locale for the application has to be specified the language_country code.
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 /* Customize the path generation in uploading a file
@@ -371,7 +376,7 @@ $prohibitDebugMode = false;
 // YAML files can be stored in the path of the following variable.
 //$yamlDefFilePool = "/Users/msyk/Code/INTER-Mediator/samples/defpool";
 
-// The DOCUMENT_ROOT isn't full path on a rental server, this variable is set before the result of DOCUMENT_ROOT.
+// The DOCUMENT_ROOT isn't a full path on a rental server, this variable is set before the result of DOCUMENT_ROOT.
 //$documentRootPrefix = "/usr/local/chroot";
 
 // In the case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
@@ -381,7 +386,7 @@ $prohibitDebugMode = false;
 
 // INTER-Mediator client should call the definition file to work fine.
 // Usually $_SERVER['SCRIPT_NAME'] is the url to request from a client.
-// In case of using INTER-Mediator with other frameworks, you might specify any special URL to call.
+// In the case of using INTER-Mediator with other frameworks, you might specify any special URL to call.
 // So you can set another url to the $callURL variables, and it can be replaced with $_SERVER['SCRIPT_NAME'].
 //$callURL = "http://yourdomai/your/path/to/definition-file.php"
 

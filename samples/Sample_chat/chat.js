@@ -13,7 +13,7 @@ let doAfter = false
 INTERMediatorOnPage.doAfterConstruct = function () {
   if (!doAfter) {
     IMLibMouseEventDispatch.setExecute('logoutbutton', function () {
-      INTERMediatorOnPage.logout()
+      IMLibAuthentication.logout()
       INTERMediator.construct(true)
     })
     IMLibMouseEventDispatch.setExecute('postbutton', function () {

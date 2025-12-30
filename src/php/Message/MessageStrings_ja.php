@@ -23,8 +23,7 @@ namespace INTERMediator\Message;
  */
 class MessageStrings_ja extends MessageStrings
 {
-    /**
-     * @var array<int, string> List of Japanese message strings indexed by message code.
+    /** @var array<int, string> List of Japanese message strings indexed by message code.
      */
     public array $messages = array(
         1 => 'レコード番号',
@@ -69,7 +68,7 @@ class MessageStrings_ja extends MessageStrings
         1025 => 'レコードを本当に削除していいですか?',
         1026 => 'レコードを本当に作成していいですか?',
         1027 => "チャレンジ取得: ",
-        1028 => "get_challenge関数での通信エラー=@1@/@2@",
+        1028 => "getChallenge関数での通信エラー=@1@/@2@",
         1029 => "パスワード変更アクセス: ",
         1030 => "パスワード変更時の通信時のエラー=@1@/@2@",
         1031 => "ファイルアップロード: ",
@@ -99,6 +98,13 @@ class MessageStrings_ja extends MessageStrings
         1057 => "2FA取得認証: ",
         1058 => "getCredential関数での通信エラー=@1@/@2@",
         1059 => "params.phpファイルでの\$oAuth変数の設定に問題があります",
+        1060 => "チャレンジ取得 (Passkey): ",
+        1061 => "getChallengePasskey関数での通信エラー=@1@/@2@",
+        1062 => "パスキー登録 (Passkey): ",
+        1063 => "registerPasskey関数での通信エラー=@1@/@2@",
+        1064 => "パスキー認証 (Passkey): ",
+        1065 => "authPasskey関数での通信エラー=@1@/@2@",
+        1066 => "Passkey認証で利用する公開鍵が保存されていません",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',
@@ -131,6 +137,7 @@ class MessageStrings_ja extends MessageStrings
         2031 => 'コードを入力してください。もしくはコードの桁数が違います。',
         2032 => '入力したコードが違います。',
         2033 => "2段階認証のコードを送信するためのメールテンプレートの設定がありません。コードは送信されていないので、2段階認証は成功しません。",
+        2034 => "Passkey認証",
         3101 => "アップロードするファイルを\nドラッグ&ドロップする",
         3102 => 'ドラッグしたファイル: ',
         3201 => "ポスト可能なデータの最大値を超えました。", //設定はphp.iniファイルのpost_max_sizeです。

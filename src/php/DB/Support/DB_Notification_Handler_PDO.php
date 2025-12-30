@@ -28,14 +28,11 @@ use DateInterval;
  */
 class DB_Notification_Handler_PDO extends DB_Notification_Common
 {
-    /**
-     * @var \INTERMediator\DB\PDO PDO database handler instance.
+    /** @var \INTERMediator\DB\PDO PDO database handler instance.
      */
     protected \INTERMediator\DB\PDO $pdoDB;
 
-    /**
-     * Constructor.
-     *
+    /** Constructor.
      * @param \INTERMediator\DB\PDO $parent Parent PDO instance.
      */
     public function __construct(\INTERMediator\DB\PDO $parent)
@@ -44,9 +41,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         $this->pdoDB = $parent;
     }
 
-    /**
-     * Checks if the required table for registration exists.
-     *
+    /** Checks if the required table for registration exists.
      * @return bool True if the required table exists, false otherwise.
      */
     public function isExistRequiredTable(): bool
@@ -73,9 +68,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
 
     }
 
-    /**
-     * Registers a new record for a client.
-     *
+    /** Registers a new record for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $condition Query condition string.
@@ -162,9 +155,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         return $newContextId;
     }
 
-    /**
-     * Unregisters a client from the database.
-     *
+    /** Unregisters a client from the database.
      * @param string|null $clientId Client identifier.
      * @param array|null $tableKeys Array of table keys.
      * @return bool True on success, false on failure.
@@ -212,9 +203,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         return true;
     }
 
-    /**
-     * Finds matching registered records for a client.
-     *
+    /** Finds matching registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param array $pkArray Array of primary keys.
@@ -251,9 +240,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         return array_unique($targetClients);
     }
 
-    /**
-     * Appends a new record to the registered records for a client.
-     *
+    /** Appends a new record to the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $pkField Primary key field name.
@@ -324,9 +311,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    /**
-     * Removes a record from the registered records for a client.
-     *
+    /** Removes a record from the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param array $pkArray Array of primary keys.

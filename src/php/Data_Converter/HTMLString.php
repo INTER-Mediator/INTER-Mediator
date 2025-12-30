@@ -20,17 +20,14 @@ namespace INTERMediator\Data_Converter;
  */
 class HTMLString
 {
-    /**
-     * @var bool
+    /** @var bool
      */
     protected bool $autolink = false;
-    /**
-     * @var bool
+    /** @var bool
      */
     protected bool $noescape = false;
 
-    /**
-     * @param string|bool $option
+    /** @param string|bool $option
      */
     public function __construct($option = false)
     {
@@ -44,8 +41,7 @@ class HTMLString
         }
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     public function converterFromUserToDB(string $str): string
@@ -53,8 +49,7 @@ class HTMLString
         return $str;
     }
 
-    /**
-     * @param ?string $str
+    /** @param ?string $str
      * @return string
      */
     public function converterFromDBtoUser(?string $str): string
@@ -72,8 +67,7 @@ class HTMLString
         return $str;
     }
 
-    /**
-     * @param string|null $str
+    /** @param string|null $str
      * @return string|null
      */
     protected function replaceTags(?string $str): ?string
@@ -89,8 +83,7 @@ class HTMLString
 
     }
 
-    /**
-     * @param string|null $str
+    /** @param string|null $str
      * @return string|null
      */
     protected function replaceCRLF(?string $str): ?string
@@ -103,8 +96,7 @@ class HTMLString
                 str_replace("\r\n", "<br />", $str)));
     }
 
-    /**
-     * @param string|null $str
+    /** @param string|null $str
      * @return string|null
      */
     protected function replaceLinkToATag(?string $str): ?string

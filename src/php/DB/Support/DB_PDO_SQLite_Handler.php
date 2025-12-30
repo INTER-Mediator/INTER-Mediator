@@ -24,44 +24,34 @@ use Exception;
  */
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
-    /**
-     * @var array Table information for schema inspection.
+    /** @var array Table information for schema inspection.
      */
     protected array $tableInfo = array();
-    /**
-     * @var string Field name for column field.
+    /** @var string Field name for column field.
      */
     public string $fieldNameForField = 'name';
-    /**
-     * @var string Field name for column type.
+    /** @var string Field name for column type.
      */
     protected string $fieldNameForType = 'type';
-    /**
-     * @var string Field name for nullable property.
+    /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'notnull';
-    /**
-     * @var array|string[] List of numeric field types.
+    /** @var array|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
         'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
         'double', 'double precision', 'float', 'decimal', 'boolean');
-    /**
-     * @var array|string[] List of time field types.
+    /** @var array|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-    /**
-     * @var array|string[] List of date field types.
+    /** @var array|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
-    /**
-     * @var array List of boolean field types.
+    /** @var array List of boolean field types.
      */
     protected array $booleanFieldTypes = [];
 
-    /**
-     * Returns the SQL SELECT command for SQLite.
-     *
+    /** Returns the SQL SELECT command for SQLite.
      * @return string SQL SELECT command.
      */
     public function sqlSELECTCommand(): string
@@ -69,9 +59,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
-    /**
-     * Returns the SQL LIMIT command for SQLite.
-     *
+    /** Returns the SQL LIMIT command for SQLite.
      * @param string $param Limit parameter.
      * @return string SQL LIMIT command.
      */
@@ -80,9 +68,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "LIMIT {$param}";
     }
 
-    /**
-     * Returns the SQL OFFSET command for SQLite.
-     *
+    /** Returns the SQL OFFSET command for SQLite.
      * @param string $param Offset parameter.
      * @return string SQL OFFSET command.
      */
@@ -91,9 +77,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "OFFSET {$param}";
     }
 
-    /**
-     * Returns the SQL DELETE command for SQLite.
-     *
+    /** Returns the SQL DELETE command for SQLite.
      * @return string SQL DELETE command.
      */
     public function sqlDELETECommand(): string
@@ -101,9 +85,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "DELETE FROM ";
     }
 
-    /**
-     * Returns the SQL UPDATE command for SQLite.
-     *
+    /** Returns the SQL UPDATE command for SQLite.
      * @return string SQL UPDATE command.
      */
     public function sqlUPDATECommand(): string
@@ -111,9 +93,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "UPDATE ";
     }
 
-    /**
-     * Returns the SQL INSERT command for SQLite.
-     *
+    /** Returns the SQL INSERT command for SQLite.
      * @param string $tableRef Table reference.
      * @param string $setClause Set clause.
      * @return string SQL INSERT command.
@@ -123,9 +103,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    /**
-     * Returns the SQL REPLACE command for SQLite.
-     *
+    /** Returns the SQL REPLACE command for SQLite.
      * @param string $tableRef Table reference.
      * @param string $setClause Set clause.
      * @return string SQL REPLACE command.
@@ -135,9 +113,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    /**
-     * Returns the SQL SET clause for SQLite.
-     *
+    /** Returns the SQL SET clause for SQLite.
      * @param string $tableName Table name.
      * @param array $setColumnNames Set column names.
      * @param string $keyField Key field.
@@ -152,9 +128,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    /**
-     * Returns the default date value for non-nullable date fields.
-     *
+    /** Returns the default date value for non-nullable date fields.
      * @return string Default date value.
      */
     public function dateResetForNotNull(): string
@@ -162,9 +136,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return '1970-01-01';
     }
 
-    /**
-     * Checks if a field is nullable.
-     *
+    /** Checks if a field is nullable.
      * @param string $info Field information.
      * @return bool True if the field is nullable, false otherwise.
      */
@@ -173,9 +145,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return intval($info) === 0;
     }
 
-    /**
-     * Returns the auto-increment field for a table.
-     *
+    /** Returns the auto-increment field for a table.
      * @param string $tableName Table name.
      * @return string|null Auto-increment field or null if not found.
      */
@@ -185,9 +155,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return '_CANCEL_THE_INCR_FIELD_DETECT_';
     }
 
-    /**
-     * Returns the SQL command to retrieve table information.
-     *
+    /** Returns the SQL command to retrieve table information.
      * @param string $tableName Table name.
      * @return string SQL command.
      */
@@ -196,9 +164,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "PRAGMA table_info({$tableName})";
     }
 
-    /**
-     * Returns the field lists for copying data.
-     *
+    /** Returns the field lists for copying data.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
@@ -236,9 +202,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    /**
-     * Returns the quoted entity name.
-     *
+    /** Returns the quoted entity name.
      * @param string $entityName Entity name.
      * @return string|null Quoted entity name or null if not found.
      */
@@ -257,16 +221,13 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     }
 
-    /**
-     * Performs optional operations during setup.
+    /** Performs optional operations during setup.
      */
     public function optionalOperationInSetup(): void
     {
     }
 
-    /**
-     * Checks if the authentication support can migrate SHA256 hash.
-     *
+    /** Checks if the authentication support can migrate SHA256 hash.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
      * @return array|null Migration result or null if not applicable.
@@ -315,9 +276,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return $returnValue;
     }
 
-    /**
-     * Returns the SQL command to list databases.
-     *
+    /** Returns the SQL command to list databases.
      * @return string SQL command.
      */
     public function sqlLISTDATABASECommand(): string
@@ -326,9 +285,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return '';
     }
 
-    /**
-     * Returns the SQL column to list databases.
-     *
+    /** Returns the SQL column to list databases.
      * @return string SQL column.
      */
     public function sqlLISTDATABASEColumn(): string
@@ -337,9 +294,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return '';
     }
 
-    /**
-     * Returns the SQL command to create a user.
-     *
+    /** Returns the SQL command to create a user.
      * @param string $dbName Database name.
      * @param string $userEntity User entity.
      * @param string $password Password.

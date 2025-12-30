@@ -26,23 +26,17 @@ use INTERMediator\DB\Logger;
  */
 class NotifyServer
 {
-    /**
-     * The database class instance used for notifications.
-     *
+    /** The database class instance used for notifications.
      * @var DBClass
      */
     private DBClass $dbClass;
-    /**
-     * The client ID associated with the notification session.
-     *
+    /** The client ID associated with the notification session.
      * @var string|null
      */
     private ?string $clientId;
 
-    /**
-     * Initializes the NotifyServer with a DBClass and client ID.
+    /** Initializes the NotifyServer with a DBClass and client ID.
      * Checks if the notification handler and required table exist.
-     *
      * @param DBClass $dbClass Database class instance.
      * @param string|null $clientId Client ID for this session.
      * @return bool True if initialization successful, false otherwise.
@@ -59,9 +53,7 @@ class NotifyServer
         return true;
     }
 
-    /**
-     * Triggers a notification event to the service server for the specified channels and data.
-     *
+    /** Triggers a notification event to the service server for the specified channels and data.
      * @param array $channels Array of client IDs to notify.
      * @param string $operation Operation type (e.g., 'update', 'create', 'delete').
      * @param array $data Data describing the change.
@@ -81,9 +73,7 @@ class NotifyServer
         $logger->setErrorMessages($ssInstance->getErrors());
     }
 
-    /**
-     * Registers a client for notifications on a given entity and condition.
-     *
+    /** Registers a client for notifications on a given entity and condition.
      * @param string $entity Entity name to register for.
      * @param string $condition Condition for registration.
      * @param array $pkArray Primary key values for the entity.
@@ -95,9 +85,7 @@ class NotifyServer
         return $this->dbClass->notifyHandler?->register($this->clientId, $entity, $condition, $pkArray);
     }
 
-    /**
-     * Unregisters a client from notifications for specific table keys.
-     *
+    /** Unregisters a client from notifications for specific table keys.
      * @param string|null $client Client ID to unregister.
      * @param array|null $tableKeys Table keys to unregister.
      * @return bool True if successfully unregistered, false otherwise.
@@ -111,9 +99,7 @@ class NotifyServer
         return false;
     }
 
-    /**
-     * Handles update notifications and triggers the appropriate event.
-     *
+    /** Handles update notifications and triggers the appropriate event.
      * @param string|null $clientId Client ID that performed the update.
      * @param string $entity Entity name.
      * @param array $pkArray Primary key values.
@@ -132,9 +118,7 @@ class NotifyServer
         }
     }
 
-    /**
-     * Handles create notifications and trigger the appropriate event.
-     *
+    /** Handles create notifications and trigger the appropriate event.
      * @param string|null $clientId Client ID that performed the creation.
      * @param string $entity Entity name.
      * @param array $pkArray Primary key values.
@@ -153,9 +137,7 @@ class NotifyServer
         }
     }
 
-    /**
-     * Handles delete notifications and trigger the appropriate event.
-     *
+    /** Handles delete notifications and trigger the appropriate event.
      * @param string|null $clientId Client ID that performed the deletion.
      * @param string $entity Entity name.
      * @param array $pkArray Primary key values.

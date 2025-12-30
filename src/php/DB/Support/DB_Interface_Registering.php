@@ -21,69 +21,51 @@ namespace INTERMediator\DB\Support;
  */
 interface DB_Interface_Registering
 {
-    /**
-     * Checks if the required table for registration exists.
-     *
+    /** Checks if the required table for registration exists.
      * @return bool True if the required table exists, false otherwise.
      */
     public function isExistRequiredTable(): bool;
 
-    /**
-     * Gets the name of the last queried entity.
-     *
+    /** Gets the name of the last queried entity.
      * @return string|null Name of the queried entity or null if not set.
      */
     public function queriedEntity(): ?string;
 
-    /**
-     * Sets the name of the last queried entity.
-     *
+    /** Sets the name of the last queried entity.
      * @param string|null $name Name of the queried entity.
      * @return void
      */
     public function setQueriedEntity(?string $name): void;
 
-    /**
-     * Gets the last queried condition string.
-     *
+    /** Gets the last queried condition string.
      * @return string|null The queried condition or null if not set.
      */
     public function queriedCondition(): ?string;
 
-    /**
-     * Sets the last queried condition string.
-     *
+    /** Sets the last queried condition string.
      * @param string $name The queried condition.
      * @return void
      */
     public function setQueriedCondition(string $name): void;
 
-    /**
-     * Gets the primary keys from the last query.
-     *
+    /** Gets the primary keys from the last query.
      * @return array|null Array of primary keys or null if not set.
      */
     public function queriedPrimaryKeys(): ?array;
 
-    /**
-     * Sets the primary keys from the last query.
-     *
+    /** Sets the primary keys from the last query.
      * @param array|null $name Array of primary keys.
      * @return void
      */
     public function setQueriedPrimaryKeys(?array $name): void;
 
-    /**
-     * Adds a primary key to the last queried primary keys.
-     *
+    /** Adds a primary key to the last queried primary keys.
      * @param string $name Primary key to add.
      * @return void
      */
     public function addQueriedPrimaryKeys(string $name): void;
 
-    /**
-     * Registers a new record for a client.
-     *
+    /** Registers a new record for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $condition Query condition string.
@@ -92,18 +74,14 @@ interface DB_Interface_Registering
      */
     public function register(?string $clientId, string $entity, string $condition, array $pkArray):?string;
 
-    /**
-     * Unregisters a record for a client.
-     *
+    /** Unregisters a record for a client.
      * @param string|null $clientId Client identifier.
      * @param array|null $tableKeys Array of table keys to unregister.
      * @return bool True if successful, false otherwise.
      */
     public function unregister(?string $clientId, ?array $tableKeys):bool;
 
-    /**
-     * Checks if a record is registered for a client.
-     *
+    /** Checks if a record is registered for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param array $pkArray Array of primary keys.
@@ -111,9 +89,7 @@ interface DB_Interface_Registering
      */
     public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array;
 
-    /**
-     * Appends a primary key into the registered records for a client.
-     *
+    /** Appends a primary key into the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $pkField Primary key field name.
@@ -122,9 +98,7 @@ interface DB_Interface_Registering
      */
     public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray):?array;
 
-    /**
-     * Removes a primary key from the registered records for a client.
-     *
+    /** Removes a primary key from the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param array $pkArray Array of primary keys to remove.

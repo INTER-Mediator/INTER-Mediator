@@ -27,14 +27,11 @@ use INTERMediator\DB\FileMaker_DataAPI;
  */
 class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
 {
-    /**
-     * @var FileMaker_DataAPI FileMaker Data API handler instance.
+    /** @var FileMaker_DataAPI FileMaker Data API handler instance.
      */
     protected FileMaker_DataAPI $fmdb;
 
-    /**
-     * Constructor.
-     *
+    /** Constructor.
      * @param FileMaker_DataAPI $parent Parent FileMaker_DataAPI instance.
      */
     public function __construct(FileMaker_DataAPI $parent)
@@ -43,11 +40,9 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         $this->fmdb = $parent;
     }
 
-    /**
-     * FileMaker Data API doesn't have any function to inspect entities in database.
+    /** FileMaker Data API doesn't have any function to inspect entities in database.
      * So we can't implement the isExistRequiredTable method.
      * This method is used just from NotifyServer class.
-     *
      * @return bool Always returns true.
      */
     public function isExistRequiredTable(): bool
@@ -55,9 +50,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return true;
     }
 
-    /**
-     * Registers a new record for a client.
-     *
+    /** Registers a new record for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $condition Query condition string.
@@ -122,9 +115,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return $newContextId;
     }
 
-    /**
-     * Unregisters a client.
-     *
+    /** Unregisters a client.
      * @param string|null $clientId Client identifier.
      * @param array|null $tableKeys Array of table keys.
      * @return bool True on success, false on failure.
@@ -170,9 +161,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return true;
     }
 
-    /**
-     * Matches registered records for a client.
-     *
+    /** Matches registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param array $pkArray Array of primary keys.
@@ -235,9 +224,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return array_unique($targetClients);
     }
 
-    /**
-     * Appends a new record to the registered records for a client.
-     *
+    /** Appends a new record to the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $pkField Primary key field name.
@@ -294,9 +281,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    /**
-     * Removes a record from the registered records for a client.
-     *
+    /** Removes a record from the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param array $pkArray Array of primary keys.

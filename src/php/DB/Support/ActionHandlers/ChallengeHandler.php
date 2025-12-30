@@ -1,8 +1,7 @@
 <?php
 
-namespace INTERMediator\DB\Support\ProxyVisitors;
+namespace INTERMediator\DB\Support\ActionHandlers;
 
-use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Logger;
 
@@ -10,60 +9,50 @@ use INTERMediator\DB\Logger;
  * Visitor class for handling challenge-based authentication operations in the Proxy pattern.
  * Implements methods for authentication, authorization, and challenge handling for challenge access.
  */
-class ChallengeVisitor extends OperationVisitor
+class ChallengeHandler extends ActionHandler
 {
-    /**
-     * Visits the IsAuthAccessing operation.
+    /** Visits the IsAuthAccessing operation.
      *
-     * @param OperationElement $e The operation element being visited.
      * @return bool Always returns true for challenge access.
      */
-    public function visitIsAuthAccessing(OperationElement $e): bool
+    public function isAuthAccessing(): bool
     {
         return true;
     }
 
-    /**
-     * Visits the CheckAuthentication operation for challenge access.
+    /** Visits the CheckAuthentication operation for challenge access.
      *
-     * @param OperationElement $e The operation element being visited.
      * @return bool Always returns false for challenge access (no authentication is performed).
      */
-    public function visitCheckAuthentication(OperationElement $e): bool
+    public function checkAuthentication(): bool
     {
         $this->proxy->dbSettings->setRequireAuthorization(true);
         return false;
         // DO NOT CALL the prepareCheckAuthentication method for the challenge accessing.
     }
 
-    /**
-     * Visits the CheckAuthorization operation for challenge access.
+    /** Visits the CheckAuthorization operation for challenge access.
      *
-     * @param OperationElement $e The operation element being visited.
      * @return bool Always returns true for challenge access.
      */
-    public function visitCheckAuthorization(OperationElement $e): bool
+    public function checkAuthorization(): bool
     {
         return true;
     }
 
-    /**
-     * Visits the DataOperation operation. No operation for challenge visitor.
+    /** The DataOperation action. No operation to the challenge action.
      *
-     * @param OperationElement $e The operation element being visited.
      * @return void
      */
-    public function visitDataOperation(OperationElement $e): void
+    public function dataOperation(): void
     {
     }
 
-    /**
-     * Visits the HandleChallenge operation to process challenge/response for challenge access.
+    /** Visits the HandleChallenge operation to process challenge/response for challenge access.
      *
-     * @param OperationElement $e The operation element being visited.
      * @return void
      */
-    public function visitHandleChallenge(OperationElement $e): void
+    public function handleChallenge(): void
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
