@@ -201,7 +201,7 @@ let IMLibAuthenticationUI = {
       userBox.setAttribute('autocapitalize', 'off')
       userLabel.appendChild(userBox)
 
-      const breakLine = document.createElement('BR')
+      let breakLine = document.createElement('BR')
       breakLine.clear = 'all'
       frontPanel.appendChild(breakLine)
 
@@ -227,11 +227,9 @@ let IMLibAuthenticationUI = {
       authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)))
       frontPanel.appendChild(authButton)
 
-      {
-        const breakLine = document.createElement('BR')
-        breakLine.clear = 'all'
-        frontPanel.appendChild(breakLine)
-      }
+      breakLine = document.createElement('BR')
+      breakLine.clear = 'all'
+      frontPanel.appendChild(breakLine)
 
       let newPasswordMessage = document.createElement('DIV')
       if (IMLibAuthenticationUI.isSetDefaultStyle) {
@@ -243,7 +241,7 @@ let IMLibAuthenticationUI = {
       frontPanel.appendChild(newPasswordMessage)
 
       if (IMLibAuthenticationUI.isShowChangePassword) {
-        const breakLine = document.createElement('HR')
+        breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
 
         const newPasswordLabel = document.createElement('LABEL')
@@ -282,7 +280,7 @@ let IMLibAuthenticationUI = {
         || IMLibAuthenticationUI.isOAuthAvailable
         || (IMLibAuthenticationUI.isPasskey && !IMLibAuthenticationUI.isAddClassAuthn)
         || (IMLibAuthentication.isSAML && IMLibAuthenticationUI.samlWithBuiltInAuth)) {
-        const breakLine = document.createElement('HR')
+        breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
       }
       if (IMLibAuthenticationUI.isOAuthAvailable) {
@@ -318,7 +316,7 @@ let IMLibAuthenticationUI = {
         frontPanel.appendChild(extButtons[key])
       }
       if (IMLibAuthentication.enrollPageURL) {
-        const breakLine = document.createElement('HR')
+        breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
         const addingButton = document.createElement('BUTTON')
         addingButton.id = '_im_enrollbutton'
@@ -381,7 +379,7 @@ let IMLibAuthenticationUI = {
       for (let provider in IMLibAuthentication.oAuthParams) {
         if (IMLibAuthentication.oAuthParams[provider]
           && IMLibAuthentication.oAuthParams[provider].Behavior !== 'no-show-on-login-panel') {
-          oAuthButton[provider].onclick = function (event) {
+          oAuthButton[provider].onclick = function () {
             if (!IMLibAuthentication.checkUIEventDT()) { // Prevent multiple click
               return
             }
@@ -534,34 +532,6 @@ let IMLibAuthenticationUI = {
     }
     INTERMediatorLog.flushMessage()
     await INTERMediatorOnPage.hideProgress(true)
-  },
-
-  /**
-   * Start WebAuthn registration (passkey) for the current user.
-   * @returns {Promise<void>}
-   */
-  getPasskey: async function () {
-    const challengeHex = IMLibAuthentication.passkeyChallenge || '';
-    const challengeBytes = new Uint8Array((challengeHex.match(/.{1,2}/g) || []).map(h => parseInt(h, 16)));
-
-    const options = {
-      publicKey: {
-        challenge: challengeBytes,
-        rp: {name: "Example CORP", id: location.hostname},
-      }
-    }
-    navigator.credentials.get(options)
-      .then((credentialInfoAssertion) => {
-        const response = credentialInfoAssertion.response;
-        const clientDataStr = new TextDecoder('utf-8').decode(response.clientDataJSON)
-        const result = JSON.parse(clientDataStr)
-        console.log(result)
-        const clientExtensionsResults = credentialInfoAssertion.getClientExtensionResults();
-        console.log(clientExtensionsResults)
-      })
-      .catch((err) => {
-        console.error(err);
-      });
   },
 
   /**
@@ -778,7 +748,7 @@ let IMLibAuthenticationUI = {
         })
         .catch((err) => {
           console.error(err)
-          if(IMLibAuthenticationUI.isPasskeyErrorAlerting) {
+          if (IMLibAuthenticationUI.isPasskeyErrorAlerting) {
             window.alert(err)
           }
         });
@@ -802,7 +772,7 @@ let IMLibAuthenticationUI = {
         })
         .catch((err) => {
           console.error(err)
-          if(IMLibAuthenticationUI.isPasskeyErrorAlerting) {
+          if (IMLibAuthenticationUI.isPasskeyErrorAlerting) {
             window.alert(err)
           }
         });
