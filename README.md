@@ -48,6 +48,7 @@ INTER-Mediator Ver.6 was quite different from previous versions. So we have call
 - Hiroko Oki
 - Tomomitsu Baba
 - Motofumi Iijima
+- Miyuki Imaizumi
 
 ## Special Thanks to:
 - Candy
