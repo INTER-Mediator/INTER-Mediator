@@ -51,16 +51,6 @@ let IMLibAuthenticationUI = {
   loginURL: null,
   /** Callback executed after showing a login panel */
   doAfterLoginPanel: null,
-  /** CSS class for copy button on generated UI */
-  buttonClassCopy: null,
-  /** CSS class for delete button on generated UI */
-  buttonClassDelete: null,
-  /** CSS class for insert button on generated UI */
-  buttonClassInsert: null,
-  /** CSS class for master navigation button on generated UI */
-  buttonClassMaster: null,
-  /** CSS class for back navigation button on generated UI */
-  buttonClassBackNavi: null,
   /** Whether to enable client service-related features */
   activateClientService: false,
   /** Additional labeled buttons to render on login panel */
