@@ -800,7 +800,7 @@ CREATE TABLE authuser
     initialPassword       VARCHAR(30),        # Storing for the initial password
     publicKey             TEXT,               # For Passkey Authentication
     publicKeyCredentialId TEXT,               # For Passkey Authentication
-    accessToken           VARCHAR(64),        #For API, the length depends on your implementation.
+    accessToken           VARCHAR(64),        # For API, the length depends on your implementation.
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
   COLLATE utf8mb4_unicode_ci
