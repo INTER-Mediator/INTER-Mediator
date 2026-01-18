@@ -719,7 +719,7 @@ const IMLibPageNavigation = {
     }
     if (currentContextDef.relation || typeof (currentContextDef.records) === 'undefined' || !currentContextDef.paging || (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
-      buttonNode.setAttribute('class', 'IM_Button_Copy' + (IMLibAuthenticationUI.buttonClassCopy ? (' ' + IMLibAuthenticationUI.buttonClassCopy) : ''))
+      buttonNode.setAttribute('class', 'IM_Button_Copy' + (INTERMediatorOnPage.buttonClassCopy ? (' ' + INTERMediatorOnPage.buttonClassCopy) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[14]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].copy) {
         buttonName = currentContextDef['button-names'].copy
@@ -757,7 +757,7 @@ const IMLibPageNavigation = {
     }
     if (currentContextDef.relation || typeof (currentContextDef.records) === 'undefined' || !currentContextDef.paging || (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
-      buttonNode.setAttribute('class', 'IM_Button_Delete' + (IMLibAuthenticationUI.buttonClassDelete ? (' ' + IMLibAuthenticationUI.buttonClassDelete) : ''))
+      buttonNode.setAttribute('class', 'IM_Button_Delete' + (INTERMediatorOnPage.buttonClassDelete ? (' ' + INTERMediatorOnPage.buttonClassDelete) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[6]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].delete) {
         buttonName = currentContextDef['button-names'].delete
@@ -844,7 +844,7 @@ const IMLibPageNavigation = {
     if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
       if (relationValue.length > 0 || !currentContextDef.paging || currentContextDef.paging === false) {
         const buttonNode = document.createElement('BUTTON')
-        buttonNode.setAttribute('class', 'IM_Button_Insert' + (IMLibAuthenticationUI.buttonClassInsert ? (' ' + IMLibAuthenticationUI.buttonClassInsert) : ''))
+        buttonNode.setAttribute('class', 'IM_Button_Insert' + (INTERMediatorOnPage.buttonClassInsert ? (' ' + INTERMediatorOnPage.buttonClassInsert) : ''))
         let buttonName = INTERMediatorOnPage.getMessages()[5]
         if (currentContextDef['button-names'] && currentContextDef['button-names'].insert) {
           buttonName = currentContextDef['button-names'].insert
@@ -984,7 +984,7 @@ const IMLibPageNavigation = {
     // }
 
     const buttonNode = document.createElement('BUTTON')
-    buttonNode.setAttribute('class', 'IM_Button_Master' + (IMLibAuthenticationUI.buttonClassMaster ? (' ' + IMLibAuthenticationUI.buttonClassMaster) : ''))
+    buttonNode.setAttribute('class', 'IM_Button_Master' + (INTERMediatorOnPage.buttonClassMaster ? (' ' + INTERMediatorOnPage.buttonClassMaster) : ''))
     let buttonName = INTERMediatorOnPage.getMessages()[12]
     if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
       buttonName = currentContextDef['button-names']['navi-detail']
@@ -1465,7 +1465,7 @@ const IMLibPageNavigation = {
 
     function createBackButton(tagName, currentContextDef) {
       const buttonNode = document.createElement(tagName)
-      buttonNode.setAttribute('class', 'IM_Button_BackNavi' + (IMLibAuthenticationUI.buttonClassBackNavi ? (' ' + IMLibAuthenticationUI.buttonClassBackNavi) : ''))
+      buttonNode.setAttribute('class', 'IM_Button_BackNavi' + (INTERMediatorOnPage.buttonClassBackNavi ? (' ' + INTERMediatorOnPage.buttonClassBackNavi) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[13]
       if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
         buttonName = currentContextDef['button-names']['navi-back']

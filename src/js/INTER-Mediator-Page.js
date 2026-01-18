@@ -67,6 +67,16 @@ let INTERMediatorOnPage = {
   serviceServerURL: null,
   uiEventDT: null,
   isPasskey: false,
+  /** CSS class for copy button on generated UI */
+  buttonClassCopy: null,
+  /** CSS class for delete button on generated UI */
+  buttonClassDelete: null,
+  /** CSS class for insert button on generated UI */
+  buttonClassInsert: null,
+  /** CSS class for master navigation button on generated UI */
+  buttonClassMaster: null,
+  /** CSS class for back navigation button on generated UI */
+  buttonClassBackNavi: null,
 
   /* This method is going to supply by accessing a definition file. This entry is just a definition for static analyzer. */
   getTerms: function () {
