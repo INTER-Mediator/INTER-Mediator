@@ -159,7 +159,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     {
         $result = true;
         $fileRoot = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
-        if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
+        if (!str_ends_with($fileRoot, '/')) {
             $fileRoot .= '/';
         }
         $uploadFilePathMode = Params::getParameterValue("uploadFilePathMode", null);

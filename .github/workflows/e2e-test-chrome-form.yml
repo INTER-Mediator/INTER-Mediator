@@ -61,7 +61,10 @@ jobs:
         run: composer update
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
-
+      - name: Setup Samples
+        run: |
+          git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples
+          cd vendor/inter-mediator; ln -s ../../ inter-mediator
       - name: Setup MySQL
         run: |
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
