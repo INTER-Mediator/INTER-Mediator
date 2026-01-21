@@ -10,10 +10,10 @@ by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
 This is the root of the INTER-Mediator source repository.
 
-INTER-Mediator is new style web application framework.
-You can develop easily, and realize your ideals.
+INTER-Mediator is the new style web application framework.
+You can develop easily and realize your ideals.
 You just describe table and field names in any HTML elements,
-and these are bond to database, showing values moreover automatically update with editing.
+and these are bond to the database, showing values moreover automatically update with editing.
 If you want to implement more complex logic, you can write programs both client and server sides.
 
 All information can be available at:
@@ -26,6 +26,9 @@ You don't have to deploy the samples if you just want to see this at a glance.
 
 The demo with the latest version of INTER-Mediator is here:
 - https://demo.inter-mediator.com/IMApp_Trial/vendor/inter-mediator/inter-mediator/samples/
+
+The sample code locates another repository:
+- https://github.com/INTER-Mediator/INTER-Mediator_Samples
 
 This demo page works on INTER-Mediator Ver.5.x (Milestone version).
 INTER-Mediator Ver.6 was quite different from previous versions. So we have called the Milestone version for the final release of Ver.5.
