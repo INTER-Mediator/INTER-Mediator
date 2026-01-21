@@ -111,13 +111,6 @@ describe "INTER-Mediator-Server VM" do
       element = @driver.find_element(:id, "_im_progress")
       expect(element.attribute("style")).to eq("opacity: 0; z-index: -9999; transition-duration: 0.3s;")
 
-      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "4")
-      sleep 1
-      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
-      expect(elements.size).to eq(4)
-      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to include("1-4 / 3654")
-
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "10")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
@@ -131,6 +124,13 @@ describe "INTER-Mediator-Server VM" do
       expect(elements.size).to eq(30)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
       expect(element.text).to include("1-30 / 3654")
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "4")
+      sleep 1
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(4)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to include("1-4 / 3654")
     }
   end
 
