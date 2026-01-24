@@ -404,7 +404,7 @@ class GenerateJSCode
         }
         $isSAML = $options['authentication']['is-saml'] ?? Params::getParameterValue("isSAML", null) ?? false;
         $this->generateAssignJS(
-            "INTERMediatorOnPage.isSAML", $isSAML ? 'true' : 'false');
+            "IMLibAuthentication.isSAML", $isSAML ? 'true' : 'false');
         $this->generateAssignJS(
             "IMLibAuthenticationUI.samlWithBuiltInAuth", $samlWithBuiltInAuth ? 'true' : 'false');
 
