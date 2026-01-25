@@ -14,3 +14,4 @@ dist-docs/pg_upgrade_server.log
 dist-docs/pg_upgrade_utility.log
 vendor/
 node_modules/
+samples/

@@ -10,10 +10,10 @@ by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
 This is the root of the INTER-Mediator source repository.
 
-INTER-Mediator is new style web application framework.
-You can develop easily, and realize your ideals.
-You just describe table and field names in any HTML elements,
-and these are bond to database, showing values moreover automatically update with editing.
+INTER-Mediator is the new style web application framework.
+You can develop easily and realize your ideals.
+You describe table and field names in any HTML elements,
+and these are bond to the database, showing values moreover automatically update with editing.
 If you want to implement more complex logic, you can write programs both client and server sides.
 
 All information can be available at:
@@ -21,11 +21,14 @@ All information can be available at:
 - https://inter-mediator.info/
 
 Sample pages within this repository are published at below,
-and anyone can see sample pages working with database.
+and anyone can see sample pages working with the database.
 You don't have to deploy the samples if you just want to see this at a glance.
 
-The demo with the latest version of INTER-Mediator is here:
-- https://demo.inter-mediator.com/IMApp_Trial/vendor/inter-mediator/inter-mediator/samples/
+The runnable version of the demo with the latest version of INTER-Mediator is here:
+- https://demo.inter-mediator.com/INTER-Mediator_Samples/
+
+The sample code locates another repository:
+- https://github.com/INTER-Mediator/INTER-Mediator_Samples
 
 This demo page works on INTER-Mediator Ver.5.x (Milestone version).
 INTER-Mediator Ver.6 was quite different from previous versions. So we have called the Milestone version for the final release of Ver.5.
@@ -78,7 +81,7 @@ INTER-Mediator Ver.6 was quite different from previous versions. So we have call
 - Motofumi Iijima
 - Miyuki Imaizumi
 
-The information about INTER-Mediator Directive Committee is below:
+The information about the INTER-Mediator Directive Committee is below:
 - https://inter-mediator.org/
 
 ## Contributing
@@ -87,6 +90,6 @@ The information about INTER-Mediator Directive Committee is below:
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+5. Create a new Pull Request
 
 The GitHub application might be comfortable for command-line unfamiliar people.
