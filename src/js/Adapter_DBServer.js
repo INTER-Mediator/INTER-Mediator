@@ -436,11 +436,16 @@ const INTERMediator_DBAdapter = {
       1062, 1063, null, null, null)
   },
 
+  /**
+   * Request server-side passkey unregistration flow start.
+   * @returns {void}
+   */
   unregisterPasskey: async function () {
     'use strict'
     return INTERMediator_DBAdapter.server_access_async(`access=unregisterPasskey`,
       1062, 1063, null, null, null);
   },
+
   /**
    * Request server-side passkey authentication flow.
    * @returns {Promise<void>}
@@ -451,6 +456,27 @@ const INTERMediator_DBAdapter = {
     const objString = encodeURIComponent(JSON.stringify(response))
     const params = `access=authPasskey&clientid=${clientId}&pubkeyInfo=${objString}`
     return INTERMediator_DBAdapter.server_access_async(params, 1064, 1065, null, null, null);
+  },
+
+  /**
+   * Request server-side google 2FA registration flow start.
+   * @returns {Promise<void>}
+   */
+  registerGoogle2FA: async function (response) {
+    'use strict'
+    const objString = encodeURIComponent(JSON.stringify(response))
+    return INTERMediator_DBAdapter.server_access_async(`access=registerGoogle2FA`,
+      1062, 1063, null, null, null)
+  },
+
+  /**
+   * Request server-side google 2FA unregistration flow start.
+   * @returns {void}
+   */
+  unregisterGoogle2FA: async function () {
+    'use strict'
+    return INTERMediator_DBAdapter.server_access_async(`access=unregisterGoogle2FA`,
+      1062, 1063, null, null, null);
   },
 
   /**

@@ -24,6 +24,7 @@
     "matthiasmullie/minify": ">=1.3",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": ">=9",
+    "pragmarx/google2fa": "^9",
     "symfony/mailer": "^7.2.0",
     "symfony/amazon-mailer": "^7.4.0",
     "symfony/google-mailer": "^7.4.0",

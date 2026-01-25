@@ -776,6 +776,24 @@ let IMLibAuthenticationUI = {
   passkeyUnregistration: async () => {
     await INTERMediator_DBAdapter.unregisterPasskey()
     location.reload()
+  },
+
+  /**
+   * Start passkey registration (WebAuthn attestation) flow.
+   * @returns {Promise<void>}
+   */
+  google2FARegistration: async () => {
+    await INTERMediator_DBAdapter.registerGoogle2FA(info)
+    location.reload()
+  },
+
+  /**
+   * Unregister passkey for current user.
+   * @returns {Promise<void>}
+   */
+  google2FAUnregistration: async () => {
+    await INTERMediator_DBAdapter.unregisterGoogle2FA()
+    location.reload()
   }
 }
 
