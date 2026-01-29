@@ -465,6 +465,7 @@ CREATE TABLE authuser
     limitdt               TIMESTAMP,
     publicKey             TEXT,
     publicKeyCredentialId TEXT,
+    secret                TEXT,
     accessToken           VARCHAR(64)
 );
 CREATE INDEX authuser_username ON authuser (username);

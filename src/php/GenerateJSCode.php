@@ -355,7 +355,7 @@ class GenerateJSCode
             $this->generateAssignJS("IMLibAuthenticationUI.resetPageURL", $q, $resetPage, $q);
         }
         $this->generateAssignJS(
-            "INTERMediatorOnPage.extraButtons", IMUtil::arrayToJS($extraButtons));
+            "IMLibAuthenticationUI.extraButtons", IMUtil::arrayToJS($extraButtons));
 
         $authStoringValue = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');

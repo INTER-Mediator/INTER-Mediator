@@ -1083,4 +1083,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return [];
     }
 
+    public function authSupportStore2FASecret(string $uid, string|null $secret): void
+    {
+
+    }
 }

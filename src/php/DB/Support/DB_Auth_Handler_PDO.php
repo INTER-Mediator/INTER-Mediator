@@ -1301,4 +1301,38 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
         return [];
     }
+
+    public function authSupportStore2FASecret(string $uid, string|null $secret): void{
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id FROM {$userTable} WHERE id = "
+                . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            if ($result->rowCount() === 0) {
+                throw new Exception("No user record for {$uid}: {$sql}");
+            } else if ($result->rowCount() > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
+            }
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable}"
+                . " SET secret = " . ($secret? $this->pdoDB->link->quote($secret) : "NULL")
+                . " WHERE id = " . $this->pdoDB->link->quote($uid);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                throw new Exception("ERROR in Update: {$sql}");
+            }
+            $this->logger->setDebugMessage("[authSupportStore2FASecret] {$sql}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportStore2FASecret] ERROR: {$e->getMessage()}");
+        }
+
+    }
 }

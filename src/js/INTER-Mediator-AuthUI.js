@@ -160,7 +160,8 @@ let IMLibAuthenticationUI = {
       frontPanel.id = '_im_authpanel'
       backBox.appendChild(frontPanel)
 
-      const panelTitle = IMLibAuthenticationUI.authPanelTitle ? IMLibAuthenticationUI.authPanelTitle : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')
+      const panelTitle = IMLibAuthenticationUI.authPanelTitle ? IMLibAuthenticationUI.authPanelTitle
+        : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')
       if (panelTitle && panelTitle.length > 0) {
         const realmBox = document.createElement('DIV')
         realmBox.appendChild(document.createTextNode(panelTitle))
@@ -305,14 +306,14 @@ let IMLibAuthenticationUI = {
         }
         frontPanel.appendChild(extButtons[key])
       }
-      if (IMLibAuthentication.enrollPageURL) {
+      if (IMLibAuthenticationUI.enrollPageURL) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
         const addingButton = document.createElement('BUTTON')
         addingButton.id = '_im_enrollbutton'
         addingButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2022)))
         addingButton.onclick = function () {
-          location.href = IMLibAuthentication.enrollPageURL
+          location.href = IMLibAuthenticationUI.enrollPageURL
         }
         frontPanel.appendChild(addingButton)
         if (IMLibAuthenticationUI.authedUser && IMLibAuthentication.authStoring === 'session-storage') {
@@ -622,7 +623,9 @@ let IMLibAuthenticationUI = {
 
     if (IMLibAuthenticationUI.authPanelTitle2FA || IMLibAuthentication.realm) {
       const realmBox = document.createElement('DIV')
-      realmBox.appendChild(document.createTextNode(IMLibAuthenticationUI.authPanelTitle ? IMLibAuthenticationUI.authPanelTitle : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')))
+      realmBox.appendChild(document.createTextNode(
+        IMLibAuthenticationUI.authPanelTitle2FA ? IMLibAuthenticationUI.authPanelTitle2FA
+          : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')))
       realmBox.id = '_im_authrealm_2FA'
       frontPanel.appendChild(realmBox)
       const breakLine = document.createElement('HR')
@@ -782,9 +785,9 @@ let IMLibAuthenticationUI = {
    * Start passkey registration (WebAuthn attestation) flow.
    * @returns {Promise<void>}
    */
-  google2FARegistration: async () => {
-    await INTERMediator_DBAdapter.registerGoogle2FA(info)
-    location.reload()
+  google2FARegistration: async (doAfterProcessing = null) => {
+    await INTERMediator_DBAdapter.registerGoogle2FA(doAfterProcessing)
+    //location.reload()
   },
 
   /**
@@ -793,7 +796,7 @@ let IMLibAuthenticationUI = {
    */
   google2FAUnregistration: async () => {
     await INTERMediator_DBAdapter.unregisterGoogle2FA()
-    location.reload()
+    //location.reload()
   }
 }
 

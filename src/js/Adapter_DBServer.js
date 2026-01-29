@@ -462,11 +462,10 @@ const INTERMediator_DBAdapter = {
    * Request server-side google 2FA registration flow start.
    * @returns {Promise<void>}
    */
-  registerGoogle2FA: async function (response) {
+  registerGoogle2FA: async function (doAfterProcessing) {
     'use strict'
-    const objString = encodeURIComponent(JSON.stringify(response))
     return INTERMediator_DBAdapter.server_access_async(`access=registerGoogle2FA`,
-      1062, 1063, null, null, null)
+      1062, 1063, doAfterProcessing, null, null)
   },
 
   /**
