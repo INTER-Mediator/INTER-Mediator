@@ -122,13 +122,23 @@ abstract class ActionHandler
             "[prepareCheckAuthentication] storedCredential={$this->storedCredential}", 2);
 
         if ($proxy->required2FA) {
-            $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
-            $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
-
-            $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge(
-                $uid, $proxy->clientId, true, "=");
-            Logger::getInstance()->setDebugMessage(
-                "[prepareCheckAuthentication] stored2FAuth={$this->stored2FAuth}", 2);
+            switch ($proxy->dbSettings->getMethod2FA()) {
+                case'email':  // Send mail containing 2FA code.
+                    $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
+                    $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
+                    $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "=");
+                    Logger::getInstance()->setDebugMessage(
+                        "[prepareCheckAuthentication] 2FA_email stored2FAuth={$this->stored2FAuth}", 2);
+                    break;
+                case 'authenticator':
+                default:
+                    $proxy->code2FA = $proxy->PostData['code2FA'] ?? "";
+                    $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
+                    $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "=");
+                    Logger::getInstance()->setDebugMessage(
+                        "[prepareCheckAuthentication] 2FA_Authenticator code2FA={$proxy->code2FA}", 2);
+                    break;
+            }
         }
         return true;
     }
@@ -163,9 +173,19 @@ abstract class ActionHandler
                     . "storedChallenge={$this->storedChallenge} clientId={$proxy->clientId} hashedPassword={$proxy->hashedPassword}", 2);
                 if ($proxy->credential === $referingCredential) {
                     if ($proxy->required2FA) {
-                        if ($proxy->credential2FA === $proxy->generateCredential(
-                                $this->stored2FAuth, $proxy->clientId, $proxy->hashedPassword)) {
-                            Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential and 2FA passed.", 2);
+                        $userName = $proxy->dbSettings->getCurrentUser();
+                        [, , $email, , $secret] = $proxy->dbClass->authHandler->getLoginUserInfo($userName);
+                        $has2FASetting = ($proxy->dbSettings->getMethod2FA() === 'email') ? !!$email : !!$secret;
+                        if (!$proxy->dbSettings->getIsPassThrough2FA()
+                            || ($proxy->dbSettings->getIsPassThrough2FA() && $has2FASetting)) {
+                            if ($proxy->credential2FA === $proxy->generateCredential(
+                                    $this->stored2FAuth, $proxy->clientId, $proxy->hashedPassword)) {
+                                Logger::getInstance()->setDebugMessage(
+                                    "[checkAuthenticationCommon] Credential + 2FA_{$proxy->dbSettings->getMethod2FA()} passed.", 2);
+                                return true;
+                            }
+                        } else {
+                            Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential passed + 2FA_{$proxy->dbSettings->getMethod2FA()} through.", 2);
                             return true;
                         }
                     } else {
@@ -189,7 +209,8 @@ abstract class ActionHandler
     /** Performs authorization checks for the CheckAuthorization operation.
      * @return bool True if authorization is successful, false otherwise.
      */
-    protected function checkAuthorizationImpl(): bool
+    protected
+    function checkAuthorizationImpl(): bool
     {
         $proxy = $this->proxy;
         $authHandler = $proxy->dbClass->authHandler;
@@ -228,7 +249,8 @@ abstract class ActionHandler
     /** Performs session storage authentication checks.
      * @return bool True if authentication is successful, false otherwise.
      */
-    protected function sessionStorageCheckAuth(): bool
+    protected
+    function sessionStorageCheckAuth(): bool
     {
         $proxy = $this->proxy;
         $hmacValue = ($proxy->hashedPassword && $this->storedChallenge)
@@ -260,14 +282,15 @@ abstract class ActionHandler
         return false;
     }
 
-    // ==== Service methods for the dataOperation method. ====
+// ==== Service methods for the dataOperation method. ====
 
     /** Creates or replaces data in the database.
      * @param string $access The access type (create or replace).
      * @return void
      * @throws Exception
      */
-    protected function CreateReplaceImpl(string $access): void
+    protected
+    function CreateReplaceImpl(string $access): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
         $proxy = $this->proxy;
@@ -341,12 +364,13 @@ abstract class ActionHandler
         }
     }
 
-    // ==== Service methods for the handleChallenge method. ====
+// ==== Service methods for the handleChallenge method. ====
 
     /** Handles the default challenge response.
      * @return void
      */
-    protected function defaultHandleChallenge(): void
+    protected
+    function defaultHandleChallenge(): void
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
@@ -384,7 +408,8 @@ abstract class ActionHandler
      * @param string $challenge The challenge which is already generated.
      * @return string The generated challenge.
      */
-    public function generateAndSaveChallenge(?string $user, string $clientID, string $prefix, string $suffix = "", string $challenge = ""): string
+    public
+    function generateAndSaveChallenge(?string $user, string $clientID, string $prefix, string $suffix = "", string $challenge = ""): string
     {
         $proxy = $this->proxy;
         if (!$challenge) {
@@ -402,7 +427,8 @@ abstract class ActionHandler
      * @param string $hashedPassword The hashed password.
      * @return void
      */
-    protected function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
+    protected
+    function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
     {
         Logger::getInstance()->setDebugMessage("[setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
         $proxy = $this->proxy;
@@ -416,7 +442,8 @@ abstract class ActionHandler
     /** Clears authentication cookies.
      * @return void
      */
-    protected function clearAuthenticationCookies(): void
+    protected
+    function clearAuthenticationCookies(): void
     {
         setcookie("_im_credential_token", "", time() - 3600); // Should be removed.
         setcookie("_im_credential_2FA", "", time() - 3600); // Should be removed.

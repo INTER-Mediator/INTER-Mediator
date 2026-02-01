@@ -204,6 +204,8 @@ class MessageStrings
         2033 => "Any mail template for telling the CODE doesn't exsist. So you can't get the CODE, you failed 2FA.",
         2034 => "Login and Register Passkey",
         2035 => "Passkey Authentication",
+        2036 => 'Enter the code on your Authenticator.',
+        2037 => 'Code:',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
         3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",

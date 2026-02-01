@@ -293,6 +293,7 @@ const INTERMediator_DBAdapter = {
     }
     IMLibAuthenticationUI.authedUser = jsonObject.authUser ?? null
     IMLibAuthenticationUI.succeedCredential = !jsonObject.requireAuth ?? false
+    IMLibAuthenticationUI.has2FASetting = jsonObject.has2FASetting ?? false
     return true
   },
 
@@ -358,35 +359,37 @@ const INTERMediator_DBAdapter = {
   getCredential: async function () {
     'use strict'
     IMLibAuthenticationUI.succeedCredential = false
-    return INTERMediator_DBAdapter.server_access_async('access=credential', 1048, 1049, function (result) {
-      //IMLibAuthenticationUI.succeedCredential = !result.requireAuth
-      if (!IMLibAuthenticationUI.isRequired2FA) {
+    return INTERMediator_DBAdapter.server_access_async('access=credential', 1048, 1049,
+      (result) => {
+        //IMLibAuthenticationUI.succeedCredential = !result.requireAuth
+        if (!IMLibAuthenticationUI.isRequired2FA) {
+          IMLibAuthentication.clearCredentials()
+        }
+      }, () => {
         IMLibAuthentication.clearCredentials()
-      }
-    }, function () {
-      IMLibAuthentication.clearCredentials()
-    }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
-      INTERMediator.constructMain()
-    }))
+      }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
+        INTERMediator.constructMain()
+      }))
   },
 
   /**
    * Request 2FA credential verification on server.
    * @returns {Promise<void>}
    */
-  getCredential2FA: async function () {
-    'use strict'
+  getCredential2FA: async function (credentialParam = '') {
     IMLibAuthenticationUI.succeedCredential = false
-    return INTERMediator_DBAdapter.server_access_async('access=authenticated', 1057, 1058, function (result) {
-      IMLibAuthenticationUI.succeedCredential = result.succeed_2FA
-      if (result.succeed_2FA) {
+    const param = 'access=authenticated' + (credentialParam ? `&code2FA=${credentialParam}` : '')
+    return INTERMediator_DBAdapter.server_access_async(param, 1057, 1058,
+      function (result) {
+        IMLibAuthenticationUI.succeedCredential = result.succeed_2FA
+        if (result.succeed_2FA) {
+          IMLibAuthentication.clearCredentials()
+        }
+      }, function () {
         IMLibAuthentication.clearCredentials()
-      }
-    }, function () {
-      IMLibAuthentication.clearCredentials()
-    }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
-      INTERMediator.constructMain()
-    }))
+      }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
+        INTERMediator.constructMain()
+      }))
   },
 
   /**

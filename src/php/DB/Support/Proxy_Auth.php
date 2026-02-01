@@ -65,6 +65,10 @@ trait Proxy_Auth
             ?? Params::getParameterValue("mailContext2FA", '');
         $this->dbSettings->setExpiringSeconds2FA($options['authentication']['expiring-seconds-2FA']
             ?? Params::getParameterValue("expiringSeconds2FA", 100000));
+        $this->dbSettings->setMethod2FA(strtolower($options['authentication']['method-2FA']
+            ?? Params::getParameterValue("method2FA", 'authenticator')));
+        $this->dbSettings->setIsPassThrough2FA($options['authentication']['is-pass-through-2FA']
+            ?? Params::getParameterValue("isPassThrough2FA", true));
 
         /* Authentication and Authorization Judgment */
         $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);

@@ -14,15 +14,23 @@ Ver.15 (in Development)
 - Passkey authentication is supported. The $authStoring variable or the "storing" key value have to set the "passkey".
   The "autofill" UI of passkey authentication is supported by $isAddClassAuthn in params.php file, or 'add-class-authn'
   key value in definition file.
-- The "samples" folder is separated to the new repository "INTER-Mediator_Samples".
+- The "samples" folder is separated to the new repository "INTER-Mediator_Samples" (https://github.com/INTER-Mediator/INTER-Mediator_Samples).
 - IMLibAuthenticationUI.passkeyRegistration() method for the passkey registering.
   IMLibAuthenticationUI.passkeyUnregistration() method for the passkey unregistering.
+- Google Authenticator 2FA authentication is supported. The $method2FA variable or the "method-2FA" key value
+  have to set the "authenticator".
+- The variable $isPassThrough2FA in the params.php file or "pass-through-2FA" key value in the definition file
+  can be set to true to pass through the 2FA session before registering. The default is true.
+- IMLibAuthenticationUI.google2FARegistration() method for the authenticator registering.
+  IMLibAuthenticationUI.google2FAUnregistration() method for the authenticator unregistering.
 - In case of affecting the order of records with editing field data, the list is going to update after modification.
 - New prompt for the related table adding are added to /dist-docs/prompts.
 - The new class RESTAPI can publish the Web API from a definition file. The sample usage is in the sample/Sample_API.
 - Largely refactoring of the database and authentication processes.
 - The default value of the INTERMediatorLog.suppressDebugMessageOnPage is changed from false to true.
   The debug messages on the page is going to be deprecated.
+- IMLibAuthenticationUI.loginPanel2FAHTML can have the HTML code for the custom 2FA panel. In this HTML, the code text
+  box (id = '_im_code_2FA') and the auth button (id = '_im_authbutton_2FA') must be included.
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 - [SECURITY ISSUES] The account manager of sample code can be accessed on same case. So the samples are moved to

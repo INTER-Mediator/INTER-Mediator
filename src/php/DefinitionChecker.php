@@ -245,6 +245,8 @@ class DefinitionChecker
             'passkey-only-on-auth' => 'boolean',
             'add-class-authn' => 'boolean',
             'passkey-error-alerting' => 'boolean',
+            'method-2FA' => 'string(authenticator|email)',
+            'is-pass-through-2FA' => 'boolean',
         ],
         'media-root-dir' => 'string',
 //        'media-context' => 'string',

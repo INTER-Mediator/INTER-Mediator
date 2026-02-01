@@ -4,6 +4,7 @@ namespace INTERMediator\DB\Support\ActionHandlers;
 
 use INTERMediator\DB\Logger;
 use INTERMediator\IMUtil;
+use PragmaRX\Google2FA\Google2FA;
 
 /**
  * Visitor class for handling authenticated operations in the Proxy pattern.
@@ -32,17 +33,37 @@ class AuthenticatedHandler extends ActionHandler
         if ($this->prepareCheckAuthentication()) {
             Logger::getInstance()->setDebugMessage(
                 "[checkAuthentication] 2FA code={$proxy->code2FA}", 2);
-            $authCredential = $proxy->generateCredential($this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
-            if ($proxy->credential === $authCredential && $proxy->code2FA && $proxy->hashedPassword) {
-                $hmacValue = hash_hmac('sha256', $proxy->code2FA, $this->storedCredential);
-                Logger::getInstance()->setDebugMessage(
-                    "[checkAuthentication] 2FA paramResponse2={$proxy->paramResponse2}/hmac_value={$hmacValue}", 2);
-                if ($proxy->paramResponse2 === $hmacValue) {
-                    Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA authentication succeed.", 2);
-                    return true;
-                } else {
-                    Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA authentication failed.", 2);
-                }
+            switch ($proxy->dbSettings->getMethod2FA()) {
+                case'email':  // Send mail containing 2FA code.
+                    $authCredential = $proxy->generateCredential($this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
+                    if ($proxy->credential === $authCredential && $proxy->code2FA && $proxy->hashedPassword) {
+                        $hmacValue = hash_hmac('sha256', $proxy->code2FA, $this->storedCredential);
+                        Logger::getInstance()->setDebugMessage(
+                            "[checkAuthentication] 2FA_email paramResponse2={$proxy->paramResponse2}/hmac_value={$hmacValue}", 2);
+                        if ($proxy->paramResponse2 === $hmacValue) {
+                            Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA_email authentication succeed.", 2);
+                            return true;
+                        } else {
+                            Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA_email authentication failed.", 2);
+                        }
+                    }
+                    break;
+                default:
+                case 'authenticator':
+                    $userName = $this->proxy->dbSettings->getCurrentUser();
+                    if ($userName) {
+                        [, , , , $secret] = $this->proxy->dbClass->authHandler->getLoginUserInfo($userName);
+                        Logger::getInstance()->setDebugMessage(
+                            "[checkAuthentication] 2FA_authenticator userName={$userName}/code={$proxy->code2FA}", 2);
+                        $google2fa = new Google2FA();
+                        if ($secret && $proxy->code2FA && $google2fa->verifyKey($secret, $proxy->code2FA)) {
+                            Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA_authenticator authentication succeed.", 2);
+                            return true;
+                        } else {
+                            Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA_authenticator authentication failed.", 2);
+                        }
+                    }
+                    break;
             }
         }
         return false;

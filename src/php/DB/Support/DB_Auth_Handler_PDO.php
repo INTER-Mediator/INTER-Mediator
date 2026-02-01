@@ -1162,6 +1162,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
+     * @param string $userID User ID or username.
+     * @return array [user ID, real name, email, public key, secret]
      * @throws Exception
      */
     public function getLoginUserInfo(string $userID): array
@@ -1175,7 +1177,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 throw new Exception("Usertable setting up failed.");
             }
             $user = $this->authSupportUnifyUsernameAndEmail($userID);
-            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id,username,realname FROM {$userTable} WHERE username = "
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " * FROM {$userTable} WHERE username = "
                 . $this->pdoDB->link->quote($user);
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {
@@ -1188,7 +1190,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             }
             $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                return [$row['id'], $row['realname']];
+                return [
+                    $row['id'],
+                    $row['realname']?? '',
+                    $row['email']?? '',
+                    $row['pubkey']?? '',
+                    $row['secret']?? '',
+                ];
             }
         } catch (\Exception $e) {
             $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
