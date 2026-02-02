@@ -1351,7 +1351,15 @@ end
 
 
 # Copy Templates
-
+directory "#{IMSAMPLE}" do
+  action :create
+  group 'im-developer'
+  mode '775'
+end
+cd
+execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
+  command "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator"
+end
 for num in 1..40 do
   num = "%02d" % num
   execute "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\"" do
