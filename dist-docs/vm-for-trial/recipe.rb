@@ -1364,7 +1364,9 @@ if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
 end
 
 # Copy Templates
-
+execute "cd \"#{IMROOT}\"; ls samples 2> /dev/null || git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples \"#{IMSAMPLE}\"" do
+  command "cd \"#{IMROOT}\"; ls samples 2> /dev/null || git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples \"#{IMSAMPLE}\""
+end
 for num in 1..40 do
   num = "%02d" % num
   execute "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\"" do
