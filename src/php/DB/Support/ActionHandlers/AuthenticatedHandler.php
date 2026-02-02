@@ -4,6 +4,9 @@ namespace INTERMediator\DB\Support\ActionHandlers;
 
 use INTERMediator\DB\Logger;
 use INTERMediator\IMUtil;
+use PragmaRX\Google2FA\Exceptions\IncompatibleWithGoogleAuthenticatorException;
+use PragmaRX\Google2FA\Exceptions\InvalidCharactersException;
+use PragmaRX\Google2FA\Exceptions\SecretKeyTooShortException;
 use PragmaRX\Google2FA\Google2FA;
 
 /**
@@ -24,6 +27,9 @@ class AuthenticatedHandler extends ActionHandler
     /** Visits the CheckAuthentication operation to verify authentication and 2FA.
      *
      * @return bool True if authentication (including 2FA) succeeds; false otherwise.
+     * @throws IncompatibleWithGoogleAuthenticatorException
+     * @throws InvalidCharactersException
+     * @throws SecretKeyTooShortException
      */
     public function checkAuthentication(): bool
     {
@@ -34,6 +40,7 @@ class AuthenticatedHandler extends ActionHandler
             Logger::getInstance()->setDebugMessage(
                 "[checkAuthentication] 2FA code={$proxy->code2FA}", 2);
             switch ($proxy->dbSettings->getMethod2FA()) {
+                case 'testing':
                 case'email':  // Send mail containing 2FA code.
                     $authCredential = $proxy->generateCredential($this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
                     if ($proxy->credential === $authCredential && $proxy->code2FA && $proxy->hashedPassword) {
@@ -79,7 +86,7 @@ class AuthenticatedHandler extends ActionHandler
         return $proxy->authSucceed && $this->checkAuthorizationImpl();
     }
 
-    /** Visits the DataOperation operation. No operation for authenticated visitor.
+    /** Visits the DataOperation operation. No operation for authenticated action.
      *
      * @return void
      */
@@ -115,7 +122,7 @@ class AuthenticatedHandler extends ActionHandler
             $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
             if ($proxy->authStoring === 'credential') {
                 $this->setCookieOfChallenge('_im_credential_token',
-                    $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+                    $challenge, $proxy->generatedClientID, $proxy->hashedPassword ?? "");
             }
         }
     }

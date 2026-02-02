@@ -82,6 +82,9 @@ class CredentialHandler extends ActionHandler
                             $userName = $this->proxy->dbSettings->getCurrentUser();
                             [, , $email, , $secret] = $this->proxy->dbClass->authHandler->getLoginUserInfo($userName);
                             switch ($proxy->dbSettings->getMethod2FA()) {
+                                case 'testing':
+                                    $has2FASetting = true;
+                                    break;
                                 case'email':  // Send mail containing 2FA code.
                                     $has2FASetting = !!$email;
                                     $proxy->logger->setDebugMessage("Try to send a message.", 2);

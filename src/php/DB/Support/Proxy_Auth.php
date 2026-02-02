@@ -57,18 +57,20 @@ trait Proxy_Auth
 //            ?? Params::getParameterValue("authExpired", 3600);
 //        $this->realm = $options['authentication']['realm']
 //            ?? Params::getParameterValue("authRealm", '');
+        $is2FATesting = !!Params::getParameterValue("fixed2FACode", '');;
         $this->required2FA = $options['authentication']['is-required-2FA']
             ?? Params::getParameterValue("isRequired2FA", '');
-        $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
-            ?? Params::getParameterValue("digitsOf2FACode", 4);
         $this->mailContext2FA = $options['authentication']['mail-context-2FA']
             ?? Params::getParameterValue("mailContext2FA", '');
         $this->dbSettings->setExpiringSeconds2FA($options['authentication']['expiring-seconds-2FA']
             ?? Params::getParameterValue("expiringSeconds2FA", 100000));
-        $this->dbSettings->setMethod2FA(strtolower($options['authentication']['method-2FA']
-            ?? Params::getParameterValue("method2FA", 'authenticator')));
+        $this->dbSettings->setMethod2FA($is2FATesting ? 'testing'
+            : strtolower($options['authentication']['method-2FA']
+                ?? Params::getParameterValue("method2FA", 'authenticator')));
         $this->dbSettings->setIsPassThrough2FA($options['authentication']['is-pass-through-2FA']
             ?? Params::getParameterValue("isPassThrough2FA", true));
+        $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
+            ?? Params::getParameterValue("digitsOf2FACode", ($this->dbSettings->getMethod2FA() === 'email') ? 4 : 6);
 
         /* Authentication and Authorization Judgment */
         $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);

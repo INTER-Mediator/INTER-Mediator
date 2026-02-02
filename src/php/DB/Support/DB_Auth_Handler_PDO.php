@@ -1178,30 +1178,28 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             }
             $user = $this->authSupportUnifyUsernameAndEmail($userID);
             $sql = $this->pdoDB->handler->sqlSELECTCommand() . " * FROM {$userTable} WHERE username = "
-                . $this->pdoDB->link->quote($user);
+                . $this->pdoDB->link->quote($user) . " LIMIT 10000 OFFSET 0";
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
-            if ($result->rowCount() === 0) {
+            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
+            $counter = 0;
+            $returnValue = null;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $returnValue = [$row['id'], $row['realname'] ?? '', $row['email'] ?? '', $row['pubkey'] ?? '', $row['secret'] ?? '',];
+                $counter++;
+            }
+            if ($counter === 0) {
                 throw new Exception("No Information Detected for the Log-in User {$userID}: {$sql}");
-            } else if ($result->rowCount() > 1) {
+            } else if ($counter > 1) {
                 throw new Exception("Multiple Users Detected for the Log-in User {$userID}: {$sql}");
             }
-            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
-            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                return [
-                    $row['id'],
-                    $row['realname']?? '',
-                    $row['email']?? '',
-                    $row['pubkey']?? '',
-                    $row['secret']?? '',
-                ];
-            }
+            return $returnValue;
         } catch (\Exception $e) {
             $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
         }
-        return [null, null, null];
+        return ['', '', '', '', ''];
     }
 
     public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void
@@ -1226,9 +1224,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             if ($result === false) {
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
-            if ($result->rowCount() === 0) {
+            $counter = 0;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $counter++;
+            }
+            if ($counter === 0) {
                 throw new Exception("No user record for {$uid}: {$sql}");
-            } else if ($result->rowCount() > 1) {
+            } else if ($counter > 1) {
                 throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
             }
             $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} SET "
@@ -1261,9 +1263,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             if ($result === false) {
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
-            if ($result->rowCount() === 0) {
+            $counter = 0;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $counter++;
+            }
+            if ($counter === 0) {
                 throw new Exception("No user record for {$uid}: {$sql}");
-            } else if ($result->rowCount() > 1) {
+            } else if ($counter > 1) {
                 throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
             }
             $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} "
@@ -1295,10 +1301,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             if ($result === false) {
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
-            if ($result->rowCount() === 0) {
+            $counter = 0;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $counter++;
+            }
+            if ($counter === 0) {
                 return [];
-            } else if ($result->rowCount() > 1) {
-                throw new Exception("Multiple Users Detected for the Log-in Public Key ID {$pkid}: {$sql}");
+            } else if ($counter > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$pkid}: {$sql}");
             }
             $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
@@ -1310,7 +1320,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return [];
     }
 
-    public function authSupportStore2FASecret(string $uid, string|null $secret): void{
+    public function authSupportStore2FASecret(string $uid, string|null $secret): void
+    {
         try {
             if (!$uid) {
                 throw new Exception("Invalid user ID: {$uid}");
@@ -1325,13 +1336,17 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             if ($result === false) {
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
-            if ($result->rowCount() === 0) {
+            $counter = 0;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $counter++;
+            }
+            if ($counter === 0) {
                 throw new Exception("No user record for {$uid}: {$sql}");
-            } else if ($result->rowCount() > 1) {
+            } else if ($counter > 1) {
                 throw new Exception("Multiple Users Detected from the authuser table {$uid}: {$sql}");
             }
             $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable}"
-                . " SET secret = " . ($secret? $this->pdoDB->link->quote($secret) : "NULL")
+                . " SET secret = " . ($secret ? $this->pdoDB->link->quote($secret) : "NULL")
                 . " WHERE id = " . $this->pdoDB->link->quote($uid);
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {

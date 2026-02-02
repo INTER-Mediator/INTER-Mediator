@@ -626,8 +626,9 @@ let IMLibAuthenticationUI = {
     IMLibAuthenticationUI.doAfterAuth = doAfterAuth
     switch (IMLibAuthenticationUI.method2FA) {
       case 'email':
+      case 'testing':
         msgNumLabel = 2028
-        msgNumExp = 2029
+        msgNumExp = 2030
         break
       default:
       case 'authenticator':
@@ -720,6 +721,7 @@ let IMLibAuthenticationUI = {
     }
     switch (IMLibAuthenticationUI.method2FA) {
       case 'email':
+      case 'testing':
         IMLibAuthentication.authHashedPassword2(inputCode)
         await INTERMediator_DBAdapter.getCredential2FA()
         break

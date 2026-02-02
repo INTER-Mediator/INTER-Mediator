@@ -386,18 +386,18 @@ class GenerateJSCode
         $this->generateAssignJS("IMLibAuthenticationUI.isRequired2FA",
             ($options['authentication']['is-required-2FA']
                 ?? Params::getParameterValue("isRequired2FA", false)) ? "true" : "false");
-        $method2FA = strtolower($options['authentication']['method-2FA']
+        $is2FATesting = !!Params::getParameterValue("fixed2FACode", '');;
+        $method2FA = $is2FATesting ? 'testing' : strtolower($options['authentication']['method-2FA']
             ?? Params::getParameterValue("method2FA", 'authenticator'));
         $this->generateAssignJS("IMLibAuthenticationUI.method2FA", $q, $method2FA, $q);
         $this->generateAssignJS("IMLibAuthenticationUI.isPassThrough2FA",
             ($options['authentication']['is-pass-through-2FA']
                 ?? Params::getParameterValue("isPassThrough2FA", true)) ? "true" : "false");
-        $defaultDigits = ($method2FA === 'email') ? 4 : 6;
         $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
-            ?? Params::getParameterValue("digitsOf2FACode", $defaultDigits);
+            ?? Params::getParameterValue("digitsOf2FACode", ($method2FA === 'email') ? 4 : 6);
         $isFix2FACodeLen = strlen(Params::getParameterValue("fixed2FACode", ''));
         $this->generateAssignJS("IMLibAuthenticationUI.digitsOf2FACode", intval(
-            ($isFix2FACodeLen > 0) ? $isFix2FACodeLen : $digitsOf2FACodeValue));
+            $is2FATesting ? $isFix2FACodeLen : $digitsOf2FACodeValue));
 
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(
