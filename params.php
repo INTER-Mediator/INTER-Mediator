@@ -170,7 +170,7 @@ $authRealm = 'INTER-Mediator_Samples';
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
 //$digitsOf2FACode = 6; // Default is 4 for email and 6 for authenticator.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input for email.
-$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+//$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 /* Authentication panels customizing */
 //$authPanelTitle= "そうだ";  // Auth Panel's title
