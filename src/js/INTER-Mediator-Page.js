@@ -78,6 +78,9 @@ let INTERMediatorOnPage = {
   /** CSS class for back navigation button on generated UI */
   buttonClassBackNavi: null,
 
+  justUpdateWholePage: false,
+  justMoveToDetail: false,
+
   /* This method is going to supply by accessing a definition file. This entry is just a definition for static analyzer. */
   getTerms: function () {
     return {dummy: 'dummy'}

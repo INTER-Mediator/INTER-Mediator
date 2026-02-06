@@ -60,6 +60,18 @@ class IMLibContext {
     this.setTable(this)
   }
 
+  isIncludeInPathToRoot(context) {
+    if (!context) {
+      return false
+    }
+    while (context.parentContext) {
+      if(context.name === this.contextName) {
+        return true
+      }
+      context = context.parentContext
+    }
+    return false
+  }
   async updateFieldValue(idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     'use strict'
     let criteria, newValue

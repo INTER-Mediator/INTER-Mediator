@@ -31,6 +31,10 @@ Ver.15 (in Development)
   The debug messages on the page is going to be deprecated.
 - IMLibAuthenticationUI.loginPanel2FAHTML can have the HTML code for the custom 2FA panel. In this HTML, the code text
   box (id = '_im_code_2FA') and the auth button (id = '_im_authbutton_2FA') must be included.
+- If the property INTERMediatorOnPage.justUpdateWholePage set to true, whole page is going to update after any
+  field is edited.
+- If the property INTERMediatorOnPage.justMoveToDetail set to true, in case of Master/Detail navigating page, just a
+  detail area is going to update after a field is edited.
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 - [SECURITY ISSUES] The account manager of sample code can be accessed on same case. So the samples are moved to

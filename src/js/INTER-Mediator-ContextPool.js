@@ -156,47 +156,41 @@ const IMLibContextPool = {
 
   updateContext: function (idValue, target) {
     'use strict'
+    if (INTERMediatorOnPage.justUpdateWholePage) {
+      IMLibQueue.setTask(async (complate) => {
+        await INTERMediator.constructMain()
+        complete()
+      })
+      return
+    }
+
     const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target)
     const value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
     if (contextInfo) {
       const updatingContexts = contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
-      //contextInfo.context.updateContext(idValue, target, contextInfo, value)
       const masterContext = IMLibContextPool.getMasterContext()
-      if (masterContext) {
-        const masterContextDef = masterContext.getContextDef()
-        let uniqueArray = []
-        if (masterContextDef && !masterContextDef['navi-control'].match(/hide/)) {
-          for (const context of updatingContexts) {
-            if (uniqueArray.indexOf(context) < 0) {
-              if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
-                uniqueArray.push(context)
-              }
-              // const contextDef = context.getContextDef()
-              // if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
-              //   uniqueArray = ['*']
-              // }
-            }
-          }
-        }
-        if (uniqueArray.length > 0) {
+      const detailContext = IMLibContextPool.getDetailContext()
+      if (masterContext) { // If the master context exists, it is going to be Master/Detail mode page
+        if (INTERMediatorOnPage.justMoveToDetail) {
           IMLibQueue.setTask((complate) => {
-            if (uniqueArray[0] === '*') {
-              INTERMediator.constructMain()
-            } else {
-              for (const context of uniqueArray) {
+            IMLibPageNavigation.moveDetailOnceAgain()
+            complate()
+          }, false, true)
+        } else {
+          const masterContextDef = masterContext.getContextDef()
+          let uniqueArray = []
+          if (masterContextDef && !masterContextDef['navi-control'].match(/hide/)) { // The master pane doesn't hide.
+            for (const context of updatingContexts) {
+              if (uniqueArray.indexOf(context) < 0) {
+                uniqueArray.push(context)
                 IMLibQueue.setTask(async (complate) => {
                   await INTERMediator.constructMain(context)
                   complate()
                 })
               }
             }
-            complate()
-          }, false, true)
-          IMLibQueue.setTask((complate) => {
-            IMLibPageNavigation.moveDetailOnceAgain()
-            complate()
-          }, false, true)
+          }
         }
       }
     }
