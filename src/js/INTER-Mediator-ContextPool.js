@@ -185,13 +185,16 @@ const IMLibContextPool = {
               INTERMediator.constructMain()
             } else {
               for (const context of uniqueArray) {
-                INTERMediator.constructMain(context)
+                IMLibQueue.setTask(async (complate) => {
+                  await INTERMediator.constructMain(context)
+                  complate()
+                })
               }
             }
             complate()
           }, false, true)
           IMLibQueue.setTask((complate) => {
-            IMLibPageNavigation.moveDetail(contextInfo.record)
+            IMLibPageNavigation.moveDetailOnceAgain()
             complate()
           }, false, true)
         }
