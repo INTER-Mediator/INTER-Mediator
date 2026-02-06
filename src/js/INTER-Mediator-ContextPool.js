@@ -168,9 +168,8 @@ const IMLibContextPool = {
     const value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
     if (contextInfo) {
       const updatingContexts = contextInfo.context.setValue(
-        contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
+        contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal) // Update all nodes bond to the edited field.
       const masterContext = IMLibContextPool.getMasterContext()
-      const detailContext = IMLibContextPool.getDetailContext()
       if (masterContext) { // If the master context exists, it is going to be Master/Detail mode page
         if (INTERMediatorOnPage.justMoveToDetail) {
           IMLibQueue.setTask((complate) => {
@@ -183,11 +182,13 @@ const IMLibContextPool = {
           if (masterContextDef && !masterContextDef['navi-control'].match(/hide/)) { // The master pane doesn't hide.
             for (const context of updatingContexts) {
               if (uniqueArray.indexOf(context) < 0) {
-                uniqueArray.push(context)
-                IMLibQueue.setTask(async (complate) => {
-                  await INTERMediator.constructMain(context)
-                  complate()
-                })
+                if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
+                  uniqueArray.push(context)
+                  IMLibQueue.setTask(async (complate) => {
+                    await INTERMediator.constructMain(context)
+                    complate()
+                  })
+                }
               }
             }
           }
