@@ -156,44 +156,43 @@ const IMLibContextPool = {
 
   updateContext: function (idValue, target) {
     'use strict'
+
+    if (INTERMediatorOnPage.justUpdateWholePage) { // This property is set to true to update the whole page.
+      IMLibQueue.setTask(async (complate) => {
+        await INTERMediator.constructMain()
+        complete()
+      })
+      return
+    }
+
     const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target)
     const value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
     if (contextInfo) {
       const updatingContexts = contextInfo.context.setValue(
-        contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
-      //contextInfo.context.updateContext(idValue, target, contextInfo, value)
+        contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal) // Update all nodes bond to the edited field.
       const masterContext = IMLibContextPool.getMasterContext()
-      if (masterContext) {
-        const masterContextDef = masterContext.getContextDef()
-        let uniqueArray = []
-        if (masterContextDef && !masterContextDef['navi-control'].match(/hide/)) {
-          for (const context of updatingContexts) {
-            if (uniqueArray.indexOf(context) < 0) {
-              if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
-                uniqueArray.push(context)
-              }
-              // const contextDef = context.getContextDef()
-              // if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
-              //   uniqueArray = ['*']
-              // }
-            }
-          }
+      if (masterContext) { // If the master context exists, it is going to be Master/Detail mode page
+        if (INTERMediatorOnPage.justMoveToDetail) { // AND INTERMediatorOnPage.justMoveToDetail is true
+          IMLibQueue.setTask((complate) => {
+            IMLibPageNavigation.moveDetailOnceAgain() // Move to detail area.
+            complate()
+          }, false, true)
+          return
         }
-        if (uniqueArray.length > 0) {
-          IMLibQueue.setTask((complate) => {
-            if (uniqueArray[0] === '*') {
-              INTERMediator.constructMain()
-            } else {
-              for (const context of uniqueArray) {
-                INTERMediator.constructMain(context)
-              }
-            }
-            complate()
-          }, false, true)
-          IMLibQueue.setTask((complate) => {
-            IMLibPageNavigation.moveDetail(contextInfo.record)
-            complate()
-          }, false, true)
+      }
+      /* The contexts that need to be updated are obtained from setValue.
+      Among those contexts, for the ones that have sortKey set,
+      we rewrite the update process to run with each context individually. */
+      let uniqueArray = []
+      for (const context of updatingContexts) {
+        if (uniqueArray.indexOf(context) < 0) {
+          if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
+            uniqueArray.push(context)
+            IMLibQueue.setTask(async (complate) => {
+              await INTERMediator.constructMain(context)
+              complate()
+            })
+          }
         }
       }
     }

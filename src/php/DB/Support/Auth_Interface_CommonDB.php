@@ -231,4 +231,6 @@ interface Auth_Interface_CommonDB
     public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void;
     public function authSupportRemovePublicKey(string $uid): void;
     public function authSupportUserInfoFromPublickeyId(string $pkid): array;
+
+    public function authSupportStore2FASecret(string $uid, string|null $secret): void;
 }

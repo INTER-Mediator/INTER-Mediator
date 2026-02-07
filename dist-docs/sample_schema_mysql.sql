@@ -800,6 +800,7 @@ CREATE TABLE authuser
     initialPassword       VARCHAR(30),        # Storing for the initial password
     publicKey             TEXT,               # For Passkey Authentication
     publicKeyCredentialId TEXT,               # For Passkey Authentication
+    secret                TEXT,               # For Google Authenticator
     accessToken           VARCHAR(64),        # For API, the length depends on your implementation.
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,

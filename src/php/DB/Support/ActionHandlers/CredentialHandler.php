@@ -14,7 +14,7 @@ use INTERMediator\Params;
 class CredentialHandler extends ActionHandler
 {
     /** Visits the IsAuthAccessing operation.
-     * 
+     *
      * @return bool Always returns true for credential access.
      */
     public function isAuthAccessing(): bool
@@ -23,7 +23,7 @@ class CredentialHandler extends ActionHandler
     }
 
     /** Visits the CheckAuthentication operation for credential access.
-     * 
+     *
      * @return bool True if authentication succeeds, false otherwise.
      */
     public function checkAuthentication(): bool
@@ -37,7 +37,7 @@ class CredentialHandler extends ActionHandler
     }
 
     /** Visits the CheckAuthorization operation for credential access.
-     * 
+     *
      * @return bool True if authorization succeeds, false otherwise.
      */
     public function checkAuthorization(): bool
@@ -47,7 +47,7 @@ class CredentialHandler extends ActionHandler
     }
 
     /** Visits the DataOperation operation. No operation for a credential visitor.
-     * 
+     *
      * @return void
      */
     public function dataOperation(): void
@@ -55,7 +55,7 @@ class CredentialHandler extends ActionHandler
     }
 
     /** Visits the HandleChallenge operation to process challenge/response for credential access and 2FA.
-     * 
+     *
      * @return void
      */
     public function handleChallenge(): void
@@ -76,22 +76,42 @@ class CredentialHandler extends ActionHandler
                     $proxy->outputOfProcessing['authUser'] = $proxy->signedUser;
                     $this->setCookieOfChallenge('_im_credential_token',
                         $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
-                    if ($proxy->required2FA && !Params::getParameterValue("fixed2FACode", false)) { // Send mail containing 2FA code.
-                        $proxy->logger->setDebugMessage("Try to send a message.", 2);
-                        $email = $proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername($proxy->signedUser);
-                        if (!$email) {
-                            $proxy->logger->setWarningMessage("The logging-in user has no email info.");
-                            break;
-                        }
-                        if ($proxy->mailContext2FA) {
-                            $msgProxy = new MessagingProxy("mail");
-                            $msgProxy->processing($proxy, ['template-context' => $proxy->mailContext2FA],
-                                [['mail' => $email, 'code' => $code2FA]]);
+                    $has2FASetting = false;
+                    if ($proxy->required2FA) {
+                        if (!Params::getParameterValue("fixed2FACode", false)) {
+                            $userName = $this->proxy->dbSettings->getCurrentUser();
+                            [, , $email, , $secret] = $this->proxy->dbClass->authHandler->getLoginUserInfo($userName);
+                            switch ($proxy->dbSettings->getMethod2FA()) {
+                                case 'testing':
+                                    $has2FASetting = true;
+                                    break;
+                                case'email':  // Send mail containing 2FA code.
+                                    $has2FASetting = !!$email;
+                                    $proxy->logger->setDebugMessage("Try to send a message.", 2);
+                                    $email = $proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername($proxy->signedUser);
+                                    if (!$email) {
+                                        $proxy->logger->setWarningMessage("The logging-in user has no email info.");
+                                        break;
+                                    }
+                                    if ($proxy->mailContext2FA) {
+                                        $msgProxy = new MessagingProxy("mail");
+                                        $msgProxy->processing($proxy, ['template-context' => $proxy->mailContext2FA],
+                                            [['mail' => $email, 'code' => $code2FA]]);
+                                    } else {
+                                        $messageClass = IMUtil::getMessageClassInstance();
+                                        $proxy->logger->setWarningMessage($messageClass->getMessageAs(2033));
+                                    }
+                                    break;
+                                case 'authenticator':
+                                default:
+                                    $has2FASetting = !!$secret;
+                                    break;
+                            }
                         } else {
-                            $messageClass = IMUtil::getMessageClassInstance();
-                            $proxy->logger->setWarningMessage($messageClass->getMessageAs(2033));
+                            $has2FASetting = true;
                         }
                     }
+                    $proxy->outputOfProcessing['has2FASetting'] = $has2FASetting;
                     break;
                 case
                 'session-storage':
@@ -101,7 +121,8 @@ class CredentialHandler extends ActionHandler
         } else {
             $this->clearAuthenticationCookies();
         }
-        if($proxy->isPasskey) {
+
+        if ($proxy->isPasskey) {
             $challenge = $this->generateAndSaveChallenge($proxy->paramAuthUser ?? "", $proxy->generatedClientID, "&");
             $proxy->outputOfProcessing['passkeyChallenge'] = "{$challenge}";
         }

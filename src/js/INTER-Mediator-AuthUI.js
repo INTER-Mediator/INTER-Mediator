@@ -31,6 +31,8 @@ let IMLibAuthenticationUI = {
   passwordPolicy: null,
   /** Custom HTML to use for the login panel instead of generated DOM */
   loginPanelHTML: null,
+  /** Custom HTML to use for the 2FA panel instead of generated DOM */
+  loginPanel2FAHTML: null,
   /** Show change-password inputs on a login panel */
   isShowChangePassword: true,
   /** Use built-in default styles for panels */
@@ -59,6 +61,10 @@ let IMLibAuthenticationUI = {
   digitsOf2FACode: null,
   /** Whether 2FA is required */
   isRequired2FA: false,
+  /** 2FA method (authenticator or email) */
+  method2FA: null,
+  /** If true, 2FA is passed through before registering */
+  isPassThrough2FA: true,
   /** Authenticated username (if any) */
   authedUser: null,
   /** Force ASCII-only username */
@@ -79,7 +85,7 @@ let IMLibAuthenticationUI = {
   /** Use SAML with a built-in authentication flow */
   samlWithBuiltInAuth: false,
 
-  /** If true, skip username/password UI and start passkey authentication immediately */
+  /** If true, skip the username / password UI and start passkey authentication immediately */
   isPasskeyOnlyOnAuth: false,
   /** If true, add additional WebAuthn-related attributes/classes to the login form */
   isAddClassAuthn: false,
@@ -87,9 +93,12 @@ let IMLibAuthenticationUI = {
   isPasskeyErrorAlerting: false,
   /** Serialized passkey options JSON returned from server */
   passkeyOption: null,
+  /** Challenge action reports this property, and use it with 2FA session. */
+  has2FASetting: false,
 
   /**
-   * Show the login panel and drive the authentication flow.
+   * Show the login panel (or start passkey auth immediately depending on settings)
+   * and drive the authentication flow.
    * @param {Function} doAfterAuth Callback after successful authentication
    * @param {boolean} [doTest] If true, only test rather than execute
    */
@@ -160,7 +169,8 @@ let IMLibAuthenticationUI = {
       frontPanel.id = '_im_authpanel'
       backBox.appendChild(frontPanel)
 
-      const panelTitle = IMLibAuthenticationUI.authPanelTitle ? IMLibAuthenticationUI.authPanelTitle : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')
+      const panelTitle = IMLibAuthenticationUI.authPanelTitle ? IMLibAuthenticationUI.authPanelTitle
+        : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')
       if (panelTitle && panelTitle.length > 0) {
         const realmBox = document.createElement('DIV')
         realmBox.appendChild(document.createTextNode(panelTitle))
@@ -305,14 +315,14 @@ let IMLibAuthenticationUI = {
         }
         frontPanel.appendChild(extButtons[key])
       }
-      if (IMLibAuthentication.enrollPageURL) {
+      if (IMLibAuthenticationUI.enrollPageURL) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
         const addingButton = document.createElement('BUTTON')
         addingButton.id = '_im_enrollbutton'
         addingButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2022)))
         addingButton.onclick = function () {
-          location.href = IMLibAuthentication.enrollPageURL
+          location.href = IMLibAuthenticationUI.enrollPageURL
         }
         frontPanel.appendChild(addingButton)
         if (IMLibAuthenticationUI.authedUser && IMLibAuthentication.authStoring === 'session-storage') {
@@ -511,7 +521,9 @@ let IMLibAuthenticationUI = {
     if (IMLibAuthentication.authStoring === 'credential') {
       await INTERMediator_DBAdapter.getCredential()
       if (IMLibAuthenticationUI.succeedCredential) { // Succeed to log in.
-        if (IMLibAuthenticationUI.isRequired2FA) { // Moving to the 2FA panel.
+        if (IMLibAuthenticationUI.isRequired2FA
+          && ((!IMLibAuthenticationUI.isPassThrough2FA)
+            || (IMLibAuthenticationUI.isPassThrough2FA && IMLibAuthenticationUI.has2FASetting))) { // Moving to the 2FA panel.
           IMLibAuthenticationUI.show2FAPanel(IMLibAuthenticationUI.doAfterAuth)
         } else {
           IMLibAuthenticationUI.doAfterAuth() // Logging-in successfully.
@@ -610,8 +622,20 @@ let IMLibAuthenticationUI = {
    * @param {Function} doAfterAuth Callback after successful 2FA
    */
   show2FAPanel: (doAfterAuth) => {
-    let authButton
+    let msgNumLabel, msgNumExp, codeBox, authButton
     IMLibAuthenticationUI.doAfterAuth = doAfterAuth
+    switch (IMLibAuthenticationUI.method2FA) {
+      case 'email':
+      case 'testing':
+        msgNumLabel = 2028
+        msgNumExp = 2030
+        break
+      default:
+      case 'authenticator':
+        msgNumLabel = 2037
+        msgNumExp = 2036
+        break
+    }
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
     backBox.id = '_im_authpback_2FA'
@@ -620,46 +644,54 @@ let IMLibAuthenticationUI = {
     frontPanel.id = '_im_authpanel_2FA'
     backBox.appendChild(frontPanel)
 
-    if (IMLibAuthenticationUI.authPanelTitle2FA || IMLibAuthentication.realm) {
-      const realmBox = document.createElement('DIV')
-      realmBox.appendChild(document.createTextNode(IMLibAuthenticationUI.authPanelTitle ? IMLibAuthenticationUI.authPanelTitle : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')))
-      realmBox.id = '_im_authrealm_2FA'
-      frontPanel.appendChild(realmBox)
-      const breakLine = document.createElement('HR')
-      frontPanel.appendChild(breakLine)
-    }
-    const userLabel = document.createElement('LABEL')
-    frontPanel.appendChild(userLabel)
+    if (IMLibAuthenticationUI.loginPanel2FAHTML) {
+      backBox.innerHTML = IMLibAuthenticationUI.loginPanelHTMLloginPanel2FAHTML
+      codeBox = document.getElementById('_im_code_2FA')
+      authButton = document.getElementById('_im_authbutton_2FA')
+    } else {
+      if (IMLibAuthenticationUI.authPanelTitle2FA || IMLibAuthentication.realm) {
+        const realmBox = document.createElement('DIV')
+        realmBox.appendChild(document.createTextNode(
+          IMLibAuthenticationUI.authPanelTitle2FA ? IMLibAuthenticationUI.authPanelTitle2FA
+            : (IMLibAuthentication.realm ? IMLibAuthentication.realm : '')))
+        realmBox.id = '_im_authrealm_2FA'
+        frontPanel.appendChild(realmBox)
+        const breakLine = document.createElement('HR')
+        frontPanel.appendChild(breakLine)
+      }
+      const userLabel = document.createElement('LABEL')
+      frontPanel.appendChild(userLabel)
 
-    const codeSpan = document.createElement('span')
-    codeSpan.setAttribute('class', '_im_authlabel_2FA')
-    codeSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2028)))
-    userLabel.appendChild(codeSpan)
+      const codeSpan = document.createElement('span')
+      codeSpan.setAttribute('class', '_im_authlabel_2FA')
+      codeSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(msgNumLabel)))
+      userLabel.appendChild(codeSpan)
 
-    const codeBox = document.createElement('INPUT')
-    codeBox.type = 'text'
-    codeBox.id = '_im_code_2FA'
-    codeBox.size = '10'
-    codeBox.setAttribute('autocapitalize', 'off')
-    userLabel.appendChild(codeBox)
+      codeBox = document.createElement('INPUT')
+      codeBox.type = 'text'
+      codeBox.id = '_im_code_2FA'
+      codeBox.size = '10'
+      codeBox.setAttribute('autocapitalize', 'off')
+      userLabel.appendChild(codeBox)
 
-    authButton = document.createElement('BUTTON')
-    authButton.id = '_im_authbutton_2FA'
-    authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2029)))
-    frontPanel.appendChild(authButton)
+      authButton = document.createElement('BUTTON')
+      authButton.id = '_im_authbutton_2FA'
+      authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2029)))
+      frontPanel.appendChild(authButton)
 
-    const explain = document.createElement('div')
-    explain.setAttribute('id', '_im_explain_2FA')
-    explain.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2030)))
-    frontPanel.appendChild(explain)
+      const explain = document.createElement('div')
+      explain.setAttribute('id', '_im_explain_2FA')
+      explain.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(msgNumExp)))
+      frontPanel.appendChild(explain)
 
-    if (IMLibAuthenticationUI.authPanelExp2FA) {
-      const breakLine = document.createElement('HR')
-      frontPanel.appendChild(breakLine)
-      const addingNode = document.createElement('DIV')
-      addingNode.className = '_im_auth_exp_2fa'
-      addingNode.innerHTML = IMLibAuthenticationUI.authPanelExp2FA
-      frontPanel.appendChild(addingNode)
+      if (IMLibAuthenticationUI.authPanelExp2FA) {
+        const breakLine = document.createElement('HR')
+        frontPanel.appendChild(breakLine)
+        const addingNode = document.createElement('DIV')
+        addingNode.className = '_im_auth_exp_2fa'
+        addingNode.innerHTML = IMLibAuthenticationUI.authPanelExp2FA
+        frontPanel.appendChild(addingNode)
+      }
     }
 
     window.scrollTo(0, 0)
@@ -668,7 +700,6 @@ let IMLibAuthenticationUI = {
     if (IMLibAuthenticationUI.doAfterLoginPanel) {
       IMLibAuthenticationUI.doAfterLoginPanel(true)
     }
-
     codeBox.onkeydown = function (event) {
       if (event.code === 'Enter') {
         authButton.onclick()
@@ -688,8 +719,17 @@ let IMLibAuthenticationUI = {
       INTERMediatorLib.removeChildNodesAppendText(document.getElementById('_im_explain_2FA'), 2031)
       return
     }
-    IMLibAuthentication.authHashedPassword2(inputCode)
-    await INTERMediator_DBAdapter.getCredential2FA()
+    switch (IMLibAuthenticationUI.method2FA) {
+      case 'email':
+      case 'testing':
+        IMLibAuthentication.authHashedPassword2(inputCode)
+        await INTERMediator_DBAdapter.getCredential2FA()
+        break
+      default:
+      case 'authenticator':
+        await INTERMediator_DBAdapter.getCredential2FA(inputCode)
+        break
+    }
     if (IMLibAuthenticationUI.succeedCredential) {
       const bodyNode = document.getElementsByTagName('BODY')[0]
       const backBox = document.getElementById('_im_authpback_2FA')
@@ -705,7 +745,7 @@ let IMLibAuthenticationUI = {
   },
 
   /**
-   * Click handler for the passkey button on login panel.
+   * Click handler for the passkey button on a login panel.
    * @param {Event} event The click event
    * @returns {Promise<void>}
    */
@@ -776,6 +816,24 @@ let IMLibAuthenticationUI = {
   passkeyUnregistration: async () => {
     await INTERMediator_DBAdapter.unregisterPasskey()
     location.reload()
+  },
+
+  /**
+   * Start passkey registration (WebAuthn attestation) flow.
+   * @returns {Promise<void>}
+   */
+  google2FARegistration: async (doAfterProcessing = null) => {
+    await INTERMediator_DBAdapter.registerGoogle2FA(doAfterProcessing)
+    //location.reload()
+  },
+
+  /**
+   * Unregister passkey for current user.
+   * @returns {Promise<void>}
+   */
+  google2FAUnregistration: async () => {
+    await INTERMediator_DBAdapter.unregisterGoogle2FA()
+    //location.reload()
   }
 }
 

@@ -134,8 +134,8 @@ $browserCompatibility = array(
 //$sendMailSMTP = array(
 //    'server' => 'msyk.sakura.ne.jp',
 //    'port' => '587',
-//    'username' => 'user1@msyk.net',
-//    'password' => 'anypassword',
+//    'username' => 'user2@msyk.net',
+//    'password' => 'xxxxx',
 //);
 // $waitAfterMail = 20; // Wait after send email with smtp server. Unit is Millisecond.
 
@@ -163,11 +163,14 @@ $authRealm = 'INTER-Mediator_Samples';
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
 //$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with '2m' style SHA-2 hash. The default is false.
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
+
 //$isRequired2FA = true; // Default is false.
+//$method2FA = 'email'; // 'authenticator' or 'email'. Default is 'authenticator'.
+//$isPassThrough2FA = true; // Default is true. If it's true, the 2FA is going to process for the case of registered users.
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
-//$digitsOf2FACode = 6; // Default is 4.
-//$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
-$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+//$digitsOf2FACode = 6; // Default is 4 for email and 6 for authenticator.
+//$expiringSeconds2FA = 1000; // 2FA effective seconds from code input for email.
+//$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 /* Authentication panels customizing */
 //$authPanelTitle= "そうだ";  // Auth Panel's title

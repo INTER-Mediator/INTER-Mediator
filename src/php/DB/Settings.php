@@ -181,6 +181,14 @@ class Settings
      */
     private int $expiringSeconds2FA = 100000;
 
+    /** @var string
+     */
+    private string $method2FA = 'authenticator';
+
+    /** @var bool
+     */
+    private bool $isPassThrough2FA = true;
+
     /** Get the expiring seconds for 2FA.
      * @return int Expiring seconds for 2FA.
      */
@@ -196,6 +204,40 @@ class Settings
     public function setExpiringSeconds2FA(int $n): void
     {
         $this->expiringSeconds2FA = $n;
+    }
+
+    /** Get the 2FA method.
+     * @return string 2FA method.
+     */
+    public function getMethod2FA(): string
+    {
+        return $this->method2FA;
+    }
+
+    /** Set the 2FA method.
+     * @param string $value 2FA method.
+     * @return void
+     */
+    public function setMethod2FA(string $value): void
+    {
+        $this->method2FA = $value;
+    }
+
+    /** Get the flag for passing through 2FA.
+     * @return bool Flag for passing through 2FA.
+     */
+    public function getIsPassThrough2FA(): bool
+    {
+        return $this->isPassThrough2FA;
+    }
+
+    /** Set the flag for passing through 2FA.
+     * @param bool $value Flag for passing through 2FA.
+     * @return void
+     */
+    public function setIsPassThrough2FA(bool $value): void
+    {
+        $this->isPassThrough2FA = $value;
     }
 
     /** @var string

@@ -95,6 +95,7 @@ jobs:
           echo "" >> params.php
           echo "\$defaultTimezone = 'UTC';" >> params.php
           echo "\$followingTimezones = true;" >> params.php
+          echo "\$fixed2FACode = '5555';" >> params.php
           echo "" >> params.php
 
         # E2E test with WebdriverIO

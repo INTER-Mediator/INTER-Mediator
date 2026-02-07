@@ -431,6 +431,7 @@ CREATE TABLE authuser
     limitdt      DateTime,
     publicKey       TEXT,
     publicKeyCredentialId TEXT,
+    secret                TEXT,
     accessToken  TEXT
 );
 

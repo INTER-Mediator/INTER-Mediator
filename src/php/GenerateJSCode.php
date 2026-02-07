@@ -355,7 +355,7 @@ class GenerateJSCode
             $this->generateAssignJS("IMLibAuthenticationUI.resetPageURL", $q, $resetPage, $q);
         }
         $this->generateAssignJS(
-            "INTERMediatorOnPage.extraButtons", IMUtil::arrayToJS($extraButtons));
+            "IMLibAuthenticationUI.extraButtons", IMUtil::arrayToJS($extraButtons));
 
         $authStoringValue = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
@@ -377,18 +377,27 @@ class GenerateJSCode
             $isPasskeyErrorAlerting ? "true" : "false");
 
         $this->generateAssignJS("IMLibAuthentication.authStoring", $q, $authStoringValue, $q);
-        $authExpiredValue = $options['authentication']['authexpired']
-            ?? Params::getParameterValue("authExpired", 3600);
-        $this->generateAssignJS("IMLibAuthentication.authExpired", intval($authExpiredValue));
-        $realmValue = $options['authentication']['realm']
-            ?? Params::getParameterValue("authRealm", '');
-        $this->generateAssignJS("IMLibAuthentication.realm", $q, $realmValue, $q);
-        $req2FAValue = $options['authentication']['is-required-2FA']
-            ?? Params::getParameterValue("isRequired2FA", '');
-        $this->generateAssignJS("IMLibAuthenticationUI.isRequired2FA", $req2FAValue ? "true" : "false");
+        $this->generateAssignJS("IMLibAuthentication.authExpired",
+            intval($options['authentication']['authexpired']
+                ?? Params::getParameterValue("authExpired", 3600)));
+        $this->generateAssignJS("IMLibAuthentication.realm", $q,
+            $options['authentication']['realm']
+            ?? Params::getParameterValue("authRealm", ''), $q);
+        $this->generateAssignJS("IMLibAuthenticationUI.isRequired2FA",
+            ($options['authentication']['is-required-2FA']
+                ?? Params::getParameterValue("isRequired2FA", false)) ? "true" : "false");
+        $is2FATesting = !!Params::getParameterValue("fixed2FACode", '');;
+        $method2FA = $is2FATesting ? 'testing' : strtolower($options['authentication']['method-2FA']
+            ?? Params::getParameterValue("method2FA", 'authenticator'));
+        $this->generateAssignJS("IMLibAuthenticationUI.method2FA", $q, $method2FA, $q);
+        $this->generateAssignJS("IMLibAuthenticationUI.isPassThrough2FA",
+            ($options['authentication']['is-pass-through-2FA']
+                ?? Params::getParameterValue("isPassThrough2FA", true)) ? "true" : "false");
         $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
-            ?? Params::getParameterValue("digitsOf2FACode", 4);
-        $this->generateAssignJS("IMLibAuthenticationUI.digitsOf2FACode", intval($digitsOf2FACodeValue));
+            ?? Params::getParameterValue("digitsOf2FACode", ($method2FA === 'email') ? 4 : 6);
+        $isFix2FACodeLen = strlen(Params::getParameterValue("fixed2FACode", ''));
+        $this->generateAssignJS("IMLibAuthenticationUI.digitsOf2FACode", intval(
+            $is2FATesting ? $isFix2FACodeLen : $digitsOf2FACodeValue));
 
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(

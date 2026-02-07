@@ -122,13 +122,21 @@ abstract class ActionHandler
             "[prepareCheckAuthentication] storedCredential={$this->storedCredential}", 2);
 
         if ($proxy->required2FA) {
-            $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
+            switch ($proxy->dbSettings->getMethod2FA()) {
+                case 'testing':
+                    $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
+                case'email':  // Send mail containing 2FA code.
+                    $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
+                     break;
+                case 'authenticator':
+                default:
+                    $proxy->code2FA = $proxy->PostData['code2FA'] ?? "";
+                    break;
+            }
             $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
-
-            $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge(
-                $uid, $proxy->clientId, true, "=");
+            $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "=");
             Logger::getInstance()->setDebugMessage(
-                "[prepareCheckAuthentication] stored2FAuth={$this->stored2FAuth}", 2);
+                "[prepareCheckAuthentication] 2FA_email stored2FAuth={$this->stored2FAuth}", 2);
         }
         return true;
     }
@@ -163,9 +171,19 @@ abstract class ActionHandler
                     . "storedChallenge={$this->storedChallenge} clientId={$proxy->clientId} hashedPassword={$proxy->hashedPassword}", 2);
                 if ($proxy->credential === $referingCredential) {
                     if ($proxy->required2FA) {
-                        if ($proxy->credential2FA === $proxy->generateCredential(
-                                $this->stored2FAuth, $proxy->clientId, $proxy->hashedPassword)) {
-                            Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential and 2FA passed.", 2);
+                        $userName = $proxy->dbSettings->getCurrentUser();
+                        [, , $email, , $secret] = $proxy->dbClass->authHandler->getLoginUserInfo($userName);
+                        $has2FASetting = ($proxy->dbSettings->getMethod2FA() === 'email') ? !!$email : !!$secret;
+                        $has2FASetting = ($proxy->dbSettings->getMethod2FA() === 'testing') ? true : $has2FASetting;
+                        if (!$proxy->dbSettings->getIsPassThrough2FA() || $has2FASetting) {
+                            if ($proxy->credential2FA === $proxy->generateCredential(
+                                    $this->stored2FAuth, $proxy->clientId, $proxy->hashedPassword)) {
+                                Logger::getInstance()->setDebugMessage(
+                                    "[checkAuthenticationCommon] Credential + 2FA_{$proxy->dbSettings->getMethod2FA()} passed.", 2);
+                                return true;
+                            }
+                        } else {
+                            Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential passed + 2FA_{$proxy->dbSettings->getMethod2FA()} through.", 2);
                             return true;
                         }
                     } else {
@@ -260,7 +278,7 @@ abstract class ActionHandler
         return false;
     }
 
-    // ==== Service methods for the dataOperation method. ====
+// ==== Service methods for the dataOperation method. ====
 
     /** Creates or replaces data in the database.
      * @param string $access The access type (create or replace).
@@ -341,7 +359,7 @@ abstract class ActionHandler
         }
     }
 
-    // ==== Service methods for the handleChallenge method. ====
+// ==== Service methods for the handleChallenge method. ====
 
     /** Handles the default challenge response.
      * @return void
@@ -363,11 +381,11 @@ abstract class ActionHandler
                 }
                 if ($proxy->authStoring == 'credential') {
                     $this->setCookieOfChallenge('_im_credential_token',
-                        $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+                        $challenge, $proxy->generatedClientID, $proxy->hashedPassword ?? "");
                 }
                 if ($proxy->required2FA) { // 2FA final step
                     $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "=");
-                    $this->setCookieOfChallenge('_im_credential_2FA', $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+                    $this->setCookieOfChallenge('_im_credential_2FA', $challenge, $proxy->generatedClientID, $proxy->hashedPassword ?? "");
                 }
             }
         }
