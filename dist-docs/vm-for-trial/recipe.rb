@@ -1349,6 +1349,17 @@ if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
   #end
 end
 
+# Copy Samples
+
+directory "#{IMSAMPLE}" do
+  action :create
+  group 'im-developer'
+  mode '775'
+end
+cd
+execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
+  command "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator"
+end
 
 # Copy Templates
 
@@ -2284,8 +2295,8 @@ elsif node[:platform] == 'ubuntu'
   execute 'dpkg -i google-chrome-stable_current_amd64.deb' do
     command 'dpkg -i google-chrome-stable_current_amd64.deb'
   end
-  execute 'npm install -g chromedriver --unsafe-perm --before `date +"%Y-%m-%d" --date "7 days"`' do
-    command 'npm install -g chromedriver --unsafe-perm --before `date +"%Y-%m-%d" --date "7 days"`'
+  execute 'rm -f /usr/local/bin/chromedriver' do
+    command 'rm -f /usr/local/bin/chromedriver'
   end
 end
 
