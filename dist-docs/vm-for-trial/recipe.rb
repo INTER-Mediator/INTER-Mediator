@@ -1624,13 +1624,13 @@ execute "cd \"#{WEBROOT}\" && cd INTER-Mediator && git checkout ." do
   command "cd \"#{WEBROOT}\" && cd INTER-Mediator && git checkout ."
 end
 
-execute "chmod 664 #{WEBROOT}/*.html" do
-  command "chmod 664 #{WEBROOT}/*.html"
-end
-
-execute "chmod 664 #{WEBROOT}/*.php" do
-  command "chmod 664 #{WEBROOT}/*.php"
-end
+# execute "chmod 664 #{WEBROOT}/*.html" do
+#   command "chmod 664 #{WEBROOT}/*.html"
+# end
+#
+# execute "chmod 664 #{WEBROOT}/*.php" do
+#   command "chmod 664 #{WEBROOT}/*.php"
+# end
 
 execute "chmod 775 \"#{IMVMROOT}/dbupdate.sh\"" do
   command "chmod 775 \"#{IMVMROOT}/dbupdate.sh\""
