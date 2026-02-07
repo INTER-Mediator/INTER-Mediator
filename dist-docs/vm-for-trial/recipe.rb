@@ -1365,23 +1365,23 @@ end
 
 # Copy Templates
 
-for num in 1..40 do
-  num = "%02d" % num
-  execute "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\"" do
-    command "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\""
-  end
-  file "#{WEBROOT}/def#{num}.php" do
-    action :nothing
-    mode '664'
-  end
-  execute "sed -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\"" do
-    command "sed -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\""
-  end
-  file "#{WEBROOT}/page#{num}.html" do
-    action :nothing
-    mode '664'
-  end
-end
+# for num in 1..40 do
+#   num = "%02d" % num
+#   execute "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\"" do
+#     command "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\""
+#   end
+#   file "#{WEBROOT}/def#{num}.php" do
+#     action :nothing
+#     mode '664'
+#   end
+#   execute "sed -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\"" do
+#     command "sed -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\""
+#   end
+#   file "#{WEBROOT}/page#{num}.html" do
+#     action :nothing
+#     mode '664'
+#   end
+# end
 
 # Import schema
 
