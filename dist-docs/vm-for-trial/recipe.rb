@@ -1293,6 +1293,17 @@ if node[:platform] == 'alpine'
   end
 end
 
+# Copy Samples
+
+directory "#{IMSAMPLE}" do
+  action :create
+  group 'im-developer'
+  mode '775'
+end
+execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
+  command "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator"
+end
+
 # Install php/js libraries
 
 if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8
@@ -1347,20 +1358,6 @@ if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
   #package 'virtualbox-guest-modules-grsec' do
   #  action :install
   #end
-end
-
-# Copy Samples
-
-directory "#{IMSAMPLE}" do
-  action :create
-  group 'im-developer'
-  mode '775'
-end
-execute "cd \"#{IMROOT}\"; rm -rf samples/*" do
-  command "cd \"#{IMROOT}\"; rm -rf samples/*"
-end
-execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
-  command "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator"
 end
 
 # Copy Templates
