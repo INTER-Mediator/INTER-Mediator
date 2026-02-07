@@ -156,7 +156,8 @@ const IMLibContextPool = {
 
   updateContext: function (idValue, target) {
     'use strict'
-    if (INTERMediatorOnPage.justUpdateWholePage) {
+
+    if (INTERMediatorOnPage.justUpdateWholePage) { // This property is set to true to update the whole page.
       IMLibQueue.setTask(async (complate) => {
         await INTERMediator.constructMain()
         complete()
@@ -171,26 +172,26 @@ const IMLibContextPool = {
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal) // Update all nodes bond to the edited field.
       const masterContext = IMLibContextPool.getMasterContext()
       if (masterContext) { // If the master context exists, it is going to be Master/Detail mode page
-        if (INTERMediatorOnPage.justMoveToDetail) {
+        if (INTERMediatorOnPage.justMoveToDetail) { // AND INTERMediatorOnPage.justMoveToDetail is true
           IMLibQueue.setTask((complate) => {
-            IMLibPageNavigation.moveDetailOnceAgain()
+            IMLibPageNavigation.moveDetailOnceAgain() // Move to detail area.
             complate()
           }, false, true)
-        } else {
-          const masterContextDef = masterContext.getContextDef()
-          let uniqueArray = []
-          if (masterContextDef && !masterContextDef['navi-control'].match(/hide/)) { // The master pane doesn't hide.
-            for (const context of updatingContexts) {
-              if (uniqueArray.indexOf(context) < 0) {
-                if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
-                  uniqueArray.push(context)
-                  IMLibQueue.setTask(async (complate) => {
-                    await INTERMediator.constructMain(context)
-                    complate()
-                  })
-                }
-              }
-            }
+          return
+        }
+      }
+      /* The contexts that need to be updated are obtained from setValue.
+      Among those contexts, for the ones that have sortKey set,
+      we rewrite the update process to run with each context individually. */
+      let uniqueArray = []
+      for (const context of updatingContexts) {
+        if (uniqueArray.indexOf(context) < 0) {
+          if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
+            uniqueArray.push(context)
+            IMLibQueue.setTask(async (complate) => {
+              await INTERMediator.constructMain(context)
+              complate()
+            })
           }
         }
       }
