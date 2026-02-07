@@ -1351,11 +1351,14 @@ end
 
 # Copy Samples
 
-# directory "#{IMSAMPLE}" do
-#   action :create
-#   group 'im-developer'
-#   mode '775'
-# end
+directory "#{IMSAMPLE}" do
+  action :create
+  group 'im-developer'
+  mode '775'
+end
+execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
+  command "cd \"#{IMROOT}\"; rm -rf samples/*
+end
 execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
   command "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator"
 end
