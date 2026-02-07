@@ -1356,7 +1356,6 @@ directory "#{IMSAMPLE}" do
   group 'im-developer'
   mode '775'
 end
-cd
 execute "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator" do
   command "cd \"#{IMROOT}\"; git clone https://github.com/INTER-Mediator/INTER-Mediator_Samples samples; mkdir -p samples/vendor/inter-mediator; cd samples/vendor/inter-mediator; ln -s ../../../ inter-mediator"
 end
