@@ -42,10 +42,6 @@ spl_autoload_register(function (string $className): bool {
         $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'],$refererPath));
         $refererPath = dirname($_SERVER['DOCUMENT_ROOT'] . $refererPath);
     }
-    $refPathOneDown = $refPath;
-    if (str_starts_with($refPath, "../")) {
-        $refPathOneDown = substr($refPathOneDown, 3);
-    }
     $paramPath = Params::getParameterValue("loadFrom", false);
     $searchDirs = [
         // Load from the file located in the same directory as the definition file.
