@@ -36,9 +36,15 @@ spl_autoload_register(function (string $className): bool {
     $comps = explode('\\', $className);
     $className = $comps[count($comps) - 1];
     $refPath = '';
+    $refererPath = '';
     if (isset($_SERVER['SCRIPT_NAME']) && isset($_SERVER['HTTP_REFERER'])) {
-        $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'],
-            parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH)));
+        $refererPath = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+        $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'],$refererPath));
+        $refererPath = dirname($_SERVER['DOCUMENT_ROOT'] . $refererPath);
+    }
+    $refPathOneDown = $refPath;
+    if (str_starts_with($refPath, "../")) {
+        $refPathOneDown = substr($refPathOneDown, 3);
     }
     $paramPath = Params::getParameterValue("loadFrom", false);
     $searchDirs = [
@@ -48,6 +54,9 @@ spl_autoload_register(function (string $className): bool {
         // Load from the file located in the same directory as the page file.
         $refPath . "/" . implode('/', $comps) . ".php",
         $refPath . "/{$className}.php",
+        // Load from the file located in the same directory with the absolute path.
+        $refererPath  . "/". implode('/', $comps) . ".php",
+        $refererPath . "/{$className}.php",
         // Load from the specific directory with params.php
         $paramPath ? ($paramPath . "/" . implode('/', $comps) . ".php") : false,
         $paramPath ? ($paramPath . "/{$className}.php") : false,
