@@ -470,8 +470,10 @@ const INTERMediator = {
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
-    if (updateRequiredContext !== true && typeof updateRequiredContext !== 'undefined' && updateRequiredContext &&
-      INTERMediatorOnPage.doBeforePartialConstruct) {
+    if (updateRequiredContext !== true
+      && typeof updateRequiredContext !== 'undefined'
+      && updateRequiredContext
+      && INTERMediatorOnPage.doBeforePartialConstruct) {
       INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
     }
     IMLibEventResponder.setup()
@@ -566,7 +568,7 @@ const INTERMediator = {
       }
     }
 
-    // Event listener should add after adding node to document.
+    // Event listener should add after adding node to the document.
     for (let i = 0; i < INTERMediator.eventListenerPostAdding.length; i++) {
       const theNode = document.getElementById(INTERMediator.eventListenerPostAdding[i].id)
       if (theNode) {
@@ -577,8 +579,10 @@ const INTERMediator = {
       }
     }
 
-    if (updateRequiredContext !== true && typeof updateRequiredContext !== 'undefined'
-      && updateRequiredContext && INTERMediatorOnPage.doAfterPartialConstruct) {
+    if (updateRequiredContext !== true
+      && typeof updateRequiredContext !== 'undefined'
+      && updateRequiredContext
+      && INTERMediatorOnPage.doAfterPartialConstruct) {
       INTERMediatorOnPage.doAfterPartialConstruct(updateRequiredContext)
     }
     if (INTERMediatorOnPage.doAfterConstruct) {
