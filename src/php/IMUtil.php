@@ -776,6 +776,7 @@ class IMUtil
                 break;
             }
         }
+
         $path = '';
         for ($index = count($from) - 2; $index >= $commonRoot; $index -= 1) {
             $path = "../{$path}";

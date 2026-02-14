@@ -1370,7 +1370,9 @@ const IMLibPageNavigation = {
    */
   setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
     'use strict'
-    if (currentContextDef['navi-control'] && currentContextDef['navi-control'].match(/master/i)) {
+    if (currentContextDef['navi-control']
+      && currentContextDef['navi-control'].match(/master/i) // Check if the current context is a master context
+      && !INTERMediator.partialConstructing) { // This is not a partial constructing
       const contextDefs = INTERMediatorOnPage.getDataSources()
       for (let i in contextDefs) {
         if (contextDefs.hasOwnProperty(i) && contextDefs[i] && contextDefs[i].name && contextDefs[i]['navi-control'] && contextDefs[i]['navi-control'].match(/detail/i)) {

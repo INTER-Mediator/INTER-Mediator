@@ -26,9 +26,9 @@ use INTERMediator\Params;
 class OperationLog
 {
     /** Access log level.
-     * @var int
+     * @var int|false
      */
-    private int $accessLogLevel;
+    private int|false $accessLogLevel;
     /** Database class log name.
      * @var string|null
      */
