@@ -456,6 +456,7 @@ class DefinitionChecker
             'aggregation-group-by' => 'string',
             'data' => 'array',
             'appending-data' => 'array',
+            'no-default-values-on-copy' => 'boolean',
             'file-upload' => [
                 '*' => [
                     'field' => 'string',

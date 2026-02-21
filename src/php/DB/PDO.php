@@ -89,12 +89,12 @@ class PDO extends DBClass
     /** Whether to suppress default values on copy.
      * @var bool
      */
-    private bool $isSuppressDVOnCopy;
+    private bool $isSuppressDefaultValuesOnCopy;
 
     /** Whether to suppress default values on copy for associative arrays.
      * @var bool
      */
-    private bool $isSuppressDVOnCopyAssoc;
+    private bool $isSuppressDefaultValuesOnCopyAssoc;
 
     /** Whether to suppress auth target filling on create.
      * @var bool
@@ -114,8 +114,8 @@ class PDO extends DBClass
     {
         $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", true);
         $this->defaultTimezone = Params::getParameterValue("defaultTimezone", date_default_timezone_get());
-        $this->isSuppressDVOnCopy = Params::getParameterValue("suppressDVOnCopy", false);
-        $this->isSuppressDVOnCopyAssoc = Params::getParameterValue("suppressDVOnCopyAssoc", false);
+        $this->isSuppressDefaultValuesOnCopy = Params::getParameterValue("suppressDefaultValuesOnCopy", false);
+        $this->isSuppressDefaultValuesOnCopyAssoc = Params::getParameterValue("suppressDefaultValuesOnCopyAssoc", false);
         $this->isSuppressAuthTargetFillingOnCreate = Params::getParameterValue("suppressAuthTargetFillingOnCreate", false);
     }
 
@@ -866,7 +866,8 @@ class PDO extends DBClass
             return null;
         }
         $defaultValues = array();
-        if (!$this->isSuppressDVOnCopy && isset($tableInfo['default-values'])) {
+        $noCopy = $tableInfo['no-default-values-on-copy'] ?? false;
+        if (!$this->isSuppressDefaultValuesOnCopy && !$noCopy && isset($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $defaultValues[$itemDef['field']] = $itemDef['value'];
             }
@@ -885,7 +886,8 @@ class PDO extends DBClass
                 $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $defaultValues = array();
-                if (!$this->isSuppressDVOnCopyAssoc && isset($assocContextDef['default-values'])) {
+                $noCopy = $assocContextDef['no-default-values-on-copy'] ?? false;
+                if (!$this->isSuppressDefaultValuesOnCopyAssoc && !$noCopy && isset($assocContextDef['default-values'])) {
                     foreach ($assocContextDef['default-values'] as $itemDef) {
                         $defaultValues[$itemDef['field']] = $itemDef['value'];
                     }
