@@ -34,6 +34,26 @@ The format of below is: [commit code from git log], [Version from composer.json]
 The test is identified by .conf.js files in the /spec/run directory.
 The test 'wdio-auth-chrome.conf.js' and 'wdio-auth-firefox.conf.js' are running on GitHub Actions.
 
+- commit 752546283db1b053339805820d168ea283158b81(Sun Mar 15 15:40:19 2026 +0900)
+  INTER-Mediator Ver. 15 (2026-02-21),
+  wdio-search-chrome.conf.js,
+  PHP 8.4.7 (Homebrew based)+MySQL 8.4.5/PostgreSQL 14.18/SQLite 3.51.0+Chrome (146.0.7680.80) on macOS Tahoe 26.3.1,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+- commit 752546283db1b053339805820d168ea283158b81(Sun Mar 15 15:40:19 2026 +0900)
+  INTER-Mediator Ver. 15 (2026-02-21),
+  wdio-sync-chrome.conf.js,
+  PHP 8.4.7 (Homebrew based)+MySQL 8.4.5/PostgreSQL 14.18/SQLite 3.51.0+Chrome (146.0.7680.80) on macOS Tahoe 26.3.1,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+- commit 752546283db1b053339805820d168ea283158b81(Sun Mar 15 15:40:19 2026 +0900)
+  INTER-Mediator Ver. 15 (2026-02-21),
+  wdio-form-md-chrome.conf.js,
+  PHP 8.4.7 (Homebrew based)+MySQL 8.4.5/PostgreSQL 14.18/SQLite 3.51.0+Chrome (146.0.7680.80) on macOS Tahoe 26.3.1,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+## Results in those days
+
 - commit 0b8d433f0985f68b0729cb4a31ad508460ff2fc8 (Sun May 18 10:15:22 2025 +0900)
   INTER-Mediator Ver. 14 (2025-05-18),
   wdio-search-chrome.conf.js,
@@ -44,6 +64,12 @@ The test 'wdio-auth-chrome.conf.js' and 'wdio-auth-firefox.conf.js' are running 
   INTER-Mediator Ver.14 (2025-05-18),
   wdio-sync-chrome.conf.js,
   PHP 8.4.4 (Homebrew based)+MySQL 8.4.4/PostgreSQL 14.17/SQLite 3.43.2+Chrome (136.0.7103.114) on mac,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+- commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
+  INTER-Mediator Ver.13 (2024-07-26),
+  wdio-edge.conf.js,
+  PHP 8.3.11 (Homebrew based)+MySQL 8.4.2/PostgreSQL 14.13/SQLite 3.43.2+MicrosoftEdge (128.0.2739.79) on mac,
   by Masayuki Nii <nii@msyk.net>, OK
 
 - commit 0b8d433f0985f68b0729cb4a31ad508460ff2fc8 (Sun May 18 10:15:22 2025 +0900)
@@ -62,14 +88,6 @@ The test 'wdio-auth-chrome.conf.js' and 'wdio-auth-firefox.conf.js' are running 
   INTER-Mediator Ver.14 (2025-05-18),
   wdio-edge.conf.js,
   PHP 8.4.4 (Homebrew based)+MySQL 8.4.4/PostgreSQL 14.17/SQLite 3.43.2+Edge (136.0.3240.76) on mac,
-  by Masayuki Nii <nii@msyk.net>, OK
-
-## Results in those days
-
-- commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
-  INTER-Mediator Ver.13 (2024-07-26),
-  wdio-edge.conf.js,
-  PHP 8.3.11 (Homebrew based)+MySQL 8.4.2/PostgreSQL 14.13/SQLite 3.43.2+MicrosoftEdge (128.0.2739.79) on mac,
   by Masayuki Nii <nii@msyk.net>, OK
 
 - commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)

@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB\Extending;
 
-interface AfterRead
+interface AfterImport
 {
-    public function doAfterReadFromDB($result);
+    public function doAfterImportToDB($result);
 }
