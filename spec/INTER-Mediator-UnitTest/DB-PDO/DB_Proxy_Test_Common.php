@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\UseSharedObjects;
 use INTERMediator\DB\Extending\AfterRead;
 use INTERMediator\DB\Extending\AfterUpdate;
-use INTERMediator\DB\Extending\AfterCreate;
+use INTERMediator\DB\Extending\AfterImport;
 use INTERMediator\DB\Proxy_ExtSupport;
 
 abstract class DB_Proxy_Test_Common extends TestCase
@@ -213,7 +213,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
     }
 }
 
-class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, AfterCreate
+class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, AfterImport
 {
     use Proxy_ExtSupport;
 
@@ -259,7 +259,7 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
     }
 }
 
-class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdate, AfterCreate
+class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdate, AfterImport
 {
     use Proxy_ExtSupport;
 

@@ -187,6 +187,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     public string|null $pubkeyInfo = null;
 
+    public function getUserExpanded(): ?object
+    {
+        return $this->userExpanded;
+    }
+
     /** Constructor.
      * @param bool $testmode
      * @param bool $noCache
@@ -753,9 +758,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Ignore post.
      * @return void
      */
-    public function ignoringPost()
+    public function ignoringPost(bool $ignore = true): void
     {
-        $this->ignorePost = true;
+        $this->ignorePost = $ignore;
     }
 
     /** Ignore post.
