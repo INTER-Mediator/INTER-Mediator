@@ -251,8 +251,8 @@ $limitPwChangeSecond = 3600;
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
-/*
+$notUseServiceServer = false;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+
 $activateClientService = true; // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from a client.
 $serviceServerHost = "localhost";    // "" for public ip address.
@@ -266,7 +266,7 @@ $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The second value that detects the outdated registering records.
 $foreverLog = '/tmp/nodemon.log';
-*/
+
 /* Operation Log
  * ===================
  * the table named 'operationlog' is required.
