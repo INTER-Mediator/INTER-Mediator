@@ -648,6 +648,8 @@ class PDO extends DBClass
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $keyField = $tableInfo['key'] ?? 'id';
+        $keyValue = NULL;
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
@@ -688,6 +690,9 @@ class PDO extends DBClass
             $value = $fieldValues[$i];
             $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            if ($field === $keyField) {
+                $keyValue = $convertedValue;
+            }
             // Convert the time explanation from UTC to server setup timezone
             if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
                 $convertedValue = $this->getDateTimeExpression($convertedValue);
@@ -721,20 +726,25 @@ class PDO extends DBClass
             }
         }
 
-        $keyField = $tableInfo['key'] ?? 'id';
         $setClause = $this->handler->sqlSETClause($tableNameRow, $setColumnNames, $keyField, $setValues);
         if ($isReplace) {
             $sql = $this->handler->sqlREPLACECommand($tableName, $setClause);
+            $lastKeyValue = $keyValue;
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->exec($sql);
+            if (!$this->errorHandlingPDO($sql, $result)) {
+                return null;
+            }
         } else {
             $sql = $this->handler->sqlINSERTCommand($tableName, $setClause);
-        }
-        $this->logger->setDebugMessage($sql);
-        $result = $this->link->exec($sql);
-        if (!$this->errorHandlingPDO($sql, $result)) {
-            return null;
-        }
-        $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
-        $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->exec($sql);
+            if (!$this->errorHandlingPDO($sql, $result)) {
+                return null;
+            }
+            $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
+            $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
+         }
         if (/* $isReplace && */ !$lastKeyValue) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid it to set non-zero value.

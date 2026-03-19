@@ -18,6 +18,7 @@ namespace INTERMediator\Media;
 
 use DateTime;
 use Exception;
+use INTERMediator\DB\Support\StopOperationException;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
 use INTERMediator\Locale\IMLocaleFormatTable;
@@ -44,6 +45,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
      * @param array|null $dataSource Data source definition.
      * @param array|null $dbSpec Database specification.
      * @param int $debug Debug level.
+     * @param string|null $customFileName
      * @return void
      * @throws Exception If an error occurs during processing.
      */
@@ -234,7 +236,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception If an error occurs during CSV import.
      */
-    private function csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp)
+    private function csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp): void
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         [$import1stLine, $importSkipLines, $importFormat, $useReplace,
@@ -291,6 +293,22 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         $zeroCode = ord('0');
         $nineCode = ord('9');
 
+        $userExpanded = method_exists($db, 'getUserExpanded') ? $db->getUserExpanded() : null;
+        $expandedClassName = is_null($userExpanded) ? '' : get_class((object)$userExpanded);
+        if ($userExpanded && method_exists($userExpanded, 'doBeforeImportToDB')) {
+            $db->logger->setDebugMessage(
+                "[FileSystem::csvImportOperation] The method 'doBeforeImportToDB' of the class '{$expandedClassName}' is calling.", 2);
+            $returnBefore = $userExpanded->doBeforeImportToDB();
+            if ($returnBefore === false) {
+                throw new StopOperationException("[FileSystem::csvImportOperation] The method 'doBeforeImportToDB' reports an error.");
+            } else if (is_string($returnBefore)) {
+                if (strlen($returnBefore) === 0) {
+                    return;
+                }
+                throw new StopOperationException($returnBefore);
+            }
+        }
+
         $db->ignoringPost();
         $db->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
 
@@ -306,7 +324,10 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         if ($encoding) {
             $fileContent = mb_convert_encoding($fileContent, "UTF-8", $encoding);
         }
+        $lineNumber = 0;
+        $result = [];
         foreach (new LineDivider($fileContent) as $line) {
+            $lineNumber += 1;
             if ($importSkipLines > 0) {
                 $importSkipLines -= 1;
             } else {
@@ -317,6 +338,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                 } else {
                     $db->dbSettings->setValue([]);
                     $db->dbSettings->setFieldsRequired([]);
+                    $record = [];
                     foreach (new FieldDivider($line, $separator) as $index => $value) {
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
@@ -348,11 +370,13 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                                     $value = $dt->format('Y-m-d H:i:s');
                                 }
                                 $db->dbSettings->addValueWithField($field, $value);
+                                $record[$field] = $value;
                             }
                         }
                     }
                     $db->processingRequest($useReplace ? "replace" : "create", true, true);
                     //$createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
+                    $result[] = $db->getUpdatedRecord()[0];
                 }
                 $is1stLine = false;
             }
@@ -364,5 +388,15 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         }
         unlink(IMUtil::removeNull($fileInfoTemp));
         $db->outputOfProcessing['dbresult'] = $createdKeys;
+
+        if ($userExpanded && method_exists($userExpanded, 'doAfterImportToDB')) {
+            $db->logger->setDebugMessage(
+                "[FileSystem::csvImportOperation] The method 'doAfterImportToDB' of the class '{$expandedClassName}' is calling.", 2);
+            $db->clearUseSetDataToUpdatedRecord();
+            $result = $userExpanded->doAfterImportToDB($result);
+            if (!$db->getUseSetDataToUpdatedRecord()) {
+                $db->setUpdatedRecord($result);
+            }
+        }
     }
 }

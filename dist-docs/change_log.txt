@@ -39,6 +39,8 @@ Ver.15 (in Development)
 - The property IMLibAuthenticationUI.doAfterLoginPanel was retired. Its callback didn't work correctly.
 - The plug-in for jQueryFileUpload was updated. The property IMParts_Catalog.jquery_fileupload.submitAfterSelect can be
   true to eliminate clicking "send" button on file uploading.
+- The AfterImport and BeforeImport interfaces are defined, and the defined methods of the extending-class's class
+  is going to call just before and after the import process.
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 - [SECURITY ISSUES] The account manager of sample code can be accessed on same case. So the samples are moved to
