@@ -293,7 +293,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         $zeroCode = ord('0');
         $nineCode = ord('9');
 
-        $userExpanded = method_exists($db, 'getUserExpanded') ? $db->getUserExpanded() : null;
+        $userExpanded = $db->getUserExpanded();
         $expandedClassName = is_null($userExpanded) ? '' : get_class((object)$userExpanded);
         if ($userExpanded && method_exists($userExpanded, 'doBeforeImportToDB')) {
             $db->logger->setDebugMessage(

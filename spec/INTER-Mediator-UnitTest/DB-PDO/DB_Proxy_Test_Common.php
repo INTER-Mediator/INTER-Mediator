@@ -31,26 +31,26 @@ abstract class DB_Proxy_Test_Common extends TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    function test___construct()
-    {
-        $this->dbProxySetupForAuthAccess("person", 1);
-        if (function_exists('xdebug_get_headers') && false) {
-            ob_start();
-            $this->db_proxy->__construct();
-            $headers = xdebug_get_headers();
-            header_remove();
-            ob_end_flush();
-            ob_clean();
-
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
-            $this->assertContains('X-Content-Type-Options: nosniff', $headers);
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
-        } else {
-            $this->assertTrue(true, "Preventing Risky warning.");
-        }
-    }
+//    #[RunInSeparateProcess]
+//    #[PreserveGlobalState(false)]
+//    function test___construct()
+//    {
+//        $this->dbProxySetupForAuthAccess("person", 1);
+//        if (function_exists('xdebug_get_headers') && false) {
+//            ob_start();
+//            $this->db_proxy->__construct();
+//            $headers = xdebug_get_headers();
+//            header_remove();
+//            ob_end_flush();
+//            ob_clean();
+//
+//            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+//            $this->assertContains('X-Content-Type-Options: nosniff', $headers);
+//            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+//        } else {
+//            $this->assertTrue(true, "Preventing Risky warning.");
+//        }
+//    }
 
 
     function testAdvisorClassOnRead()
@@ -186,7 +186,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $testResult = $this->dbRead("testtable", null, null,
             $isPgsql ? $dataSrcPgsql : $dataSrcOthers);
 
-        $countTTBefore = $testResult ? count($testResult) : 0;
+        $countTTBefore = $testResult ? count($testResult) : null;
         $this->assertTrue($countTTBefore >= 0, "Exist test table.");
 
         $nameValue = random_int(10000000, 99999999);

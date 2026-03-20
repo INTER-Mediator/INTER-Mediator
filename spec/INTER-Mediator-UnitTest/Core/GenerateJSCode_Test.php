@@ -14,7 +14,7 @@ class GenerateJSCode_Test extends TestCase
 
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-   protected function setUp(): void
+    protected function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
@@ -69,39 +69,42 @@ class GenerateJSCode_Test extends TestCase
         $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    function test___construct()
-    {
-        if (function_exists('xdebug_get_headers') && false) {
-            ob_start();
-            $this->generater->__construct();
-            $headers = xdebug_get_headers();
-            header_remove();
-            ob_end_flush();
-            ob_clean();
-
-            $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', implode("\n", $headers));
-            $this->assertStringContainsString('X-XSS-Protection: 1; mode=block', implode("\n", $headers));
-            $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', implode("\n", $headers));
-        } else {
-            $this->assertTrue(true, "Preventing Risky warning.");
-        }
-    }
-
+//    #[RunInSeparateProcess]
+//    #[PreserveGlobalState(false)]
+//    function test___construct()
+//    {
+//        if (function_exists('xdebug_get_headers') && false) {
+//            ob_start();
+//            $this->generater->__construct();
+//            $headers = xdebug_get_headers();
+//            header_remove();
+//            ob_end_flush();
+//            ob_clean();
+//
+//            $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', implode("\n", $headers));
+//            $this->assertStringContainsString('X-XSS-Protection: 1; mode=block', implode("\n", $headers));
+//            $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', implode("\n", $headers));
+//        } else {
+//            $this->assertTrue(true, "Preventing Risky warning.");
+//        }
+//    }
+//
+    /**
+     * @throws ReflectionException
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function test_combineScripts()
     {
         if (((float)phpversion()) >= 5.3) {
             $reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
-            $reflectionMethod->setAccessible(true);
+//            $reflectionMethod->setAccessible(true);
             $currentDir = dirname(__FILE__, 4) . DIRECTORY_SEPARATOR .
                 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
             $content = $reflectionMethod->invokeArgs($this->generater, array($currentDir));
             $jsLibDir = dirname($currentDir, 2) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
-            $method->setAccessible(true);
+//            $method->setAccessible(true);
             $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/dist/sha.js'));
             $this->assertStringContainsString($partOfCode, $content);
         }

@@ -49,7 +49,7 @@ class RESTAPI
 
     /** @var string|null The path to the definition file.
      */
-    private string|null $pathToDefFile;
+    private string $pathToDefFile;
 
     /** RESTAPI constructor.
      * @param string $path The path to the definition file.

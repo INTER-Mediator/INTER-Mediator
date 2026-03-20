@@ -113,9 +113,7 @@ trait Proxy_Auth
         $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
 
-        if (isset($this->PostData['pubkeyInfo'])) {
-            $this->pubkeyInfo = $this->PostData['pubkeyInfo'] ?? null;
-        }
+        $this->pubkeyInfo = $this->PostData['pubkeyInfo'] ?? null;
     }
 
     /** Calling from Proxy::processing method to cheking the auth infos.

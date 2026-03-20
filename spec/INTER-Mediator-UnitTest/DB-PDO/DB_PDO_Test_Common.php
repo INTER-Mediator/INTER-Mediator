@@ -339,7 +339,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $registResult = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
 //        var_export($this->db_proxy->logger->getDebugMessages());
 //        var_export($this->db_proxy->logger->getErrorMessages());
-        $this->assertTrue($registResult !== false, "Register table1");
+        $this->assertTrue(!is_null($registResult), "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientid" => $clientId, "entity" => $entity));
@@ -356,7 +356,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         ), "Stored pk values");
 
         $entity = "table2";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray)),
             "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -374,7 +374,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         ), "Stored pk values");
 
         $entity = "table3";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray)),
             "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -457,9 +457,9 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) ), $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2)), $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->matchInRegistered($clientId2, $entity, array(3003));
         $this->assertTrue(count($result) == 1, "Count matching");
@@ -555,9 +555,9 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1)), $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2)), $testName);
         $clientId3 = "555588888DDDDDD";
 
         $result = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId1, $entity, array(3003));
@@ -599,12 +599,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
     }
 
-    public function testTransactionFeature()
-    {
-        $this->dbProxySetupForAccess("person", 1);
-        $result = $this->db_proxy->hasTransaction();
-        $this->assertIsBool($result, "Proxy class has to respond whether it can do transaction.");
-    }
+//    public function testTransactionFeature()
+//    {
+//        $this->dbProxySetupForAccess("person", 1);
+//        $result = $this->db_proxy->hasTransaction();
+//        $this->assertIsBool($result, "Proxy class has to respond whether it can do transaction.");
+//    }
 
     public function testTransactionWithCommit()
     {

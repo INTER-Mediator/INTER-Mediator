@@ -507,6 +507,7 @@ class FileMaker_DataAPI extends DBClass
                     $useOrOperation = true;
                 } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
                     // just ignore it
+                    $dummy = 1;
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {

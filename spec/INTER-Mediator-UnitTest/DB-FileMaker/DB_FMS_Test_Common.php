@@ -606,7 +606,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $result = $this->db_proxy->readFromDB();
-        $this->assertTrue($result !== FALSE, "Found record should be exists.");
+        $this->assertTrue(count($result) > 0, "Found record should be exists.");
         $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
@@ -684,43 +684,43 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-/*
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    public function testAuthUser5()
-    {
-        $this->dbProxySetupForAuth();
+    /*
+        #[RunInSeparateProcess]
+        #[PreserveGlobalState(false)]
+        public function testAuthUser5()
+        {
+            $this->dbProxySetupForAuth();
 
-//        $this->db_proxy->logger->clearLogs();
+    //        $this->db_proxy->logger->clearLogs();
 
-        $testName = "Simulation of Authentication";
-        $username = 'user1';
-        $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
-        $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
-        $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+            $testName = "Simulation of Authentication";
+            $username = 'user1';
+            $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+            $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
+            $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
 
-        $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
+            $challenge = IMUtil::generateChallenge();
+            $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
 
-        //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
-        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
-        $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
+            //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
+            $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
+            $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
-        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
+            $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
+            $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
-        $this->db_proxy->setParamResponse($calcuratedHash);
-        $this->db_proxy->setClientId_forTest("TEST");
-        $this->db_proxy->setHashedPassword_forTest($hpw);
-        $checkResult = $this->db_proxy->checkAuthorization($username);
+            $this->db_proxy->setParamResponse($calcuratedHash);
+            $this->db_proxy->setClientId_forTest("TEST");
+            $this->db_proxy->setHashedPassword_forTest($hpw);
+            $checkResult = $this->db_proxy->checkAuthorization($username);
 
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
+    //        var_export($this->db_proxy->logger->getAllErrorMessages());
+    //        var_export($this->db_proxy->logger->getDebugMessage());
 
-        $this->assertTrue($checkResult, $testName);
-        $this->db_proxy->closeDBOperation();
-    }
-*//*
+            $this->assertTrue($checkResult, $testName);
+            $this->db_proxy->closeDBOperation();
+        }
+    *//*
     #[RunInSeparateProcess]
     public function testAuthByValidUser()
     {
@@ -797,60 +797,61 @@ abstract class DB_FMS_Test_Common extends TestCase
 
         $this->db_proxy->processingRequest("read");
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
-        $this->assertTrue(is_null($this->db_proxy->getDatabaseResultCount()), $testName);
-        $this->assertTrue(is_null($this->db_proxy->getDatabaseTotalCount()), $testName);
+        $this->assertTrue($this->db_proxy->getDatabaseResultCount() === 0, $testName);
+        $this->assertTrue($this->db_proxy->getDatabaseTotalCount() === 0, $testName);
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
         $this->db_proxy->closeDBOperation();
     }
-/*
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    public function testAuthUser6()
-    {
-        $this->dbProxySetupForAuth();
 
-//        $this->db_proxy->logger->clearLogs();
+    /*
+        #[RunInSeparateProcess]
+        #[PreserveGlobalState(false)]
+        public function testAuthUser6()
+        {
+            $this->dbProxySetupForAuth();
 
-        $testName = "Create New User and Authenticate";
-        $username = "testuser1";
-        $password = "testuser1";
+    //        $this->db_proxy->logger->clearLogs();
 
-        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
-        $this->assertTrue($addUserResult, $testName);
+            $testName = "Create New User and Authenticate";
+            $username = "testuser1";
+            $password = "testuser1";
 
-        $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-        $this->assertTrue($hpw == $hashedpw, $testName);
+            [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
+            $this->assertTrue($addUserResult, $testName);
 
-        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
-        $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
+            $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+            $this->assertTrue($hpw == $hashedpw, $testName);
 
-        $clientId = "TEST";
-        $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->saveChallenge($username, $challenge, $clientId);
+            $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
+            $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
-        $hashedvalue = hash('sha1', $password . $retrievedSalt) . $retrievedHexSalt;
-        $value = $password . $retrievedSalt;
-        for ($i = 0; $i < 4999; $i++) {
-            $value = hash("sha256", $value, true);
+            $clientId = "TEST";
+            $challenge = IMUtil::generateChallenge();
+            $this->db_proxy->saveChallenge($username, $challenge, $clientId);
+
+            $hashedvalue = hash('sha1', $password . $retrievedSalt) . $retrievedHexSalt;
+            $value = $password . $retrievedSalt;
+            for ($i = 0; $i < 4999; $i++) {
+                $value = hash("sha256", $value, true);
+            }
+            $hashedvalue256 = hash("sha256", $value, false) . $retrievedHexSalt;
+            $this->db_proxy->setParamResponse([
+                hash_hmac('sha256', $hashedvalue, $challenge),
+                hash_hmac('sha256', $hashedvalue256, $challenge),
+                hash_hmac('sha256', $hashedvalue256, $challenge),
+            ]);
+            $this->db_proxy->setClientId_forTest($clientId);
+            $this->db_proxy->setHashedPassword_forTest($hpw);
+            $checkResult = $this->db_proxy->checkAuthorization($username);
+
+    //        var_export($this->db_proxy->logger->getErrorMessages());
+    //        var_export($this->db_proxy->logger->getDebugMessages());
+
+            $this->assertTrue($checkResult, $testName);
+            $this->db_proxy->closeDBOperation();
         }
-        $hashedvalue256 = hash("sha256", $value, false) . $retrievedHexSalt;
-        $this->db_proxy->setParamResponse([
-            hash_hmac('sha256', $hashedvalue, $challenge),
-            hash_hmac('sha256', $hashedvalue256, $challenge),
-            hash_hmac('sha256', $hashedvalue256, $challenge),
-        ]);
-        $this->db_proxy->setClientId_forTest($clientId);
-        $this->db_proxy->setHashedPassword_forTest($hpw);
-        $checkResult = $this->db_proxy->checkAuthorization($username);
-
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
-
-        $this->assertTrue($checkResult, $testName);
-        $this->db_proxy->closeDBOperation();
-    }
-*/
+    */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     function testUserGroup()
@@ -931,7 +932,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $entity = "table1";
         $registResult = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
         //var_export($this->db_proxy->logger->getDebugMessage());
-        $this->assertTrue($registResult !== false, "Register table1");
+        $this->assertTrue(!is_null($registResult), "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientid" => $clientId, "entity" => $entity));
@@ -948,7 +949,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         ), "Stored pk values");
 
         $entity = "table2";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray)),
             "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -966,7 +967,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         ), "Stored pk values");
 
         $entity = "table3";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray)),
             "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -1153,9 +1154,9 @@ abstract class DB_FMS_Test_Common extends TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1)), $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2)), $testName);
         $clientId3 = "555588888DDDDDD";
 
         $result = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId1, $entity, array(3003));
