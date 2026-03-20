@@ -47,7 +47,7 @@ class RESTAPI
      */
     private string|null $targetKeyValue = null;
 
-    /** @var string|null The path to the definition file.
+    /** @var string The path to the definition file.
      */
     private string $pathToDefFile;
 
