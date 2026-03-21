@@ -318,7 +318,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
-      await browser.pause(10000) // Wait for timeout
+      await browser.pause(20000) // Wait for timeout
 
       await browser.refresh()
       await browser.pause(waiting)
