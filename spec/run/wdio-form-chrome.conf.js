@@ -33,6 +33,9 @@ exports.config = {
     './test/specs/media_mysql.e2e.js',
     './test/specs/media_postgresql.e2e.js',
     './test/specs/media_sqlite.e2e.js',
+    './test/specs/media2_mysql.e2e.js',
+    './test/specs/media2_postgresql.e2e.js',
+    './test/specs/media2_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -67,9 +70,9 @@ exports.config = {
     //
     browserName: 'chrome',
     acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
-    }
+    // 'goog:chromeOptions': {
+    //   args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
+    // }
   }
     // If outputDir is provided, WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.

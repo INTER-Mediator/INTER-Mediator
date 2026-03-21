@@ -33,6 +33,9 @@ exports.config = {
     './test/specs/media_mysql.e2e.js',
     './test/specs/media_postgresql.e2e.js',
     './test/specs/media_sqlite.e2e.js',
+    './test/specs/media2_mysql.e2e.js',
+    './test/specs/media2_postgresql.e2e.js',
+    './test/specs/media2_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
