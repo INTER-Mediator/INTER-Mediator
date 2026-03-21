@@ -127,6 +127,7 @@ module.exports = (FormPage) => {
       await FormPage.contactTableInsertButton.waitForClickable()
       await expect(FormPage.contactTableInsertButton).toExist()
       await FormPage.contactTableInsertButton.click()
+      await browser.waitUntil(async () => await browser.isAlertOpen())
       await browser.acceptAlert()
       await browser.pause(waiting * 2)
       const rows = await FormPage.rowContact
@@ -150,6 +151,7 @@ module.exports = (FormPage) => {
       browser.refresh()
       await FormPage.rowContactDeleteButton[1].waitForClickable()
       await FormPage.rowContactDeleteButton[1].click()
+      await browser.waitUntil(async () => await browser.isAlertOpen())
       await browser.acceptAlert()
       await browser.pause(waiting * 4)
 

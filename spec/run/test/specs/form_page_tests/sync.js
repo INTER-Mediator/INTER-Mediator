@@ -120,6 +120,7 @@ module.exports = (FormPage, windowList) => {
 
       await FormPage.rowContactDeleteButton[0].waitForClickable()
       await FormPage.rowContactDeleteButton[0].click()
+      await browser.waitUntil(async () => await browser.isAlertOpen())
       await browser.acceptAlert()
       await expect(FormPage.rowContact).toBeElementsArrayOfSize(lineCount - 1)
       await FormPage.setTitle(windowList[1])
