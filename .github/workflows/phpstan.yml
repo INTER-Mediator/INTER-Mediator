@@ -30,7 +30,7 @@ jobs:
         run: ./vendor/bin/phpstan analyse  -c ./spec/phpstan.neon --memory-limit 1024M --level "${{ matrix.level }}"
 
       - name: Run PHPStan
-        if: matrix.level > matrix.current-level && github.event_name != 'pull_request'
+        if: matrix.level > matrix.current-level # && github.event_name != 'pull_request'
         continue-on-error: true
         run: |
           ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M --level "${{ matrix.level }}"
