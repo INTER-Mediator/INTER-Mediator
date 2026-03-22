@@ -3,7 +3,7 @@ module.exports = (mdPage) => {
 
   describe('Master-Detail Page', () => {
     it('1-can show the Master area, and disappear the Detail area.', async () => {
-      browser.refresh() // For stability
+      await browser.refresh() // For stability
       await mdPage.navigatorUpdateButton.waitForClickable() // For stability
       browser.pause(waiting) // For stability
       await expect(mdPage.navigator).toExist()

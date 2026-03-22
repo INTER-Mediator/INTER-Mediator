@@ -74,7 +74,7 @@ module.exports = (FormPage) => {
       await FormPage.navigatorMoveButtonFirst.waitForClickable()
       await FormPage.navigatorMoveButtonFirst.click() // Move to first record
       await browser.pause(waiting)
-      browser.refresh()
+      await browser.refresh()
       await FormPage.navigatorUpdateButton.waitForClickable();
       // await FormPage.navigatorUpdateButton.click();
       await browser.pause(waiting * 4)
@@ -122,13 +122,13 @@ module.exports = (FormPage) => {
     it('5-can insert a row into detail area.', async () => {
       await FormPage.navigatorUpdateButton.waitForClickable();
       // await FormPage.navigatorUpdateButton.click();
-      browser.refresh()
+      await browser.refresh()
       await browser.pause(waiting)
       await FormPage.contactTableInsertButton.waitForClickable()
       await expect(FormPage.contactTableInsertButton).toExist()
       await FormPage.contactTableInsertButton.click()
-      await browser.waitUntil(async () => await browser.isAlertOpen())
-      await browser.acceptAlert()
+      // await browser.waitUntil(async () => await browser.isAlertOpen())
+      // await browser.acceptAlert()
       await browser.pause(waiting * 2)
       const rows = await FormPage.rowContact
       await rows[0].waitForExist()
@@ -148,11 +148,11 @@ module.exports = (FormPage) => {
       // await FormPage.navigatorUpdateButton.waitForClickable()
       // await FormPage.navigatorUpdateButton.click();
       // await browser.pause(waiting)
-      browser.refresh()
+      await browser.refresh()
       await FormPage.rowContactDeleteButton[1].waitForClickable()
       await FormPage.rowContactDeleteButton[1].click()
-      await browser.waitUntil(async () => await browser.isAlertOpen())
-      await browser.acceptAlert()
+      // await browser.waitUntil(async () => await browser.isAlertOpen())
+      // await browser.acceptAlert()
       await browser.pause(waiting * 4)
 
       const rows = await FormPage.rowContact
@@ -170,7 +170,7 @@ module.exports = (FormPage) => {
       await FormPage.navigatorUpdateButton.waitForClickable();
       // await FormPage.navigatorUpdateButton.click();
       // await browser.pause(waiting)
-      browser.refresh()
+      await browser.refresh()
       const value = await FormPage.rowContactSummary[1].getValue()
       await expect(FormPage.contactTableInsertButton).toExist()
       await FormPage.rowContactCopyButton[1].waitForClickable()
