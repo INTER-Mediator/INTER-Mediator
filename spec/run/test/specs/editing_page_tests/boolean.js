@@ -23,13 +23,11 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "" : "0") // Checking initial value
       const value = 1
       await EditingPage.fieldBool1Textfield.setValue(value) // Set a value to the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "true" : "1")
       await EditingPage.fieldBool1Textfield.setValue("") // Clear the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "" : "0")
     })
@@ -48,13 +46,11 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldBool2Textfield).toHaveValue("") // Checking initial value
       const value = 1
       await EditingPage.fieldBool2Textfield.setValue(value) // Set a value to the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL ? "true" : "1")
       await EditingPage.fieldBool2Textfield.setValue("") // Clear the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
     })
@@ -76,16 +72,14 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldBool1Checkbox.waitForClickable() // For stability
       await EditingPage.fieldBool1Checkbox.click() // ON
       // await browser.pause(waiting)
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await EditingPage.fieldBool1Checkbox.waitForClickable() // For stability
       await expect(EditingPage.fieldBool1Checkbox).toBeSelected()
       await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "true" : "1")
       await EditingPage.fieldBool1Checkbox.waitForClickable() // OFF
       await EditingPage.fieldBool1Checkbox.click() // OFF
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "" : "0")
@@ -107,15 +101,13 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldBool2Checkbox).not.toBeSelected() // Checking initial value
       await EditingPage.fieldBool2Checkbox.waitForClickable() // ON
       await EditingPage.fieldBool2Checkbox.click() // ON
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Checkbox).toBeSelected()
       await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL ? "true" : "1")
       await EditingPage.fieldBool2Checkbox.waitForClickable() // OFF
       await EditingPage.fieldBool2Checkbox.click() // OFF
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
@@ -136,8 +128,7 @@ module.exports = (EditingPage) => {
      */
     it('5-can edit the radio buttons of boolean field which is NOT NULL.', async () => {
       await EditingPage.fieldBool1Textfield.setValue("") // Clear the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Radio[0]).toExist()
       await expect(EditingPage.fieldBool1Radio[1]).toExist()
@@ -145,16 +136,14 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldBool1Radio[1]).not.toBeSelected() // Checking initial value
       await EditingPage.fieldBool1Radio[0].waitForClickable() // First button
       await EditingPage.fieldBool1Radio[0].click() // First button
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldBool1Radio[1]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "" : "0")
       await EditingPage.fieldBool1Radio[1].waitForClickable() // Second button
       await EditingPage.fieldBool1Radio[1].click() // Second button
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Radio[0]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldBool1Radio[1]).toBeSelected() // Checking initial value
@@ -176,8 +165,7 @@ module.exports = (EditingPage) => {
      */
     it('6-can edit the radio buttons of nullable boolean field.', async () => {
       await EditingPage.fieldBool2Textfield.setValue("") // Clear the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Radio[0]).toExist()
       await expect(EditingPage.fieldBool2Radio[1]).toExist()
@@ -185,8 +173,7 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
       await EditingPage.fieldBool2Radio[0].waitForClickable() // First button
       await EditingPage.fieldBool2Radio[0].click() // First button
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await EditingPage.fieldBool2Radio[0].waitForClickable() // For stability
       await expect(EditingPage.fieldBool2Radio[0]).toBeSelected()
@@ -194,8 +181,7 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
       await EditingPage.fieldBool2Radio[1].waitForClickable() // Second button
       await EditingPage.fieldBool2Radio[1].click() // Second button
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Radio[0]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldBool2Radio[1]).toBeSelected() // Checking initial value

@@ -187,7 +187,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
             $isPgsql ? $dataSrcPgsql : $dataSrcOthers);
 
         $countTTBefore = $testResult ? count($testResult) : null;
-        $this->assertTrue($countTTBefore >= 0, "Exist test table.");
+        $this->assertNotNull($countTTBefore, "Exist test table.");
 
         $nameValue = random_int(10000000, 99999999);
         $addressValue = random_int(10000000, 99999999);

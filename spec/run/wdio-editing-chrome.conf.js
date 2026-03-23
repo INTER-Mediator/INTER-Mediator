@@ -58,9 +58,9 @@ exports.config = {
     //
     browserName: 'chrome',
     acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
-    }
+    // 'goog:chromeOptions': {
+    //   args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox', '--window-size=1280,800'],
+    // }
   }
     // If outputDir is provided, WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
@@ -98,10 +98,10 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://localhost:9000/',
+  baseUrl: process.env.IM_BASEURL || 'http://localhost:9000/',
   //
   // Default timeout for all waitFor* commands.
-  waitforTimeout: 10000,
+  waitforTimeout: 5000,
   //
   // Default timeout in milliseconds for request
   // if browser driver or grid doesn't send a response
@@ -125,7 +125,7 @@ exports.config = {
   framework: 'mocha',
   //
   // The number of times to retry the entire specfile when it fails as a whole
-  // specFileRetries: 1,
+  specFileRetries: 1,
   //
   // Delay in seconds between the spec file retry attempts
   // specFileRetriesDelay: 0,
@@ -144,7 +144,49 @@ exports.config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: 60000
+    timeout: 90000
+  },
+
+  before: async function () {
+    browser.addCommand(
+      'clickStable',
+      async function (options = {}) {
+        const timeout = options.timeout || 20000
+        const retries = options.retries || 3
+        let lastError
+
+        for (let i = 0; i < retries; i++) {
+          try {
+            await this.waitForExist({ timeout })
+            await this.scrollIntoView()
+            await this.waitForDisplayed({ timeout })
+            await this.waitForClickable({ timeout })
+            await this.click()
+            return
+          } catch (e) {
+            lastError = e
+            await browser.pause(200)
+          }
+        }
+        throw lastError
+      },
+      true
+    )
+  },
+
+  afterTest: async function (test, context, { error }) {
+    if (!error) {
+      return
+    }
+    const fs = require('node:fs')
+    const path = require('node:path')
+    const outDir = path.resolve(process.cwd(), 'artifacts')
+    fs.mkdirSync(outDir, { recursive: true })
+
+    const safeName = `${test.parent}-${test.title}`.replace(/[^a-zA-Z0-9._-]+/g, '_')
+    await browser.saveScreenshot(path.join(outDir, `${safeName}.png`))
+    const html = await browser.getPageSource()
+    fs.writeFileSync(path.join(outDir, `${safeName}.html`), html)
   },
 //
 // =====

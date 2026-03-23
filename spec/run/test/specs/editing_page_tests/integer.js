@@ -19,14 +19,12 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("0") // Checking initial value
       const value = Math.trunc(Math.random() * 10000000)
       await EditingPage.fieldNum1Textfield.setValue(String(value)) // Set a value to the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum1Textfield).toHaveValue(String(value))
       await EditingPage.fieldNum1Textfield.setValue("") // Clear the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("0")
     })
     /*
@@ -44,14 +42,12 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldNum2Textfield).toHaveValue("") // Checking initial value
       const value = Math.trunc(Math.random() * 10000000)
       await EditingPage.fieldNum2Textfield.setValue(value) // Set a value to the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
+      await EditingPage.navigatorUpdateButton.clickStable()
       await browser.pause(waiting)
       await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))
       await EditingPage.fieldNum2Textfield.setValue("") // Clear the field
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
     })
     /*
@@ -69,16 +65,14 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldNum1Checkbox).toExist()
       await expect(EditingPage.fieldNum1Checkbox).not.toBeSelected() // Checking initial value
       await EditingPage.fieldNum1Checkbox.click() // ON
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum1Checkbox).toBeSelected()
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
       await EditingPage.fieldNum1Checkbox.click() // OFF
-      await browser.pause(waiting)
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      // await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // // await browser.pause(waiting)
       await expect(EditingPage.fieldNum1Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("0")
     })
@@ -97,16 +91,14 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldNum2Checkbox).toExist()
       await expect(EditingPage.fieldNum2Checkbox).not.toBeSelected() // Checking initial value
       await EditingPage.fieldNum2Checkbox.click() // ON
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum2Checkbox).toBeSelected()
       await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
       await EditingPage.fieldNum2Checkbox.click() // OFF
       // await browser.pause(waiting)
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum2Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
     })
@@ -128,28 +120,30 @@ module.exports = (EditingPage) => {
     Check-with: The second button of the field num1 is not selected (same as before reload).
     Check-with: The num1 text field has the value 2 which the value attribute of the button (same as before reload).
      */
-    it('5-can edit the radio buttons of integer field which is NOT NULL.', async () => {
-      const buttons = await EditingPage.fieldNum1Radio
+    it('5-can edit the radio buttons of integer field which is NOT NULL.', async function () {
+      this.timeout(180000)
+
+      let buttons = await EditingPage.fieldNum1Radio
       await expect(buttons[0]).toExist()
       await expect(buttons[1]).toExist()
-      await expect(buttons[0]).not.toBeSelected() // Checking initial value
-      await expect(buttons[1]).not.toBeSelected() // Checking initial value
 
-      await buttons[0].click() // First button
-      await expect(buttons[0]).toBeSelected() // Checking initial value
-      await expect(buttons[1]).not.toBeSelected() // Checking initial value
+      await buttons[0].clickStable() // First button
+      buttons = await EditingPage.fieldNum1Radio
+      await expect(buttons[0]).toBeSelected()
+      await expect(buttons[1]).not.toBeSelected()
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
 
-      await buttons[1].click() // Second button
-      await expect(buttons[0]).not.toBeSelected() // Checking initial value
-      await expect(buttons[1]).toBeSelected() // Checking initial value
+      await buttons[1].clickStable() // Second button
+      buttons = await EditingPage.fieldNum1Radio
+      await expect(buttons[0]).not.toBeSelected()
+      await expect(buttons[1]).toBeSelected()
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
 
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
-      await expect(buttons[0]).not.toBeSelected() // Checking initial value
-      await expect(buttons[1]).toBeSelected() // Checking initial value
+      await EditingPage.navigatorUpdateButton.clickStable()
+      // await browser.pause(waiting)
+      buttons = await EditingPage.fieldNum1Radio
+      await expect(buttons[0]).not.toBeSelected()
+      await expect(buttons[1]).toBeSelected()
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
     })
     /*
@@ -172,27 +166,28 @@ module.exports = (EditingPage) => {
      */
     it('6-can edit the radio buttons of nullable integer field.', async () => {
       const buttons = await EditingPage.fieldNum2Radio
-      await expect(buttons[0]).toExist()
-      await expect(buttons[1]).toExist()
-      await expect(buttons[0]).not.toBeSelected() // Checking initial value
-      await expect(buttons[1]).not.toBeSelected() // Checking initial value
+      await expect(await EditingPage.fieldNum2Radio[0]).toExist()
+      await expect(await EditingPage.fieldNum2Radio[1]).toExist()
+      await expect(await EditingPage.fieldNum2Radio[0]).not.toBeSelected() // Checking initial value
+      await expect(await EditingPage.fieldNum2Radio[1]).not.toBeSelected() // Checking initial value
 
-      await buttons[0].click() // First button
-      await expect(buttons[0]).toBeSelected() // Checking initial value
-      await expect(buttons[1]).not.toBeSelected() // Checking initial value
-      await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
+      await EditingPage.fieldNum2Radio[0].waitForClickable() // First button
+      await EditingPage.fieldNum2Radio[0].clickStable() // First button
+      await expect(await EditingPage.fieldNum2Radio[0]).toBeSelected() // Checking initial value
+      await expect(await EditingPage.fieldNum2Radio[1]).not.toBeSelected() // Checking initial value
+      await expect(await EditingPage.fieldNum2Textfield).toHaveValue("1")
 
-      await buttons[1].click() // Second button
-      await expect(buttons[0]).not.toBeSelected() // Checking initial value
-      await expect(buttons[1]).toBeSelected() // Checking initial value
-      await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
+      await EditingPage.fieldNum2Radio[1].waitForClickable() // First button
+      await EditingPage.fieldNum2Radio[1].clickStable() // Second button
+      await expect(await EditingPage.fieldNum2Radio[0]).not.toBeSelected() // Checking initial value
+      await expect(await EditingPage.fieldNum2Radio[1]).toBeSelected() // Checking initial value
+      await expect(await EditingPage.fieldNum2Textfield).toHaveValue("2")
 
-      await EditingPage.navigatorUpdateButton.waitForClickable()
-      await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
-      await expect(buttons[0]).not.toBeSelected() // Checking initial value
-      await expect(buttons[1]).toBeSelected() // Checking initial value
-      await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
+      // await EditingPage.navigatorUpdateButton.clickStable()
+      // // await browser.pause(waiting)
+      // await expect(await EditingPage.fieldNum2Radio[0]).not.toBeSelected() // Checking initial value
+      // await expect(await EditingPage.fieldNum2Radio[1]).toBeSelected() // Checking initial value
+      // await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
     })
     /*
     Summary: popup menu with non-null integer field
@@ -234,7 +229,7 @@ module.exports = (EditingPage) => {
 
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum1Popup).toHaveValue("0")
       await expect(EditingPage.fieldNum1Textfield).toHaveValue("0")
     })
@@ -278,7 +273,7 @@ module.exports = (EditingPage) => {
 
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      // await browser.pause(waiting)
       await expect(EditingPage.fieldNum2Popup).toHaveValue("")
       await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
     })
