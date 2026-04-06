@@ -54,7 +54,7 @@
     "express": "*",
     "nodemon": ">=3.0.2",
     "inter-mediator-expressionparser": "1.2.2",
-    "inter-mediator-formatter": "1.0.19",
+    "inter-mediator-formatter": "1.1.0",
     "inter-mediator-locale": "1.0.4",
     "inter-mediator-nodegraph": "1.0.6",
     "inter-mediator-plugin-codemirror": "1.1.0",

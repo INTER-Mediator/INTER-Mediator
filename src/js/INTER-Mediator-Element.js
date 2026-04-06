@@ -36,7 +36,8 @@ const IMLibElement = {
     datetime: IMLibFormat.datetimeFormat,
     datetimelocal: IMLibFormat.dateTimeLocalFormat,
     time: IMLibFormat.timeFormat,
-    timelocal: IMLibFormat.timeFormatLocal
+    timelocal: IMLibFormat.timeFormatLocal,
+    markdown: IMLibFormat.markdownFormat
   },
 
   unformatters: {
@@ -48,7 +49,8 @@ const IMLibElement = {
     datetime: IMLibFormat.convertDateTime,
     datetimelocal: IMLibFormat.convertDateTimeLocal,
     time: IMLibFormat.convertTime,
-    timelocal: IMLibFormat.convertTimeLocal
+    timelocal: IMLibFormat.convertTimeLocal,
+    markdown: IMLibFormat.convertMarkdown
   },
 
   formatOptions: {
