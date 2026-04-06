@@ -41,6 +41,7 @@ Ver.15 (in Development)
   true to eliminate clicking "send" button on file uploading.
 - The AfterImport and BeforeImport interfaces are defined, and the defined methods of the extending-class's class
   is going to call just before and after the import process.
+- The formatter with the data-im-format attribute supports the new format "markdown".
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 - [SECURITY ISSUES] The account manager of sample code can be accessed on same case. So the samples are moved to
