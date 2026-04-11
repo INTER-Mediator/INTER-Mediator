@@ -316,7 +316,7 @@ trait Proxy_Auth
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         if ($uid) {
             $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-            if (strlen($storedChallenge) === 48 && $storedChallenge === $token) { // ex.fc0d54312ce33c2fac19d758
+            if (strlen($storedChallenge) === 48 && hash_equals($storedChallenge, $token)) { // ex.fc0d54312ce33c2fac19d758
                 $returnValue = true;
             }
         }

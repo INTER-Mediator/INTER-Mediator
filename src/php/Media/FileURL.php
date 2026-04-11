@@ -31,6 +31,7 @@ use INTERMediator\Params;
 class FileURL extends UploadingSupport implements DownloadingSupport
 {
     private ?string $customFileName = null;
+
     /** Handles file upload processing, including CSV import if specified.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
@@ -44,8 +45,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param array|null $dataSource Data source definition.
      * @param array|null $dbSpec Database specification.
      * @param int $debug Debug level.
-     * @throws Exception If an error occurs during processing.
      * @return void
+     * @throws Exception If an error occurs during processing.
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, ?string $keyField, ?string $keyValue,
@@ -171,11 +172,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
             . $this->justifyPathComponent($keyField, $uploadFilePathMode) . "="
             . $this->justifyPathComponent($keyValue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
             . $this->justifyPathComponent($targetFieldName, $uploadFilePathMode);
-        try {
-            $rand4Digits = random_int(1000, 9999);
-        } catch (Exception $ex) {
-            $rand4Digits = rand(1000, 9999);
-        }
+        $rand4Digits = random_int(1000, 9999);
         $filePartialPath = $dirPath . '/'
             . (!is_null($this->customFileName)
                 ? ($this->customFileName . ($counter > 1 ? "_" . $counter : ""))

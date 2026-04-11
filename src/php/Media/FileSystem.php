@@ -173,11 +173,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
             . $this->justifyPathComponent($keyField, $uploadFilePathMode) . "="
             . $this->justifyPathComponent($keyValue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
             . $this->justifyPathComponent($targetFieldName, $uploadFilePathMode);
-        try {
-            $rand4Digits = random_int(1000, 9999);
-        } catch (Exception $ex) {
-            $rand4Digits = rand(1000, 9999);
-        }
+        $rand4Digits = random_int(1000, 9999);
         $filePartialPath = $dirPath . '/'
             . (!is_null($this->customFileName)
                 ? ($this->customFileName . ($counter > 1 ? "_" . $counter : ""))

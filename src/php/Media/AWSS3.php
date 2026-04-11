@@ -157,11 +157,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
             $targetFieldName = $field[$counter];
             $dirPath = $contextName . DIRECTORY_SEPARATOR
                 . $keyField . "=" . $keyValue . DIRECTORY_SEPARATOR . $targetFieldName;
-            try {
-                $rand4Digits = random_int(1000, 9999);
-            } catch (Exception $ex) {
-                $rand4Digits = rand(1000, 9999);
-            }
+            $rand4Digits = random_int(1000, 9999);
             $objectKey = $dirPath . '/'
                 . (!is_null($this->customFileName)
                     ? ($this->customFileName . ($counter > 1 ? "_" . $counter : ""))

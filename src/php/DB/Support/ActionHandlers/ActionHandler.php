@@ -127,7 +127,7 @@ abstract class ActionHandler
                     $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
                 case'email':  // Send mail containing 2FA code.
                     $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
-                     break;
+                    break;
                 case 'authenticator':
                 default:
                     $proxy->code2FA = $proxy->PostData['code2FA'] ?? "";
@@ -169,7 +169,7 @@ abstract class ActionHandler
                     $this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
                 Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] credential={$proxy->credential} "
                     . "storedChallenge={$this->storedChallenge} clientId={$proxy->clientId} hashedPassword={$proxy->hashedPassword}", 2);
-                if ($proxy->credential === $referingCredential) {
+                if (hash_equals($proxy->credential, $referingCredential)) {
                     if ($proxy->required2FA) {
                         $userName = $proxy->dbSettings->getCurrentUser();
                         [, , $email, , $secret] = $proxy->dbClass->authHandler->getLoginUserInfo($userName);
@@ -256,7 +256,7 @@ abstract class ActionHandler
         Logger::getInstance()->setDebugMessage(
             "[sessionStorageCheckAuth] hashedPassword={$proxy->hashedPassword}/hmac_value={$hmacValue}", 2);
         if (strlen($proxy->hashedPassword) > 0) {
-            if ($proxy->paramResponse === $hmacValue) {
+            if (hash_equals($proxy->paramResponse, $hmacValue)) {
                 Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha1 hash used.", 2);
                 if ($proxy->migrateSHA1to2) {
                     $salt = hex2bin(substr($proxy->hashedPassword, -8));
