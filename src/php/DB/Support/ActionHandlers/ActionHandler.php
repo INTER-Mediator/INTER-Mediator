@@ -425,10 +425,9 @@ abstract class ActionHandler
         Logger::getInstance()->setDebugMessage("[setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
         $proxy = $this->proxy;
         $dbSettings = $proxy->dbSettings;
-        setcookie($key,
-            $proxy->generateCredential($challenge, $generatedClientID, $hashedPassword),
-            time() + $dbSettings->getAuthenticationItem('authexpired'), '/',
-            $proxy->credentialCookieDomain, false, true);
+        setcookie($key, $proxy->generateCredential($challenge, $generatedClientID, $hashedPassword),
+            ['expires' => time() + $dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
+                'domain' => $proxy->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
     }
 
     /** Clears authentication cookies.
@@ -436,7 +435,9 @@ abstract class ActionHandler
      */
     protected function clearAuthenticationCookies(): void
     {
-        setcookie("_im_credential_token", "", time() - 3600); // Should be removed.
-        setcookie("_im_credential_2FA", "", time() - 3600); // Should be removed.
+        setcookie("_im_credential_token", "",
+            ['expires' => time() - 3600, 'path' => '/', 'samesite' => 'Strict']); // Should be removed.
+        setcookie("_im_credential_2FA", "",
+            ['expires' => time() - 3600, 'path' => '/', 'samesite' => 'Strict']); // Should be removed.
     }
 }

@@ -128,13 +128,15 @@ class AuthPasskeyHandler extends ActionHandler
             $generatedClientID = IMUtil::generateClientId('', $this->credential);
             $challenge = IMUtil::generateChallenge();
             $this->proxy->saveChallenge($this->username, $challenge, $generatedClientID, "+");
-            setcookie('_im_credential_token',
-                $this->proxy->generateCredential($challenge, $generatedClientID, $this->credential),
-                time() + $authExpired, '/', "", false, true);
-            setcookie("_im_username_{$authRealm}",
-                $this->username, time() + $authExpired, '/', "", false, false);
-            setcookie("_im_clientid_{$authRealm}",
-                $generatedClientID, time() + $authExpired, '/', "", false, false);
+            setcookie('_im_credential_token', $this->proxy->generateCredential($challenge, $generatedClientID, $this->credential),
+                ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                    'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+            setcookie("_im_username_{$authRealm}", $this->username,
+                ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+            setcookie("_im_clientid_{$authRealm}", $generatedClientID,
+                ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
         }
     }
 }

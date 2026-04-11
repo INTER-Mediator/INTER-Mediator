@@ -245,11 +245,11 @@ trait Proxy_Auth
                 $cookieNameToken .= ('_' . $realm);
             }
             setcookie($cookieNameToken, $generatedChallenge,
-                time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                $this->credentialCookieDomain, false, true);
+                ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
+                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
             setcookie($cookieNameUser, $this->paramAuthUser,
-                time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                $this->credentialCookieDomain, false, false);
+                ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
+                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
             $this->logger->setDebugMessage("mediatoken stored", 2);
         }
     }
