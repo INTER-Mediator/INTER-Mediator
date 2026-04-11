@@ -297,8 +297,8 @@ class GenerateJSCode
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
             $remoteAddr = '0.0.0.0';
         }
-        $clientIdSeed = time() . $remoteAddr . random_int();
-        $randomSecret = random_int();
+        $clientIdSeed = time() . $remoteAddr . random_int(1111, 9999);
+        $randomSecret = random_int(11110000, 99999999);
         $clientId = hash_hmac('sha256', $clientIdSeed, $randomSecret);
 
         $this->generateAssignJS(
