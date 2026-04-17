@@ -24,6 +24,15 @@ class AuthenticatedHandler extends ActionHandler
         return true;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     /** Visits the CheckAuthentication operation to verify authentication and 2FA.
      *
      * @return bool True if authentication (including 2FA) succeeds; false otherwise.
@@ -41,13 +50,13 @@ class AuthenticatedHandler extends ActionHandler
                 "[checkAuthentication] 2FA code={$proxy->code2FA}", 2);
             switch ($proxy->dbSettings->getMethod2FA()) {
                 case 'testing':
-                case'email':  // Send mail containing 2FA code.
+                case 'email':  // Send mail containing 2FA code.
                     $authCredential = $proxy->generateCredential($this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
-                    if ($proxy->credential === $authCredential && $proxy->code2FA && $proxy->hashedPassword) {
+                    if (hash_equals($authCredential, $proxy->credential) && $proxy->code2FA && $proxy->hashedPassword) {
                         $hmacValue = hash_hmac('sha256', $proxy->code2FA, $this->storedCredential);
                         Logger::getInstance()->setDebugMessage(
                             "[checkAuthentication] 2FA_email paramResponse2={$proxy->paramResponse2}/hmac_value={$hmacValue}", 2);
-                        if ($proxy->paramResponse2 === $hmacValue) {
+                        if (hash_equals($hmacValue, $proxy->paramResponse2)) {
                             Logger::getInstance()->setDebugMessage("[checkAuthentication] 2FA_email authentication succeed.", 2);
                             return true;
                         } else {

@@ -42,6 +42,9 @@ Ver.15 (in Development)
 - The AfterImport and BeforeImport interfaces are defined, and the defined methods of the extending-class's class
   is going to call just before and after the import process.
 - The formatter with the data-im-format attribute supports the new format "markdown".
+- To prevent brute force attack, the authentication failure count is going to be stored. The default is inavtive.
+  The variable $authFailCount in the params.php file or "auth-fail-count" keyed value in definition file can be set to
+  any number which is larger than 0 to activate.
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 - [SECURITY ISSUES] The account manager of sample code can be accessed on same case. So the samples are moved to

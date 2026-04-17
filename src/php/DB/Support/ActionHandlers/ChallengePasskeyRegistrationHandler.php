@@ -22,6 +22,15 @@ class ChallengePasskeyRegistrationHandler extends ActionHandler
         return false;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     /** Visits the CheckAuthentication operation for copy operations.
      *
      * @return bool True, if authentication succeeds or bypassAuth is enabled, false otherwise.

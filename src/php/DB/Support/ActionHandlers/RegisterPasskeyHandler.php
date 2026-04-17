@@ -21,6 +21,15 @@ class RegisterPasskeyHandler extends ActionHandler
         return false;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     /** Visits the CheckAuthentication operation.
      *
      * @return bool Result of the operation.
@@ -74,7 +83,9 @@ class RegisterPasskeyHandler extends ActionHandler
                 $publicKeyCredentialSource = $responseValidator->check($publicKeyCredential->response, $creationOption, $hostName);
                 // Storing passkey data into the "authuser" table.
                 $publicKey = $this->passKeySeriarize($publicKeyCredentialSource);
-                $publicKeyCredentialId = base64_encode($publicKeyCredentialSource->publicKeyCredentialId);
+//                $publicKeyCredentialId = base64_encode($publicKeyCredentialSource->publicKeyCredentialId);
+                $publicKeyCredentialId = str_replace(['+', '/', '='], ['-', '_', ''],
+                    base64_encode($publicKeyCredentialSource->publicKeyCredentialId));  // base64_url encoding
                 $this->proxy->dbClass->authHandler->authSupportStorePublicKey($uid, $publicKey, $publicKeyCredentialId);
                 Logger::getInstance()->setDebugMessage(
                     "[RegisterPasskeyHandler] *** Passkey registration succeed.***", 2);
@@ -84,7 +95,6 @@ class RegisterPasskeyHandler extends ActionHandler
         } catch (Exception $e) {
             Logger::getInstance()->setDebugMessage(
                 "[RegisterPasskeyHandler] Exception:" . $e->getMessage(), 2);
-
         }
     }
 

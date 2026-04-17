@@ -30,7 +30,7 @@ trait PasskeySupport
         $userEntity = PublicKeyCredentialUserEntity::create($userName, strval($userId), $realName ?? "");
         if (!$challenge) {
             $challenge = hex2bin($this->generateAndSaveChallenge(
-                $userName ?? "", $this->proxy->generatedClientID, "$", "", $challenge));
+                $userName ?? "", $this->proxy->generatedClientID ?? "", "$", "", $challenge));
         }
         return PublicKeyCredentialCreationOptions::create($rpEntity, $userEntity, $challenge);
     }

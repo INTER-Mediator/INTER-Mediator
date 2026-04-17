@@ -165,7 +165,7 @@ $authRealm = 'INTER-Mediator_Samples';
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
 
 //$isRequired2FA = true; // Default is false.
-//$method2FA = 'email'; // 'authenticator' or 'email'. Default is 'authenticator'.
+//$method2FA = 'authenticator'; // 'authenticator' or 'email'. Default is 'authenticator'.
 //$isPassThrough2FA = true; // Default is true. If it's true, the 2FA is going to process for the case of registered users.
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
 //$digitsOf2FACode = 6; // Default is 4 for email and 6 for authenticator.
@@ -247,6 +247,11 @@ $oAuth = [
 /* User Enrollment */
 $limitEnrollSecond = 3600;
 $limitPwChangeSecond = 3600;
+
+/* Auth Fail Counter */
+$authFailRate = 0; // Specifies the number of authentication failures before blocking communication. If 0 or less, blocking is disabled.
+$checkUsername = false; // Whether to also consider the username when counting authentication failures.
+$authFailSeconds = 60; // How many seconds back from now to count failures when determining whether to block authentication.
 
 /* Service Server Behavior
  * ===================

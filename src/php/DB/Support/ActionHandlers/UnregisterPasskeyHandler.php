@@ -24,6 +24,16 @@ class UnregisterPasskeyHandler extends ActionHandler
      *
      * @return bool Result of the operation.
      */
+
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     public function checkAuthentication(): bool
     {
         if ($this->proxy->bypassAuth) {

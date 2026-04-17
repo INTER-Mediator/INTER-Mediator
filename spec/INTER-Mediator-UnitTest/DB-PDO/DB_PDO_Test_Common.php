@@ -201,7 +201,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addValueWithField("num2", 100);
         $this->db_proxy->requireUpdatedRecord(true);
 
-        $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $newKeyValue = $this->db_proxy->createInDB();
 //        echo " Returns {$newKeyValue}\n";
@@ -209,10 +209,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $createdRecord = $this->db_proxy->getUpdatedRecord();
 //        echo " Returns ".var_export($createdRecord,true)."\n";
 
-
-        var_export($this->db_proxy->logger->getErrorMessages());
-        var_export($this->db_proxy->logger->getDebugMessages());
-
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertNotNull($createdRecord, "Created record should be exists.(2)");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");

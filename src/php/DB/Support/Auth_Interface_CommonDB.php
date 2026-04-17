@@ -233,4 +233,7 @@ interface Auth_Interface_CommonDB
     public function authSupportUserInfoFromPublickeyId(string $pkid): array;
 
     public function authSupportStore2FASecret(string $uid, string|null $secret): void;
+
+    public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int;
+    public function authSupportAddAuthFail(string $ip, string $username): void;
 }

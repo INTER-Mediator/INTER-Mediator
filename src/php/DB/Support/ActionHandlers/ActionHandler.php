@@ -38,6 +38,12 @@ abstract class ActionHandler
      */
     abstract public function isAuthAccessing(): bool;
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool True if authorization should be skipped, false otherwise.
+     */
+    abstract public function isSkipAuthorization(): bool;
+
     /** Visits the CheckAuthentication operation.
      *
      * @return bool Result of the operation.

@@ -25,6 +25,15 @@ class AuthPasskeyHandler extends ActionHandler
         return true;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     private string $credential;
     private string $username;
 
@@ -43,7 +52,7 @@ class AuthPasskeyHandler extends ActionHandler
                 "[AuthPasskeyHandler] checkAuthentication() type={$publicKeyCredential->type}", 2);
 //            Logger::getInstance()->setDebugMessage(
 //                "[AuthPasskeyHandler] checkAuthentication() publicKeyCredential-->" . var_export($publicKeyCredential, true), 2);
-            $rowId = base64_encode($publicKeyCredential->rawId);
+            $rowId = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($publicKeyCredential->rawId));
 
             // Retrieve the challenge data stored on the server
             $clientId = $this->proxy->clientId;
@@ -59,6 +68,8 @@ class AuthPasskeyHandler extends ActionHandler
 
             // Get the user information.
             $userInfo = $this->proxy->dbClass->authHandler->authSupportUserInfoFromPublickeyId($rowId);
+            Logger::getInstance()->setDebugMessage(
+                "[AuthPasskeyHandler] checkAuthentication() userInfo=" . var_export($userInfo, true), 2);
             if (!isset($userInfo['hashedpasswd'])) { // No user bond to the public key.
                 Logger::getInstance()->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1066));
                 return false;

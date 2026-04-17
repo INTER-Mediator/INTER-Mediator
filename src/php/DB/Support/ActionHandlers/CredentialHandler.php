@@ -22,6 +22,15 @@ class CredentialHandler extends ActionHandler
         return true;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     /** Visits the CheckAuthentication operation for credential access.
      *
      * @return bool True if authentication succeeds, false otherwise.

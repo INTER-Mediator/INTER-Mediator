@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB\Support;
 
+use DateInterval;
 use DateTime;
 use Exception;
 use INTERMediator\DB\PDO;
@@ -1302,7 +1303,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
             $counter = 0;
+            $resultRow = [];
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $resultRow = $row;
                 $counter++;
             }
             if ($counter === 0) {
@@ -1310,10 +1313,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             } else if ($counter > 1) {
                 throw new Exception("Multiple Users Detected from the authuser table {$pkid}: {$sql}");
             }
-            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
-            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                return $row;
-            }
+            $this->logger->setDebugMessage("[authSupportUserInfoFromPublickeyId] {$sql}");
+            return $resultRow;
         } catch (\Exception $e) {
             $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
         }
@@ -1357,5 +1358,63 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $this->pdoDB->errorMessageStore("[authSupportStore2FASecret] ERROR: {$e->getMessage()}");
         }
 
+    }
+
+    public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int
+    {
+        $counter = 0;
+        $failTable = "authfail";
+        try {
+            if (!$this->pdoDB->setupConnection()) {
+                throw new Exception("authfail table setting up failed.");
+            }
+            $periodBefore = (new DateTime())->modify("-{$seconds} seconds")->format('Y-m-d H:i:s');
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " COUNT(*) AS count FROM {$failTable}"
+                . " WHERE dt >= " . $this->pdoDB->link->quote($periodBefore)
+                . " AND ip = " . $this->pdoDB->link->quote($ip);
+            if (!is_null($username)) {
+                $sql .= " AND username = " . $this->pdoDB->link->quote($username);
+            }
+            $result = $this->pdoDB->link->query($sql);
+            $this->logger->setDebugMessage("[authSupportCheckAuthFailCount] {$sql}");
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $counter = $row['count'];
+            }
+            $this->logger->setDebugMessage("[authSupportCheckAuthFailCount] counter = {$counter}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportCheckAuthFailCount] ERROR: {$e->getMessage()}");
+        }
+        return $counter;
+    }
+
+    public function authSupportAddAuthFail(string $ip, string $username): void
+    {
+        $failTable = "authfail";
+        try {
+            if (!$this->pdoDB->setupConnection()) {
+                throw new Exception("authfail table setting up failed.");
+            }
+            $oneDayBefore = (new DateTime())->sub(new DateInterval('P1D'))->format('Y-m-d H:i:s');
+            $sql = "{$this->pdoDB->handler->sqlDELETECommand()}{$failTable} "
+                . " WHERE dt <= " . $this->pdoDB->link->quote($oneDayBefore);
+            $result = $this->pdoDB->link->query($sql);
+            $this->logger->setDebugMessage("[authSupportAddAuthFail] {$sql}");
+            if ($result === false) {
+                throw new Exception("ERROR in DELETE: {$sql}");
+            }
+            $tableRef = "{$failTable} (ip, username)";
+            $setClause = "VALUES ({$this->pdoDB->link->quote($ip)},{$this->pdoDB->link->quote($username)})";
+            $sql = $this->pdoDB->handler->sqlINSERTCommand($tableRef, $setClause);
+            $result = $this->pdoDB->link->query($sql);
+            $this->logger->setDebugMessage("[authSupportAddAuthFail] {$sql}");
+            if ($result === false) {
+                throw new Exception("ERROR in INSERT: {$sql}");
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportAddAuthFail] ERROR: {$e->getMessage()}");
+        }
     }
 }
