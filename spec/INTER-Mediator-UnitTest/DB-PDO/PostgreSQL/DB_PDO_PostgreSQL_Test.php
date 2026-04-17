@@ -21,7 +21,8 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
-        date_default_timezone_set('Asia/Tokyo');
+//        date_default_timezone_set('Asia/Tokyo');
+        date_default_timezone_set('UTC');
         $this->dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
     }
 
