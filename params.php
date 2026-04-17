@@ -366,7 +366,7 @@ $followingTimezones = true;
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
 $appLocale = "ja_JP";   // Locale for the application has to be specified the language_country code.
-$appLocale = "UTC";   // Locale for the application has to be specified the language_country code.
+//$appLocale = "UTC";   // Locale for the application has to be specified the language_country code.
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 /* Customize the path generation in uploading a file

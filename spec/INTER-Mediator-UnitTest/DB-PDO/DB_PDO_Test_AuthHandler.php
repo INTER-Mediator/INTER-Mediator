@@ -230,6 +230,14 @@ trait DB_PDO_Test_AuthHandler
         $authFail->addFailRecord('127.0.0.1', 'user1');
         $authFail->addFailRecord('127.0.0.1', 'user2');
 
+        if (date_default_timezone_get()) {
+            echo 'date_default_timezone_set: ' . date_default_timezone_get() . "\n";
+        }
+
+        if (ini_get('date.timezone')) {
+            echo 'date.timezone: ' . ini_get('date.timezone');
+        }
+
         $sql = "SELECT * FROM authfail";
         $result = $this->db_proxy->dbClass->link->query($sql);
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
