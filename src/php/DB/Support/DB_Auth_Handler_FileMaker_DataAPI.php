@@ -1091,7 +1091,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int
     {
         // TODO: Implement authSupportCheckAuthFailCount() method.
-        return false;
+        return 0;
     }
 
     public function authSupportAddAuthFail(string $ip, string $username): void
