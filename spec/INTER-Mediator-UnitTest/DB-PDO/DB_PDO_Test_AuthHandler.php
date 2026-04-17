@@ -230,6 +230,12 @@ trait DB_PDO_Test_AuthHandler
         $authFail->addFailRecord('127.0.0.1', 'user1');
         $authFail->addFailRecord('127.0.0.1', 'user2');
 
+        $sql = "SELECT * FROM authfail";
+        $result = $this->db_proxy->dbClass->link->query($sql);
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            echo str_replace("\n", "", var_export($row, true)). "\n";
+        }
+
         $result = $authFail->getFailCount('127.0.0.1', 'user1');
         var_dump(Logger::getInstance()->getDebugMessages());
         var_dump(Logger::getInstance()->getWarningMessages());
