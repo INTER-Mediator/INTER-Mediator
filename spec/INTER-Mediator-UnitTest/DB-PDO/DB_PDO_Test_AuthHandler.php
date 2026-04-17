@@ -222,7 +222,7 @@ trait DB_PDO_Test_AuthHandler
         $testName = "Test for the AuthFail class with AuthHandler.";
         $this->dbProxySetupForAuth();
 
-//        Logger::getInstance()->clearLogs();
+        Logger::getInstance()->clearLogs();
 
         $authFail = new AuthFailCount($this->db_proxy->dbClass->authHandler);
         $authFail->addFailRecord('127.0.0.1', 'user1');
@@ -231,10 +231,10 @@ trait DB_PDO_Test_AuthHandler
         $authFail->addFailRecord('127.0.0.1', 'user2');
 
         $result = $authFail->getFailCount('127.0.0.1', 'user1');
-//        var_dump(Logger::getInstance()->getDebugMessages());
-//        var_dump(Logger::getInstance()->getWarningMessages());
-//        var_dump(Logger::getInstance()->getErrorMessages());
-//        var_dump($result);
+        var_dump(Logger::getInstance()->getDebugMessages());
+        var_dump(Logger::getInstance()->getWarningMessages());
+        var_dump(Logger::getInstance()->getErrorMessages());
+        var_dump($result);
         $this->assertEquals(4, $result, $testName);
         $this->assertEquals(4, $authFail->getFailCount('127.0.0.1', 'user2'), $testName);
         $this->assertEquals(4, $authFail->getFailCount('127.0.0.1', null), $testName);
