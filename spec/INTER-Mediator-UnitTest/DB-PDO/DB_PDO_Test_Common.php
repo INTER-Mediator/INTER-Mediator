@@ -47,7 +47,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
-        date_default_timezone_set('Asia/Tokyo');
+//        date_default_timezone_set('Asia/Tokyo');
+        date_default_timezone_set('UTC');
     }
 
     public function isMySQL(): bool
