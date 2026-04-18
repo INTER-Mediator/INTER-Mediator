@@ -251,6 +251,7 @@ $limitPwChangeSecond = 3600;
 /* Auth Fail Counter */
 $authFailRate = 0; // Specifies the number of authentication failures before blocking communication. If 0 or less, blocking is disabled.
 $checkUsername = false; // Whether to also consider the username when counting authentication failures.
+$checkNullUser = false; // Counting falsy username or not..
 $authFailSeconds = 60; // How many seconds back from now to count failures when determining whether to block authentication.
 
 /* Service Server Behavior

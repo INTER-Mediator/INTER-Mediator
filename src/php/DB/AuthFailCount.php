@@ -38,6 +38,8 @@ class AuthFailCount
      */
     private Auth_Interface_CommonDB $authHandler;
 
+    private bool $checkNullUser = false;
+
     /** Constructs an AuthFailCount instance with configuration from parameters.
      * @param Auth_Interface_CommonDB $authHandler The authentication handler for database operations.
      */
@@ -45,6 +47,7 @@ class AuthFailCount
     {
         $this->failRate = Params::getParameterValue("authFailRate", 0);
         $this->checkUsername = Params::getParameterValue("checkUsername", false);
+        $this->checkNullUser = Params::getParameterValue("checkNullUser", false);
         $this->seconds = Params::getParameterValue("authFailSeconds", 60);
         $this->authHandler = $authHandler;
     }
@@ -56,6 +59,7 @@ class AuthFailCount
     {
         return $this->failRate > 0;
     }
+
     /** Determines whether an authentication attempt should be allowed based on a recent failure count.
      * @param string $ip The client IP address.
      * @param string|null $username The username attempting authentication.
@@ -76,7 +80,7 @@ class AuthFailCount
      */
     public function addFailRecord(string $ip, string $username): void
     {
-        if ($username) {
+        if ($this->checkNullUser || $username) {
             $this->authHandler->authSupportAddAuthFail($ip, $username);
         }
     }

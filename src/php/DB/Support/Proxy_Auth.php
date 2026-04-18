@@ -138,6 +138,7 @@ trait Proxy_Auth
             if ($authFail->isAcceptableAuthFail($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser)) {
                 Logger::getInstance()->setWarningMessage(IMUtil::getMessageClassInstance()->getMessageAs(1067));
                 $this->accessSetToNothing();
+                sleep(1);
                 return;
             }
             if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
