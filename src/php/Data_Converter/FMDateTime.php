@@ -73,7 +73,7 @@ class FMDateTime
         if ($dtObj === false) {
             return $str;
         }
-        return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
+        return date(($this->fmt == '') ? $fmt : $this->fmt, intval($dtObj->format('U')));
     }
 
     /** @param string $str

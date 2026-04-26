@@ -594,7 +594,7 @@ class Settings
      * @param string|null $value Field value.
      * @return void
      */
-    public function addValueWithField(?string $field, ?string $value): void
+    public function addValueWithField(?string $field, null|string|int|float|bool $value): void
     {
         $this->fieldsValues[] = $value;
         $this->fieldsRequired[] = $field;

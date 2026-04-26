@@ -164,7 +164,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string $value The value for soft deletion.
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;

@@ -73,10 +73,10 @@ class MySQLDateTime
         if ($dtObj === false) {
             return $str;
         }
-        if (date('Y', $dtObj->format('U')) < 1970) {
+        if (date('Y', intval($dtObj->format('U'))) < 1970) {
             return '';
         }
-        return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
+        return date(($this->fmt == '') ? $fmt : $this->fmt, intval($dtObj->format('U')));
     }
 
     /** @param string $str

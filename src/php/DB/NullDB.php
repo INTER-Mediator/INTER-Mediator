@@ -126,7 +126,7 @@ class NullDB extends DBClass
      * @param string $value The value to set.
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
 
     }

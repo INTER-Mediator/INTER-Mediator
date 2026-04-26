@@ -308,7 +308,7 @@ abstract class ActionHandler
                     $fileUploader->processingAsError(
                         $dbSettings->getDataSource(),
                         $dbSettings->getOptions(),
-                        $dbSettings->getDbSpec(), true,
+                        $dbSettings->getDbSpec(), 2,
                         $dbSettings->getDataSourceName(), true);
                 } else {
                     $fileUploader->processingWithParameters(
@@ -335,7 +335,7 @@ abstract class ActionHandler
                         $fileUploader->processingAsError(
                             $dbSettings->getDataSource(),
                             $dbSettings->getOptions(),
-                            $dbSettings->getDbSpec(), true,
+                            $dbSettings->getDbSpec(), 2,
                             $dbSettings->getDataSourceName(), true);
                     } else { // No file upload error.
                         $dbresult = [];

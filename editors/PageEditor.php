@@ -109,7 +109,7 @@ class PageEditor extends DBClass
         return $this->updatedRecord;
     }
 
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
         // TODO: Implement softDeleteActivate() method.
     }

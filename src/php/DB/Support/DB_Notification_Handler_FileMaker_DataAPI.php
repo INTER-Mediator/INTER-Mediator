@@ -319,7 +319,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
                     try {
                         $resultForRemove = $this->fmdb->fmData->{$pksTable}->query($conditions);
                         if ($resultForRemove->count() > 0) {
-                            $this->fmdb->setupFMDataAPIforDB($pksTable, '');
+                            $this->fmdb->setupFMDataAPIforDB($pksTable);
                             foreach ($resultForRemove as $recordForRemove) {
                                 $recordId = $recordForRemove->getRecordId();
                                 try {

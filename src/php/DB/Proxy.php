@@ -1243,7 +1243,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $field
      * @param string $value
      */
-    function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
         if ($this->dbClass) {
             $this->dbClass->softDeleteActivate($field, $value);

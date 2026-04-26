@@ -342,7 +342,7 @@ class TextFile extends DBClass
      * @param string $value
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
     }
 

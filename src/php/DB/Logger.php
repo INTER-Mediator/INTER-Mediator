@@ -50,10 +50,10 @@ class Logger
      * @var bool
      */
     private bool $warningMessageLogging;
-    /** Whether debug message logging is enabled.
-     * @var bool
+    /** The prefix of namespace to the output log.
+     * @var string
      */
-    private bool $debugMessageLogging;
+    private string $debugMessageLogging;
     /** Singleton instance of Logger.
      * @var Logger|null
      */
@@ -74,8 +74,9 @@ class Logger
      */
     private function __construct()
     {
-        [$this->errorMessageLogging, $this->warningMessageLogging, $this->debugMessageLogging]
-            = Params::getParameterValue(["errorMessageLogging", "warningMessageLogging", "debugMessageLogging",], false);
+        $this->errorMessageLogging = Params::getParameterValue("errorMessageLogging", false);
+        $this->warningMessageLogging = Params::getParameterValue("warningMessageLogging", false);
+        $this->debugMessageLogging = Params::getParameterValue("debugMessageLogging", "");
     }
 
     /** Clear all logs (error, warning, debug).
@@ -97,10 +98,10 @@ class Logger
     }
 
     /** Get the namespace of the caller if the setting is true or matches the namespace.
-     * @param bool $setting
+     * @param string|true $setting
      * @return bool
      */
-    private function getCallersNamespace(bool $setting): bool
+    private function getCallersNamespace(string|true $setting): bool
     {
         if ($setting === true) { // $setting === "*"
             return true;
