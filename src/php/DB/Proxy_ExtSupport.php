@@ -31,7 +31,7 @@ trait Proxy_ExtSupport
     /** Debug level for extended operations.
      * @var int|null
      */
-    private ?int $extDebug = 0;
+    private null|int|false $extDebug = 0;
     /** Fixed key for operations.
      * @var string|null
      */
@@ -78,7 +78,7 @@ trait Proxy_ExtSupport
      * @param int|null $debug
      * @return void
      */
-    public function dbInit(?array $dataSource = null, ?array $options = null, ?array $dbSpec = null, ?int $debug = null): void
+    public function dbInit(?array $dataSource = null, ?array $options = null, ?array $dbSpec = null, null|int|false $debug = null): void
     {
         if (!$this->extProxy) {
             $this->extProxy = new Proxy($this->testMode);

@@ -13,7 +13,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        level: [ 3, 4 ]
+        level: [ 4, 5 ]
         include:
           - current-level: 3
     steps:

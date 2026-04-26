@@ -179,7 +179,7 @@ class ServiceServerProxy
                     $this->messages[] = $message;
                     return false;
                 }
-                sleep(1.0);
+                sleep(1);
             }
             return true;
         }

@@ -48,7 +48,9 @@ class GenerateJSCode
      * @param string $value5 Optional additional value.
      * @return void
      */
-    public function generateAssignJS(string $variable, string $value1, string $value2 = '', string $value3 = '', string $value4 = '', string $value5 = ''): void
+    public function generateAssignJS(string $variable, string|int|float $value1,
+                                     string|int|float $value2 = '', string|int|float $value3 = '',
+                                     string|int|float $value4 = '', string|int|float $value5 = ''): void
     {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
@@ -299,7 +301,7 @@ class GenerateJSCode
         }
         $clientIdSeed = time() . $remoteAddr . random_int(1111, 9999);
         $randomSecret = random_int(11110000, 99999999);
-        $clientId = hash_hmac('sha256', $clientIdSeed, $randomSecret);
+        $clientId = hash_hmac('sha256', $clientIdSeed, "$randomSecret");
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.clientNotificationIdentifier",
