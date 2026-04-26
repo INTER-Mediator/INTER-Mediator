@@ -385,14 +385,8 @@ class IMUtil
             if (is_null($webServerName)) {
                 return TRUE;
             }
-            if (is_array($webServerName)) {
-                foreach ($webServerName as $name) {
-                    if ($this->checkHost($host, $name) === TRUE) {
-                        return TRUE;
-                    }
-                }
-            } else {
-                if ($this->checkHost($host, $webServerName) === TRUE) {
+            foreach ($webServerName as $name) {
+                if ($this->checkHost($host, $name) === TRUE) {
                     return TRUE;
                 }
             }

@@ -293,18 +293,16 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-            if (!is_null($result)) {
-                foreach ($result as $record) {
-                    $recordId = $record->getRecordId();
-                    $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
-                    try {
-                        $result = $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
-                    } catch (Exception $e) {
-                        $this->logger->setDebugMessage(
-                            $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
-                                $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-                        return false;
-                    }
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
+                try {
+                    $result = $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
+                } catch (Exception $e) {
+                    $this->logger->setDebugMessage(
+                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                            $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                    return false;
                 }
             }
         } catch (Exception $e) {

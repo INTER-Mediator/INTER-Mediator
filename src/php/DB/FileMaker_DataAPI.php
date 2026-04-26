@@ -297,6 +297,7 @@ class FileMaker_DataAPI extends DBClass
     /** Get the string with only return characters.
      * @param string|null $str The input string.
      * @return string The string with only return characters.
+     * @phpstan-ignore method.unused
      */
     private function stringReturnOnly(?string $str): string
     {
@@ -775,7 +776,7 @@ class FileMaker_DataAPI extends DBClass
                 }
 
                 $relatedsetArray = [];
-                if (count($portalNames) >= 1) {
+                if (count($portalNames) >= 1) { // @phpstan-ignore-line greaterOrEqual.alwaysFalse
                     $relatedArray = [];
                     foreach ($portalNames as $portalName) {
                         foreach ($result->{$portalName} as $portalRecord) {
@@ -803,7 +804,7 @@ class FileMaker_DataAPI extends DBClass
                     }
                 }
 
-                foreach ($relatedsetArray as $j => $relatedset) {
+                foreach ($relatedsetArray as $j => $relatedset) { // @phpstan-ignore-line foreach.emptyArray
                     $dataArray = $dataArray + [$j => $relatedset];
                 }
                 if ($usePortal) {
@@ -991,7 +992,7 @@ class FileMaker_DataAPI extends DBClass
         $result = NULL;
         $data = array();
         $portal = array();
-        if (isset($condition[0]['recordId']) && count($condition) === 1) {
+        if (isset($condition[0]['recordId']) && count($condition) === 1) { // @phpstan-ignore-line identical.alwaysTrue
             $recordId = str_replace('=', '', $condition[0]['recordId']);
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -1009,7 +1010,7 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') { // @phpstan-ignore-line notIdentical.alwaysTrue
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
@@ -1020,6 +1021,7 @@ class FileMaker_DataAPI extends DBClass
             return false;
         }
 
+        // @phpstan-ignore-next-line deadCode.unreachable
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
 //        $this->logger->setDebugMessage($this->stringWithoutCredential(var_export($this->dbSettings->getFieldsRequired(),true)));
 
@@ -1472,7 +1474,7 @@ class FileMaker_DataAPI extends DBClass
                 if (isset($contextDef["relation"]) &&
                     isset($contextDef["relation"][0]) &&
                     isset($contextDef["relation"][0]["portal"]) &&
-                    $contextDef["relation"][0]["portal"] = true
+                    $contextDef["relation"][0]["portal"]
                 ) {
                     return "{$fieldComp[0]}{$this->dbSettings->getSeparator()}{$field}";
                 }
