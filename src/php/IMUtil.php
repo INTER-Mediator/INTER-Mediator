@@ -345,9 +345,7 @@ class IMUtil
          * http://d.hatena.ne.jp/hasegawayosuke/20130302/p1
          */
         $webServerName = Params::getParameterValue('webServerName', null);
-        if ($webServerName === '' ||
-            $webServerName === array() || $webServerName === array('')
-        ) {
+        if (!is_array($webServerName) || $webServerName === array() || $webServerName === array('')) {
             $webServerName = NULL;
         }
 
