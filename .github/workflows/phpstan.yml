@@ -15,7 +15,7 @@ jobs:
       matrix:
         level: [ 4, 5 ]
         include:
-          - current-level: 3
+          - current-level: 4
     steps:
       - uses: actions/checkout@v4
 
