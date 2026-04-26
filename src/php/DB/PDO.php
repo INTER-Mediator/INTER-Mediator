@@ -379,11 +379,11 @@ class PDO extends DBClass
             }
         }
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
-            . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
+            . $this->handler->sqlOrderByCommand($sortClause, $limitParam, intval($offset));
         $this->logger->setDebugMessage($sql);
         $this->notifyHandler->setQueriedEntity($isAggregate ? $this->dbSettings->getAggregationFrom() : $sourceTable);
         $this->notifyHandler->setQueriedCondition(
-            "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
+            "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, intval($offset))}");
 
         $result = $this->link->query($sql);
         if (!$this->errorHandlingPDO($sql, $result)) {
