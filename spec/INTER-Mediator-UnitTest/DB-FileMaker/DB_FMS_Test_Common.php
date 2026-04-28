@@ -20,7 +20,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    abstract public function dbProxySetupForAccess($contextName, $maxRecord);
+    abstract public function dbProxySetupForAccess(string $contextName, int $maxRecord);
 
     abstract public function dbProxySetupForAuth();
 

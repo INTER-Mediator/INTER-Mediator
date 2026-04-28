@@ -1119,7 +1119,7 @@ class Settings
      * @param string|null $value Value.
      * @return void
      */
-    public function addValue(?string $value): void
+    public function addValue(null|string|int|float|bool $value): void
     {
         $this->fieldsValues[] = $value;
     }
@@ -1206,7 +1206,7 @@ class Settings
      * @param string|null $value Value.
      * @return void
      */
-    public function addExtraCriteria(?string $field, ?string $operator = '=', ?string $value = null): void
+    public function addExtraCriteria(?string $field, ?string $operator = '=', null|string|int|float|bool $value = null): void
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }

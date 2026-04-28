@@ -450,7 +450,7 @@ abstract class ProviderAdapter
         }
         // Store the challenge in the database
         $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $code, substr($key, 0, 64), $prefix, true);
+            "0", $code, substr($key, 0, 64), $prefix, true);
     }
 
     /** Retrieves the stored authorization code from the internal database.
@@ -467,7 +467,7 @@ abstract class ProviderAdapter
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
         // Retrieve the stored challenge from the database
         $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-            0, substr($key, 0, 64), true, $prefix, true);
+            "0", substr($key, 0, 64), true, $prefix, true);
         // Split the retrieved challenge into an array
         return explode("\n", $challenges);
     }

@@ -29,7 +29,7 @@ class HTMLString
 
     /** @param string|bool $option
      */
-    public function __construct($option = false)
+    public function __construct(string|bool|int $option = false)
     {
         if ($option) {
             if (in_array(strtolower($option), array('true', 'autolink')) || $option === true) {

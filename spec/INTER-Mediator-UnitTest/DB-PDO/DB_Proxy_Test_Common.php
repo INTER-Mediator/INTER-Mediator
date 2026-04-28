@@ -98,7 +98,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
             'table' => "{$this->schemaName}testtable",
             'key' => 'id'/*, 'sequence' => "{$this->schemaName}serial"*/]];
 
-        $this->dbProxySetupForAccess("person", 1, true);
+        $this->dbProxySetupForAccess("person", 1, 1);
 //        $this->db_proxy->logger->clearLogs();
 
         $this->setTestMode();

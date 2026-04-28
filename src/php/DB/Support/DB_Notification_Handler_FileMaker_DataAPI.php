@@ -64,7 +64,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         $pksTable = $this->dbSettings->registerPKTableName;
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $this->fmdb->setupFMDataAPIforDB($regTable, 1);
+        $this->fmdb->setupFMDataAPIforDB($regTable);
         $recordId = $this->fmdb->fmData->{$regTable}->create(array(
             'clientid' => $clientId,
             'entity' => $entity,
@@ -91,7 +91,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
             return $newContextId;
         }
         foreach ($pkArray as $pk) {
-            $this->fmdb->setupFMDataAPIforDB($pksTable, 1);
+            $this->fmdb->setupFMDataAPIforDB($pksTable);
             $recordId = $this->fmdb->fmData->{$pksTable}->create(array(
                 'context_id' => $newContextId,
                 'pk' => $pk,
@@ -124,7 +124,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     {
         $regTable = $this->dbSettings->registerTableName;
 
-        $this->fmdb->setupFMDataAPIforDB($regTable, 'all');
+        $this->fmdb->setupFMDataAPIforDB($regTable);
         $conditions = array('clientid' => $clientId);
         if ($tableKeys) {
             foreach ($tableKeys as $regId) {
@@ -135,7 +135,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         try {
             $result = $this->fmdb->fmData->{$regTable}->query($conditions);
             if (!is_null($result) && $result->count() > 0) {
-                $this->fmdb->setupFMDataAPIforDB($regTable, '');
+                $this->fmdb->setupFMDataAPIforDB($regTable);
                 foreach ($result as $record) {
                     $recId = $record->getRecordId();
                     try {
@@ -172,7 +172,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         $originPK = $pkArray[0];
-        $this->fmdb->setupFMDataAPIforDB($regTable, 'all');
+        $this->fmdb->setupFMDataAPIforDB($regTable);
         $conditions = array(array('entity' => $entity), array('clientid' => $clientId, "omit" => "true"));
         $sort = array(array('clientid', 'ascend'));
         $result = null; // For PHPStan level 1
@@ -201,7 +201,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         }
 
         foreach ($contextIds as $context) {
-            $this->fmdb->setupFMDataAPIforDB($pksTable, '1');
+            $this->fmdb->setupFMDataAPIforDB($pksTable);
             $conditions = array(array('context_id' => $context[0], 'pk' => $originPK));
             try {
                 $result = $this->fmdb->fmData->{$pksTable}->query($conditions, NULL, 1, 1);
@@ -237,7 +237,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
 
-        $this->fmdb->setupFMDataAPIforDB($regTable, 'all');
+        $this->fmdb->setupFMDataAPIforDB($regTable);
         $conditions = array(array('entity' => $entity));
         $result = null; // For PHPStan level 1
         try {
@@ -259,7 +259,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
                 foreach ($result as $record) {
                     $targetId = $record->id;
                     $targetClients[] = $record->clientid;
-                    $this->fmdb->setupFMDataAPIforDB($pksTable, 1);
+                    $this->fmdb->setupFMDataAPIforDB($pksTable);
                     $recordId = $this->fmdb->fmData->{$pksTable}->create(array(
                         'context_id' => $targetId,
                         'pk' => $pkArray[0],
@@ -291,7 +291,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
-        $this->fmdb->setupFMDataAPIforDB($regTable, 'all');
+        $this->fmdb->setupFMDataAPIforDB($regTable);
         $conditions = array(array('entity' => $entity));
         $result = null; // For PHPStan level 1
         try {
@@ -314,12 +314,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
                 foreach ($result as $record) {
                     $targetId = $record->id;
                     $targetClients[] = $record->clientid;
-                    $this->fmdb->setupFMDataAPIforDB($pksTable, 'all');
+                    $this->fmdb->setupFMDataAPIforDB($pksTable);
                     $conditions = array(array('context_id' => $targetId, 'pk' => $pkArray[0]));
                     try {
                         $resultForRemove = $this->fmdb->fmData->{$pksTable}->query($conditions);
                         if ($resultForRemove->count() > 0) {
-                            $this->fmdb->setupFMDataAPIforDB($pksTable, "all");
+                            $this->fmdb->setupFMDataAPIforDB($pksTable);
                             foreach ($resultForRemove as $recordForRemove) {
                                 $recordId = $recordForRemove->getRecordId();
                                 try {

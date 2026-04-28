@@ -123,7 +123,7 @@ class PageEditor extends DBClass
     {
     }
 
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0):void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0):void
     {
     }
 

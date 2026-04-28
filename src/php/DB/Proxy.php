@@ -775,12 +775,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array|null $dataSource
      * @param array|null $options
      * @param array|null $dbSpec
-     * @param int|null $debug
+     * @param int|false $debug
      * @param string|null $target
      * @return bool
      * @throws Exception
      */
-    public function initialize(?array $dataSource, ?array $options, ?array $dbSpec, ?int $debug, ?string $target = null): bool
+    public function initialize(?array $dataSource, ?array $options, ?array $dbSpec, int|false $debug, ?string $target = null): bool
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
@@ -1289,10 +1289,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /** Set data to updated record.
      * @param string $field
-     * @param string|null $value
+     * @param null|string|int|float|bool $value
      * @param int $index
      */
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
         $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
     }

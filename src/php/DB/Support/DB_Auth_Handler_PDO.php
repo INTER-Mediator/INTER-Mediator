@@ -44,7 +44,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Stores a challenge for authentication.
-     * @param string|null $uid User ID.
+     * @param string|null|int $uid User ID.
      * @param string $challenge Challenge string.
      * @param string $clientId Client ID.
      * @param string $prefix Prefix for the challenge.
@@ -52,7 +52,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @return void
      * Using 'issuedhash'.
      */
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void
+    public function authSupportStoreChallenge(string|null|int $uid,
+                                              string          $challenge,
+                                              string          $clientId,
+                                              string          $prefix = "",
+                                              bool            $alwaysInsert = false): void
     {
         $this->logger->setDebugMessage("[authSupportStoreChallenge] $uid, $challenge, $clientId");
 
@@ -156,17 +160,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Retrieves a challenge for authentication.
-     * @param null|string $uid User ID.
+     * @param null|string|int $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
      * @param bool $isMulti Retrieve multiple challenges.
-     * @return ?string Challenge string or null if not found.
+     * @return null|string|array Challenge string or null if not found.
      * Using 'issuedhash'.
      * @throws Exception
      */
-    public function authSupportRetrieveChallenge(
-        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): null|string|array
+    public function authSupportRetrieveChallenge(null|string|int $uid,
+                                                 string          $clientId,
+                                                 bool            $isDelete = true,
+                                                 string          $prefix = "",
+                                                 bool            $isMulti = false): null|string|array
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -549,11 +556,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Gets a group name from a group ID.
-     * @param string $groupid Group ID.
+     * @param string|int $groupid Group ID.
      * @return ?string Group name or null if not found.
      * Using 'authgroup'.
      */
-    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
+    public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if (is_null($groupTable) || !$this->pdoDB->setupConnection()) {
@@ -768,11 +775,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Gets a username from a user ID.
-     * @param string $userid User ID.
+     * @param string|int $userid User ID.
      * @return ?string Username or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportGetUsernameFromUserId(string $userid): ?string
+    public function authSupportGetUsernameFromUserId(string|int $userid): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$userid || !$this->pdoDB->setupConnection()) {

@@ -6,11 +6,9 @@ use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
+use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
-use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\PublicKeyCredential;
-use Webauthn\PublicKeyCredentialSource;
 
 class AuthPasskeyHandler extends ActionHandler
 {
@@ -83,12 +81,14 @@ class AuthPasskeyHandler extends ActionHandler
 
             // Varidating the response.
             try {
-                $publicKeyCredentialSource = $authenticatorValidator->check(
-                    $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);
+                if ( $publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {
+                    $publicKeyCredentialSource = $authenticatorValidator->check(
+                        $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);
 //                Logger::getInstance()->setDebugMessage(
 //                    "[AuthPasskeyHandler] publicKeyCredentialSource=" . var_export($publicKeyCredentialSource, true), 2);
-                Logger::getInstance()->setDebugMessage(
-                    "[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
+                    Logger::getInstance()->setDebugMessage(
+                        "[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
+                }
                 return true;
             } catch (\Throwable $e) {
                 Logger::getInstance()->setErrorMessage("Passkey Authentication Error: {$e->getMessage()}");

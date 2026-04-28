@@ -81,10 +81,10 @@ class GenerateJSCode
      * @param array|null $dataSource Data source definitions for contexts.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpecification Database specification.
-     * @param int $debug Debug mode level.
+     * @param int|false $debug Debug mode level.
      * @return void
      */
-    public function generateInitialJSCode(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug): void
+    public function generateInitialJSCode(?array $dataSource, ?array $options, ?array $dbSpecification, int|false $debug): void
     {
         $q = '"';
         $ds = DIRECTORY_SEPARATOR;
