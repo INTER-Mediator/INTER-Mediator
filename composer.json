@@ -90,7 +90,7 @@
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "./vendor/bin/npm update",
+      "./vendor/bin/npm ci",
       "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-install-cmd": [
