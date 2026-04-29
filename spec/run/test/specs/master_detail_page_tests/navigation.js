@@ -231,8 +231,8 @@ module.exports = (mdPage) => {
       masterCities = await mdPage.masterFieldCity
       masterTowns = await mdPage.masterFieldTown
 
-      expect(await masterCodes[0].isDisplayedInViewport()).toBe(false)
-      expect(await masterCodes[99].isDisplayedInViewport()).toBe(true)
+      expect(await masterCodes[0].isDisplayed({withinViewport: true})).toBe(false)
+      expect(await masterCodes[99].isDisplayed({withinViewport: true})).toBe(true)
     })
   })
 }

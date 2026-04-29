@@ -43,7 +43,6 @@ module.exports = (EditingPage) => {
       const value = Math.trunc(Math.random() * 10000000)
       await EditingPage.fieldNum2Textfield.setValue(value) // Set a value to the field
       await EditingPage.navigatorUpdateButton.clickStable()
-      await browser.pause(waiting)
       await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))
       await EditingPage.fieldNum2Textfield.setValue("") // Clear the field
       await EditingPage.navigatorUpdateButton.clickStable()
