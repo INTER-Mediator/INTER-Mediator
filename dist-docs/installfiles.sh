@@ -16,12 +16,12 @@ pnpm install --frozen-lockfile
 mv spec/tempfile '__Did_you_run_composer_update.txt'
 
 cd spec/run
-npm install --before 2025-09-14
+npm install --before 2026-03-23
 pnpm install --no-frozen-lockfile
 pnpm install --frozen-lockfile
 
 cd ../run-safari
-npm install --before 2025-09-14
+npm install --before 2026-03-23
 pnpm install --no-frozen-lockfile
 pnpm install --frozen-lockfile
 
