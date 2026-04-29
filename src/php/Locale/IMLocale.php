@@ -49,11 +49,11 @@ class IMLocale
     private static array $localeConvertTable = array("ja" => "ja_JP");
 
     /** Set the locale and currency based on parameters, environment, and options.
-     * @param string $locType The locale category (e.g., LC_ALL).
+     * @param int $locType The locale category (e.g., LC_ALL).
      * @param string $localeName Optional locale name to use.
      * @return void
      */
-    public static function setLocale(string $locType, string $localeName = ''): void
+    public static function setLocale(int $locType, string $localeName = ''): void
     {
         $isSetLocale = false;
         $isSetCurrency = false;

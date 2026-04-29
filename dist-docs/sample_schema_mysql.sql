@@ -1112,6 +1112,23 @@ CREATE TABLE operationlog
   ENGINE = InnoDB;
 # In case of real deployment, some indices are required for quick operations.
 
+# Collecting failed login information.
+CREATE TABLE authfail
+(
+    id       INT AUTO_INCREMENT,
+    dt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip       VARCHAR(39),
+    username VARCHAR(64),
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE INDEX authfail_dt ON authfail (dt);
+CREATE INDEX authfail_ip ON authfail (ip);
+CREATE INDEX authfail_username ON authfail (username);
+CREATE INDEX authfail_ip_username ON authfail (ip, username);
+
 CREATE TABLE testtable
 (
     id      INT AUTO_INCREMENT,

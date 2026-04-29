@@ -345,9 +345,7 @@ class IMUtil
          * http://d.hatena.ne.jp/hasegawayosuke/20130302/p1
          */
         $webServerName = Params::getParameterValue('webServerName', null);
-        if ($webServerName === '' ||
-            $webServerName === array() || $webServerName === array('')
-        ) {
+        if (!is_array($webServerName) || $webServerName === array() || $webServerName === array('')) {
             $webServerName = NULL;
         }
 
@@ -387,14 +385,8 @@ class IMUtil
             if (is_null($webServerName)) {
                 return TRUE;
             }
-            if (is_array($webServerName)) {
-                foreach ($webServerName as $name) {
-                    if ($this->checkHost($host, $name) === TRUE) {
-                        return TRUE;
-                    }
-                }
-            } else {
-                if ($this->checkHost($host, $webServerName) === TRUE) {
+            foreach ($webServerName as $name) {
+                if ($this->checkHost($host, $name) === TRUE) {
                     return TRUE;
                 }
             }
@@ -582,11 +574,7 @@ class IMUtil
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            try {
-                $code = random_int(0, 9);
-            } catch (Exception $ex) {
-                $code = rand(0, 10);
-            }
+            $code = random_int(0, 9);
             $resultStr .= $code;
         }
         return $resultStr;
@@ -600,11 +588,7 @@ class IMUtil
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            try {
-                $code = random_int(33, 126);
-            } catch (Exception $ex) {
-                $code = rand(33, 126);
-            }
+            $code = random_int(33, 126);
             $resultStr .= chr($code);
         }
         return $resultStr;
@@ -620,11 +604,7 @@ class IMUtil
         $len = strlen($chars);
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            try {
-                $code = random_int(0, $len - 1);
-            } catch (Exception $ex) {
-                $code = rand(0, $len - 1);
-            }
+            $code = random_int(0, $len - 1);
             $resultStr .= $chars[$code];
         }
         return $resultStr;
@@ -650,7 +630,7 @@ class IMUtil
     {
         $str = '';
         for ($i = 0; $i < 24; $i++) {
-            $n = rand(1, 255);
+            $n = random_int(1, 255);
             $str .= ($n < 16 ? '0' : '') . dechex($n);
         }
         return $str;
@@ -663,7 +643,7 @@ class IMUtil
     {
         $str = '';
         for ($i = 0; $i < 4; $i++) {
-            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
             $str .= chr($n);
         }
         return $str;
@@ -680,10 +660,10 @@ class IMUtil
         $seedPunctuation = "#$%&";
         $str = '';
         for ($i = 0; $i < $digit - 1; $i++) {
-            $n = rand(0, strlen($seed) - 1);
+            $n = random_int(0, strlen($seed) - 1);
             $str .= substr($seed, $n, 1);
         }
-        $n = rand(0, strlen($seedPunctuation) - 1);
+        $n = random_int(0, strlen($seedPunctuation) - 1);
         $str .= substr($seedPunctuation, $n, 1);
         return $str;
     }
@@ -720,7 +700,7 @@ class IMUtil
     {
         $password = '';
         for ($i = 0; $i < $digit; $i++) {
-            $password .= chr(rand(32, 127));
+            $password .= chr(random_int(32, 127));
         }
         return IMUtil::convertHashedPassword($password, $passwordHash, $alwaysGenSHA2);
     }
@@ -731,17 +711,9 @@ class IMUtil
     public static function generateRandomPW(): string
     {
         $str = '';
-        try {
-            $limit = random_int(15, 20);
-        } catch (Exception $ex) {
-            $limit = rand(15, 20);
-        }
+        $limit = random_int(15, 20);
         for ($i = 0; $i < $limit; $i++) {
-            try {
-                $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
-            } catch (Exception $ex) {
-                $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
-            }
+            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
             $str .= chr($n);
         }
         return $str;

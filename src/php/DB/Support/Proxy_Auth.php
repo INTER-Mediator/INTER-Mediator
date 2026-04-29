@@ -18,6 +18,7 @@ namespace INTERMediator\DB\Support;
 
 use Exception;
 use INTERMediator\Auth\SAMLAuth;
+use INTERMediator\DB\AuthFailCount;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
@@ -113,9 +114,7 @@ trait Proxy_Auth
         $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
 
-        if (isset($this->PostData['pubkeyInfo'])) {
-            $this->pubkeyInfo = $this->PostData['pubkeyInfo'] ?? null;
-        }
+        $this->pubkeyInfo = $this->PostData['pubkeyInfo'] ?? null;
     }
 
     /** Calling from Proxy::processing method to cheking the auth infos.
@@ -125,12 +124,23 @@ trait Proxy_Auth
         if ($this->bypassAuth) {
             return;
         }
+        // Initialization
         $this->dbSettings->setRequireAuthentication(false);
         $isAuthAccessing = $this->visitor->isAuthAccessing();
+        $isChallengeAccess = $this->visitor->isSkipAuthorization();
         $this->dbSettings->setRequireAuthorization($isAuthAccessing || $this->checkAuthSettings());
         $this->authSucceed = false;
-        if ($this->dbSettings->getRequireAuthorization()) { // Authentication required
+        // Authentication process
+        if ($this->dbSettings->getRequireAuthorization() && !$isChallengeAccess) { // Authentication required
             $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication process started.");
+            // brute-force attack protection
+            $authFail = new AuthFailCount($this->dbClass->authHandler);
+            if ($authFail->isAcceptableAuthFail($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser)) {
+                Logger::getInstance()->setWarningMessage(IMUtil::getMessageClassInstance()->getMessageAs(1067));
+                $this->accessSetToNothing();
+                sleep(1);
+                return;
+            }
             if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
@@ -183,10 +193,19 @@ trait Proxy_Auth
                 $this->dbSettings->setRequireAuthentication(true);
                 $this->authSucceed = false;
             }
+            if (!$this->authSucceed) {  // Not Authenticated!
+                if (!$isAuthAccessing) {
+                    $this->accessSetToNothing();
+                }
+                if ($authFail->isActive()) {
+                    $authFail->addFailRecord($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser);
+                }
+            }
         }
     }
 
-    private function checkAuthSettings(): bool
+    private
+    function checkAuthSettings(): bool
     {
         $authOptions = $this->dbSettings->getAuthentication();
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -205,7 +224,8 @@ trait Proxy_Auth
 
     /** @return void
      */
-    public function accessSetToNothing()
+    public
+    function accessSetToNothing()
     {
         $this->dbSettings->setRequireAuthentication(true);
         $this->access = "nothing";
@@ -219,7 +239,8 @@ trait Proxy_Auth
      * @param ?array $attrs
      * @return array
      */
-    public function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
+    public
+    function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isSAML={$isSAML}", 2);
         $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
@@ -231,7 +252,8 @@ trait Proxy_Auth
     /** Calling from Proxy::finishCommunication method to generate cookies.
      * @return void
      */
-    public function handleMediaToken(): void
+    public
+    function handleMediaToken(): void
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         if (isset($tableInfo['authentication']['media-handling']) && $tableInfo['authentication']['media-handling'] === true && !$this->suppressMediaToken
@@ -247,11 +269,11 @@ trait Proxy_Auth
                 $cookieNameToken .= ('_' . $realm);
             }
             setcookie($cookieNameToken, $generatedChallenge,
-                time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                $this->credentialCookieDomain, false, true);
+                ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
+                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
             setcookie($cookieNameUser, $this->paramAuthUser,
-                time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                $this->credentialCookieDomain, false, false);
+                ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
+                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
             $this->logger->setDebugMessage("mediatoken stored", 2);
         }
     }
@@ -259,7 +281,8 @@ trait Proxy_Auth
     /** @param string|null $username The username as the username field of authuser table.
      * @return string
      */
-    public function authSupportGetSalt(?string $username): ?string
+    public
+    function authSupportGetSalt(?string $username): ?string
     {
         if (is_null($username)) {
             return "";
@@ -277,7 +300,8 @@ trait Proxy_Auth
      * @param string $prefix
      * @return void
      */
-    public function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void
+    public
+    function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void
     {
         Logger::getInstance()->setDebugMessage(
             "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
@@ -308,7 +332,8 @@ trait Proxy_Auth
      * @param string $token
      * @return bool
      */
-    public function checkMediaToken(string $user, string $token): bool
+    public
+    function checkMediaToken(string $user, string $token): bool
     {
         $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
         $returnValue = false;
@@ -318,7 +343,7 @@ trait Proxy_Auth
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         if ($uid) {
             $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-            if (strlen($storedChallenge) === 48 && $storedChallenge === $token) { // ex.fc0d54312ce33c2fac19d758
+            if (strlen($storedChallenge) === 48 && hash_equals($storedChallenge, $token)) { // ex.fc0d54312ce33c2fac19d758
                 $returnValue = true;
             }
         }
@@ -330,7 +355,8 @@ trait Proxy_Auth
      * @param string|null $s3
      * @return string
      */
-    public function generateCredential(?string $s1, ?string $s2, ?string $s3): string
+    public
+    function generateCredential(?string $s1, ?string $s2, ?string $s3): string
     {
         return hash("sha256", $s1 . $s2 . $s3);
     }

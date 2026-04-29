@@ -25,11 +25,11 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
      * @param array|null $dataSource Data source definition.
      * @param array|null $options Options for proxy operation.
      * @param array|null $dbSpec Database specification.
-     * @param int|null $debug Debug level.
+     * @param int|false $debug Debug level.
      * @param string|null $target Target context.
      * @return bool True on success, false otherwise.
      */
-    function initialize(?array $dataSource, ?array $options, ?array $dbSpec, ?int $debug, ?string $target = null): bool;
+    function initialize(?array $dataSource, ?array $options, ?array $dbSpec, int|false $debug, ?string $target = null): bool;
 
     /** Process an incoming request.
      * @param string|null $access Access type.

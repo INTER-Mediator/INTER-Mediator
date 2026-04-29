@@ -68,7 +68,7 @@ class SendMail_Test extends TestCase
 
 //        var_export($result);
 //        var_export($this->db_proxy->logger->getDebugMessages());
-        var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertEquals($recordCount, 1, "The queried record has to be just one.");
     }
@@ -87,7 +87,7 @@ class SendMail_Test extends TestCase
 
 //        var_export($result);
 //        var_export($this->db_proxy->logger->getDebugMessages());
-        var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertEquals(count($result), 1, "The queried record has to be just one.");
     }
@@ -102,7 +102,7 @@ class SendMail_Test extends TestCase
 
 //        var_export($result);
 //        var_export($this->db_proxy->logger->getDebugMessages());
-        var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertEquals(count($result), 1, "The queried record has to be just one.");
     }

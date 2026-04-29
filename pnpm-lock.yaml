@@ -21,8 +21,8 @@ importers:
         specifier: 1.2.2
         version: 1.2.2
       inter-mediator-formatter:
-        specifier: 1.0.19
-        version: 1.0.19
+        specifier: 1.1.0
+        version: 1.1.0
       inter-mediator-locale:
         specifier: 1.0.4
         version: 1.0.4
@@ -1285,8 +1285,8 @@ packages:
   inter-mediator-expressionparser@1.2.2:
     resolution: {integrity: sha512-DuAuK3bz1NKcd/GM6qY7TmJwwRc44+cz9tZnI4cmOzm+2ANVerpCEh7HaNsJVnapzjrgidubd0yE8XJR9+H1JQ==}
 
-  inter-mediator-formatter@1.0.19:
-    resolution: {integrity: sha512-lpIFxHdertQzMkYRW2ekbKLhmnI8HmvAotcGaB0Xq/WU1s9GBGzeHzVimU60H7FDT3kfVV3/86Zu8ooYwetg+A==}
+  inter-mediator-formatter@1.1.0:
+    resolution: {integrity: sha512-UslTRM0eJEXbIj7AWyXNZG2YMRqObh1ZginLNhZ4+j4allmyyMjQWTHHyqAmpqhkmkkHqGLrFlHYdagImBIE4A==}
 
   inter-mediator-locale@1.0.4:
     resolution: {integrity: sha512-lwwXGuG6Gmsoe+IYbqniifFJMBClK7VFXRiy8TXifKpZX0CxArdacpeRt5rdzrac6RN55iG7RIh9NobXXZ1WUg==}
@@ -3871,10 +3871,10 @@ snapshots:
 
   inter-mediator-expressionparser@1.2.2:
     dependencies:
-      inter-mediator-formatter: 1.0.19
+      inter-mediator-formatter: 1.1.0
       inter-mediator-locale: 1.0.4
 
-  inter-mediator-formatter@1.0.19: {}
+  inter-mediator-formatter@1.1.0: {}
 
   inter-mediator-locale@1.0.4: {}
 

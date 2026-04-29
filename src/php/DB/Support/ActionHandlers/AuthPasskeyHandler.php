@@ -6,11 +6,9 @@ use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
+use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
-use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\PublicKeyCredential;
-use Webauthn\PublicKeyCredentialSource;
 
 class AuthPasskeyHandler extends ActionHandler
 {
@@ -23,6 +21,15 @@ class AuthPasskeyHandler extends ActionHandler
     public function isAuthAccessing(): bool
     {
         return true;
+    }
+
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
     }
 
     private string $credential;
@@ -43,7 +50,7 @@ class AuthPasskeyHandler extends ActionHandler
                 "[AuthPasskeyHandler] checkAuthentication() type={$publicKeyCredential->type}", 2);
 //            Logger::getInstance()->setDebugMessage(
 //                "[AuthPasskeyHandler] checkAuthentication() publicKeyCredential-->" . var_export($publicKeyCredential, true), 2);
-            $rowId = base64_encode($publicKeyCredential->rawId);
+            $rowId = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($publicKeyCredential->rawId));
 
             // Retrieve the challenge data stored on the server
             $clientId = $this->proxy->clientId;
@@ -59,6 +66,8 @@ class AuthPasskeyHandler extends ActionHandler
 
             // Get the user information.
             $userInfo = $this->proxy->dbClass->authHandler->authSupportUserInfoFromPublickeyId($rowId);
+            Logger::getInstance()->setDebugMessage(
+                "[AuthPasskeyHandler] checkAuthentication() userInfo=" . var_export($userInfo, true), 2);
             if (!isset($userInfo['hashedpasswd'])) { // No user bond to the public key.
                 Logger::getInstance()->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1066));
                 return false;
@@ -72,12 +81,14 @@ class AuthPasskeyHandler extends ActionHandler
 
             // Varidating the response.
             try {
-                $publicKeyCredentialSource = $authenticatorValidator->check(
-                    $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);
+                if ( $publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {
+                    $publicKeyCredentialSource = $authenticatorValidator->check(
+                        $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);
 //                Logger::getInstance()->setDebugMessage(
 //                    "[AuthPasskeyHandler] publicKeyCredentialSource=" . var_export($publicKeyCredentialSource, true), 2);
-                Logger::getInstance()->setDebugMessage(
-                    "[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
+                    Logger::getInstance()->setDebugMessage(
+                        "[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
+                }
                 return true;
             } catch (\Throwable $e) {
                 Logger::getInstance()->setErrorMessage("Passkey Authentication Error: {$e->getMessage()}");
@@ -128,13 +139,15 @@ class AuthPasskeyHandler extends ActionHandler
             $generatedClientID = IMUtil::generateClientId('', $this->credential);
             $challenge = IMUtil::generateChallenge();
             $this->proxy->saveChallenge($this->username, $challenge, $generatedClientID, "+");
-            setcookie('_im_credential_token',
-                $this->proxy->generateCredential($challenge, $generatedClientID, $this->credential),
-                time() + $authExpired, '/', "", false, true);
-            setcookie("_im_username_{$authRealm}",
-                $this->username, time() + $authExpired, '/', "", false, false);
-            setcookie("_im_clientid_{$authRealm}",
-                $generatedClientID, time() + $authExpired, '/', "", false, false);
+            setcookie('_im_credential_token', $this->proxy->generateCredential($challenge, $generatedClientID, $this->credential),
+                ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                    'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+            setcookie("_im_username_{$authRealm}", $this->username,
+                ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+            setcookie("_im_clientid_{$authRealm}", $generatedClientID,
+                ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
         }
     }
 }

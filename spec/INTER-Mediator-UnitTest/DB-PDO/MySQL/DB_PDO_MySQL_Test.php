@@ -24,7 +24,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
-        date_default_timezone_set('Asia/Tokyo');
+//        date_default_timezone_set('Asia/Tokyo');
+        date_default_timezone_set('UTC');
 
         $this->dsn = 'mysql:host=localhost;dbname=test_db;charset=utf8mb4';
         if (getenv('TRAVIS') === 'true') {

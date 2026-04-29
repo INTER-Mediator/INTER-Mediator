@@ -25,6 +25,15 @@ class UpdateHandler extends ActionHandler
         return false;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return false;
+    }
+
     /** Visits the CheckAuthentication operation for update operations.
      * 
      * @return bool True if authentication succeeds, false otherwise.

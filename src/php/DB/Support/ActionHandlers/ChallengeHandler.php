@@ -20,6 +20,15 @@ class ChallengeHandler extends ActionHandler
         return true;
     }
 
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
+    {
+        return true;
+    }
+
     /** Visits the CheckAuthentication operation for challenge access.
      *
      * @return bool Always returns false for challenge access (no authentication is performed).

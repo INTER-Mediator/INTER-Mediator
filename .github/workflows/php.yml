@@ -52,6 +52,8 @@ jobs:
           coverage: xdebug
       - name: Print Env Varialbles
         run: printenv
+      - name: Show the host name
+        run: hostname
       - name: PHP Module Checking
         run: php -m
       - name: Get Composer Cache Directory

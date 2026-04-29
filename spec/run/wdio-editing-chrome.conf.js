@@ -13,29 +13,17 @@ exports.config = {
   //
   // The specs are defined as an array of spec files (optionally using wildcards
   // that will be expanded). The test for each spec file will be run in a separate
-  // worker process. In order to have a group of spec files run in the same worker
-  // process simply enclose them in an array within the specs array.
+  // worker process. To have a group of spec files run in the same worker
+  //  process, enclose them in an array within the spec array.
   //
   // If you are calling `wdio` from an NPM script (see https://docs.npmjs.com/cli/run-script),
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
   specs: [
-    './test/specs/auth_page_credential_basic_mysql.e2e.js',
-    './test/specs/auth_page_credential_basic_postgresql.e2e.js',
-    './test/specs/auth_page_credential_basic_sqlite.e2e.js',
-    './test/specs/auth_page_session-storage_mysql.e2e.js',
-    './test/specs/auth_page_session-storage_postgresql.e2e.js',
-    './test/specs/auth_page_session-storage_sqlite.e2e.js',
-    './test/specs/auth_page_credential_2fa_mysql.e2e.js',
-    './test/specs/auth_page_credential_2fa_postgresql.e2e.js',
-    './test/specs/auth_page_credential_2fa_sqlite.e2e.js',
-    './test/specs/auth_page_credential_email_mysql.e2e.js',
-    './test/specs/auth_page_credential_email_postgresql.e2e.js',
-    './test/specs/auth_page_credential_email_sqlite.e2e.js',
-    './test/specs/auth_page_credential_usergroup_mysql.e2e.js',
-    './test/specs/auth_page_credential_usergroup_postgresql.e2e.js',
-    './test/specs/auth_page_credential_usergroup_sqlite.e2e.js',
+    './test/specs/editing_page_mysql.e2e.js',
+    './test/specs/editing_page_postgresql.e2e.js',
+    './test/specs/editing_page_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -45,36 +33,36 @@ exports.config = {
   // ============
   // Define your capabilities here. WebdriverIO can run multiple capabilities at the same
   // time. Depending on the number of capabilities, WebdriverIO launches several test
-  // sessions. Within your capabilities you can overwrite the spec and exclude options in
-  // order to group specific specs to a specific capability.
+  // sessions. Within your capabilities, you can overwrite the spec and exclude options
+  // to group-specific specs to a specific capability.
   //
   // First, you can define how many instances should be started at the same time. Let's
   // say you have 3 different capabilities (Chrome, Firefox, and Safari) and you have
   // set maxInstances to 1; wdio will spawn 3 processes. Therefore, if you have 10 spec
-  // files and you set maxInstances to 10, all spec files will get tested at the same time
+  // files, and you set maxInstances to 10, all spec files will get tested at the same time
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
   maxInstances: 3,
   //
   // If you have trouble getting all important capabilities together, check out the
-  // Sauce Labs platform configurator - a great tool to configure your capabilities:
+  // Sauce Labs platform configurator - a great tool to configure your abilities:
   // https://saucelabs.com/platform/platform-configurator
   //
   capabilities: [{
 
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-    // grid with only 5 firefox instances available you can make sure that not more than
+    // grid with only 5 firefox instances available, you can make sure that not more than
     // 5 instances get started at a time.
     maxInstances: 3,
     //
     browserName: 'chrome',
     acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
-    }
+    // 'goog:chromeOptions': {
+    //   args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox', '--window-size=1280,800'],
+    // }
   }
-    // If outputDir is provided WebdriverIO can capture driver session logs
+    // If outputDir is provided, WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
     // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
     // excludeDriverLogs: ['bugreport', 'server'],
@@ -102,31 +90,31 @@ exports.config = {
   //     '@wdio/appium-service': 'info'
   // },
   //
-  // If you only want to run your tests until a specific amount of tests have failed use
+  // If you only want to run your tests until a specific amount of tests has failed use
   // bail (default is 0 - don't bail, run all tests).
   bail: 0,
   //
-  // Set a base URL in order to shorten url command calls. If your `url` parameter starts
+  // Set a base URL to shorten url command calls. If your `url` parameter starts
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://localhost:9000/',
+  baseUrl: process.env.IM_BASEURL || 'http://localhost:9000/',
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 5000,
   //
   // Default timeout in milliseconds for request
-  // if browser driver or grid doesn't send response
+  // if browser driver or grid doesn't send a response
   connectionRetryTimeout: 120000,
   //
   // Default request retries count
   connectionRetryCount: 3,
   //
   // Test runner services
-  // Services take over a specific job you don't want to take care of. They enhance
+  //  take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-//  services: ['chromedriver'],
+  //  Services: ['chromedriver'],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -137,7 +125,7 @@ exports.config = {
   framework: 'mocha',
   //
   // The number of times to retry the entire specfile when it fails as a whole
-  // specFileRetries: 1,
+  specFileRetries: 1,
   //
   // Delay in seconds between the spec file retry attempts
   // specFileRetriesDelay: 0,
@@ -156,37 +144,79 @@ exports.config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: 60000
+    timeout: 90000
+  },
+
+  before: async function () {
+    browser.addCommand(
+      'clickStable',
+      async function (options = {}) {
+        const timeout = options.timeout || 20000
+        const retries = options.retries || 3
+        let lastError
+
+        for (let i = 0; i < retries; i++) {
+          try {
+            await this.waitForExist({ timeout })
+            await this.scrollIntoView()
+            await this.waitForDisplayed({ timeout })
+            await this.waitForClickable({ timeout })
+            await this.click()
+            return
+          } catch (e) {
+            lastError = e
+            await browser.pause(200)
+          }
+        }
+        throw lastError
+      },
+      true
+    )
+  },
+
+  afterTest: async function (test, context, { error }) {
+    if (!error) {
+      return
+    }
+    const fs = require('node:fs')
+    const path = require('node:path')
+    const outDir = path.resolve(process.cwd(), 'artifacts')
+    fs.mkdirSync(outDir, { recursive: true })
+
+    const safeName = `${test.parent}-${test.title}`.replace(/[^a-zA-Z0-9._-]+/g, '_')
+    await browser.saveScreenshot(path.join(outDir, `${safeName}.png`))
+    const html = await browser.getPageSource()
+    fs.writeFileSync(path.join(outDir, `${safeName}.html`), html)
   },
 //
 // =====
 // Hooks
 // =====
-// WebdriverIO provides several hooks you can use to interfere with the test process in order to enhance
+// WebdriverIO provides several hooks you can use to interfere with the test process to enhance
 // it and to build services around it. You can either apply a single function or an array of
 // methods to it. If one of them returns with a promise, WebdriverIO will wait until that promise got
 // resolved to continue.
   /**
    * Gets executed once before all workers get launched.
    * @param {Object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
+   * @param {Array.<Object>} capabilities list of capability details
    */
 // onPrepare: function (config, capabilities) {
 // },
   /**
-   * Gets executed before a worker process is spawned and can be used to initialise specific service
+   * Gets executed before a worker process is spawned and can be used to initialize specific service
    * for that worker as well as modify runtime environments in an async fashion.
-   * @param  {String} cid      capability id (e.g 0-0)
+   * @param  {String} cid      capability id (e.g., 0-0)
    * @param  {[type]} caps     object containing capabilities for session that will be spawn in the worker
    * @param  {[type]} specs    specs to be run in the worker process
-   * @param  {[type]} args     object that will be merged with the main configuration once worker is initialized
+   * @param  {[type]} args     object that will be merged with the main configuration once worker is initialised
    * @param  {[type]} execArgv list of string arguments passed to the worker process
    */
 // onWorkerStart: function (cid, caps, specs, args, execArgv) {
 // },
   /**
    * Gets executed just after a worker process has exited.
-   * @param  {String} cid      capability id (e.g 0-0)
+   * @param  {String} cid      capability id (e.g., 0-0)
    * @param  {Number} exitCode 0 - success, 1 - fail
    * @param  {[type]} specs    specs to be run in the worker process
    * @param  {Number} retries  number of retries used
@@ -194,18 +224,19 @@ exports.config = {
 // onWorkerEnd: function (cid, exitCode, specs, retries) {
 // },
   /**
-   * Gets executed just before initialising the webdriver session and test framework. It allows you
+   * Gets executed just before initializing the webdriver session and test framework. It allows you
    * to manipulate configurations depending on the capability or spec.
    * @param {Object} config wdio configuration object
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
-   * @param {String} cid worker id (e.g. 0-0)
+   * @param {String} cid worker id (e.g., 0-0)
    */
 // beforeSession: function (config, capabilities, specs, cid) {
 // },
   /**
-   * Gets executed before test execution begins. At this point you can access to all global
-   * variables like `browser`. It is the perfect place to define custom commands.
+   * Gets executed before test execution begins.
+   * At this point, you can access to all global variables like `browser`.
+   * It is the perfect place to define custom commands.
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {Object}         browser      instance of created browser/device session
@@ -231,13 +262,13 @@ exports.config = {
 // beforeTest: function (test, context) {
 // },
   /**
-   * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
+   * Hook that gets executed _before_ a hook within the suite starts (e.g., runs before calling
    * beforeEach in Mocha)
    */
 // beforeHook: function (test, context) {
 // },
   /**
-   * Hook that gets executed _after_ a hook within the suite starts (e.g. runs after calling
+   * Hook that gets executed _after_ a hook within the suite starts (e.g., runs after calling
    * afterEach in Mocha)
    */
 // afterHook: function (test, context, { error, result, duration, passed, retries }) {

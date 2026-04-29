@@ -1270,7 +1270,7 @@ class DefEditor extends DBClass
         return $this->updatedRecord;
     }
 
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
         // TODO: Implement softDeleteActivate() method.
     }
@@ -1295,7 +1295,7 @@ class DefEditor extends DBClass
         // TODO: Implement setupHandlers() method.
     }
 
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
         // TODO: Implement setDataToUpdatedRecord() method.
     }

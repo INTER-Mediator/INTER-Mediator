@@ -126,7 +126,7 @@ class NullDB extends DBClass
      * @param string $value The value to set.
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
 
     }
@@ -149,11 +149,11 @@ class NullDB extends DBClass
 
     /** Set data to the updated record (no-op).
      * @param string $field The field to update.
-     * @param string|null $value The value to set.
+     * @param null|string|int|float|bool $value The value to set.
      * @param int $index The index of the record.
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
     }
 

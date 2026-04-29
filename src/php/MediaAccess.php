@@ -164,7 +164,7 @@ class MediaAccess
                         $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("load");
                         $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                         $contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
-                            $tableName, $authResult, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
+                            $tableName, $authResult, $authInfoField, $this->cookieUser ?? '', $this->targetKeyField, $this->targetKeyValue);
                         if (!$contextRecord) {
                             $this->exitAsError(401);
                         }
@@ -306,7 +306,7 @@ class MediaAccess
                 . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
                 . $dbProxyInstance->dbSettings->getDbSpecPort();
             $file = $urlHost . $file;
-            $oldLocale = setlocale(LC_CTYPE, 0);
+            $oldLocale = setlocale(LC_CTYPE, "0");
             setlocale(LC_CTYPE, 'C');
             $path = parse_url($file, PHP_URL_PATH);
             $query = parse_url($file, PHP_URL_QUERY);

@@ -32,14 +32,14 @@ if (file_exists($autoLoad)) { // If the vendor is inside INTER-Mediator
     }
 }
 
-spl_autoload_register(function (string $className): bool {
+spl_autoload_register(function (string $className): void {
     $comps = explode('\\', $className);
     $className = $comps[count($comps) - 1];
     $refPath = '';
     $refererPath = '';
     if (isset($_SERVER['SCRIPT_NAME']) && isset($_SERVER['HTTP_REFERER'])) {
         $refererPath = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-        $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'],$refererPath));
+        $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'], $refererPath));
         $refererPath = dirname($_SERVER['DOCUMENT_ROOT'] . $refererPath);
     }
     $paramPath = Params::getParameterValue("loadFrom", false);
@@ -51,7 +51,7 @@ spl_autoload_register(function (string $className): bool {
         $refPath . "/" . implode('/', $comps) . ".php",
         $refPath . "/{$className}.php",
         // Load from the file located in the same directory with the absolute path.
-        $refererPath  . "/". implode('/', $comps) . ".php",
+        $refererPath . "/" . implode('/', $comps) . ".php",
         $refererPath . "/{$className}.php",
         // Load from the specific directory with params.php
         $paramPath ? ($paramPath . "/" . implode('/', $comps) . ".php") : false,
@@ -61,11 +61,10 @@ spl_autoload_register(function (string $className): bool {
         if ($path) {
             if (file_exists($path)) {
                 require_once $path;
-                return true;
             }
         }
+
     }
-    return false;
 });
 
 // Define constant

@@ -108,10 +108,10 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /** Adds a primary key to the list of primary keys from the last query.
-     * @param string|null $name Primary key to add.
+     * @param string|int|null $name Primary key to add.
      * @return void
      */
-    public function addQueriedPrimaryKeys(?string $name): void
+    public function addQueriedPrimaryKeys(string|int|null $name): void
     {
         if (!$name) {
             return;

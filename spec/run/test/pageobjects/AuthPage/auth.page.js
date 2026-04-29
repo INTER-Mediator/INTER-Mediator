@@ -5,7 +5,7 @@ const IMPage = require('../im.page');
  */
 module.exports = class AuthPage extends IMPage {
   get logoutLink() {
-    return $("#logout_link")
+    return $('#logout_link')
   }
 
   get itemInsertButton() {

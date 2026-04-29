@@ -79,7 +79,7 @@ interface DBClass_Interface
      * @param string $value The value to set.
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void;
+    public function softDeleteActivate(string $field, string|int $value): void;
 
     /** Get field information for a data source.
      * @param string $dataSourceName The data source name.
@@ -111,11 +111,11 @@ interface DBClass_Interface
 
     /** Set a field value in the updated record.
      * @param string $field The field name.
-     * @param string|null $value The value to set.
+     * @param null|string|int|float|bool $value The value to set.
      * @param int $index The record index (default 0).
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void;
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void;
 
     /** Check if setDataToUpdatedRecord is used.
      * @return bool True if used.

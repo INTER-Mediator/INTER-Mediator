@@ -15,7 +15,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    public function dbProxySetupForAccess($contextName, $maxRecord)
+    public function dbProxySetupForAccess(string $contextName, int $maxRecord)
     {
         $this->schemaName = "";
         $contexts = array(

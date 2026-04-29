@@ -222,8 +222,11 @@ trait DB_PDO_SQLSupport
         }
         $exCriteria = $this->dbSettings->getExtraCriteria();
         if ($includeExtra && isset($exCriteria[0])) {
-            $queryClause = ($queryClause === '' ? '' : "($queryClause) AND ")
-                . '(' . $this->generateWhereClause($exCriteria, $primaryKey, $numericFields, true) . ')';
+            $extConditions = $this->generateWhereClause($exCriteria, $primaryKey, $numericFields, true);
+            if ($extConditions) {
+                $queryClause = ($queryClause === '' ? '' : "($queryClause) AND ")
+                    . '(' . $extConditions . ')';
+            }
         }
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($tableInfo['relation'] as $relDef) {

@@ -15,7 +15,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
-        date_default_timezone_set('Asia/Tokyo');
+//        date_default_timezone_set('Asia/Tokyo');
+        date_default_timezone_set('UTC');
+
         if (getenv('GITHUB_ACTIONS') === 'true') {
             $this->dsn = 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3';
         }
@@ -194,11 +196,11 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    public function testCreateRecord2()
-    {
-        // SQLite doesn't support the record creation with the key field as non AUTOINCREMENT field.
-        $this->assertNull(null, "This is dummy test record to avoid judged as risky test");
-    }
+//    public function testCreateRecord2()
+//    {
+//        // SQLite doesn't support the record creation with the key field as non AUTOINCREMENT field.
+//        $this->assertNull(null, "This is dummy test record to avoid judged as risky test");
+//    }
 
     protected string $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(100,200,'2022-04-01','2022-04-01','10:21:31','10:21:31','2022-04-01 10:21:31','2022-04-01 10:21:31','TEST','TEST','TEST','TEST')";

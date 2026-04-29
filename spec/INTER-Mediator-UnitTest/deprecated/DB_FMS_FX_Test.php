@@ -15,7 +15,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord)
+    function dbProxySetupForAccess(string $contextName, int $maxRecord)
     {
         $this->schemaName = "";
         $contexts = array(

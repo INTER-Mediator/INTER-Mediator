@@ -55,11 +55,10 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
 
     /** Throws an exception; should only be used by FileMaker subclasses.
      * @param string $layoutName The layout name.
-     * @param int $recordCount The number of records.
      * @return mixed
      * @throws Exception Always throws; not supported in base class.
      */
-    public function setupFMDataAPIforDB(string $layoutName, int $recordCount)
+    public function setupFMDataAPIforDB(string $layoutName)
     {
         $currentClass = get_class($this);
         throw new Exception("This '{$currentClass}' class doesn't support the setupFMDataAPIforDB method.");

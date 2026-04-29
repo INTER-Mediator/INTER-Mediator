@@ -12,6 +12,7 @@ Test Suites of INTER-Mediator are located in the /spec/run directory.
 The below configuration files are tested on GitHub Actions every time to commit.
 
 - wdio-form-chrome.conf.js
+- wdio-editing-chrome.conf.js
 - wdio-auth-chrome.conf.js
 - wdio-auth-firefox.conf.js
 

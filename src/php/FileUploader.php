@@ -196,7 +196,8 @@ class FileUploader
         $customFileName = null;
         if (isset($contextDef['file-upload'])) {
             foreach ($contextDef['file-upload'] as $uploadDef) {
-                if ($uploadDef['field'] === $targetField && isset($uploadDef['file-name'])) {
+                if (isset($uploadDef['field']) && isset($uploadDef['file-name'])
+                    && $uploadDef['field'] === $targetField) {
                     $customFileName = $uploadDef['file-name'];
                 }
             }

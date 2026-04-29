@@ -55,6 +55,9 @@ exports.config = {
     './test/specs/media_mysql.e2e.js',
     './test/specs/media_postgresql.e2e.js',
     './test/specs/media_sqlite.e2e.js',
+    './test/specs/media2_mysql.e2e.js',
+    './test/specs/media2_postgresql.e2e.js',
+    './test/specs/media2_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -131,7 +134,7 @@ exports.config = {
   baseUrl: 'http://localhost:9000/',
   //
   // Default timeout for all waitFor* commands.
-  waitforTimeout: 10000,
+  waitforTimeout: 5000,
   //
   // Default timeout in milliseconds for request
   // if browser driver or grid doesn't send response

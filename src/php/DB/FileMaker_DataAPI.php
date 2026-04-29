@@ -133,11 +133,11 @@ class FileMaker_DataAPI extends DBClass
 
     /** Set data to the updated record.
      * @param string $field The field name.
-     * @param string|null $value The field value.
+     * @param null|string|int|float|bool $value The field value.
      * @param int $index The record index (default: 0).
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
@@ -164,55 +164,51 @@ class FileMaker_DataAPI extends DBClass
      * @param string $value The value for soft deletion.
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
     }
 
     /** Setup FMDataAPI for authentication.
-     * @param string $layoutName The layout name.
-     * @param int $recordCount The record count.
+     * @param string|null $layoutName The layout name.
      * @return void
      */
-    public function setupFMDataAPIforAuth(string $layoutName, int $recordCount): void
+    public function setupFMDataAPIforAuth(string|null $layoutName): void
     {
         $this->fmData = null;
-        $this->fmDataAuth = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
+        $this->fmDataAuth = $this->setupFMDataAPI_Impl($layoutName,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
     /** Setup FMDataAPI for database operations.
-     * @param string $layoutName The layout name.
-     * @param int $recordCount The record count.
+     * @param string|null $layoutName The layout name.
      * @return void
      */
-    public function setupFMDataAPIforDB(string $layoutName, int $recordCount): void
+    public function setupFMDataAPIforDB(string|null $layoutName): void
     {
         $this->fmDataAuth = null;
-        $this->fmData = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
+        $this->fmData = $this->setupFMDataAPI_Impl($layoutName,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
     /** Setup FMDataAPI for alternate database operations.
-     * @param string $layoutName The layout name.
-     * @param int $recordCount The record count.
+     * @param string|null $layoutName The layout name.
      * @return void
      */
-    public function setupFMDataAPIforDB_Alt(string $layoutName, int $recordCount): void
+    public function setupFMDataAPIforDB_Alt(string|null $layoutName): void
     {
-        $this->fmDataAlt = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
+        $this->fmDataAlt = $this->setupFMDataAPI_Impl($layoutName,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
     /** Setup FMDataAPI implementation.
-     * @param string $layoutName The layout name.
-     * @param int $recordCount The record count.
+     * @param string|null $layoutName The layout name.
      * @param string $user The user name.
      * @param string $password The password.
      * @return FMDataAPI The FMDataAPI instance.
      */
-    private function setupFMDataAPI_Impl(string $layoutName, int $recordCount, string $user, string $password): FMDataAPI
+    private function setupFMDataAPI_Impl(string|null $layoutName, string $user, string $password): FMDataAPI
     {
         $this->targetLayout = $layoutName;
         if (session_status() === PHP_SESSION_NONE) {
@@ -232,7 +228,7 @@ class FileMaker_DataAPI extends DBClass
                 '',
                 '',
                 $this->dbSettings->getDbSpecServer(),
-                $this->dbSettings->getDbSpecPort(),
+                intval($this->dbSettings->getDbSpecPort()),
                 $this->dbSettings->getDbSpecProtocol()
             );
             $fmDataObj->setSessionToken($token);
@@ -245,7 +241,7 @@ class FileMaker_DataAPI extends DBClass
                 $user,
                 $password,
                 $this->dbSettings->getDbSpecServer(),
-                $this->dbSettings->getDbSpecPort(),
+                intval($this->dbSettings->getDbSpecPort()),
                 $this->dbSettings->getDbSpecProtocol()
             );
             $fmDataObj->setCertValidating($this->dbSettings->getCertVerifying());
@@ -297,6 +293,7 @@ class FileMaker_DataAPI extends DBClass
     /** Get the string with only return characters.
      * @param string|null $str The input string.
      * @return string The string with only return characters.
+     * @phpstan-ignore method.unused
      */
     private function stringReturnOnly(?string $str): string
     {
@@ -401,7 +398,7 @@ class FileMaker_DataAPI extends DBClass
     {
         $this->fieldInfo = null;
 
-        $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), '');
+        $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve());
         $layout = $this->targetLayout;
         $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 1);
 
@@ -466,7 +463,7 @@ class FileMaker_DataAPI extends DBClass
         }
 
         $limitParam = $this->getLimitParam($context);
-        $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
+        $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve());
         $layout = $this->targetLayout;
         $skip = (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0;
 
@@ -507,6 +504,7 @@ class FileMaker_DataAPI extends DBClass
                     $useOrOperation = true;
                 } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
                     // just ignore it
+                    $dummy = 1;
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
@@ -774,7 +772,7 @@ class FileMaker_DataAPI extends DBClass
                 }
 
                 $relatedsetArray = [];
-                if (count($portalNames) >= 1) {
+                if (count($portalNames) >= 1) { // @phpstan-ignore-line greaterOrEqual.alwaysFalse
                     $relatedArray = [];
                     foreach ($portalNames as $portalName) {
                         foreach ($result->{$portalName} as $portalRecord) {
@@ -802,7 +800,7 @@ class FileMaker_DataAPI extends DBClass
                     }
                 }
 
-                foreach ($relatedsetArray as $j => $relatedset) {
+                foreach ($relatedsetArray as $j => $relatedset) { // @phpstan-ignore-line foreach.emptyArray
                     $dataArray = $dataArray + [$j => $relatedset];
                 }
                 if ($usePortal) {
@@ -912,7 +910,7 @@ class FileMaker_DataAPI extends DBClass
         } else {
             $layout = $this->dbSettings->getEntityForUpdate();
         }
-        $this->setupFMDataAPIforDB($layout, 1);
+        $this->setupFMDataAPIforDB($layout);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $primaryKey = $tableInfo['key'] ?? $this->specHandler->getDefaultKey();
 
@@ -990,7 +988,7 @@ class FileMaker_DataAPI extends DBClass
         $result = NULL;
         $data = array();
         $portal = array();
-        if (isset($condition[0]['recordId']) && count($condition) === 1) {
+        if (isset($condition[0]['recordId']) && count($condition) === 1) { // @phpstan-ignore-line identical.alwaysTrue
             $recordId = str_replace('=', '', $condition[0]['recordId']);
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -1008,7 +1006,7 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') { // @phpstan-ignore-line notIdentical.alwaysTrue
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
@@ -1019,6 +1017,7 @@ class FileMaker_DataAPI extends DBClass
             return false;
         }
 
+        // @phpstan-ignore-next-line deadCode.unreachable
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
 //        $this->logger->setDebugMessage($this->stringWithoutCredential(var_export($this->dbSettings->getFieldsRequired(),true)));
 
@@ -1039,9 +1038,9 @@ class FileMaker_DataAPI extends DBClass
                     $this->notifyHandler->addQueriedPrimaryKeys($record->{$keyField});
                 }
                 if ($usePortal) {
-                    $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), 1);
+                    $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve());
                 } else {
-                    $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate(), 1);
+                    $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate());
                 }
                 $counter = 0;
                 $fieldValues = $this->dbSettings->getValue();
@@ -1191,7 +1190,7 @@ class FileMaker_DataAPI extends DBClass
 
         $recordData = array();
 
-        $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate(), 1);
+        $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate());
         $requiredFields = $this->dbSettings->getFieldsRequired();
         $countFields = count($requiredFields);
         $fieldValues = $this->dbSettings->getValue();
@@ -1326,7 +1325,7 @@ class FileMaker_DataAPI extends DBClass
         } else {
             $layout = $this->dbSettings->getEntityForUpdate();
         }
-        $this->setupFMDataAPIforDB($layout, 10000000);
+        $this->setupFMDataAPIforDB($layout);
 
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $value = $this->normalizedCondition($value);
@@ -1400,7 +1399,7 @@ class FileMaker_DataAPI extends DBClass
                 } else {
                     $this->notifyHandler->addQueriedPrimaryKeys($record->{$keyField});
                 }
-                $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate(), 1);
+                $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate());
                 if (isset($context['global'])) {
                     foreach ($context['global'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
@@ -1471,7 +1470,7 @@ class FileMaker_DataAPI extends DBClass
                 if (isset($contextDef["relation"]) &&
                     isset($contextDef["relation"][0]) &&
                     isset($contextDef["relation"][0]["portal"]) &&
-                    $contextDef["relation"][0]["portal"] = true
+                    $contextDef["relation"][0]["portal"]
                 ) {
                     return "{$fieldComp[0]}{$this->dbSettings->getSeparator()}{$field}";
                 }
@@ -1565,7 +1564,7 @@ class FileMaker_DataAPI extends DBClass
             $this->errorMessageStore("The table doesn't specified.");
             return null;
         }
-        $this->setupFMDataAPIforAuth($table, 'all');
+        $this->setupFMDataAPIforAuth($table);
         $recordSet = array();
         try {
             $result = $this->fmDataAuth->{$table}->query(array($conditions), NULL, 1, 100000000);

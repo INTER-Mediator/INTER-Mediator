@@ -636,6 +636,19 @@ CREATE TABLE operationlog
 );
 /* In case of real deployment, some indices are required for quick operations. */
 
+-- Collecting failed login information.
+CREATE TABLE authfail
+(
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    dt       TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+    ip       TEXT,
+    username TEXT
+);
+CREATE INDEX authfail_dt ON authfail (dt);
+CREATE INDEX authfail_ip ON authfail (ip);
+CREATE INDEX authfail_username ON authfail (username);
+CREATE INDEX authfail_ip_username ON authfail (ip, username);
+
 CREATE TABLE testtable
 (
     id     INTEGER PRIMARY KEY AUTOINCREMENT,

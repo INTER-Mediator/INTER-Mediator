@@ -86,11 +86,11 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 
     /** Returns the SQL ORDER BY command for SQL Server.
      * @param string $sortClause Sort clause.
-     * @param string $limit Limit parameter.
-     * @param string $offset Offset parameter.
+     * @param int $limit Limit parameter.
+     * @param int $offset Offset parameter.
      * @return string SQL ORDER BY command.
      */
-    public function sqlOrderByCommand(string $sortClause, string $limit, string $offset): string
+    public function sqlOrderByCommand(string $sortClause, int $limit, int $offset): string
     {
         if ($sortClause === '') {
             $tableInfo = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
@@ -101,9 +101,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
                 $sortClause = $fields[0];
             }
         }
-        return "ORDER BY {$sortClause} "
-            . (strlen($offset) > 0 ? "OFFSET {$offset} ROWS " : "OFFSET 0 ROWS ")
-            . (strlen($limit) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
+        return "ORDER BY {$sortClause} OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY ";
     }
 
     /** Returns the SQL DELETE command for SQL Server.

@@ -41,9 +41,9 @@
     "wdio": "npx wdio run wdio.conf.js"
   },
   "devDependencies": {
-    "@wdio/cli": "^8",
-    "@wdio/local-runner": "^8",
-    "@wdio/mocha-framework": "^8",
-    "@wdio/spec-reporter": "^8"
+    "@wdio/cli": "^9",
+    "@wdio/local-runner": "^9",
+    "@wdio/mocha-framework": "^9",
+    "@wdio/spec-reporter": "^9"
   }
 }

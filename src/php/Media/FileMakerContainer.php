@@ -70,7 +70,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     throw new Exception("CURL doesn't installed here.");
                 }
             } else { // Other settings
-                $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL, 1);
+                $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL);
                 $content = base64_decode($dbProxyInstance->dbClass->getFMDataInstance()->getContainerData($target));
             }
         } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
@@ -216,7 +216,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     '&-field=' . urlencode($targetFieldName));
             } else if ($dbSpec['db-class'] === 'FileMaker_DataAPI') {
                 $layout = $dataSource[0]['name'];
-                $db->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
+                $db->dbClass->setupFMDataAPIforDB($layout);
                 $result = $db->dbClass->getFMDataInstance()->{$layout}->query(NULL, NULL, 1, 1);
                 $path = '';
                 $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);

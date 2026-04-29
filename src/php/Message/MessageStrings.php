@@ -170,6 +170,7 @@ class MessageStrings
         1064 => "Authentication (Passkey): ",
         1065 => "Connection Error in authPasskey=@1@/@2@",
         1066 => "The public key for Passkey authentication is not stored",
+        1067 => "Brute-force attack protection: too many failed authentication attempts.",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

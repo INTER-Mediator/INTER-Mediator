@@ -82,8 +82,8 @@ class SendSlack extends MessagingProvider
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $msgURL);
             curl_setopt($ch, CURLOPT_PORT, 443);
-            curl_setopt($ch, CURLOPT_VERBOSE, 0);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_VERBOSE, false);
+            curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);

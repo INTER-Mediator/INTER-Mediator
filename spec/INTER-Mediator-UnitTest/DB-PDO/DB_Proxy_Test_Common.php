@@ -28,29 +28,30 @@ abstract class DB_Proxy_Test_Common extends TestCase
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
-        date_default_timezone_set('Asia/Tokyo');
+//        date_default_timezone_set('Asia/Tokyo');
+        date_default_timezone_set('UTC');
     }
 
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    function test___construct()
-    {
-        $this->dbProxySetupForAuthAccess("person", 1);
-        if (function_exists('xdebug_get_headers') && false) {
-            ob_start();
-            $this->db_proxy->__construct();
-            $headers = xdebug_get_headers();
-            header_remove();
-            ob_end_flush();
-            ob_clean();
-
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
-            $this->assertContains('X-Content-Type-Options: nosniff', $headers);
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
-        } else {
-            $this->assertTrue(true, "Preventing Risky warning.");
-        }
-    }
+//    #[RunInSeparateProcess]
+//    #[PreserveGlobalState(false)]
+//    function test___construct()
+//    {
+//        $this->dbProxySetupForAuthAccess("person", 1);
+//        if (function_exists('xdebug_get_headers') && false) {
+//            ob_start();
+//            $this->db_proxy->__construct();
+//            $headers = xdebug_get_headers();
+//            header_remove();
+//            ob_end_flush();
+//            ob_clean();
+//
+//            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+//            $this->assertContains('X-Content-Type-Options: nosniff', $headers);
+//            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+//        } else {
+//            $this->assertTrue(true, "Preventing Risky warning.");
+//        }
+//    }
 
 
     function testAdvisorClassOnRead()
@@ -97,7 +98,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
             'table' => "{$this->schemaName}testtable",
             'key' => 'id'/*, 'sequence' => "{$this->schemaName}serial"*/]];
 
-        $this->dbProxySetupForAccess("person", 1, true);
+        $this->dbProxySetupForAccess("person", 1, 1);
 //        $this->db_proxy->logger->clearLogs();
 
         $this->setTestMode();
@@ -186,8 +187,8 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $testResult = $this->dbRead("testtable", null, null,
             $isPgsql ? $dataSrcPgsql : $dataSrcOthers);
 
-        $countTTBefore = $testResult ? count($testResult) : 0;
-        $this->assertTrue($countTTBefore >= 0, "Exist test table.");
+        $countTTBefore = $testResult ? count($testResult) : null;
+        $this->assertNotNull($countTTBefore, "Exist test table.");
 
         $nameValue = random_int(10000000, 99999999);
         $addressValue = random_int(10000000, 99999999);

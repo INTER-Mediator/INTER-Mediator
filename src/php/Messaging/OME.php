@@ -664,6 +664,7 @@ class OME
         return $resultMail;
     }
 
+    /** @phpstan-ignore method.unused */
     private function recepientsArray(array $ar): array
     {
         mb_regex_encoding('UTF-8');
@@ -752,7 +753,8 @@ class OME
     /** Unifies CRLF to LF.
      * @param string $str The string to unify.
      * @return string The unified string.
-     */
+     * @phpstan-ignore method.unused
+    */
     private function unifyCRLF(string $str): string
     {
         $strUnifiedLF = str_replace("\r", "\n", str_replace("\r\n", "\n", $str));

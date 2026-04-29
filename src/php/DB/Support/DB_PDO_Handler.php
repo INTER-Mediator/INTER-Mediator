@@ -105,16 +105,13 @@ abstract class DB_PDO_Handler
 
     /** Returns the SQL ORDER BY command for the database.
      * @param string $sortClause Sort clause.
-     * @param string $limit Limit parameter.
-     * @param string $offset Offset parameter.
+     * @param int $limit Limit parameter.
+     * @param int $offset Offset parameter.
      * @return string SQL ORDER BY command.
      */
-    public function sqlOrderByCommand(string $sortClause, string $limit, string $offset): string
+    public function sqlOrderByCommand(string $sortClause, int $limit, int $offset): string
     {
-        return
-            (strlen($sortClause) > 0 ? "ORDER BY {$sortClause} " : "") .
-            (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
-            (strlen($offset) > 0 ? "OFFSET {$offset} " : "");
+        return (strlen($sortClause) > 0 ? "ORDER BY {$sortClause} " : "") . "LIMIT {$limit} OFFSET {$offset} ";
     }
 
     /** Returns the SQL DELETE command for the database.

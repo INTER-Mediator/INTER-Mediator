@@ -149,7 +149,7 @@ class SendMail extends MessagingProvider
                     }
                     $ome->insertToTemplate($dataArray);
                 } else if (isset($sendMailParam['body-constant'])) {
-                    $ome->setBody($this->modernTemplating($result[$i], $sendMailParam['body-constant']), true);
+                    $ome->setBody($this->modernTemplating($result[$i], $sendMailParam['body-constant']));
                 } else if (isset($result[$i][$sendMailParam['body']]) && $sendMailParam['body']) {
                     $ome->setBody($result[$i][$sendMailParam['body']]);
                 }
@@ -233,7 +233,7 @@ class SendMail extends MessagingProvider
                 $ome->setFromField(trim($this->modernTemplating($result[$i], $mailSeed['from'])));
                 $ome->setSubject($this->modernTemplating($result[$i], $mailSeed['subject']));
                 $bodyString = $this->modernTemplating($result[$i], $mailSeed['body']);
-                $type = (str_starts_with($bodyString, '<html>')) ? 'text/html' : false;
+                $type = (str_starts_with($bodyString, '<html>')) ? 'text/html' : null;
 
                 $ome->setBody($bodyString, $type);
             }

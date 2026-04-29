@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB\Support;
 
+use DateInterval;
 use DateTime;
 use Exception;
 use INTERMediator\DB\PDO;
@@ -43,7 +44,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Stores a challenge for authentication.
-     * @param string|null $uid User ID.
+     * @param string|null|int $uid User ID.
      * @param string $challenge Challenge string.
      * @param string $clientId Client ID.
      * @param string $prefix Prefix for the challenge.
@@ -51,7 +52,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @return void
      * Using 'issuedhash'.
      */
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void
+    public function authSupportStoreChallenge(string|null|int $uid,
+                                              string          $challenge,
+                                              string          $clientId,
+                                              string          $prefix = "",
+                                              bool            $alwaysInsert = false): void
     {
         $this->logger->setDebugMessage("[authSupportStoreChallenge] $uid, $challenge, $clientId");
 
@@ -155,17 +160,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Retrieves a challenge for authentication.
-     * @param null|string $uid User ID.
+     * @param null|string|int $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
      * @param bool $isMulti Retrieve multiple challenges.
-     * @return ?string Challenge string or null if not found.
+     * @return null|string|array Challenge string or null if not found.
      * Using 'issuedhash'.
      * @throws Exception
      */
-    public function authSupportRetrieveChallenge(
-        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): null|string|array
+    public function authSupportRetrieveChallenge(null|string|int $uid,
+                                                 string          $clientId,
+                                                 bool            $isDelete = true,
+                                                 string          $prefix = "",
+                                                 bool            $isMulti = false): null|string|array
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -548,11 +556,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Gets a group name from a group ID.
-     * @param string $groupid Group ID.
+     * @param string|int $groupid Group ID.
      * @return ?string Group name or null if not found.
      * Using 'authgroup'.
      */
-    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
+    public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if (is_null($groupTable) || !$this->pdoDB->setupConnection()) {
@@ -767,11 +775,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Gets a username from a user ID.
-     * @param string $userid User ID.
+     * @param string|int $userid User ID.
      * @return ?string Username or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportGetUsernameFromUserId(string $userid): ?string
+    public function authSupportGetUsernameFromUserId(string|int $userid): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$userid || !$this->pdoDB->setupConnection()) {
@@ -1302,7 +1310,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 throw new Exception("ERROR in SELECT: {$sql}");
             }
             $counter = 0;
+            $resultRow = [];
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $resultRow = $row;
                 $counter++;
             }
             if ($counter === 0) {
@@ -1310,10 +1320,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             } else if ($counter > 1) {
                 throw new Exception("Multiple Users Detected from the authuser table {$pkid}: {$sql}");
             }
-            $this->logger->setDebugMessage("[getLoginUserInfo] {$sql}");
-            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                return $row;
-            }
+            $this->logger->setDebugMessage("[authSupportUserInfoFromPublickeyId] {$sql}");
+            return $resultRow;
         } catch (\Exception $e) {
             $this->pdoDB->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
         }
@@ -1357,5 +1365,63 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $this->pdoDB->errorMessageStore("[authSupportStore2FASecret] ERROR: {$e->getMessage()}");
         }
 
+    }
+
+    public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int
+    {
+        $counter = 0;
+        $failTable = "authfail";
+        try {
+            if (!$this->pdoDB->setupConnection()) {
+                throw new Exception("authfail table setting up failed.");
+            }
+            $periodBefore = (new DateTime())->modify("-{$seconds} seconds")->format('Y-m-d H:i:s');
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " COUNT(*) AS count FROM {$failTable}"
+                . " WHERE dt >= " . $this->pdoDB->link->quote($periodBefore)
+                . " AND ip = " . $this->pdoDB->link->quote($ip);
+            if (!is_null($username)) {
+                $sql .= " AND username = " . $this->pdoDB->link->quote($username);
+            }
+            $result = $this->pdoDB->link->query($sql);
+            $this->logger->setDebugMessage("[authSupportCheckAuthFailCount] {$sql}");
+            if ($result === false) {
+                throw new Exception("ERROR in SELECT: {$sql}");
+            }
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $counter = $row['count'];
+            }
+            $this->logger->setDebugMessage("[authSupportCheckAuthFailCount] counter = {$counter}");
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportCheckAuthFailCount] ERROR: {$e->getMessage()}");
+        }
+        return $counter;
+    }
+
+    public function authSupportAddAuthFail(string $ip, string $username): void
+    {
+        $failTable = "authfail";
+        try {
+            if (!$this->pdoDB->setupConnection()) {
+                throw new Exception("authfail table setting up failed.");
+            }
+            $oneDayBefore = (new DateTime())->sub(new DateInterval('P1D'))->format('Y-m-d H:i:s');
+            $sql = "{$this->pdoDB->handler->sqlDELETECommand()}{$failTable} "
+                . " WHERE dt <= " . $this->pdoDB->link->quote($oneDayBefore);
+            $result = $this->pdoDB->link->query($sql);
+            $this->logger->setDebugMessage("[authSupportAddAuthFail] {$sql}");
+            if ($result === false) {
+                throw new Exception("ERROR in DELETE: {$sql}");
+            }
+            $tableRef = "{$failTable} (ip, username)";
+            $setClause = "VALUES ({$this->pdoDB->link->quote($ip)},{$this->pdoDB->link->quote($username)})";
+            $sql = $this->pdoDB->handler->sqlINSERTCommand($tableRef, $setClause);
+            $result = $this->pdoDB->link->query($sql);
+            $this->logger->setDebugMessage("[authSupportAddAuthFail] {$sql}");
+            if ($result === false) {
+                throw new Exception("ERROR in INSERT: {$sql}");
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportAddAuthFail] ERROR: {$e->getMessage()}");
+        }
     }
 }

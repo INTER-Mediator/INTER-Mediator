@@ -24,15 +24,15 @@ exports.config = {
     './test/specs/form_page_mysql.e2e.js',
     './test/specs/form_page_postgresql.e2e.js',
     './test/specs/form_page_sqlite.e2e.js',
-    './test/specs/editing_page_mysql.e2e.js',
-    './test/specs/editing_page_postgresql.e2e.js',
-    './test/specs/editing_page_sqlite.e2e.js',
     './test/specs/calc_lookup_page_mysql.e2e.js',
     './test/specs/calc_lookup_page_postgresql.e2e.js',
     './test/specs/calc_lookup_page_sqlite.e2e.js',
     './test/specs/media_mysql.e2e.js',
     './test/specs/media_postgresql.e2e.js',
     './test/specs/media_sqlite.e2e.js',
+    './test/specs/media2_mysql.e2e.js',
+    './test/specs/media2_postgresql.e2e.js',
+    './test/specs/media2_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -52,7 +52,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 6,
+  maxInstances: 3,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your abilities:

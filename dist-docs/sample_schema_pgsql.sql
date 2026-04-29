@@ -677,6 +677,21 @@ GRANT ALL PRIVILEGES ON im_sample.operationlog_id_seq TO web;
 
 /* In case of real deployment, some indices are required for quick operations. */
 
+-- Collecting failed login information.
+CREATE TABLE authfail
+(
+    id       SERIAL PRIMARY KEY ,
+    dt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip       TEXT,
+    username TEXT
+);
+
+CREATE INDEX authfail_dt ON authfail (dt);
+CREATE INDEX authfail_ip ON authfail (ip);
+CREATE INDEX authfail_username ON authfail (username);
+CREATE INDEX authfail_ip_username ON authfail (ip, username);
+GRANT ALL PRIVILEGES ON im_sample.authfail_id_seq TO web;
+
 CREATE TABLE testtable
 (
     id      SERIAL PRIMARY KEY,
@@ -736,6 +751,7 @@ GRANT ALL PRIVILEGES ON im_sample.rent TO web;
 GRANT ALL PRIVILEGES ON im_sample.staff TO web;
 GRANT ALL PRIVILEGES ON im_sample.category TO web;
 GRANT ALL PRIVILEGES ON im_sample.testtable TO web;
+GRANT ALL PRIVILEGES ON im_sample.authfail TO web;
 GRANT ALL PRIVILEGES ON im_sample.fileupload TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredcontext TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredpks TO web;

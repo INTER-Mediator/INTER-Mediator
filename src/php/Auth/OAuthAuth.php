@@ -258,13 +258,15 @@ class OAuthAuth
                 $generatedClientID = IMUtil::generateClientId('', $credential);
                 $challenge = IMUtil::generateChallenge();
                 $dbProxy->saveChallenge($param["username"], $challenge, $generatedClientID, "+");
-                setcookie('_im_credential_token',
-                    $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
-                    time() + $authExpired, '/', "", false, true);
-                setcookie("_im_username_{$oAuthRealm}",
-                    $param["username"], time() + $authExpired, '/', "", false, false);
-                setcookie("_im_clientid_{$oAuthRealm}",
-                    $generatedClientID, time() + $authExpired, '/', "", false, false);
+                setcookie('_im_credential_token', $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
+                    ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                        'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                setcookie("_im_username_{$oAuthRealm}", $param["username"],
+                    ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                        'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                setcookie("_im_clientid_{$oAuthRealm}", $generatedClientID,
+                    ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
+                        'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
             }
 
             if ($this->debugMode) {

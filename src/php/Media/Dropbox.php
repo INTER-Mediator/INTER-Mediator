@@ -133,11 +133,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
             $targetFieldName = $field[$counter];
             $dirPath = $contextName . DIRECTORY_SEPARATOR
                 . $keyField . "=" . $keyValue . DIRECTORY_SEPARATOR . $targetFieldName;
-            try {
-                $rand4Digits = random_int(1000, 9999);
-            } catch (Exception $ex) {
-                $rand4Digits = rand(1000, 9999);
-            }
+            $rand4Digits = random_int(1000, 9999);
 
             $objectPath = $this->rootInDropbox . '/' . $dirPath . '/'
                 . (!is_null($this->customFileName)

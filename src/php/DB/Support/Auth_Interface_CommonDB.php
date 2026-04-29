@@ -53,14 +53,18 @@ interface Auth_Interface_CommonDB
     public function getAuthorizedGroups(?string $operation = null): array;
 
     /** Stores a challenge in the issuedhash authentication table.
-     * @param string|null $uid The user ID.
+     * @param string|null|int $uid The user ID.
      * @param string $challenge The challenge string.
      * @param string $clientId The client identifier.
      * @param string $prefix Optional prefix for the challenge.
      * @param bool $alwaysInsert Whether to always insert a new challenge.
      * @return void
      */
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void;
+    public function authSupportStoreChallenge(string|null|int $uid,
+                                              string $challenge,
+                                              string $clientId,
+                                              string $prefix = "",
+                                              bool $alwaysInsert = false): void;
 
     /** Removes outdated challenges from the issuedhash authentication table.
      * @return bool True if successful, false otherwise.
@@ -68,15 +72,18 @@ interface Auth_Interface_CommonDB
     public function authSupportRemoveOutdatedChallenges(): bool;
 
     /** Retrieves a challenge from the issuedhash authentication table.
-     * @param null|string $uid The user ID.
+     * @param null|string|int $uid The user ID.
      * @param string $clientId The client identifier.
      * @param bool $isDelete Whether to delete the challenge after retrieval.
      * @param string $prefix Optional prefix for the challenge.
      * @param bool $isMulti Whether to support multiple challenges.
-     * @return string|null The challenge string, or null if not found.
+     * @return string|null|array The challenge string, or null if not found.
      */
-    public function authSupportRetrieveChallenge(
-        ?string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): null|string|array;
+    public function authSupportRetrieveChallenge(null|string|int $uid,
+                                                 string $clientId,
+                                                 bool $isDelete = true,
+                                                 string $prefix = "",
+                                                 bool $isMulti = false): null|string|array;
 
     /** Checks the media token for a user in the issuedhash authentication table.
      * @param string $uid The user ID.
@@ -133,16 +140,16 @@ interface Auth_Interface_CommonDB
     public function authSupportGetUserIdFromUsername(?string $username): ?string;
 
     /** Retrieves the username from a user ID in the authuser authentication table.
-     * @param string $userid The user ID.
+     * @param string|int $userid The user ID.
      * @return string|null The username, or null if not found.
      */
-    public function authSupportGetUsernameFromUserId(string $userid): ?string;
+    public function authSupportGetUsernameFromUserId(string|int $userid): ?string;
 
     /** Retrieves the group name from a group ID in the authgroup authentication table.
-     * @param string $groupid The group ID.
+     * @param string|int $groupid The group ID.
      * @return string|null The group name, or null if not found.
      */
-    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string;
+    public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string;
 
     /** Retrieves the groups for a user in the authuser and authgroup authentication tables.
      * @param string|null $user The user value.
@@ -233,4 +240,7 @@ interface Auth_Interface_CommonDB
     public function authSupportUserInfoFromPublickeyId(string $pkid): array;
 
     public function authSupportStore2FASecret(string $uid, string|null $secret): void;
+
+    public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int;
+    public function authSupportAddAuthFail(string $ip, string $username): void;
 }

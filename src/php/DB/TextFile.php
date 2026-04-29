@@ -342,7 +342,7 @@ class TextFile extends DBClass
      * @param string $value
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
     }
 
@@ -372,11 +372,11 @@ class TextFile extends DBClass
 
     /** Set data to the updated record.
      * @param string $field
-     * @param string|null $value
+     * @param null|string|int|float|bool $value
      * @param int $index
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
     }
 

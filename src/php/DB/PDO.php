@@ -146,11 +146,11 @@ class PDO extends DBClass
 
     /** Sets data to the updated record.
      * @param string $field
-     * @param string|null $value
+     * @param null|string|int|float|bool $value
      * @param int $index
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
@@ -186,7 +186,7 @@ class PDO extends DBClass
      * @param string $value
      * @return void
      */
-    public function softDeleteActivate(string $field, string $value): void
+    public function softDeleteActivate(string $field, string|int $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
@@ -379,11 +379,11 @@ class PDO extends DBClass
             }
         }
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
-            . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
+            . $this->handler->sqlOrderByCommand($sortClause, $limitParam, intval($offset));
         $this->logger->setDebugMessage($sql);
         $this->notifyHandler->setQueriedEntity($isAggregate ? $this->dbSettings->getAggregationFrom() : $sourceTable);
         $this->notifyHandler->setQueriedCondition(
-            "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
+            "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, intval($offset))}");
 
         $result = $this->link->query($sql);
         if (!$this->errorHandlingPDO($sql, $result)) {

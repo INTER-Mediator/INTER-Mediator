@@ -4,9 +4,9 @@ namespace INTERMediator\DB\Support\ActionHandlers;
 
 use Exception;
 use INTERMediator\DB\Logger;
+use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\AuthenticatorAttestationResponseValidator;
-use Webauthn\PublicKeyCredential;
 
 class RegisterPasskeyHandler extends ActionHandler
 {
@@ -17,6 +17,15 @@ class RegisterPasskeyHandler extends ActionHandler
      * @return bool Result of the operation.
      */
     public function isAuthAccessing(): bool
+    {
+        return false;
+    }
+
+    /** Determines whether authorization should be skipped for this handler.
+     *
+     * @return bool Always returns false, meaning authorization is not skipped.
+     */
+    public function isSkipAuthorization(): bool
     {
         return false;
     }
@@ -71,20 +80,22 @@ class RegisterPasskeyHandler extends ActionHandler
             $responseValidator = AuthenticatorAttestationResponseValidator::create($creationCSM);
             $creationOption = $this->publicKeyCredentialCreationOptions($userName, hex2bin($challenge));
             try {
-                $publicKeyCredentialSource = $responseValidator->check($publicKeyCredential->response, $creationOption, $hostName);
-                // Storing passkey data into the "authuser" table.
-                $publicKey = $this->passKeySeriarize($publicKeyCredentialSource);
-                $publicKeyCredentialId = base64_encode($publicKeyCredentialSource->publicKeyCredentialId);
-                $this->proxy->dbClass->authHandler->authSupportStorePublicKey($uid, $publicKey, $publicKeyCredentialId);
-                Logger::getInstance()->setDebugMessage(
-                    "[RegisterPasskeyHandler] *** Passkey registration succeed.***", 2);
+                if ($publicKeyCredential->response instanceof AuthenticatorAttestationResponse) {
+                    $publicKeyCredentialSource = $responseValidator->check(($publicKeyCredential->response), $creationOption, $hostName);
+                    // Storing passkey data into the "authuser" table.
+                    $publicKey = $this->passKeySeriarize($publicKeyCredentialSource);
+                    $publicKeyCredentialId = str_replace(['+', '/', '='], ['-', '_', ''],
+                        base64_encode($publicKeyCredentialSource->publicKeyCredentialId));  // base64_url encoding
+                    $this->proxy->dbClass->authHandler->authSupportStorePublicKey($uid, $publicKey, $publicKeyCredentialId);
+                    Logger::getInstance()->setDebugMessage(
+                        "[RegisterPasskeyHandler] *** Passkey registration succeed.***", 2);
+                }
             } catch (\Throwable $e) {
                 Logger::getInstance()->setErrorMessage("Passkey Registration Error: {$e->getMessage()}");
             }
         } catch (Exception $e) {
             Logger::getInstance()->setDebugMessage(
                 "[RegisterPasskeyHandler] Exception:" . $e->getMessage(), 2);
-
         }
     }
 

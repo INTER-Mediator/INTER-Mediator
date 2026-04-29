@@ -102,12 +102,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
         $s3 = new S3Client($clientArgs);
         $objectSpec = ['Bucket' => $this->rootBucket, 'Key' => $urlPath,];
         $result = $s3->getObject($objectSpec);
-        if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
-            $content = $result['Body']->getContents(); // @phpstan-ignore method.nonObject
-        } else {
-            $content = $result['Body'];
-        }
-        return $content;
+        return $result['Body'];
     }
 
     /** Returns the file name of the last accessed or processed file.
@@ -157,11 +152,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
             $targetFieldName = $field[$counter];
             $dirPath = $contextName . DIRECTORY_SEPARATOR
                 . $keyField . "=" . $keyValue . DIRECTORY_SEPARATOR . $targetFieldName;
-            try {
-                $rand4Digits = random_int(1000, 9999);
-            } catch (Exception $ex) {
-                $rand4Digits = rand(1000, 9999);
-            }
+            $rand4Digits = random_int(1000, 9999);
             $objectKey = $dirPath . '/'
                 . (!is_null($this->customFileName)
                     ? ($this->customFileName . ($counter > 1 ? "_" . $counter : ""))

@@ -13,11 +13,11 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        level: [ 3, 4 ]
+        level: [ 5, 6 ]
         include:
-          - current-level: 3
+          - current-level: 5
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # v2.33.0
@@ -30,7 +30,7 @@ jobs:
         run: ./vendor/bin/phpstan analyse  -c ./spec/phpstan.neon --memory-limit 1024M --level "${{ matrix.level }}"
 
       - name: Run PHPStan
-        if: matrix.level > matrix.current-level && github.event_name != 'pull_request'
+        if: matrix.level > matrix.current-level # && github.event_name != 'pull_request'
         continue-on-error: true
         run: |
           ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M --level "${{ matrix.level }}"
