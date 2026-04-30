@@ -3,10 +3,11 @@ module.exports = (searchPage) => {
 
   describe('Searching Page', () => {
     it('1-can show the Listing area, and showing all postalcode data.', async () => {
+      await searchPage.navigator.waitForExist()
       await expect(searchPage.navigator).toExist()
       await expect(searchPage.masterTable).toExist()
       // await browser.pause(waiting)
-      await searchPage.button1.click() // all global variable are false. OR operation
+      await searchPage.button1.clickStable() // all global variable are false. OR operation
 
       await expect(searchPage.masterFieldPostalCode).toBeElementsArrayOfSize(3654)
       await expect(searchPage.masterFieldPref).toBeElementsArrayOfSize(3654)
@@ -38,7 +39,9 @@ module.exports = (searchPage) => {
      */
     it('2-can search from a postal code.', async () => {
       await browser.refresh()
-      await searchPage.button1.click() // all global variable are false. OR operation
+      await searchPage.navigator.waitForExist()
+
+      await searchPage.button1.clickStable() // all global variable are false. OR operation
       await searchPage.searchPostalCode.setValue("1710052")
       await searchPage.searchButton.click()
       await expect(searchPage.navigator).toExist()
@@ -64,7 +67,9 @@ module.exports = (searchPage) => {
      */
     it('3-can search from a part of string.', async () => {
       await browser.refresh()
-      await searchPage.button1.click() // all global variable are false. OR operation
+      await searchPage.navigator.waitForExist()
+
+      await searchPage.button1.clickStable() // all global variable are false. OR operation
       // await searchPage.searchPostalCode.setValue("")
       // await searchPage.searchCity.setValue("")
       // await searchPage.searchTown.setValue("")
@@ -92,6 +97,7 @@ module.exports = (searchPage) => {
     });
     it('4-can resort with sorting button.', async () => {
       await searchPage.sortDesc.click()
+      await searchPage.navigator.waitForExist()
       // await browser.pause(waiting)
       const masterCodes = await searchPage.masterFieldPostalCode
       const masterPrefs = await searchPage.masterFieldPref
@@ -112,6 +118,8 @@ module.exports = (searchPage) => {
     */
     it('5-can search from a part of string.', async () => {
       await browser.refresh()
+      await searchPage.navigator.waitForExist()
+
       await expect(searchPage.navigator).toExist()
       await expect(searchPage.masterTable).toExist()
 // await searchPage.button2.waitForClickable()

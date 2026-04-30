@@ -1,3 +1,5 @@
+const path = require("node:path");
+const fs = require("node:fs");
 exports.config = {
   //
   // ====================
@@ -134,6 +136,47 @@ exports.config = {
   // see also: https://webdriver.io/docs/dot-reporter
   reporters: ['spec'],
 
+  before: async function () {
+    browser.addCommand(
+      'clickStable',
+      async function (options = {}) {
+        const timeout = options.timeout || 20000
+        const retries = options.retries || 3
+        let lastError
+
+        for (let i = 0; i < retries; i++) {
+          try {
+            await this.waitForExist({ timeout })
+            await this.scrollIntoView()
+            await this.waitForDisplayed({ timeout })
+            await this.waitForClickable({ timeout })
+            await this.click()
+            return
+          } catch (e) {
+            lastError = e
+            await browser.pause(200)
+          }
+        }
+        throw lastError
+      },
+      true
+    )
+  },
+
+  afterTest: async function (test, context, { error }) {
+    if (!error) {
+      return
+    }
+    const fs = require('node:fs')
+    const path = require('node:path')
+    const outDir = path.resolve(process.cwd(), 'artifacts')
+    fs.mkdirSync(outDir, { recursive: true })
+
+    const safeName = `${test.parent}-${test.title}`.replace(/[^a-zA-Z0-9._-]+/g, '_')
+    await browser.saveScreenshot(path.join(outDir, `${safeName}.png`))
+    const html = await browser.getPageSource()
+    fs.writeFileSync(path.join(outDir, `${safeName}.html`), html)
+  },
 
   //
   // Options to be passed to Mocha.

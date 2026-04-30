@@ -15,7 +15,6 @@ The below configuration files are tested on GitHub Actions every time to commit.
 - wdio-auth-firefox.conf.js
 - wdio-editing-chrome.conf.js
 - wdio-form-chrome.conf.js
-- wdio-form-md-chrome.conf.js
 
 The below ones have to be tested manually.
 
@@ -23,15 +22,16 @@ The below ones have to be tested manually.
 - wdio-editing-edge.conf.js
 - wdio-editing-firefox.conf.js (Not stable)
 - wdio-form-edge.conf.js
-- wdio-form-firefox.conf.js
+- wdio-form-firefox.conf.js (Not stable)
+- wdio-form-md-chrome.conf.js
 - wdio-form-md-edge.conf.js (Not stable)
 - wdio-form-md-firefox.conf.js (Not stable)
-- wdio-search-chrome.conf.js
-- wdio-search-edge.conf.js
+- wdio-search-chrome.conf.js (Not stable from wdio v9)
+- wdio-search-edge.conf.js (Not stable from wdio v9)
 - wdio-search-firefox.conf.js (Not stable)
-- wdio-sync-chrome.conf.js
-- wdio-sync-edge.conf.js
-- wdio-sync-firefox.conf.js
+- wdio-sync-chrome.conf.js (Not stable from wdio v9)
+- wdio-sync-edge.conf.js (Not stable from wdio v9)
+- wdio-sync-firefox.conf.js (Not stable)
 
 ## Latest Test Record
 
