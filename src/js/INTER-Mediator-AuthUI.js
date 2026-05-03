@@ -380,7 +380,7 @@ let IMLibAuthenticationUI = {
         if (IMLibAuthentication.oAuthParams[provider]
           && IMLibAuthentication.oAuthParams[provider].Behavior !== 'no-show-on-login-panel') {
           oAuthButton[provider].onclick = function () {
-            if (!IMLibAuthentication.checkUIEventDT()) { // Prevent multiple click
+            if (!INTERMediatorOnPage.checkUIEventDT()) { // Prevent multiple click
               return
             }
             if (!IMLibAuthentication.oAuthParams[provider].AuthURL) {

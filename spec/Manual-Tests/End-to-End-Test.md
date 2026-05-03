@@ -40,6 +40,12 @@ The format of below is: [commit code from git log], [Version from composer.json]
 Every test results are able to identify by .conf.js files in the /spec/run directory.
 The test 'wdio-auth-chrome.conf.js' and 'wdio-auth-firefox.conf.js' are running on GitHub Actions.
 
+- commit 5b048d0cd72378fc38c40717fbf9cd5b6240d178 (Thu Apr 30 14:11:33 2026 +0900)
+  INTER-Mediator Ver. 15 (2026-04-05),
+  wdio-form-md-chrome.conf.js,
+  PHP 8.4.7 (Homebrew based)+MySQL 8.4.5/PostgreSQL 14.18/SQLite 3.51.0+chrome 147.0.7727.138 on macOS Tahoe 26.4.1,
+  by Masayuki Nii <nii@msyk.net>, OK
+
 - commit 1fbb4967606d29a9c535b955528e19b0ff45932d (Wed Apr 29 11:25:19 2026 +0900)
   INTER-Mediator Ver. 15 (2026-04-05),
   wdio-form-edge.conf.js,

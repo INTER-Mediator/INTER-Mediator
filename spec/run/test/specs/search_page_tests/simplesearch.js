@@ -38,14 +38,15 @@ module.exports = (searchPage) => {
     f3 = "1710052"
      */
     it('2-can search from a postal code.', async () => {
-      await browser.refresh()
-      await searchPage.navigator.waitForExist()
+      await searchPage.navigatorUpdateButton.clickStable()
+      // await browser.refresh()
+      // await searchPage.navigator.waitForExist()
 
       await searchPage.button1.clickStable() // all global variable are false. OR operation
       await searchPage.searchPostalCode.setValue("1710052")
-      await searchPage.searchButton.click()
-      await expect(searchPage.navigator).toExist()
-      await expect(searchPage.masterTable).toExist()
+      await searchPage.searchButton.clickStable()
+      // await expect(searchPage.navigator).toExist()
+      // await expect(searchPage.masterTable).toExist()
       // await browser.pause(waiting)
 
       await expect(searchPage.masterFieldPostalCode).toBeElementsArrayOfSize(1)
@@ -66,16 +67,17 @@ module.exports = (searchPage) => {
     f8 like '%中%' OR f9 like '%中%'
      */
     it('3-can search from a part of string.', async () => {
-      await browser.refresh()
-      await searchPage.navigator.waitForExist()
+      await searchPage.navigatorUpdateButton.clickStable()
+      // await browser.refresh()
+      // await searchPage.navigator.waitForExist()
 
       await searchPage.button1.clickStable() // all global variable are false. OR operation
       // await searchPage.searchPostalCode.setValue("")
       // await searchPage.searchCity.setValue("")
       // await searchPage.searchTown.setValue("")
       await searchPage.searchAll.setValue("中")
-      await searchPage.searchButton.click()
-      await searchPage.sortAsc.click()
+      await searchPage.searchButton.clickStable()
+      await searchPage.sortAsc.clickStable()
       // await browser.pause(waiting)
 
       await expect(searchPage.masterFieldPostalCode).toBeElementsArrayOfSize(282)
@@ -96,8 +98,9 @@ module.exports = (searchPage) => {
       expect(masterTowns[281]).toHaveValue('中原')
     });
     it('4-can resort with sorting button.', async () => {
-      await searchPage.sortDesc.click()
-      await searchPage.navigator.waitForExist()
+      await searchPage.navigatorUpdateButton.clickStable()
+      // await searchPage.sortDesc.clickStable()
+      // await searchPage.navigator.waitForExist()
       // await browser.pause(waiting)
       const masterCodes = await searchPage.masterFieldPostalCode
       const masterPrefs = await searchPage.masterFieldPref
@@ -117,18 +120,19 @@ module.exports = (searchPage) => {
    f8 like '%中%' AND f9 like '%中%'
     */
     it('5-can search from a part of string.', async () => {
-      await browser.refresh()
-      await searchPage.navigator.waitForExist()
+      await searchPage.navigatorUpdateButton.clickStable()
+      // await browser.refresh()
+      // await searchPage.navigator.waitForExist()
 
       await expect(searchPage.navigator).toExist()
       await expect(searchPage.masterTable).toExist()
 // await searchPage.button2.waitForClickable()
-      await searchPage.button2.click() // all global variable are false. AND operation
+      await searchPage.button2.clickStable() // all global variable are false. AND operation
       await searchPage.searchAll.setValue("中")
       await searchPage.searchButton.waitForClickable()
-      await searchPage.searchButton.click()
+      await searchPage.searchButton.clickStable()
       await searchPage.sortAsc.waitForClickable()
-      await searchPage.sortAsc.click()
+      await searchPage.sortAsc.clickStable()
       await expect(searchPage.navigator).toExist()
       await expect(searchPage.masterTable).toExist()
 

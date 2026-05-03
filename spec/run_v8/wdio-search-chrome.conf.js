@@ -24,9 +24,9 @@ exports.config = {
   //
   specs: [
     // './test/specs/**/*.js'
-    './test/specs/search_page_mysql.e2e.js',
-    './test/specs/search_page_postgresql.e2e.js',
-    './test/specs/search_page_sqlite.e2e.js',
+    '../run/test/specs/search_page_mysql.e2e.js',
+    '../run/test/specs/search_page_postgresql.e2e.js',
+    '../run/test/specs/search_page_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],

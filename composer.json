@@ -20,7 +20,7 @@
     "inter-mediator/fmdataapi": ">=36",
     "tecnickcom/tcpdf": ">=6.9",
     "aws/aws-sdk-php": ">=3",
-    "simplesamlphp/simplesamlphp": ">=2",
+    "simplesamlphp/simplesamlphp": "^2",
     "matthiasmullie/minify": ">=1.3",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": ">=9",

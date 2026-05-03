@@ -65,6 +65,10 @@ The format of below is: [commit code from git log], [Version from composer.json]
 
 ### Before developing "IMTesting_SAML" app
 
+- commit c8a22da1ac3981cb637118cad6b4292e0f37643c (Sun May 3 12:55:26 2026 +0900),
+  INTER-Mediator Ver.15(2026-04-05) with SimpleSAMLphp Ver.2.4.5,
+  by Masayuki Nii(2026-05-03 16:00), OK
+
 - commit 0e0a34d2c7354369e17bcce7bfb8bebd4b7eaa7b (Fri Jul 26 14:14:15 2024 +0900),
   INTER-Mediator Ver.13(2024-07-26) with SimpleSAMLphp Ver.2.2.2,
   by Masayuki Nii(2024-07-26 15:00), OK

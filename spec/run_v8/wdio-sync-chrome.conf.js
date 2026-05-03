@@ -24,9 +24,9 @@ exports.config = {
   //
   specs: [
     // './test/specs/**/*.js'
-    './test/specs/sync_mysql.e2e.js',
-    './test/specs/sync_postgresql.e2e.js',
-    './test/specs/sync_sqlite.e2e.js',
+    '../run/test/specs/sync_mysql.e2e.js',
+    '../run/test/specs/sync_postgresql.e2e.js',
+    '../run/test/specs/sync_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
