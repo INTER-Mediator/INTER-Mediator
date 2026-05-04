@@ -20,6 +20,11 @@ npm install --before 2026-03-23
 pnpm install --no-frozen-lockfile
 pnpm install --frozen-lockfile
 
+cd ../run_v8
+npm install --before 2026-03-23
+pnpm install --no-frozen-lockfile
+pnpm install --frozen-lockfile
+
 cd ../run-safari
 npm install --before 2026-03-23
 pnpm install --no-frozen-lockfile

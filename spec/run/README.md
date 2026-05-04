@@ -26,7 +26,7 @@ npx wdio wdio-auth-chrome.conf.js
 Just run the test with Microsoft Edge
 
 ```
-npx wdio wdio-edge.conf.js 
+npx wdio wdio-form-edge.conf.js 
 ```
 
 Just run the test with Firefox

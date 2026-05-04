@@ -1,3 +1,5 @@
+const path = require("node:path");
+const fs = require("node:fs");
 exports.config = {
   //
   // ====================
@@ -21,18 +23,10 @@ exports.config = {
   // will be called from there.
   //
   specs: [
-    './test/specs/form_page_mysql.e2e.js',
-    './test/specs/form_page_postgresql.e2e.js',
-    './test/specs/form_page_sqlite.e2e.js',
-    './test/specs/calc_lookup_page_mysql.e2e.js',
-    './test/specs/calc_lookup_page_postgresql.e2e.js',
-    './test/specs/calc_lookup_page_sqlite.e2e.js',
-    './test/specs/media_mysql.e2e.js',
-    './test/specs/media_postgresql.e2e.js',
-    './test/specs/media_sqlite.e2e.js',
-    './test/specs/media2_mysql.e2e.js',
-    './test/specs/media2_postgresql.e2e.js',
-    './test/specs/media2_sqlite.e2e.js',
+    // './test/specs/**/*.js'
+    './test/specs/sync_mysql.e2e.js',
+    './test/specs/sync_postgresql.e2e.js',
+    './test/specs/sync_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -63,12 +57,12 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 3, //
+    maxInstances: 3, // This is prefer for setting to 1 here
     //
     browserName: 'firefox',
-    'moz:firefoxOptions': {
-      args: ['-headless']
-    }
+    // 'moz:firefoxOptions': {
+    //   args: ['-headless']
+    // }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
@@ -122,7 +116,7 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  //services: ['chromedriver'],
+  //services: ['geckodriver'],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -146,6 +140,47 @@ exports.config = {
   // see also: https://webdriver.io/docs/dot-reporter
   reporters: ['spec'],
 
+  before: async function () {
+    browser.addCommand(
+      'clickStable',
+      async function (options = {}) {
+        const timeout = options.timeout || 20000
+        const retries = options.retries || 3
+        let lastError
+
+        for (let i = 0; i < retries; i++) {
+          try {
+            await this.waitForExist({ timeout })
+            await this.scrollIntoView()
+            await this.waitForDisplayed({ timeout })
+            await this.waitForClickable({ timeout })
+            await this.click()
+            return
+          } catch (e) {
+            lastError = e
+            await browser.pause(200)
+          }
+        }
+        throw lastError
+      },
+      true
+    )
+  },
+
+  afterTest: async function (test, context, { error }) {
+    if (!error) {
+      return
+    }
+    const fs = require('node:fs')
+    const path = require('node:path')
+    const outDir = path.resolve(process.cwd(), 'artifacts')
+    fs.mkdirSync(outDir, { recursive: true })
+
+    const safeName = `${test.parent}-${test.title}`.replace(/[^a-zA-Z0-9._-]+/g, '_')
+    await browser.saveScreenshot(path.join(outDir, `${safeName}.png`))
+    const html = await browser.getPageSource()
+    fs.writeFileSync(path.join(outDir, `${safeName}.html`), html)
+  },
 
   //
   // Options to be passed to Mocha.

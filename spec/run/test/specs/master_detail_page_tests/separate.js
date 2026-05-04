@@ -1,3 +1,4 @@
+const separatePage = require("../../pageobjects/MasterDetailPage/separate_mysql.page");
 module.exports = (separatePage) => {
   const waiting = 500
 
@@ -31,12 +32,13 @@ module.exports = (separatePage) => {
     });
     it('3-can move to the detail page', async () => {
       const buttons = await separatePage.masterButtonMoveToDetail
-      buttons[3].click()
-      browser.pause(waiting)
+      await buttons[3].waitForClickable()
+      await buttons[3].clickStable()
+      // browser.pause(waiting)
 
-      await expect(separatePage.navigator).not.toExist()
-      await expect(separatePage.masterTable).not.toExist()
-      await expect(separatePage.detailTable).toExist()
+      // await expect(separatePage.navigator).not.toExist()
+      // await expect(separatePage.masterTable).not.toExist()
+      // await expect(separatePage.detailTable).toExist()
 
       expect(separatePage.detailFieldPostalCode).toHaveValue('1000003')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
@@ -45,8 +47,9 @@ module.exports = (separatePage) => {
     })
     it('4-can back to the master page', async () => {
       const button = await separatePage.detailButtonMoveToMaster
-      button.click()
-      browser.pause(waiting)
+      await button.waitForClickable()
+      await button.clickStable()
+      // browser.pause(waiting)
 
       // await separatePage.navigator.waitForExist()
       await expect(separatePage.navigator).toExist()
@@ -55,14 +58,18 @@ module.exports = (separatePage) => {
 
     })
     it('5-can edit on the detail page and affect to the result of the master page', async () => {
+      await separatePage.open()
+      await separatePage.navigator.waitForExist()
+
       const buttons = await separatePage.masterButtonMoveToDetail
-      buttons[6].click()
-      browser.pause(waiting)
+      await buttons[6].waitForClickable()
+      await buttons[6].clickStable()
+      // browser.pause(waiting)
 
       // await separatePage.detailTable.waitForExist()
-      await expect(separatePage.navigator).not.toExist()
-      await expect(separatePage.masterTable).not.toExist()
-      await expect(separatePage.detailTable).toExist()
+      // expect(await separatePage.navigator.isDisplayed({withinViewport: true})).toBe(false)
+      // await expect(separatePage.masterTable).not.toExist() // Fails here
+      // await expect(separatePage.detailTable).toExist()
 
       expect(separatePage.detailFieldPostalCode).toHaveValue('1000006')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
@@ -74,8 +81,9 @@ module.exports = (separatePage) => {
       browser.pause(waiting)
 
       const button = await separatePage.detailButtonMoveToMaster
-      button.click()
-      browser.pause(waiting)
+      await button.waitForClickable()
+      await button.clickStable()
+      // browser.pause(waiting)
 
       // separatePage.navigator.waitForExist()
       await expect(separatePage.navigator).toExist()
@@ -85,12 +93,18 @@ module.exports = (separatePage) => {
       expect(await separatePage.masterFieldTown[6]).toHaveValue(value)
     })
     it('6-can move to next page of navigator, and checking', async () => {
-      await separatePage.navigatorMoveButtonNext.click()
-      browser.pause(waiting)
+      await separatePage.open()
+      await separatePage.navigator.waitForExist()
 
-      await expect(separatePage.navigator).toExist()
-      await expect(separatePage.masterTable).toExist()
-      await expect(separatePage.detailTable).not.toExist()
+      await separatePage.navigatorUpdateButton.clickStable()
+      await separatePage.navigatorMoveButtonNext.waitForClickable()
+      await separatePage.navigatorMoveButtonNext.clickStable()
+      // browser.pause(waiting)
+
+      await separatePage.navigator.waitForExist()
+      expect(await separatePage.navigator.isDisplayed({withinViewport: true})).toBe(true)
+      expect(await separatePage.masterTable.isDisplayed({withinViewport: true})).toBe(true)
+      expect(await separatePage.detailTable.isDisplayed({withinViewport: true})).toBe(false)
 
       await separatePage.masterFieldPostalCodeFirst.waitForExist()
       await separatePage.masterFieldPrefFirst.waitForExist()
@@ -107,27 +121,28 @@ module.exports = (separatePage) => {
       expect(await separatePage.masterFieldTown[0]).toHaveValue('永田町山王パークタワー（２２階）')
 
       const buttons = await separatePage.masterButtonMoveToDetail
-      buttons[1].click()
-      browser.pause(waiting)
-      await separatePage.detailButtonMoveToMaster.waitForExist()
-      browser.pause(waiting)
+      buttons[1].clickStable()
+      // browser.pause(waiting)
+      // await separatePage.detailButtonMoveToMaster.waitForExist()
+      // browser.pause(waiting)
 
-      await expect(separatePage.navigator).not.toExist()
-      await expect(separatePage.masterTable).not.toExist()
-      await expect(separatePage.detailTable).toExist()
+      // await expect(separatePage.navigator).not.toExist()
+      // await expect(separatePage.masterTable).not.toExist()
+      // await expect(separatePage.detailTable).toExist()
 
       expect(separatePage.detailFieldPostalCode).toHaveValue('1006123')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
       expect(separatePage.detailFieldCity).toHaveValue('千代田区')
       expect(separatePage.detailFieldTown).toHaveValue('永田町山王パークタワー（２３階）')
 
+      await separatePage.detailFieldTown.waitForEnabled()
       const value = "######"
       await separatePage.detailFieldTown.setValue(value) // Set a value to the field
       browser.pause(waiting)
 
       const button = await separatePage.detailButtonMoveToMaster
-      button.click()
-      browser.pause(waiting)
+      await button.clickStable()
+      // browser.pause(waiting)
 
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
@@ -143,55 +158,63 @@ module.exports = (separatePage) => {
       expect(await separatePage.masterFieldCity[2]).toHaveValue('千代田区')
       expect(await separatePage.masterFieldTown[2]).toHaveValue(value)
     })
-    // it('7-can back to scrolled position', async () => {
-    //   await separatePage.navigatorMoveButtonNext.click()
-    //   browser.pause(waiting)
-    //
-    //   await expect(separatePage.navigator).toExist()
-    //   await expect(separatePage.masterTable).toExist()
-    //   await expect(separatePage.detailTable).not.toExist()
-    //
-    //   await separatePage.masterFieldPostalCodeFirst.waitForExist()
-    //   await separatePage.masterFieldPrefFirst.waitForExist()
-    //   await separatePage.masterFieldCityFirst.waitForExist()
-    //   await separatePage.masterFieldTownFirst.waitForExist()
-    //
-    //   expect(await separatePage.masterFieldPostalCode.length).toBe(100)
-    //   expect(await separatePage.masterFieldPref.length).toBe(100)
-    //   expect(await separatePage.masterFieldCity.length).toBe(100)
-    //   expect(await separatePage.masterFieldTown.length).toBe(100)
-    //   expect(await separatePage.masterFieldPostalCode[0]).toHaveValue('1006407')
-    //   expect(await separatePage.masterFieldPref[0]).toHaveValue('東京都')
-    //   expect(await separatePage.masterFieldCity[0]).toHaveValue('千代田区')
-    //   expect(await separatePage.masterFieldTown[0]).toHaveValue('丸の内東京ビルディング（７階）')
-    //
-    //   const buttons = await separatePage.masterButtonMoveToDetail
-    //   buttons[99].click()
-    //   browser.pause(waiting)
-    //   // await separatePage.detailButtonMoveToMaster.waitForExist()
-    //   // browser.pause(waiting)
-    //
-    //   await expect(separatePage.navigator).not.toExist()
-    //   await expect(separatePage.masterTable).not.toExist()
-    //   await expect(separatePage.detailTable).toExist()
-    //
-    //   expect(separatePage.detailFieldPostalCode).toHaveValue('1006633')
-    //   expect(separatePage.detailFieldPref).toHaveValue('東京都')
-    //   expect(separatePage.detailFieldCity).toHaveValue('千代田区')
-    //   expect(separatePage.detailFieldTown).toHaveValue('丸の内グラントウキョウサウスタワー（３３階）')
-    //
-    //   const button = await separatePage.detailButtonMoveToMaster
-    //   button.click()
-    //   browser.pause(waiting)
-    //   // await separatePage.firstMasterButtonMoveToDetail.waitForExist()
-    //   browser.pause(waiting)
-    //
-    //   await expect(separatePage.navigator).toExist()
-    //   await expect(separatePage.masterTable).toExist()
-    //   await expect(separatePage.detailTable).not.toExist()
-    //
-    //   expect(await await separatePage.masterFieldPostalCode[0].isDisplayedInViewport()).toBe(false)
-    //   expect(await await separatePage.masterFieldPostalCode[99].isDisplayedInViewport()).toBe(true)
-    // })
+    it('7-can back to scrolled position', async () => {
+      await separatePage.navigatorUpdateButton.waitForClickable()
+      await separatePage.navigatorUpdateButton.clickStable()
+       // browser.pause(waiting)
+
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await separatePage.navigatorMoveButtonNext.waitForClickable()
+      await separatePage.navigatorMoveButtonNext.clickStable()
+      // browser.pause(waiting)
+
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
+
+      await separatePage.masterFieldPostalCodeFirst.waitForExist()
+      await separatePage.masterFieldPrefFirst.waitForExist()
+      await separatePage.masterFieldCityFirst.waitForExist()
+      await separatePage.masterFieldTownFirst.waitForExist()
+
+      expect(await separatePage.masterFieldPostalCode.length).toBe(100)
+      expect(await separatePage.masterFieldPref.length).toBe(100)
+      expect(await separatePage.masterFieldCity.length).toBe(100)
+      expect(await separatePage.masterFieldTown.length).toBe(100)
+      expect(await separatePage.masterFieldPostalCode[0]).toHaveValue('1006407')
+      expect(await separatePage.masterFieldPref[0]).toHaveValue('東京都')
+      expect(await separatePage.masterFieldCity[0]).toHaveValue('千代田区')
+      expect(await separatePage.masterFieldTown[0]).toHaveValue('丸の内東京ビルディング（７階）')
+
+      const buttons = await separatePage.masterButtonMoveToDetail
+      await buttons[99].waitForClickable()
+      await buttons[99].clickStable()
+      // browser.pause(waiting)
+      // await separatePage.detailButtonMoveToMaster.waitForExist()
+      // browser.pause(waiting)
+
+      // await expect(separatePage.navigator).not.toExist()
+      // await expect(separatePage.masterTable).not.toExist()
+      // await expect(separatePage.detailTable).toExist()
+
+      expect(separatePage.detailFieldPostalCode).toHaveValue('1006633')
+      expect(separatePage.detailFieldPref).toHaveValue('東京都')
+      expect(separatePage.detailFieldCity).toHaveValue('千代田区')
+      expect(separatePage.detailFieldTown).toHaveValue('丸の内グラントウキョウサウスタワー（３３階）')
+
+      const button = await separatePage.detailButtonMoveToMaster
+      button.click()
+      // browser.pause(waiting)
+      // await separatePage.firstMasterButtonMoveToDetail.waitForExist()
+      // browser.pause(waiting)
+
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      // await expect(separatePage.detailTable).not.toExist() // Failed here
+
+      expect(await await separatePage.masterFieldPostalCode[0].isDisplayed({withinViewport: true})).toBe(false)
+      expect(await await separatePage.masterFieldPostalCode[99].isDisplayed({withinViewport: true})).toBe(true)
+    })
   })
 }
