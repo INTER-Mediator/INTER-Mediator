@@ -272,7 +272,7 @@ $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The second value that detects the outdated registering records.
 $foreverLog = '/tmp/nodemon.log';
-*/
+*
 /* Operation Log
  * ===================
  * the table named 'operationlog' is required.
