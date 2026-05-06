@@ -37,8 +37,8 @@
     "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
   },
   "scripts": {
-    "test": "npx wdio run ./run/wdio.conf.js",
-    "wdio": "npx wdio run wdio.conf.js"
+    "test": "pnpm exec wdio run ./run/wdio.conf.js",
+    "wdio": "pnpm exec wdio run wdio.conf.js"
   },
   "devDependencies": {
     "@wdio/cli": "^9",
