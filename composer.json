@@ -6,8 +6,8 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.1",
-    "composer-plugin-api": "~2.9",
-    "composer/composer": "~2.0",
+    "composer-plugin-api": "^2.0",
+    "composer/composer": "^2.0",
     "ext-mbstring": "*",
     "ext-pdo": "*",
     "ext-curl": "*",
