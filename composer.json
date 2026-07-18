@@ -6,8 +6,8 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.1",
-    "composer-plugin-api": "~2.9",
-    "composer/composer": "~2.0",
+    "composer-plugin-api": "2.6.0",
+    "composer/composer": "^2.0",
     "ext-mbstring": "*",
     "ext-pdo": "*",
     "ext-curl": "*",
@@ -21,7 +21,7 @@
     "inter-mediator/fmdataapi": ">=37",
     "tecnickcom/tcpdf": "~7",
     "aws/aws-sdk-php": "~3",
-    "simplesamlphp/simplesamlphp": "^2.4.0",
+    "simplesamlphp/simplesamlphp": "~2.4.0",
     "matthiasmullie/minify": ">=1.3",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": "~9",
@@ -30,8 +30,9 @@
     "symfony/amazon-mailer": "~7.4",
     "symfony/google-mailer": "~7.4",
     "symfony/mime": "~7.4",
-    "symfony/yaml": "~7.4",
-    "web-token/jwt-framework": "~4",
+    "symfony/yaml": "~6.4",
+    "symfony/http-kernel": "6.4.42",
+    "web-token/jwt-framework": "~3",
     "web-auth/webauthn-lib": "~5"
   },
   "extra": {
