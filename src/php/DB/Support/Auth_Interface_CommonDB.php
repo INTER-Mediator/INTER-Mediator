@@ -15,6 +15,8 @@
 
 namespace INTERMediator\DB\Support;
 
+use Exception;
+
 /**
  * Interface for common database authentication support.
  * Provides methods for handling authorization fields, targets, users, groups,
@@ -233,14 +235,73 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array;
 
+    /** Retrieves login user information from the authuser authentication table.
+     * @param string $userID The user ID or username.
+     * @return array Array containing [user ID, real name, email, public key, secret].
+     * @throws Exception If the user table is not configured, connection fails, or multiple/no users are found.
+     */
     public function getLoginUserInfo(string $userID): array;
 
+    /** Stores a public key and its credential ID for a user in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @param string $publicKey The public key to store.
+     * @param string $publicKeyCredentialId The credential ID associated with the public key.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void;
+
+    /** Removes the public key and credential ID for a user from the authuser authentication table.
+     * @param string $uid The user ID.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportRemovePublicKey(string $uid): void;
+
+    /** Retrieves user information from the authuser authentication table by public key credential ID.
+     * @param string $pkid The public key credential ID.
+     * @return array Array of user information, or empty array if not found.
+     * @throws Exception If the public key ID is invalid, the user table is not configured, or multiple users are found.
+     */
     public function authSupportUserInfoFromPublickeyId(string $pkid): array;
 
+    /** Stores or clears the 2FA secret for a user in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @param string|null $secret The 2FA secret to store, or null to clear it.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStore2FASecret(string $uid, string|null $secret): void;
 
+    /** Counts authentication failures within a specified time period from the authfail table.
+     * @param string $ip The client IP address.
+     * @param string|null $username The username, or null to count all failures for the IP.
+     * @param int $seconds The time period in seconds to look back.
+     * @return int The number of authentication failures within the period.
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int;
+
+    /** Records an authentication failure in the authfail table and removes outdated entries.
+     * @param string $ip The client IP address.
+     * @param string $username The username that failed authentication.
+     * @return void
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportAddAuthFail(string $ip, string $username): void;
+
+    /** Checks if a user is marked as inactive in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @return bool True if the user is inactive, false otherwise.
+     * @throws Exception If the user table is not configured or the database connection fails.
+     */
+    public function authSupportIsInactive(string $uid): bool;
+
+    /** Sets the inactive status for a user in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @param bool $value The inactive status to set.
+     * @return void
+     * @throws Exception If the user table is not configured or the database connection fails.
+     */
+    public function authSupportSetInactive(string $uid, bool $value):void;
 }

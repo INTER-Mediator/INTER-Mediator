@@ -57,10 +57,12 @@ exports.config = {
     maxInstances: 3,
     //
     browserName: 'chrome',
+    'wdio:enforceWebDriverClassic': true,
+    unhandledPromptBehavior: 'accept',
     acceptInsecureCerts: true,
-    // 'goog:chromeOptions': {
-    //   args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox', '--window-size=1280,800'],
-    // }
+    'goog:chromeOptions': {
+      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox', '--window-size=1280,800'],
+    }
   }
     // If outputDir is provided, WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.

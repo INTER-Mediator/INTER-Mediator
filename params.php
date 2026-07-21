@@ -170,7 +170,7 @@ $authRealm = 'INTER-Mediator_Samples';
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
 //$digitsOf2FACode = 6; // Default is 4 for email and 6 for authenticator.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input for email.
-$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+//$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 /* Authentication panels customizing */
 //$authPanelTitle= "そうだ";  // Auth Panel's title
@@ -251,8 +251,9 @@ $limitPwChangeSecond = 3600;
 /* Auth Fail Counter */
 $authFailRate = 0; // Specifies the number of authentication failures before blocking communication. If 0 or less, blocking is disabled.
 $checkUsername = false; // Whether to also consider the username when counting authentication failures.
-$checkNullUser = false; // Counting falsy username or not..
-$authFailSeconds = 60; // How many seconds back from now to count failures when determining whether to block authentication.
+$authFailSeconds = 24 * 3600; // How many seconds back from now to count failures when determining whether to block authentication.
+
+$inactivatingOnFails = false; // false means no inactivating on fails. An integer value means the number of authentication failures before inactivating.
 
 /* Service Server Behavior
  * ===================
@@ -295,6 +296,7 @@ $dontRecordDownloadNoGet = false; */
  * =================== */
 $mediaRootDir = "/tmp"; // Supposed to macOS
 //$cacheMediaAccess = false;
+$allowedMediaFileRootDirs = [$mediaRootDir, ]; // Just for file:/// (File URL) media file path.
 
 /* S3 Support
  * =================== */

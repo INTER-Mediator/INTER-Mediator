@@ -7,6 +7,7 @@ use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 /**
  * Abstract base class for visitor implementations in the Proxy authentication/authorization system.
