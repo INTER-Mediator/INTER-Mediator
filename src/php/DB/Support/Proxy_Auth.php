@@ -135,12 +135,20 @@ trait Proxy_Auth
             $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication process started.");
             // brute-force attack protection
             $authFail = new AuthFailCount($this->dbClass->authHandler);
-            if ($authFail->isAcceptableAuthFail($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser)) {
+            if ($authFail->isAcceptableAuthFailBruteForce($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser)) {
                 Logger::getInstance()->setWarningMessage(IMUtil::getMessageClassInstance()->getMessageAs(1067));
                 $this->accessSetToNothing();
                 sleep(1);
                 return;
             }
+            // inactivating on fails
+            if ($authFail->getInactive($this->paramAuthUser)) {
+                Logger::getInstance()->setWarningMessage(IMUtil::getMessageClassInstance()->getMessageAs(1068));
+                $this->accessSetToNothing();
+                sleep(1);
+                return;
+            }
+
             if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
@@ -197,7 +205,7 @@ trait Proxy_Auth
                 if (!$isAuthAccessing) {
                     $this->accessSetToNothing();
                 }
-                if ($authFail->isActive()) {
+                if ($authFail->isActiveBluteForce()||$authFail->isActiveInactivating()) {
                     $authFail->addFailRecord($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser);
                 }
             }

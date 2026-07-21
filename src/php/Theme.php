@@ -31,7 +31,7 @@ class Theme
      */
     private bool $accessLogLevel;
     /** Stores output messages for logging.
-     * @var array
+     * @var array<string, string>
      */
     private array $outputMessage = [];
 
@@ -46,7 +46,7 @@ class Theme
     }
 
     /** Gets the result message array for access logging.
-     * @return array Output message array for logging.
+     * @return array<string, string> Output message array for logging.
      */
     public function getResultForLog(): array
     {

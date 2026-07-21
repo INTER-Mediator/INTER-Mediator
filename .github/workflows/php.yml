@@ -3,18 +3,39 @@ name: unit-test
 on:
   push:
     branches:
-      - "*"
+      - '*'
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - Ver.16-PHP8.1
+      - Ver.16-PHP8.2
+      - Ver.16-PHP8.3
 
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
     strategy:
+      fail-fast: false
       matrix:
-        operating-system: [ 'ubuntu-latest' ]
-        #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: [  '8.2', '8.3', '8.4','8.5', 'nightly' ]
+        include:
+          - operating-system: 'ubuntu-latest'
+            php-versions: '8.1'
+            branch: 'Ver.16-PHP8.1'
+          - operating-system: 'ubuntu-latest'
+            php-versions: '8.2'
+            branch: 'Ver.16-PHP8.2'
+          - operating-system: 'ubuntu-latest'
+            php-versions: '8.3'
+            branch: 'Ver.16-PHP8.3'
+          - operating-system: 'ubuntu-latest'
+            php-versions: '8.4'
+            branch: 'default'
+          - operating-system: 'ubuntu-latest'
+            php-versions: '8.5'
+            branch: 'default'
+          - operating-system: 'ubuntu-latest'
+            php-versions: 'nightly'
+            branch: 'default'
     name: Unit Test on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
@@ -38,45 +59,70 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
+      - name: Check branch match
+        id: branch-check
+        run: |
+          SHOULD_RUN=false
+          BRANCH_NAME="${{ github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH_NAME="${{ github.base_ref }}"
+          fi
+          if [[ "${{ matrix.branch }}" == "$BRANCH_NAME" || ( "${{ matrix.branch }}" == "default" && "$BRANCH_NAME" != Ver.16-PHP8.* ) ]]; then
+            SHOULD_RUN=true
+          fi
+          echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        if: steps.branch-check.outputs.should_run == 'true'
 
       #      - name: Validate composer.json and composer.lock
       #        run: composer validate --strict
 
       - name: Install PHP
+        if: steps.branch-check.outputs.should_run == 'true'
         uses: ./.github/actions/setup-php
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: xdebug
       - name: Print Env Varialbles
+        if: steps.branch-check.outputs.should_run == 'true'
         run: printenv
       - name: Show the host name
+        if: steps.branch-check.outputs.should_run == 'true'
         run: hostname
       - name: PHP Module Checking
+        if: steps.branch-check.outputs.should_run == 'true'
         run: php -m
       - name: Get Composer Cache Directory
+        if: steps.branch-check.outputs.should_run == 'true'
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        if: steps.branch-check.outputs.should_run == 'true'
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
-      - name: Update dependencies
-        run: composer update
+#      - name: Update dependencies
+#        if: steps.branch-check.outputs.should_run == 'true'
+#        run: composer update
       - name: Install dependencies
+        if: steps.branch-check.outputs.should_run == 'true'
         run: composer install --prefer-dist --no-progress
 
       - name: Add locale ja_JP.UTF-8
+        if: steps.branch-check.outputs.should_run == 'true'
         run: |
           sudo locale-gen ja_JP.UTF-8
           sudo update-locale LANG=ja_JP.UTF-8
       - name: Add locale en_GB.UTF-8
+        if: steps.branch-check.outputs.should_run == 'true'
         run: |
           sudo locale-gen en_GB.UTF-8
           sudo update-locale LANG=en_GB.UTF-8
 
       - name: Setup MySQL
+        if: steps.branch-check.outputs.should_run == 'true'
         run: |
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "CREATE USER IF NOT EXISTS 'web'@'%' IDENTIFIED BY 'password';"
@@ -84,18 +130,21 @@ jobs:
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
 
       - name: Setup PostgreSQL
+        if: steps.branch-check.outputs.should_run == 'true'
         run: psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
 
       #      - name: Check MySQL
       #        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
 
       - name: Setup SQLite
+        if: steps.branch-check.outputs.should_run == 'true'
         run: |
           touch sample.sq3
           sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
           chmod 777 sample.sq3
       #          chown www-data sample.sq3
       - name: Modify params.php file
+        if: steps.branch-check.outputs.should_run == 'true'
         run: |
           echo "" >> params.php
           echo "\$defaultTimezone = 'UTC';" >> params.php
@@ -103,17 +152,18 @@ jobs:
           echo "" >> params.php
 
       - name: Test of PHP Code
-        if:  ${{ matrix.php-versions != 'nightly' }}
+        if: ${{ steps.branch-check.outputs.should_run == 'true' && matrix.php-versions != 'nightly' }}
         run: composer test
 
       - name: Testing for PHP nightly
-        if:  ${{ matrix.php-versions == 'nightly' }}
+        if: ${{ steps.branch-check.outputs.should_run == 'true' && matrix.php-versions == 'nightly' }}
         continue-on-error: true
         run: |
           composer test
           exit 0
 
       - name: Test of JavaScript Code
+        if: steps.branch-check.outputs.should_run == 'true'
         run: composer jest
 
         # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"

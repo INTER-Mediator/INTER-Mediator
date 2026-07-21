@@ -11,10 +11,11 @@ jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
     strategy:
+      fail-fast: false
       matrix:
         operating-system: [ 'ubuntu-latest' ]
         #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: [ '8.2', '8.3', '8.4','8.5' ]
+        php-versions: [ '8.3', '8.4','8.5' ]
     name: End-to-End Test for Chrome on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
@@ -98,6 +99,7 @@ jobs:
 
         # E2E test with WebdriverIO
       - name: Setup Headless Chrome
+        id: setup-chrome
         uses: browser-actions/setup-chromium@latest
         with:
           chrome-version: 126
@@ -109,6 +111,19 @@ jobs:
       - name: Setup WebdriverIO
         run: cd spec/run; pnpm config list; pnpm install --frozen-lockfile
 
+      - name: Use CI-installed Chrome and ChromeDriver (avoid wdio auto-download)
+        run: |
+          CHROMEDRIVER_BIN="${{ steps.setup-chrome.outputs.chromedriver-path }}"
+          [ -n "$CHROMEDRIVER_BIN" ] || CHROMEDRIVER_BIN="$(command -v chromedriver || true)"
+          CHROME_BIN="${{ steps.setup-chrome.outputs.chrome-path }}"
+          [ -n "$CHROME_BIN" ] || CHROME_BIN="$(command -v chrome || command -v chromium || command -v chromium-browser || true)"
+          echo "chromedriver: $CHROMEDRIVER_BIN"
+          echo "chrome:       $CHROME_BIN"
+          test -x "$CHROMEDRIVER_BIN"
+          test -x "$CHROME_BIN"
+          echo "CHROMEDRIVER_PATH=$CHROMEDRIVER_BIN" >> "$GITHUB_ENV"
+          sudo ln -sf "$CHROME_BIN" /usr/local/bin/google-chrome
+
       - name: Decide port number
         id: set-ghport
         run: |
@@ -117,11 +132,12 @@ jobs:
 
       - name: Boot the web server with php server mode
         run: |
-          php -S "localhost:${{ steps.set-ghport.outputs.GHPORTNUM }}" &
+          PHP_CLI_SERVER_WORKERS=10 php -S "localhost:${{ steps.set-ghport.outputs.GHPORTNUM }}" > /tmp/php-server.log 2>&1 &
           for i in $(seq 1 60); do
-            curl -fsS "http://localhost:${{ steps.set-ghport.outputs.GHPORTNUM }}/" >/dev/null && break
+            curl -sS -o /dev/null "http://localhost:${{ steps.set-ghport.outputs.GHPORTNUM }}/" && break
             sleep 1
           done
+          curl -sS -o /dev/null "http://localhost:${{ steps.set-ghport.outputs.GHPORTNUM }}/" || { echo "PHP server did not start"; cat /tmp/php-server.log; exit 1; }
 
       - name: Starting End-to-End Tests with Google Chrome
         env:
