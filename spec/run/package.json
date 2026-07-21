@@ -37,8 +37,9 @@
     "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
   },
   "scripts": {
-    "test": "pnpm exec wdio run ./run/wdio.conf.js",
-    "wdio": "pnpm exec wdio run wdio.conf.js"
+    "seed-drivers": "bash ./seed-drivers.sh",
+    "test": "bash ./run/seed-drivers.sh && pnpm exec wdio run ./run/wdio.conf.js",
+    "wdio": "bash ./seed-drivers.sh && pnpm exec wdio run wdio.conf.js"
   },
   "devDependencies": {
     "@wdio/cli": "9.27.1",

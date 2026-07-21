@@ -42,14 +42,19 @@ abstract class UploadingSupport
                                    string $targetFieldName, ?string $keyField, ?string $keyValue,
                                    ?array $dataSource, ?array $dbSpec, int $debug): void
     {
+        $db->logger->setDebugMessage("[UploadingSupport::processingFile] targetFieldName={$targetFieldName}", 2);
+        $db->logger->setDebugMessage("[UploadingSupport::processingFile] filePartialPath={$filePartialPath}", 2);
+
         $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
-        if (isset($dbProxyContext['file-upload'])) {
-            foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['field']) && !isset($item['context'])) {
-                    $targetFieldName = $item['field'];
-                }
-            }
-        }
+//        if (isset($dbProxyContext['file-upload'])) {
+//            foreach ($dbProxyContext['file-upload'] as $item) {
+//                if (isset($item['field']) && !isset($item['context'])) {
+//                    $targetFieldName = $item['field'];
+//                }
+//            }
+//        }
+
+//        $db->logger->setDebugMessage("[UploadingSupport::processingFile] targetFieldName={$targetFieldName}", 2);
 
         $db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
         $db->dbSettings->setFieldsRequired(array($targetFieldName));
@@ -57,14 +62,14 @@ abstract class UploadingSupport
         $db->processingRequest("update"/*,true*/);
         $dbProxyRecord = $db->getDatabaseResult();
 
-        $db->logger->setDebugMessage("[FileSystem::processing] dbProxyRecord=" . var_export($dbProxyRecord, true), 2);
-        $db->logger->setDebugMessage("[FileSystem::processing] dbProxyContext=" . var_export($dbProxyContext, true), 2);
+//        $db->logger->setDebugMessage("[UploadingSupport::processingFile] dbProxyRecord=" . var_export($dbProxyRecord, true), 2);
+//        $db->logger->setDebugMessage("[UploadingSupport::processingFile] dbProxyContext=" . var_export($dbProxyContext, true), 2);
 
         $db->addOutputData('dbresult', $filePath);
         $db->finishCommunication();
         if (isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['field']) && $item['field'] == $targetFieldName) {
+                if (isset($item['field']) && $item['field'] == $targetFieldName && isset($item['context'])) {
                     $relatedContext = new Proxy();
                     $relatedContext->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();

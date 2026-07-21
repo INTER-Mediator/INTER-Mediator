@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB\Support;
 
+use DateInterval;
 use Datetime;
 use Exception;
 use INTERMediator\DB\FileMaker_DataAPI;
@@ -304,10 +305,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $recordId = $record->getRecordId();
                 $this->fmdb->setupFMDataAPIforAuth($hashTable);
                 try {
-                    $result = $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
+                    $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
                 } catch (Exception $e) {
                     $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->stringWithoutCredential('Delete pperation: ' .
                             $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                     return false;
                 }
@@ -1068,39 +1069,554 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return [null, null, null];
     }
 
+    /** Retrieves login user information from the authuser table.
+     * @param string $userID User ID or username.
+     * @return array Array containing [user ID, real name, email, public key, secret].
+     * @throws Exception If the user table is not configured, connection fails, or multiple/no users are found.
+     */
     public function getLoginUserInfo(string $userID): array
     {
-        return [null, null];
+        try {
+            if (!$userID) {
+                throw new Exception("Invalid user ID: {$userID}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $user = $this->authSupportUnifyUsernameAndEmail($userID);
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('username' => str_replace('@', '\\@', $user)));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            $counter = 0;
+            $returnValue = null;
+            foreach ($result as $record) {
+                $returnValue = [
+                    $record->id, // @phpstan-ignore property.notFound
+                    $record->realname ?? '', // @phpstan-ignore property.notFound
+                    $record->email ?? '', // @phpstan-ignore property.notFound
+                    $record->pubkey ?? '', // @phpstan-ignore property.notFound
+                    $record->secret ?? '', // @phpstan-ignore property.notFound
+                ];
+                $counter++;
+            }
+            if ($counter === 0) {
+                throw new Exception("No Information Detected for the Log-in User {$userID}");
+            } else if ($counter > 1) {
+                throw new Exception("Multiple Users Detected for the Log-in User {$userID}");
+            }
+            return $returnValue;
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[getLoginUserInfo] ERROR: {$e->getMessage()}");
+        }
+        return ['', '', '', '', ''];
     }
 
+    /** Stores a public key and its credential ID for a user in the authuser table.
+     * @param string $uid The user ID.
+     * @param string $publicKey The public key to store.
+     * @param string $publicKeyCredentialId The credential ID associated with the public key.
+     * @return void
+     * @throws Exception If the user ID is invalid, the public key or credential ID is empty, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void
     {
-
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            if (!$publicKey) {
+                throw new Exception("The public key is empty.");
+            }
+            if (!$publicKeyCredentialId) {
+                throw new Exception("The credential ID of the public key is empty.");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('id' => $uid));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            $counter = 0;
+            $recordId = null;
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $counter++;
+            }
+            if ($counter === 0) {
+                throw new Exception("No user record for {$uid}");
+            } else if ($counter > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $this->fmdb->fmData->{$userTable}->update($recordId, array(
+                'publicKey' => $publicKey,
+                'publicKeyCredentialId' => $publicKeyCredentialId,
+            ));
+            $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in UPDATE");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportStorePublicKey] ERROR: {$e->getMessage()}");
+        }
     }
 
+    /** Removes the public key and credential ID for a user from the authuser table.
+     * @param string $uid The user ID.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportRemovePublicKey(string $uid): void
     {
-
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('id' => $uid));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            $counter = 0;
+            $recordId = null;
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $counter++;
+            }
+            if ($counter === 0) {
+                throw new Exception("No user record for {$uid}");
+            } else if ($counter > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $this->fmdb->fmData->{$userTable}->update($recordId, array(
+                'publicKey' => '',
+                'publicKeyCredentialId' => '',
+            ));
+            $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in UPDATE");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportRemovePublicKey] ERROR: {$e->getMessage()}");
+        }
     }
 
+    /** Retrieves user information from the authuser table by public key credential ID.
+     * @param string $pkid The public key credential ID.
+     * @return array Array of user information, or empty array if not found.
+     * @throws Exception If the public key ID is invalid, the user table is not configured, or multiple users are found.
+     */
     public function authSupportUserInfoFromPublickeyId(string $pkid): array
     {
+        try {
+            if (!$pkid) {
+                throw new Exception("Invalid Public Key ID: {$pkid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('publicKeyCredentialId' => $pkid));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            $counter = 0;
+            $resultRow = [];
+            foreach ($result as $record) {
+                $resultRow = [
+                    'id' => $record->id, // @phpstan-ignore property.notFound
+                    'username' => $record->username, // @phpstan-ignore property.notFound
+                    'realname' => $record->realname, // @phpstan-ignore property.notFound
+                    'hashedpasswd' => $record->hashedpasswd, // @phpstan-ignore property.notFound
+                    'publicKey' => $record->publicKey, // @phpstan-ignore property.notFound
+                ];
+                $counter++;
+            }
+            if ($counter === 0) {
+                return [];
+            } else if ($counter > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$pkid}");
+            }
+            return $resultRow;
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportUserInfoFromPublickeyId] ERROR: {$e->getMessage()}");
+        }
         return [];
     }
 
+    /** Stores or clears the 2FA secret for a user in the authuser table.
+     * @param string $uid The user ID.
+     * @param string|null $secret The 2FA secret to store, or null to clear it.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStore2FASecret(string $uid, string|null $secret): void
     {
-
+        try {
+            if (!$uid) {
+                throw new Exception("Invalid user ID: {$uid}");
+            }
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("Usertable setting up failed.");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('id' => $uid));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            $counter = 0;
+            $recordId = null;
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $counter++;
+            }
+            if ($counter === 0) {
+                throw new Exception("No user record for {$uid}");
+            } else if ($counter > 1) {
+                throw new Exception("Multiple Users Detected from the authuser table {$uid}");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $this->fmdb->fmData->{$userTable}->update($recordId, array(
+                'secret' => $secret ?? '',
+            ));
+            $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in Update");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportStore2FASecret] ERROR: {$e->getMessage()}");
+        }
     }
 
+    /** Counts authentication failures within a specified time period from the authfail table.
+     * @param string $ip The client IP address.
+     * @param string|null $username The username, or null to count all failures for the IP.
+     * @param int $seconds The time period in seconds to look back.
+     * @return int The number of authentication failures within the period.
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int
     {
-        // TODO: Implement authSupportCheckAuthFailCount() method.
-        return 0;
+        $counter = 0;
+        $failTable = "authfail";
+        try {
+            $periodBefore = (new DateTime())->modify("-{$seconds} seconds")->format('m/d/Y H:i:s');
+            $this->fmdb->setupFMDataAPIforDB($failTable);
+            $conditions = array(array('dt' => $periodBefore . '...', 'ip' => $ip));
+            if (!is_null($username)) {
+                $conditions[0]['username'] = $username;
+            }
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$failTable}->query($conditions);// @phpstan-ignore property.notFound
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+            foreach ($result as $record) {
+                $counter++;
+            }
+            $this->logger->setDebugMessage("[authSupportCheckAuthFailCount] counter = {$counter}");
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportCheckAuthFailCount] ERROR: {$e->getMessage()}");
+        }
+        return $counter;
     }
 
+    /** Records an authentication failure in the authfail table and removes outdated entries older than one day.
+     * @param string $ip The client IP address.
+     * @param string $username The username that failed authentication.
+     * @return void
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportAddAuthFail(string $ip, string $username): void
     {
-        // TODO: Implement authSupportAddAuthFail() method.
+        $failTable = "authfail";
+        try {
+            $this->fmdb->setupFMDataAPIforDB($failTable);
+            $oneDayBefore = (new DateTime())->sub(new DateInterval('P1D'))->format('m/d/Y H:i:s');
+            $conditions = array(array('dt' => '...' . $oneDayBefore));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$failTable}->query($conditions);// @phpstan-ignore property.notFound
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $this->fmdb->setupFMDataAPIforDB($failTable);
+                try {
+                    $this->fmdb->fmData->{$failTable}->delete($recordId);// @phpstan-ignore property.notFound
+                } catch (Exception $e) {
+                    $this->logger->setDebugMessage(
+                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                            $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+                    throw new Exception("ERROR in DELETE");
+                }
+            }
+            $currentDT = new DateTime();
+            $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
+            $this->fmdb->setupFMDataAPIforDB($failTable);
+            $recordId = $this->fmdb->fmData->{$failTable}->create(array(// @phpstan-ignore property.notFound
+                'ip' => $ip,
+                'username' => $username,
+                'dt' => $currentDTFormat,
+            ));
+            if (!is_numeric($recordId)) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(
+                        'FileMakerLayout: ' . $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+                throw new Exception("ERROR in INSERT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportAddAuthFail] ERROR: {$e->getMessage()}");
+        }
+    }
+
+    /** Checks if a user is marked as inactive in the authuser table.
+     * @param string $uid The user ID.
+     * @return bool True if the user is inactive, false otherwise.
+     * @throws Exception If the user table is not configured, the database connection fails, or the query errors.
+     */
+    public function authSupportIsInactive(string $uid): bool
+    {
+        $returnValue = false;
+        try {
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("ERROR in no user table.");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('id' => $uid));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            foreach ($result as $record) {
+                $returnValue = $record->inactive; // @phpstan-ignore property.notFound
+            }
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportIsInactive] ERROR: {$e->getMessage()}");
+        }
+        return $returnValue;
+    }
+
+    /** Sets the inactive status for a user in the authuser table.
+     * @param string $uid The user ID.
+     * @param bool $value The inactive status to set.
+     * @return void
+     * @throws Exception If the user table is not configured, the database connection fails, or the query errors.
+     */
+    public function authSupportSetInactive(string $uid, bool $value): void
+    {
+        try {
+            $authUser = $this->authSupportUnifyUsernameAndEmail($uid) ?? "";
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("ERROR in no user table.");
+            }
+            $userId = $this->authSupportGetUserIdFromUsername($authUser);
+            if (is_null($userId)) {
+                throw new Exception("User not found: {$uid}");
+            }
+            $this->fmdb->setupFMDataAPIforDB($userTable);
+            $conditions = array(array('id' => $userId));
+            $result = null;
+            try {
+                $result = $this->fmdb->fmData->{$userTable}->query($conditions);
+                if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                    $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
+                }
+            } catch (Exception $e) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                throw new Exception("ERROR in SELECT");
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $this->fmdb->setupFMDataAPIforDB($userTable);
+                $this->fmdb->fmData->{$userTable}->update($recordId, array(
+                    'inactive' => $value ? 1 : 0,
+                ));
+                $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
+                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                    $this->logger->setDebugMessage(
+                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                            $this->fmdb->fmData->{$userTable}->getDebugInfo()));
+                    throw new Exception("ERROR in UPDATE");
+                }
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
+            }
+        } catch (\Exception $e) {
+            $this->fmdb->errorMessageStore("[authSupportSetInactive] ERROR: {$e->getMessage()}");
+        }
     }
 }

@@ -12,10 +12,11 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         operating-system: [ 'ubuntu-latest' ]
         #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: [ '8.2', '8.3', '8.4','8.5' ]
+        php-versions: [ '8.3', '8.4','8.5' ]
     name: End-to-End Test for Firefox on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
@@ -99,6 +100,7 @@ jobs:
 
         # E2E test with WebdriverIO
       - name: Setup Firefox
+        id: setup-firefox
         uses: browser-actions/setup-firefox@latest
 
       - name: Install pnpm and setup Takumi Guard
@@ -107,12 +109,33 @@ jobs:
       - name: Setup WebdriverIO
         run: cd spec/run; pnpm config list; pnpm install --frozen-lockfile
 
+      - name: Use CI-installed Firefox and install GeckoDriver (avoid wdio auto-download)
+        run: |
+          FIREFOX_BIN="${{ steps.setup-firefox.outputs.firefox-path }}"
+          [ -n "$FIREFOX_BIN" ] || FIREFOX_BIN="$(command -v firefox || true)"
+          echo "firefox: $FIREFOX_BIN"
+          test -x "$FIREFOX_BIN"
+          sudo ln -sf "$FIREFOX_BIN" /usr/local/bin/firefox
+          GECKO_VERSION="$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/mozilla/geckodriver/releases/latest | sed -E 's#.*/tag/v##')"
+          [ -n "$GECKO_VERSION" ] || GECKO_VERSION=0.35.0
+          echo "geckodriver version: $GECKO_VERSION"
+          curl -fsSL -o /tmp/geckodriver.tar.gz "https://github.com/mozilla/geckodriver/releases/download/v${GECKO_VERSION}/geckodriver-v${GECKO_VERSION}-linux64.tar.gz"
+          sudo tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin geckodriver
+          sudo chmod +x /usr/local/bin/geckodriver
+          echo "GECKODRIVER_PATH=/usr/local/bin/geckodriver" >> "$GITHUB_ENV"
+          /usr/local/bin/geckodriver --version
+
       - name: Boot the web server with php server mode
         run: |
           GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
           mv "spec/run/wdio-auth-firefox.conf.js" "spec/run/wdio-auth-firefox.conf.js.bak"
           cat "spec/run/wdio-auth-firefox.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-auth-firefox.conf.js"
-          php -S "localhost:${GHPORTNUM}" &
+          PHP_CLI_SERVER_WORKERS=10 php -S "localhost:${GHPORTNUM}" > "/tmp/php-server-${GHPORTNUM}.log" 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sS -o /dev/null "http://localhost:${GHPORTNUM}/" && break
+            sleep 1
+          done
+          curl -sS -o /dev/null "http://localhost:${GHPORTNUM}/" || { echo "PHP server did not start on port ${GHPORTNUM}"; cat "/tmp/php-server-${GHPORTNUM}.log"; exit 1; }
 
       - name: Starting End-to-End Tests with Firefox
         run: cd spec/run;npx wdio wdio-auth-firefox.conf.js

@@ -92,6 +92,19 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
+        $mediaRootDir = Params::getParameterValue("mediaRootDir", null);
+        $allowedMediaFileRootDirs = Params::getParameterValue("allowedMediaFileRootDirs", [$mediaRootDir]);
+        $resolvedTarget = realpath($target);
+        if ($resolvedTarget === false) {
+            throw new Exception("[INTER-Mediator] The file doesn't exist: {$target}.");
+        }
+        $isInAllowed = array_reduce($allowedMediaFileRootDirs,
+            fn($carry, $item) => $carry || str_starts_with($resolvedTarget, realpath($item) ?: $item));
+//        $isInAllowed = array_reduce($allowedMediaFileRootDirs,
+//            fn($carry, $item) => $carry || str_starts_with($target, $item), false);
+        if (!$isInAllowed) {
+            throw new Exception("[INTER-Mediator] The file does't exist in the allowed directory: {$target}.");
+        }
         if (!empty($file) && !file_exists($target)) {
             throw new Exception("[INTER-Mediator] The file does't exist: {$target}.");
         }
@@ -102,7 +115,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param string $file The file path.
      * @return string|null The base file name.
      */
-    public function getFileName(string $file): ?string
+    public
+    function getFileName(string $file): ?string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -116,7 +130,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param array $info The file info array.
      * @return array Array containing the file name and temporary file name.
      */
-    private function getFileNames(array $info): array
+    private
+    function getFileNames(array $info): array
     {
         if (is_array($info['name'])) {   // JQuery File Upload Style
             $fileInfoName = $info['name'][0];
@@ -135,7 +150,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception
      */
-    private function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg)
+    private
+    function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg)
     {
         $db->logger->setErrorMessage($errorMsg);
         $db->processingRequest("nothing");
@@ -157,9 +173,10 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return array Array containing result status, full file path, and partial file path.
      * @throws Exception If the path is invalid or directory creation fails.
      */
-    private function decideFilePath(Proxy  $db, bool $noOutput, ?array $options,
-                                    string $contextName, string $keyField, string $keyValue,
-                                    string $targetFieldName, array $filePathInfo, int $counter): array
+    private
+    function decideFilePath(Proxy  $db, bool $noOutput, ?array $options,
+                            string $contextName, string $keyField, string $keyValue,
+                            string $targetFieldName, array $filePathInfo, int $counter): array
     {
         $result = true;
         $fileRoot = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
@@ -200,7 +217,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param string|null $mode The encoding mode (default, assjis, asucs4).
      * @return string The justified path component.
      */
-    private function justifyPathComponent(string $str, ?string $mode = "default"): string
+    private
+    function justifyPathComponent(string $str, ?string $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
@@ -232,8 +250,9 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception If an error occurs during CSV import.
      */
-    private function csvImportOperation(Proxy  $db, ?array $dataSource, ?array $options, ?array $dbSpec, int $debug,
-                                        string $contextName, string $fileInfoTemp): void
+    private
+    function csvImportOperation(Proxy  $db, ?array $dataSource, ?array $options, ?array $dbSpec, int $debug,
+                                string $contextName, string $fileInfoTemp): void
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime, $encoding]

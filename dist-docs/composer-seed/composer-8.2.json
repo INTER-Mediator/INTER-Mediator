@@ -26,14 +26,13 @@
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": "~9",
     "pragmarx/google2fa": "~9",
-    "symfony/mailer": "~7.4",
-    "symfony/amazon-mailer": "~7.4",
-    "symfony/google-mailer": "~7.4",
-    "symfony/mime": "~7.4",
+    "symfony/mailer": "~6.4",
+    "symfony/amazon-mailer": "~6.4",
+    "symfony/google-mailer": "~6.4",
+    "symfony/mime": "~6.4",
     "symfony/yaml": "~6.4",
-    "symfony/http-kernel": "6.4.42",
-    "web-token/jwt-framework": "~3",
-    "web-auth/webauthn-lib": "~5"
+    "web-token/jwt-framework": "~3.3",
+    "web-auth/webauthn-lib": "~4.9"
   },
   "extra": {
     "class": "INTERMediator\\Composer\\InstallerPlugin"
