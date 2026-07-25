@@ -10,6 +10,7 @@ on:
       - Ver.16-PHP8.1
       - Ver.16-PHP8.2
       - Ver.16-PHP8.3
+      - Ver.16-PHP8.4
 
 jobs:
   run:
@@ -29,7 +30,7 @@ jobs:
             branch: 'Ver.16-PHP8.3'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.4'
-            branch: 'default'
+            branch: 'Ver.16-PHP8.4'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.5'
             branch: 'default'
