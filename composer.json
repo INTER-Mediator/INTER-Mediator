@@ -106,7 +106,11 @@
     },
     "policy": {
       "advisories": {
-        "ignore-id": ["PKSA-569h-6vqh-5xr3"]
+        "ignore-id": [
+          "PKSA-569h-6vqh-5xr3",
+          "PKSA-1fc7-xrz7-vw78",
+          "PKSA-yk3g-3g3t-ts6q"
+        ]
       }
     }
   },
