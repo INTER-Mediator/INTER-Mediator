@@ -135,3 +135,16 @@ option   {
 button   {
 	font-size: 10pt;
 }
+
+._im_debugging-mark {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100vw;
+	height: 400px;
+	z-index: 555555;
+	pointer-events: none;
+	font-size: 140pt;
+	font-weight: bold;
+	color: rgba(255, 0, 0, 0.3);
+}
