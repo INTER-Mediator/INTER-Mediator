@@ -104,9 +104,9 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
-#      - name: Update dependencies
-#        if: steps.branch-check.outputs.should_run == 'true'
-#        run: composer update
+      - name: Update dependencies
+        if: steps.branch-check.outputs.should_run == 'true'
+        run: composer update
       - name: Install dependencies
         if: steps.branch-check.outputs.should_run == 'true'
         run: composer install --prefer-dist --no-progress
