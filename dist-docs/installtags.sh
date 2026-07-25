@@ -19,8 +19,9 @@ for ver in "${versionArray[@]}"; do
     git branch -D "Ver.${baseVersion}-PHP${ver}"
     git branch "Ver.${baseVersion}-PHP${ver}"
     git checkout "Ver.${baseVersion}-PHP${ver}"
+#    git pull origin "Ver.${baseVersion}-PHP${ver}"
+    git fetch origin
     git add composer.json composer.lock
-    git pull origin "Ver.${baseVersion}-PHP${ver}"
     git commit -m "Update composer.json and composer.lock for PHP ${ver}"
     git push origin "Ver.${baseVersion}-PHP${ver}"
     git tag -d "${baseVersion}-${ver}"

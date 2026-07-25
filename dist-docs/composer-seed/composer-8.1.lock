@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9958205b4efda7f07bcd3a1cb38c7c46",
+    "content-hash": "ba1691e2c3b9379e6d64b15102084316",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3551,16 +3551,16 @@
         },
         {
             "name": "simplesamlphp/saml2",
-            "version": "v4.19.3",
+            "version": "v4.19.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplesamlphp/saml2.git",
-                "reference": "d5c213132ef671c0018a11252322034dbddd735a"
+                "reference": "93df4bffc052939e74ec0c1208e66cbd7eb2a1b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplesamlphp/saml2/zipball/d5c213132ef671c0018a11252322034dbddd735a",
-                "reference": "d5c213132ef671c0018a11252322034dbddd735a",
+                "url": "https://api.github.com/repos/simplesamlphp/saml2/zipball/93df4bffc052939e74ec0c1208e66cbd7eb2a1b2",
+                "reference": "93df4bffc052939e74ec0c1208e66cbd7eb2a1b2",
                 "shasum": ""
             },
             "require": {
@@ -3606,9 +3606,9 @@
             "description": "SAML2 PHP library from SimpleSAMLphp",
             "support": {
                 "issues": "https://github.com/simplesamlphp/saml2/issues",
-                "source": "https://github.com/simplesamlphp/saml2/tree/v4.19.3"
+                "source": "https://github.com/simplesamlphp/saml2/tree/v4.19.2"
             },
-            "time": "2026-07-06T21:31:10+00:00"
+            "time": "2026-03-13T12:09:45+00:00"
         },
         {
             "name": "simplesamlphp/simplesamlphp",
