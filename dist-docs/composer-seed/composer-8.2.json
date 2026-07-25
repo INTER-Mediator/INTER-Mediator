@@ -102,6 +102,11 @@
       "simplesamlphp/composer-module-installer": true,
       "simplesamlphp/composer-xmlprovider-installer": true,
       "inter-mediator/inter-mediator": true
+    },
+    "policy": {
+      "advisories": {
+        "ignore-id": ["PKSA-569h-6vqh-5xr3"]
+      }
     }
   },
   "github-oauth": {
