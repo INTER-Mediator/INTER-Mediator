@@ -120,7 +120,7 @@ class PDO extends DBClass
     }
 
     /** Returns the updated record.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getUpdatedRecord(): ?array
     {
@@ -128,7 +128,7 @@ class PDO extends DBClass
     }
 
     /** Returns the updated record.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function updatedRecord(): ?array
     {
@@ -293,7 +293,7 @@ class PDO extends DBClass
     }
 
     /** Reads data from the database.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -943,7 +943,7 @@ class PDO extends DBClass
 
     /** Returns the field information.
      * @param string $dataSourceName
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -969,8 +969,8 @@ class PDO extends DBClass
 
     /** Queries for test.
      * @param string $table
-     * @param array|null $conditions
-     * @return array|null
+     * @param array<string, number|string|bool|null>|null $conditions
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
@@ -1095,7 +1095,7 @@ class PDO extends DBClass
     /** Returns the result relation.
      * @param $result
      * @param array $timeFields
-     * @return array
+     * @return array<string, number|string|bool|null>
      * @throws Exception
      */
     private function getResultRelation($result, array $timeFields): array
@@ -1121,7 +1121,7 @@ class PDO extends DBClass
      * @param array $row
      * @param bool $isFirstRow
      * @param array $timeFields
-     * @return array
+     * @return array<string, number|string|bool|null>
      * @throws Exception
      */
     private function getResultRecord(array $row, bool $isFirstRow, array $timeFields): array

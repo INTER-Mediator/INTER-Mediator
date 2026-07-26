@@ -11,8 +11,18 @@ use INTERMediator\IMUtil;
 
 class IMUtil_Test extends TestCase
 {
+    /**
+     * The util.
+     *
+     * @var IMUtil
+     */
     private IMUtil $util;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
@@ -20,7 +30,12 @@ class IMUtil_Test extends TestCase
         $this->util = new IMUtil();
     }
 
-    public function test_RelativePath()
+    /**
+     * Test relative Path.
+     *
+     * @return void
+     */
+    public function test_RelativePath(): void
     {
         $fromPath = '/samples/Practices/search_page1.html';
         $toPath = '/samples/Practices/search_def.php';
@@ -58,7 +73,12 @@ class IMUtil_Test extends TestCase
         $this->assertEquals('../dir/dir/search_def.php', $p);
     }
 
-    public function test_phpVersion()
+    /**
+     * Test php Version.
+     *
+     * @return void
+     */
+    public function test_phpVersion(): void
     {
         $version = IMUtil::phpVersion("5.4.45");
         $this->assertLessThan(6, $version);
@@ -82,13 +102,23 @@ class IMUtil_Test extends TestCase
         $this->assertGreaterThan(7, $version);
     }
 
-    public function test_removeNull()
+    /**
+     * Test remove Null.
+     *
+     * @return void
+     */
+    public function test_removeNull(): void
     {
         $str = IMUtil::removeNull("INTER\x00-Mediator");
         $this->assertEquals("INTER-Mediator", $str);
     }
 
-    public function test_getParameterValue()
+    /**
+     * Test get Parameter Value.
+     *
+     * @return void
+     */
+    public function test_getParameterValue(): void
     {
         $webServerName = Params::getParameterValue('webServerName', '');
         if (php_uname('n') === 'inter-mediator-server') {
@@ -98,7 +128,12 @@ class IMUtil_Test extends TestCase
         }
     }
 
-    public function test_protectCSRF()
+    /**
+     * Test protect CSRF.
+     *
+     * @return void
+     */
+    public function test_protectCSRF(): void
     {
         $result = $this->util->protectCSRF();
         $this->assertFalse($result);
@@ -123,7 +158,12 @@ class IMUtil_Test extends TestCase
         $this->assertTrue($result);
     }
 
-    public function test_checkHost()
+    /**
+     * Test check Host.
+     *
+     * @return void
+     */
+    public function test_checkHost(): void
     {
         $reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
         $reflectionMethod->setAccessible(true);
@@ -156,9 +196,14 @@ class IMUtil_Test extends TestCase
         $this->assertFalse($result);
     }
 
+    /**
+     * Test output Security Headers.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    public function test_outputSecurityHeaders()
+    public function test_outputSecurityHeaders(): void
     {
         $params = array();
 
@@ -230,7 +275,12 @@ class IMUtil_Test extends TestCase
         }
     }
 
-    public function test_randomString()
+    /**
+     * Test random String.
+     *
+     * @return void
+     */
+    public function test_randomString(): void
     {
         $testName = "Check randamString function in INTER-Mediator.php.";
         $str = IMUtil::randomString(10);
@@ -247,7 +297,12 @@ class IMUtil_Test extends TestCase
         $this->assertTrue(strlen($str) === 0, $testName);
     }
 
-    public function test_DateTimeString()
+    /**
+     * Test date Time String.
+     *
+     * @return void
+     */
+    public function test_DateTimeString(): void
     {
         $cdt1 = IMUtil::currentDTString();
         $cdt2 = IMUtil::currentDTString(20);
@@ -258,7 +313,12 @@ class IMUtil_Test extends TestCase
         $this->assertGreaterThan($cdt1, $cdt3, "IMUtil::currentDTString checked with order but it mighit be corrupted.");
     }
 
-    public function test_getMimeType()
+    /**
+     * Test get Mime Type.
+     *
+     * @return void
+     */
+    public function test_getMimeType(): void
     {
         if (((float)phpversion()) >= 5.3) {
             $path = '';
@@ -307,7 +367,12 @@ class IMUtil_Test extends TestCase
         }
     }
 
-    public function test_UserNameHome()
+    /**
+     * Test user Name Home.
+     *
+     * @return void
+     */
+    public function test_UserNameHome(): void
     {
         $user = IMUtil::getServerUserName();
         $home = IMUtil::getServerUserHome();
@@ -318,7 +383,12 @@ class IMUtil_Test extends TestCase
         $this->assertNotNull($home, "IMUtil::getServerUserHome has to return any strings.");
     }
 
-    public function test_Profile()
+    /**
+     * Test profile.
+     *
+     * @return void
+     */
+    public function test_Profile(): void
     {
         $tempDir = sys_get_temp_dir();
         Params::setVar("profileRoot", $tempDir);
@@ -394,7 +464,12 @@ class IMUtil_Test extends TestCase
         $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
     }
 
-    public function test_GeneratePassword()
+    /**
+     * Test generate Password.
+     *
+     * @return void
+     */
+    public function test_GeneratePassword(): void
     {
         $seed = "2345678abcdefghijkmnoprstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ";
         $seedPunctuation = "#$%&";

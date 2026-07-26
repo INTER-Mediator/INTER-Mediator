@@ -322,7 +322,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Get result for log.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getResultForLog(): ?array
     {
@@ -352,7 +352,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Read from DB.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function readFromDB(): ?array
     {
@@ -748,7 +748,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /** Get field info.
      * @param string $dataSourceName
-     * @return array|null
+     * @return array<string, string>|null
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -1021,7 +1021,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Get database result.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getDatabaseResult(): ?array
     {
@@ -1076,7 +1076,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /** Reset password sequence start.
      * @param string $email
-     * @return array|null
+     * @return array<string, string>|null
      */
     public function resetPasswordSequenceStart(string $email): ?array
     {
@@ -1261,7 +1261,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Get updated record.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getUpdatedRecord(): ?array
     {
@@ -1272,7 +1272,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Updated record.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function updatedRecord(): ?array
     {
@@ -1319,8 +1319,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /** Query for test.
      * @param string $table
-     * @param array|null $conditions
-     * @return array|null
+     * @param array<string, number|string|bool|null>|null $conditions
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
@@ -1329,7 +1329,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /** Delete for test.
      * @param string $table
-     * @param array|null $conditions
+     * @param array<string, number|string|bool|null>|null $conditions
      * @return bool
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool
@@ -1382,8 +1382,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Normalized condition.
-     * @param array $condition
-     * @return null|array
+     * @param array<string, number|string|bool|null> $condition
+     * @return null|array<string, number|string|bool|null>
      * @throws Exception
      */
     public function normalizedCondition(array $condition): null|array

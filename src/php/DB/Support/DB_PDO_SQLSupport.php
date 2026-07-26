@@ -344,8 +344,8 @@ trait DB_PDO_SQLSupport
     }
 
     /** Normalizes a condition array for SQL usage.
-     * @param array $condition Condition array.
-     * @return array Normalized condition array.
+     * @param array<string, number|string|bool|null> $condition Condition array.
+     * @return array<string, number|string|bool|null> Normalized condition array.
      */
     public function normalizedCondition(array $condition): null|array
     {

@@ -16,8 +16,18 @@ use INTERMediator\DB\Proxy;
 
 class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
 {
+    /**
+     * The dsn.
+     *
+     * @var string
+     */
     public string $dsn;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
@@ -31,7 +41,15 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         }
     }
 
-    function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null):void
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param ?string $subContextName The sub context name.
+     * @return void
+     */
+    function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void
     {
         $this->schemaName = "";
         $contexts = array(
@@ -72,7 +90,12 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
 
-    function dbProxySetupForAuth():void
+    /**
+     * Set up the DB proxy for auth.
+     *
+     * @return void
+     */
+    function dbProxySetupForAuth(): void
     {
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(array(
@@ -109,7 +132,12 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         );
     }
 
-    function dbProxySetupForAggregation():void
+    /**
+     * Set up the DB proxy for aggregation.
+     *
+     * @return void
+     */
+    function dbProxySetupForAggregation(): void
     {
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
@@ -142,7 +170,13 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         );
     }
 
-    function dbProxySetupForCondition(?array $queryArray):void
+    /**
+     * Set up the DB proxy for condition.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $queryArray The query array.
+     * @return void
+     */
+    function dbProxySetupForCondition(?array $queryArray): void
     {
         $this->schemaName = "";
         $contextName = 'testtable';
@@ -167,18 +201,46 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
 
-    protected function getSampleComdition()
+    /**
+     * Get Sample Comdition.
+     *
+     * @return string The result.
+     */
+    protected function getSampleComdition(): string
     {
         return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";;
     }
 
+    /**
+     * The sql set clause 1.
+     *
+     * @var string
+     */
     protected string $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(100,200,'2022-04-01','2022-04-01','10:21:31','10:21:31','2022-04-01 10:21:31','2022-04-01 10:21:31','TEST','TEST','TEST','TEST')";
+    /**
+     * The sql set clause 2.
+     *
+     * @var string
+     */
     protected string $sqlSETClause2 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,'',NULL)";
+    /**
+     * The sql set clause 3.
+     *
+     * @var string
+     */
     protected string $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,0,'','','','','','','','','','')";
 
+    /**
+     * Set up the DB proxy for access Set Key.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param string $keyName The key name.
+     * @return void
+     */
     function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName): void
     {
         // TODO: Implement dbProxySetupForAccessSetKey() method.

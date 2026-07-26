@@ -8,11 +8,21 @@ use INTERMediator\Messaging\SendMail;
 
 class Messaging_Test extends TestCase
 {
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
     }
 
-    public function test_templating()
+    /**
+     * Test templating.
+     *
+     * @return void
+     */
+    public function test_templating(): void
     {
         $sMail = new SendMail();
         $record = ['id' => 1, 'email' => 'msyk@msyk.net'];

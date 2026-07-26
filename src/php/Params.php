@@ -98,7 +98,7 @@ class Params
     }
 
     /** Returns all loaded parameter variables as an array.
-     * @return array|null Array of all variables, or null if not loaded.
+     * @return array<string, number|string|bool|null>|null Array of all variables, or null if not loaded.
      */
     public static function getVars(): ?array
     {

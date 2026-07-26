@@ -43,8 +43,8 @@ class SendMail extends MessagingProvider
     /** Sends emails based on the provided parameters and result set.
      * Handles both legacy and new email architectures, supports attachments and storing sent mail data.
      * @param Proxy $dbProxy A Proxy class's instance for logging and settings.
-     * @param array $sendMailParam Parameters for email sending (recipients, subject, body, etc.).
-     * @param array $result Result set from database operations.
+     * @param array<string, string> $sendMailParam Parameters for email sending (recipients, subject, body, etc.).
+     * @param array<array<string, number|string|bool|null>> $result Result set from database operations.
      * @return bool True if all emails sent successfully, false if any error occurred.
      * @throws TransportExceptionInterface
      */

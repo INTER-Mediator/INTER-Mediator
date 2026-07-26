@@ -94,7 +94,7 @@ class Generator
     }
 
     /** Acquire schema information from the database.
-     * @return array[] The schema information array.
+     * @return array<string, number|string|bool|null> The schema information array.
      */
     public function acquire(): array
     {
@@ -266,7 +266,7 @@ class Generator
     }
 
     /** Get the list of databases.
-     * @return array
+     * @return array<string>
      */
     private function getDatabases(): array
     {
@@ -340,7 +340,7 @@ class Generator
     }
 
     /** Get the list of tables in the database.
-     * @return array
+     * @return array<string>
      */
     private function getTables(): array
     {
@@ -363,7 +363,7 @@ class Generator
 
     /** Get the information of a table.
      * @param string $tableName
-     * @return array
+     * @return array<string>
      */
     private function getTableInfo(string $tableName): array
     {
@@ -387,7 +387,7 @@ class Generator
     }
 
     /** Get the list of fields for a table.
-     * @return array
+     * @return array<string, string>
      */
     private function getFieldList(): array
     {
@@ -426,8 +426,8 @@ class Generator
     }
 
     /** Generate dummy data for a table.
-     * @param array $fieldList
-     * @return array[]
+     * @param array<string, string> $fieldList
+     * @return array<string, string>
      */
     private function generateDummyData(array $fieldList): array
     {

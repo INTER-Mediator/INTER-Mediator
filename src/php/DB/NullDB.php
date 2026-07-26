@@ -23,7 +23,7 @@ class NullDB extends DBClass
 {
 
     /** Read records from the database (no-op).
-     * @return array|null Always returns null.
+     * @return array<array<string, number|string|bool|null>>|null Always returns null.
      */
     public function readFromDB(): ?array
     {
@@ -74,7 +74,7 @@ class NullDB extends DBClass
 
     /** Get field information (no-op).
      * @param string $dataSourceName The data source name.
-     * @return array|null Always returns null.
+     * @return array<string, string>|null Always returns null.
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -98,7 +98,7 @@ class NullDB extends DBClass
     }
 
     /** Get the updated record (no-op).
-     * @return array|null Always returns null.
+     * @return array<array<string, number|string|bool|null>>|null Always returns null.
      */
     public function getUpdatedRecord(): ?array
     {
@@ -106,7 +106,7 @@ class NullDB extends DBClass
     }
 
     /** Get the updated record (no-op).
-     * @return array|null Always returns null.
+     * @return array<array<string, number|string|bool|null>>|null Always returns null.
      */
     public function updatedRecord(): ?array
     {
@@ -174,8 +174,8 @@ class NullDB extends DBClass
 
     /** Query records for testing (no-op).
      * @param string $table The table to query.
-     * @param array|null $conditions The query conditions.
-     * @return array|null Always returns null.
+     * @param array<string, number|string|bool|null>|null $conditions The query conditions.
+     * @return array<array<string, number|string|bool|null>>|null Always returns null.
      */
     public function queryForTest(string $table, ?array $conditions = null):?array
     {

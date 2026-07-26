@@ -382,8 +382,8 @@ class TextFile extends DBClass
 
     /** Query the database for testing purposes.
      * @param string $table
-     * @param array|null $conditions
-     * @return array|null
+     * @param array<string, number|string|bool|null>|null $conditions
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
@@ -392,7 +392,7 @@ class TextFile extends DBClass
 
     /** Delete records from the database for testing purposes.
      * @param string $table
-     * @param array|null $conditions
+     * @param array<string, number|string|bool|null>|null $conditions
      * @return bool
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool

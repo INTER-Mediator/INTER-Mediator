@@ -56,11 +56,11 @@ class FileMaker_DataAPI extends DBClass
      */
     private mixed $fieldInfo;
     /** The most recently updated record.
-     * @var array|null
+     * @var array<string, string>|null
      */
     private ?array $updatedRecord = null;
     /** Field name used for soft deletion.
-     * @var string|null
+     * @var string<array<string, number|string|bool|null>>|null
      */
     private ?string $softDeleteField = null;
     /** Value used for soft deletion.
@@ -107,7 +107,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the updated record.
-     * @return array|null The updated record or null.
+     * @return array<araay<string, number|string|bool|null>>|null The updated record or null.
      */
     public function getUpdatedRecord(): ?array
     {
@@ -115,7 +115,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the updated record (alias for getUpdatedRecord).
-     * @return array|null The updated record or null.
+     * @return array<araay<string, number|string|bool|null>>|null The updated record or null.
      */
     public function updatedRecord(): ?array
     {
@@ -123,7 +123,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Set the updated record.
-     * @param array $record The updated record.
+     * @param array<araay<string, number|string|bool|null>> $record The updated record.
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -313,7 +313,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string $field The field name.
      * @param string $value The field value.
      * @param string|null $operator The operator (default: null).
-     * @return array|null The search conditions or null.
+     * @return array<araay<string, number|string|bool|null>>|null The search conditions or null.
      */
     private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): ?array
     {
@@ -340,8 +340,8 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Execute scripts.
-     * @param array|null $scriptContext The script context.
-     * @return array|string[]|null The script result or null.
+     * @param araay<string, array<string, number|string|bool|null>>|null $scriptContext The script context.
+     * @return array<araay<string, number|string|bool|null>>|string[]|null The script result or null.
      */
     private function executeScripts(?array $scriptContext): ?array
     {
@@ -382,7 +382,7 @@ class FileMaker_DataAPI extends DBClass
 
     /** Get field information.
      * @param string $dataSourceName The data source name.
-     * @return array|null The field information or null.
+     * @return array<string, string>|null The field information or null.
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -391,7 +391,7 @@ class FileMaker_DataAPI extends DBClass
 
     /** Get schema.
      * @param string $dataSourceName The data source name.
-     * @return array|bool The schema or false.
+     * @return array<string, string>|bool The schema or false.
      * @throws Exception
      */
     public function getSchema(string $dataSourceName): array|bool
@@ -432,7 +432,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Read from database.
-     * @return array|array[]|null The read result or null.
+     * @return array<array<string, number|string|bool|null>>|array[]|null The read result or null.
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -832,7 +832,7 @@ class FileMaker_DataAPI extends DBClass
 
     /** Create a record set.
      * @param FileMakerRelation|null $resultData The result data.
-     * @return array The record set.
+     * @return array<array<string, number|string|bool|null>> The record set.
      */
     private function createRecordset(?FileMakerRelation $resultData): array
     {
@@ -1480,8 +1480,8 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Normalize condition.
-     * @param array $condition The condition array.
-     * @return null|array The normalized condition array.
+     * @param array<string, number|string|bool|null> $condition The condition array.
+     * @return null|array<string, number|string|bool|null> The normalized condition array.
      */
     public function normalizedCondition(array $condition): null|array
     {
@@ -1555,8 +1555,8 @@ class FileMaker_DataAPI extends DBClass
 
     /** Query for test.
      * @param string $table The table name.
-     * @param array|null $conditions The conditions array.
-     * @return array|null The query result or null.
+     * @param array<string, number|string|bool|null>|null $conditions The conditions array.
+     * @return array<array<string, number|string|bool|null>>|null The query result or null.
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
@@ -1583,7 +1583,7 @@ class FileMaker_DataAPI extends DBClass
 
     /** Delete for test.
      * @param string $table The table name.
-     * @param array|null $conditions The conditions array.
+     * @param array<array<string, number|string|bool|null>>|null $conditions The conditions array.
      * @return bool True if delete is successful, false otherwise.
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool
@@ -1607,9 +1607,9 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get portal data for updating.
-     * @param array $data The data array.
+     * @param array<array<string, number|string|bool|null>> $data The data array.
      * @param FileMakerRelation $result The result object.
-     * @return array The portal data array.
+     * @return array<array<string, number|string|bool|null>> The portal data array.
      */
     protected function _getPortalDataForUpdating(array $data, FileMakerRelation $result): array
     {

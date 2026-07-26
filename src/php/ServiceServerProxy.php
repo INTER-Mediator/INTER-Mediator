@@ -116,7 +116,7 @@ class ServiceServerProxy
     }
 
     /** Gets the message array.
-     * @return array List of messages.
+     * @return array<string> List of messages.
      */
     public function getMessages(): array
     {
@@ -124,7 +124,7 @@ class ServiceServerProxy
     }
 
     /** Gets the error array.
-     * @return array List of errors.
+     * @return array<string> List of errors.
      */
     public function getErrors(): array
     {
