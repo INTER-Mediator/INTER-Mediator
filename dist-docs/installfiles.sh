@@ -3,7 +3,7 @@
 distDocDir=$(cd $(dirname "$0"); pwd)
 seedComposer="${distDocDir}/composer-seed/composer-"
 versions="8.1,8.2,8.3,8.4,8.5"
-composerVers="2.7,2.7,2.7,2.8,2.10"
+composerVers="2.7.9,2.7.9,2.10.2,2.10.2,2.10.2"
 originalPath=$(dirname "${distDocDir}")
 cd "${originalPath}"
 
@@ -35,7 +35,7 @@ for ver in "${versionArray[@]}"; do
     rm composer.json composer.lock
 
     echo "Setup composer ver.${cvArray[${COUNT}]}"
-    php composer-setup.php --"${cvArray[${COUNT}]}"
+    php composer-setup.php --version=${cvArray[${COUNT}]}
 
     cp -f "${seedComposer}${ver}.json" "${originalPath}/composer.json"
     php composer.phar update --no-scripts --no-plugins --no-interaction

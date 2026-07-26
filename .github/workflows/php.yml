@@ -7,9 +7,10 @@ on:
   pull_request:
     branches:
       - master
-      - 16-8.1
-      - 16-8.2
-      - 16-8.3
+      - Ver.16-PHP8.1
+      - Ver.16-PHP8.2
+      - Ver.16-PHP8.3
+      - Ver.16-PHP8.4
 
 jobs:
   run:
@@ -20,16 +21,16 @@ jobs:
         include:
           - operating-system: 'ubuntu-latest'
             php-versions: '8.1'
-            branch: '16-8.1'
+            branch: 'Ver.16-PHP8.1'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.2'
-            branch: '16-8.2'
+            branch: 'Ver.16-PHP8.2'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.3'
-            branch: '16-8.3'
+            branch: 'Ver.16-PHP8.3'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.4'
-            branch: 'default'
+            branch: 'Ver.16-PHP8.4'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.5'
             branch: 'default'
@@ -67,7 +68,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BRANCH_NAME="${{ github.base_ref }}"
           fi
-          if [[ "${{ matrix.branch }}" == "$BRANCH_NAME" || ( "${{ matrix.branch }}" == "default" && "$BRANCH_NAME" != 16-8.* ) ]]; then
+          if [[ "${{ matrix.branch }}" == "$BRANCH_NAME" || ( "${{ matrix.branch }}" == "default" && "$BRANCH_NAME" != Ver.16-PHP8.* ) ]]; then
             SHOULD_RUN=true
           fi
           echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
