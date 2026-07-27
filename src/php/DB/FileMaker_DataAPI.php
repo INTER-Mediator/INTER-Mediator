@@ -431,8 +431,9 @@ class FileMaker_DataAPI extends DBClass
         return $returnArray;
     }
 
-    /** Read from database.
-     * @return array<array<string, number|string|bool|null>>|array[]|null The read result or null.
+    /**
+     * Read from database.
+     * @return array<array<string, number|string|bool|null>>|array<array-key, array<array-key, mixed>>|null The read result or null.
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -1098,7 +1099,7 @@ class FileMaker_DataAPI extends DBClass
                         if (isset($item['field']) &&
                             $item['field'] === $fieldName &&
                             isset($item['container']) &&
-                            (boolean)$item['container'] === TRUE) {
+                            (bool)$item['container'] === TRUE) {
                             $useContainer = TRUE;
                         }
                     }
@@ -1683,6 +1684,9 @@ class FileMaker_DataAPI extends DBClass
     {
     }
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array
     {
         return [];

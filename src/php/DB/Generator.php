@@ -45,28 +45,33 @@ class Generator
      * @var Proxy
      */
     private Proxy $proxy;
-    /** DSN elements parsed from the connection string.
-     * @var array
+    /**
+     * DSN elements parsed from the connection string.
+     * @var array<array-key, mixed>
      */
     private array $dsnElements;
     /** DSN prefix (e.g., 'mysql').
      * @var string
      */
     private string $dsnPrefix;
-    /** Context definition array.
-     * @var array|null
+    /**
+     * Context definition array.
+     * @var array<array-key, mixed>|null
      */
     private ?array $contextDef;
-    /** Schema information array.
-     * @var array
+    /**
+     * Schema information array.
+     * @var array<array-key, mixed>
      */
     private array $schemaInfo;
-    /** Options for generator behavior.
-     * @var array|null
+    /**
+     * Options for generator behavior.
+     * @var array<array-key, mixed>|null
      */
     private ?array $options;
-    /** Supported database engines.
-     * @var array
+    /**
+     * Supported database engines.
+     * @var array<array-key, mixed>
      */
     private array $supportDB = ["mysql",/* "pgsql" */];
 
@@ -289,7 +294,7 @@ class Generator
     }
 
     /** Parse the DSN string into elements.
-     * @param $dsn
+     * @param string $dsn
      * @return void
      */
     private function parseDSN($dsn): void

@@ -20,8 +20,9 @@ trait DB_PDO_SQLSupport
         return $this->getWhereClause($currentOperation);
     }
 
-    /** Converts an array of query clauses into a SQL clause string.
-     * @param array $queryClauseArray Array of query clauses.
+    /**
+     * Converts an array of query clauses into a SQL clause string.
+     * @param array<array-key, mixed> $queryClauseArray Array of query clauses.
      * @param string $insideOp Operator for terms within a clause.
      * @param string $outsideOp Operator for combining clauses.
      * @return string SQL clause string.
@@ -35,9 +36,10 @@ trait DB_PDO_SQLSupport
         return implode($outsideOp, $oneClause);
     }
 
-    /** Determines logical operators in a block term.
+    /**
+     * Determines logical operators in a block term.
      * @param string $term Block term string.
-     * @return array Array of operators: [fieldOp, groupOp, blockOp].
+     * @return array<array-key, mixed> Array of operators: [fieldOp, groupOp, blockOp].
      */
     private function determineOperatorsInBlock(string $term): array
     {
@@ -67,10 +69,11 @@ trait DB_PDO_SQLSupport
         return $escapedValue;
     }
 
-    /** Generates a SQL WHERE clause from conditions.
-     * @param array $conditions Array of condition arrays.
+    /**
+     * Generates a SQL WHERE clause from conditions.
+     * @param array<array-key, mixed> $conditions Array of condition arrays.
      * @param string $primaryKey Primary key field name.
-     * @param array $numericFields Array of numeric field names.
+     * @param array<array-key, mixed> $numericFields Array of numeric field names.
      * @param bool $isExtra Whether to include extra conditions.
      * @param string $insideOp Operator for terms within a clause.
      * @param string $outsideOp Operator for combining clauses.
@@ -336,8 +339,14 @@ trait DB_PDO_SQLSupport
         return implode(',', $sortClause);
     }
 
+    /** Sort keys for the current context.
+     * @var array<string, string>
+     */
     private array $sortKeys = [];
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array
     {
         return $this->sortKeys;

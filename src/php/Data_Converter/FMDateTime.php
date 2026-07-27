@@ -98,8 +98,9 @@ class FMDateTime
         return $dt;
     }
 
-    /** @param string $d
-     * @return array
+    /**
+     * @param string $d
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     public function dateArrayFromFMDate(string $d): ?array

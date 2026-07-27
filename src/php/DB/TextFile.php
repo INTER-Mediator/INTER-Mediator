@@ -29,8 +29,9 @@ class TextFile extends DBClass
      */
     private int $recordCount;
 
-    /** Read records from the text file data source.
-     * @return array|null Returns an array of records or null on failure.
+    /**
+     * Read records from the text file data source.
+     * @return array<array-key, mixed>|null Returns an array of records or null on failure.
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -146,12 +147,13 @@ class TextFile extends DBClass
         return $this->recordCount;
     }
 
-    /** Get the WHERE clause for the current operation.
+    /**
+     * Get the WHERE clause for the current operation.
      * @param string $currentOperation
      * @param bool $includeContext
      * @param bool $includeExtra
      * @param string $signedUser
-     * @return array
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     private function getWhereClause(string $currentOperation, bool $includeContext = true, bool $includeExtra = true,
@@ -210,8 +212,9 @@ class TextFile extends DBClass
         return $queryClauseArray;
     }
 
-    /** Get the SORT clause for the current operation.
-     * @return array
+    /**
+     * Get the SORT clause for the current operation.
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     private function getSortClause(): array
@@ -260,9 +263,10 @@ class TextFile extends DBClass
         return false;
     }
 
-    /** Get field information for the specified data source.
+    /**
+     * Get field information for the specified data source.
      * @param string $dataSourceName
-     * @return array|null
+     * @return array<array-key, mixed>|null
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -304,24 +308,27 @@ class TextFile extends DBClass
         // TODO: Implement requireUpdatedRecord() method.
     }
 
-    /** Get the updated record.
-     * @return array|null
+    /**
+     * Get the updated record.
+     * @return array<array-key, mixed>|null
      */
     public function getUpdatedRecord(): ?array
     {
         return [];
     }
 
-    /** Get the updated record.
-     * @return array|null
+    /**
+     * Get the updated record.
+     * @return array<array-key, mixed>|null
      */
     public function updatedRecord(): ?array
     {
         return [];
     }
 
-    /** Set the updated record.
-     * @param array $record
+    /**
+     * Set the updated record.
+     * @param array<array-key, mixed> $record
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -459,6 +466,9 @@ class TextFile extends DBClass
     {
     }
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array
     {
         return [];

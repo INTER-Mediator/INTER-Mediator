@@ -53,10 +53,11 @@ class NotifyServer
         return true;
     }
 
-    /** Triggers a notification event to the service server for the specified channels and data.
-     * @param array $channels Array of client IDs to notify.
+    /**
+     * Triggers a notification event to the service server for the specified channels and data.
+     * @param array<array-key, mixed> $channels Array of client IDs to notify.
      * @param string $operation Operation type (e.g., 'update', 'create', 'delete').
-     * @param array $data Data describing the change.
+     * @param array<array-key, mixed> $data Data describing the change.
      * @return void
      */
     private function trigger(array $channels, string $operation, array $data): void
@@ -73,10 +74,11 @@ class NotifyServer
         $logger->setErrorMessages($ssInstance->getErrors());
     }
 
-    /** Registers a client for notifications on a given entity and condition.
+    /**
+     * Registers a client for notifications on a given entity and condition.
      * @param string $entity Entity name to register for.
      * @param string $condition Condition for registration.
-     * @param array $pkArray Primary key values for the entity.
+     * @param array<array-key, mixed> $pkArray Primary key values for the entity.
      * @return string|null Registration result or null on failure.
      */
     public function register(string $entity, string $condition, array $pkArray): ?string
@@ -85,9 +87,10 @@ class NotifyServer
         return $this->dbClass->notifyHandler?->register($this->clientId, $entity, $condition, $pkArray);
     }
 
-    /** Unregisters a client from notifications for specific table keys.
+    /**
+     * Unregisters a client from notifications for specific table keys.
      * @param string|null $client Client ID to unregister.
-     * @param array|null $tableKeys Table keys to unregister.
+     * @param array<array-key, mixed>|null $tableKeys Table keys to unregister.
      * @return bool True if successfully unregistered, false otherwise.
      */
     public function unregister(?string $client, ?array $tableKeys): bool
@@ -99,12 +102,13 @@ class NotifyServer
         return false;
     }
 
-    /** Handles update notifications and triggers the appropriate event.
+    /**
+     * Handles update notifications and triggers the appropriate event.
      * @param string|null $clientId Client ID that performed the update.
      * @param string $entity Entity name.
-     * @param array $pkArray Primary key values.
-     * @param array $field Updated fields.
-     * @param array $value Updated values.
+     * @param array<array-key, mixed> $pkArray Primary key values.
+     * @param array<array-key, mixed> $field Updated fields.
+     * @param array<array-key, mixed> $value Updated values.
      * @param bool $isNotify Whether to just notify or not.
      * @return void
      */
@@ -118,12 +122,13 @@ class NotifyServer
         }
     }
 
-    /** Handles create notifications and trigger the appropriate event.
+    /**
+     * Handles create notifications and trigger the appropriate event.
      * @param string|null $clientId Client ID that performed the creation.
      * @param string $entity Entity name.
-     * @param array $pkArray Primary key values.
+     * @param array<array-key, mixed> $pkArray Primary key values.
      * @param string $pkField Primary key field name.
-     * @param array $record Created record data.
+     * @param array<array-key, mixed> $record Created record data.
      * @param bool $isNotify Whether to just notify or not.
      * @return void
      */
@@ -137,10 +142,11 @@ class NotifyServer
         }
     }
 
-    /** Handles delete notifications and trigger the appropriate event.
+    /**
+     * Handles delete notifications and trigger the appropriate event.
      * @param string|null $clientId Client ID that performed the deletion.
      * @param string $entity Entity name.
-     * @param array $pkArray Primary key values.
+     * @param array<array-key, mixed> $pkArray Primary key values.
      * @return void
      */
     public function deleted(?string $clientId, string $entity, array $pkArray): void

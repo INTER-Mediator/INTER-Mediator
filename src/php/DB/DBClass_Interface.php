@@ -129,10 +129,11 @@ interface DBClass_Interface
      */
     public function clearUseSetDataToUpdatedRecord(): void;
 
-    /** Query the database for testing.
+    /**
+     * Query the database for testing.
      * @param string $table The table name.
      * @param array<string, number|string|bool|null>|null $conditions Optional conditions.
-     * @return array<array<array, number|string|bool|null>>|null Result set or null.
+     * @return array<array<array-key, number|string|bool|null>>|null Result set or null.
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array;
 
@@ -173,5 +174,8 @@ interface DBClass_Interface
      */
     public function closeDBOperation(): void;
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array;
 }
