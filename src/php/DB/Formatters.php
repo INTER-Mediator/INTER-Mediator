@@ -21,7 +21,7 @@ namespace INTERMediator\DB;
 class Formatters
 {
     /** Array of formatter objects for each field.
-     * @var array<string, string>
+     * @var array<string, object>
      */
     private array $formatter = [];
 
@@ -45,10 +45,10 @@ class Formatters
 
     /** Convert field data from DB format to user format using the field's formatter.
      * @param string $field Field name.
-     * @param number|string|bool|null $data Data from the database.
-     * @return number|string|bool|null Converted data for user display.
+     * @param string $data Data from the database.
+     * @return string|null Converted data for user display.
      */
-    public function formatterFromDB($field, $data): number|string|bool|null
+    public function formatterFromDB(string $field, string $data): ?string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromDBtoUser($data);
@@ -58,10 +58,10 @@ class Formatters
 
     /** Convert field data from user format to DB format using the field's formatter.
      * @param string $field Field name.
-     * @param number|string|bool|null $data Data from the user.
-     * @return number|string|bool|null Converted data for DB storage.
+     * @param string $data Data from the user.
+     * @return string Converted data for DB storage.
      */
-    public function formatterToDB($field, $data): number|string|bool|null
+    public function formatterToDB(string $field, string $data): string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromUserToDB($data);

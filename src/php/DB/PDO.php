@@ -136,7 +136,7 @@ class PDO extends DBClass
     }
 
     /** Sets the updated record.
-     * @param array $record
+     * @param array<array<string, bool|float|int|string|null>> $record
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -556,11 +556,11 @@ class PDO extends DBClass
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $value = $this->formatter->formatterToDB($filedInForm, $value);
-                if ($this->isFollowingTimezones && in_array($field, $timeFields) && !is_null($value) && $value !== '') {
+                if ($this->isFollowingTimezones && in_array($field, $timeFields) && $value !== '') {
                     $value = $this->getDateTimeExpression($value, true);
-                } else if (in_array($field, $nullableFields)) {
+                }/* else if (in_array($field, $nullableFields)) {
                     $value = $value ?? NULL;
-                }
+                }*/
             }
             $setParameter[] = $value;
             $this->logger->setDebugMessage("field={$field}, value={$value}/original={$origValue}/, len={$valueLen}");
@@ -1095,7 +1095,7 @@ class PDO extends DBClass
     /** Returns the result relation.
      * @param $result
      * @param array $timeFields
-     * @return array<string, number|string|bool|null>
+     * @return list<array<string, bool|float|int|string|null>>
      * @throws Exception
      */
     private function getResultRelation($result, array $timeFields): array

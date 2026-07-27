@@ -220,7 +220,7 @@ trait Proxy_ExtSupport
     }
 
     /** Set up the query for the operation.
-     * @param array<array<string, number|string|bool|null>>|null $query
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
      * @return void
      */
     private function setupQuery(?array $query): void

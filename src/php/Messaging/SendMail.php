@@ -59,11 +59,11 @@ class SendMail extends MessagingProvider
             $isErrorThisRecord = false;
             $ome = new OME();
 
-            if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
+            if (isset($sendMailParam['f-option']) && $sendMailParam['f-option']) {
                 $ome->useSendMailParam();
             }
             if (isset($sendMailParam['body-wrap']) && $sendMailParam['body-wrap'] > 1) {
-                $ome->setBodyWidth($sendMailParam['body-wrap']);
+                $ome->setBodyWidth(intval($sendMailParam['body-wrap']));
             }
 
             if (isset($smtpConfig)) {

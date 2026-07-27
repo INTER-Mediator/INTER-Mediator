@@ -1272,7 +1272,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Updated record.
-     * @return array<array<string, number|string|bool|null>>|null
+     * @return array<array<string, bool|float|int|string|null>>|null
      */
     public function updatedRecord(): ?array
     {
@@ -1280,7 +1280,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Set updated record.
-     * @param array $record
+     * @param array<array<string, bool|float|int|string|null>> $record
      */
     public function setUpdatedRecord(array $record): void
     {

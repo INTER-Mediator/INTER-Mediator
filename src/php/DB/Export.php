@@ -6,7 +6,7 @@ use DateTime;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Exception;
 use League\Csv\InvalidArgument;
-use League\Csv\AbstractCsv;
+use League\Csv\Writer;
 use League\Csv\CharsetConverter;
 
 /**
@@ -46,7 +46,7 @@ class Export
 
     /** Processes export of context data to CSV and outputs the file to the browser.
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>> $contextData The data to export.
-     * @param arrayarray<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|null $options Optional export options.
+     * @param array<array<string, number|string|bool|null>>|null $options Optional export options.
      * @return void
      * @throws CannotInsertRecord
      * @throws Exception
@@ -64,7 +64,7 @@ class Export
         }
         $existKeysLabels = count($this->keysAndLabels) > 0;
 
-        $writer = AbstractCsv::fromString();
+        $writer = Writer::fromString();
         CharsetConverter::addTo($writer, 'UTF-8', $this->encoding);
         $writer->setDelimiter($this->fieldSeparator);
         $writer->setEscape('\\');

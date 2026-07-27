@@ -114,7 +114,7 @@ class NullDB extends DBClass
     }
 
     /** Set the updated record (no-op).
-     * @param array $record The record to set.
+     * @param array<array<string, number|string|bool|null>> $record The record to set.
      * @return void
      */
     public function setUpdatedRecord(array $record): void

@@ -94,7 +94,7 @@ class Generator
     }
 
     /** Acquire schema information from the database.
-     * @return array<string, number|string|bool|null> The schema information array.
+     * @return array<int, array<string, int|string>> The schema information array.
      */
     public function acquire(): array
     {
@@ -427,7 +427,7 @@ class Generator
 
     /** Generate dummy data for a table.
      * @param array<string, string> $fieldList
-     * @return array<string, string>
+     * @return array<int, array<string, int|string>>
      */
     private function generateDummyData(array $fieldList): array
     {
