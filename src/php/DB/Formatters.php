@@ -45,10 +45,10 @@ class Formatters
 
     /** Convert field data from DB format to user format using the field's formatter.
      * @param string $field Field name.
-     * @param string $data Data from the database.
+     * @param string|null $data Data from the database.
      * @return string|null Converted data for user display.
      */
-    public function formatterFromDB(string $field, string $data): ?string
+    public function formatterFromDB(string $field, ?string $data): ?string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromDBtoUser($data);
@@ -58,10 +58,10 @@ class Formatters
 
     /** Convert field data from user format to DB format using the field's formatter.
      * @param string $field Field name.
-     * @param string $data Data from the user.
+     * @param string|null $data Data from the user.
      * @return string Converted data for DB storage.
      */
-    public function formatterToDB(string $field, string $data): string
+    public function formatterToDB(string $field, ?string $data): string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromUserToDB($data);
