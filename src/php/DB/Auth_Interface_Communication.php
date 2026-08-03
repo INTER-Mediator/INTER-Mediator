@@ -27,7 +27,7 @@ interface Auth_Interface_Communication
      * @param string $prefix Optional prefix for the challenge.
      * @return void
      */
-    public function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void;
+    public function saveChallenge(string|null $username, string $challenge, string $clientId, string $prefix = ""): void;
 
     // public function checkAuthorization(string $username, bool $isSAML = false): bool;
     // public function checkChallenge(string $challenge, string $clientId): bool;
@@ -52,7 +52,7 @@ interface Auth_Interface_Communication
      * @param string|null $username The username, or null.
      * @return string|null The salt value or null if not found.
      */
-    public function authSupportGetSalt(?string $username): ?string;
+    public function authSupportGetSalt(string|null $username): string|null;
 
     /** Change the password for a given username.
      * @param string $username The username.

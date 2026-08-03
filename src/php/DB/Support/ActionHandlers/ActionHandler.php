@@ -28,7 +28,7 @@ abstract class ActionHandler
     public function __construct(Proxy $proxy)
     {
         $this->proxy = $proxy;
-        Logger::getInstance()->setDebugMessage("Action handler class generated: " . get_class($this));
+        Logger::getInstance()->setDebugMessage("Action handler class generated: " . $this::class);
     }
 
     // Handler methods
@@ -74,17 +74,17 @@ abstract class ActionHandler
     /** Stored challenge string for authentication checks.
      * @var string|null
      */
-    protected ?string $storedChallenge;
+    protected string|null $storedChallenge;
 
     /** Stored credential string for authentication checks.
      * @var string|null
      */
-    protected ?string $storedCredential;
+    protected string|null $storedCredential;
 
     /** Stored 2FA authentication string for authentication checks.
      * @var string|null
      */
-    protected ?string $stored2FAuth;
+    protected string|null $stored2FAuth;
 
     /** Prepares and validates authentication for the CheckAuthentication operation.
      *
@@ -409,7 +409,7 @@ abstract class ActionHandler
      * @param string $challenge The challenge which is already generated.
      * @return string The generated challenge.
      */
-    public function generateAndSaveChallenge(?string $user, string $clientID, string $prefix, string $suffix = "", string $challenge = ""): string
+    public function generateAndSaveChallenge(string|null $user, string $clientID, string $prefix, string $suffix = "", string $challenge = ""): string
     {
         $proxy = $this->proxy;
         if (!$challenge) {

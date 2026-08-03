@@ -21,10 +21,10 @@ namespace INTERMediator\Data_Converter;
  */
 class MarkdownString extends HTMLString
 {
-    /** @param ?string $str
+    /** @param string|null $str
      * @return string
      */
-    public function converterFromDBtoUser(?string $str): string
+    public function converterFromDBtoUser(string|null $str): string
     {
         if (is_null($str)) {
             return "";

@@ -29,14 +29,14 @@ class Formatters
      * @param array<array<string, number|string|bool|null>>|null $fmt Array of formatter definitions.
      * @return void
      */
-    public function setFormatter($fmt): void
+    public function setFormatter(array|null $fmt): void
     {
         if (is_array($fmt)) {
             $this->formatter = array();
             foreach ($fmt as $oneItem) {
-                if (!isset($this->formatter[$oneItem['field']])) {
+                if (!isset($this->formatter[(string)$oneItem['field']])) {
                     $cvClassName = "INTERMediator\\Data_Converter\\" . $oneItem['converter-class'];
-                    $this->formatter[$oneItem['field']]
+                    $this->formatter[(string)$oneItem['field']]
                         = new $cvClassName($oneItem['parameter'] ?? '');
                 }
             }
@@ -48,7 +48,7 @@ class Formatters
      * @param string|null $data Data from the database.
      * @return string|null Converted data for user display.
      */
-    public function formatterFromDB(string $field, ?string $data): ?string
+    public function formatterFromDB(string $field, string|null $data): string|null
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromDBtoUser($data);
@@ -61,7 +61,7 @@ class Formatters
      * @param string|null $data Data from the user.
      * @return string Converted data for DB storage.
      */
-    public function formatterToDB(string $field, ?string $data): string
+    public function formatterToDB(string $field, string|null $data): string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromUserToDB($data);

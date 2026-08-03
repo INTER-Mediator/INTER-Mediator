@@ -74,7 +74,7 @@ class PageEditor extends DBClass
         return true;
     }
 
-    public function createInDB($isReplace = false):?string
+    public function createInDB($isReplace = false):string|null
     {
         return null;
     }
@@ -114,12 +114,12 @@ class PageEditor extends DBClass
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB():?string
+    public function copyInDB():string|null
     {
         return null;
     }
 
-    public function setupHandlers(?string $dsn = null):void
+    public function setupHandlers(string|null $dsn = null):void
     {
     }
 

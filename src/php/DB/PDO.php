@@ -71,12 +71,12 @@ class PDO extends DBClass
     /** Field name used for soft deletion.
      * @var string|null
      */
-    private ?string $softDeleteField = null;
+    private string|null $softDeleteField = null;
 
     /** Value used for soft deletion.
-     * @var string|null
+     * @var string|int|null
      */
-    private ?string $softDeleteValue = null;
+    private null|string|int $softDeleteValue = null;
 
     /** Whether setDataToUpdatedRecord was used.
      * @var bool
@@ -216,7 +216,7 @@ class PDO extends DBClass
      * @param \PDOStatement|bool|null $result
      * @return bool
      */
-    private function errorHandlingPDO(string $sql, $result): bool
+    private function errorHandlingPDO(string $sql, \PDOStatement|bool|null $result): bool
     {
         $errorCode = $this->link->errorCode();
         $errorClass = strlen($errorCode) < 2 ? "00" : substr($errorCode, 0, 2);
@@ -264,7 +264,7 @@ class PDO extends DBClass
      * @param string|null $dsn
      * @return void
      */
-    public function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(string|null $dsn = null): void
     {
         if (!$dsn) {
             $dsn = $this->dbSettings->getDbSpecDSN();
@@ -316,11 +316,11 @@ class PDO extends DBClass
         $sourceTable = $this->dbSettings->getEntityAsSource();
         $boolFields = $this->handler->getBooleanFields($updatingTable);
 
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] === 'load' || $condition['db-operation'] === 'read') {
                     if ($condition['situation'] === 'pre') {
-                        $sql = $condition['definition'];
+                        $sql = (string)$condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
                         if (!$this->errorHandlingPDO($sql, $result)) {
@@ -380,7 +380,7 @@ class PDO extends DBClass
                 if (!$this->errorHandlingPDO($sql, $result)) {
                     return null;
                 }
-                $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+                $this->mainTableTotalCount = (int)($isAggregate ? $result->rowCount() : $result->fetchColumn(0));
             }
         }
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
@@ -421,7 +421,7 @@ class PDO extends DBClass
             }
             $sqlResult[] = $rowArray;
             if ($keyField && isset($rowArray[$keyField])) {
-                $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
+                $this->notifyHandler->addQueriedPrimaryKeys((string)$rowArray[$keyField]);
             }
             $isFirstRow = false;
         }
@@ -430,11 +430,11 @@ class PDO extends DBClass
             $this->mainTableCount = count($sqlResult);
             $this->mainTableTotalCount = count($sqlResult);
         }
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] === 'load' || $condition['db-operation'] === 'read') {
                     if ($condition['situation'] === 'post') {
-                        $sql = $condition['definition'];
+                        $sql = (string)$condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
                         if (!$this->errorHandlingPDO($sql, $result)) {
@@ -517,10 +517,10 @@ class PDO extends DBClass
         }
         $signedUser = $this->dbSettings->getCurrentUser();
 
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] === 'update' && $condition['situation'] === 'pre') {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -537,8 +537,7 @@ class PDO extends DBClass
 
         foreach ($this->dbSettings->getFieldsRequired() as $field) {
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
-            $value = (is_array($fieldValues[$counter]))
-                ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
+            $value = $fieldValues[$counter];
             $origValue = $value;
             $counter++;
             $valueLen = ($value || $value === 0 || $value === 0.0) ? strlen((string)$value) : 0;
@@ -560,7 +559,7 @@ class PDO extends DBClass
                 $value = $this->isTrue($value);
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                $value = $this->formatter->formatterToDB($filedInForm, $value);
+                $value = $this->formatter->formatterToDB($filedInForm, (string)$value);
                 if ($this->isFollowingTimezones && in_array($field, $timeFields) && $value !== '') {
                     $value = $this->getDateTimeExpression($value, true);
                 }/* else if (in_array($field, $nullableFields)) {
@@ -618,17 +617,17 @@ class PDO extends DBClass
             $isFirstRow = true;
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 $record = $this->getResultRecord($row, $isFirstRow, $timeFields);
-                $this->notifyHandler->addQueriedPrimaryKeys($record[$keyField]);
+                $this->notifyHandler->addQueriedPrimaryKeys((string)$record[$keyField]);
                 $isFirstRow = false;
                 $sqlResult[] = $record;
             }
             $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
         }
 
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] === 'update' && $condition['situation'] === 'post') {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -645,7 +644,7 @@ class PDO extends DBClass
      * @return string|null
      * @throws Exception
      */
-    public function createInDB(bool $isReplace = false): ?string
+    public function createInDB(bool $isReplace = false): string|null
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
@@ -653,7 +652,7 @@ class PDO extends DBClass
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $keyField = $tableInfo['key'] ?? 'id';
+        $keyField = ($tableInfo['key'] ?? 'id');
         $keyValue = NULL;
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
@@ -671,12 +670,12 @@ class PDO extends DBClass
 
         $setColumnNames = array();
         $setValues = array();
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if (($condition['db-operation'] === 'new' || $condition['db-operation'] === 'create')
                     && $condition['situation'] === 'pre'
                 ) {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -694,29 +693,29 @@ class PDO extends DBClass
             $setColumnNames[] = $field;
             $value = $fieldValues[$i];
             $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            $convertedValue = $value;
             if ($field === $keyField) {
                 $keyValue = $convertedValue;
             }
             // Convert the time explanation from UTC to server setup timezone
             if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
-                $convertedValue = $this->getDateTimeExpression($convertedValue);
+                $convertedValue = $this->getDateTimeExpression((string)$convertedValue);
             }
-            $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+            $setValues[] = $this->formatter->formatterToDB($filedInForm, (string)$convertedValue);
         }
-        if (isset($tableInfo['default-values'])) {
+        if (is_array($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 if (!in_array($field, $setColumnNames)) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                    $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                    $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                    $convertedValue = $value;
+                    $setValues[] = $this->formatter->formatterToDB($filedInForm, (string)$convertedValue);
                     $setColumnNames[] = $field;
                 }
             }
         }
-        if (isset($tableInfo['authentication']) && !$this->isSuppressAuthTargetFillingOnCreate) {
+        if (is_array($tableInfo['authentication']) && !$this->isSuppressAuthTargetFillingOnCreate) {
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if (!$this->authHandler->getNoSetForAuthorization("create")) {
@@ -760,7 +759,7 @@ class PDO extends DBClass
 
         if ($this->isRequiredUpdated) {
             $sql = $this->handler->sqlSELECTCommand() . " * FROM " . $tableName
-                . " WHERE " . $keyField . " = " . $this->link->quote($lastKeyValue);
+                . " WHERE " . $keyField . " = " . $this->link->quote((string)$lastKeyValue);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if (!$this->errorHandlingPDO($sql, $result)) {
@@ -770,12 +769,12 @@ class PDO extends DBClass
             $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
         }
 
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if (($condition['db-operation'] === 'new' || $condition['db-operation'] === 'create')
                     && $condition['situation'] === 'post'
                 ) {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -805,7 +804,7 @@ class PDO extends DBClass
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] === 'delete' && $condition['situation'] === 'pre') {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -827,10 +826,10 @@ class PDO extends DBClass
         }
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'delete' && $condition['situation'] == 'post') {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -846,7 +845,7 @@ class PDO extends DBClass
      * @return string|null
      * @throws Exception
      */
-    public function copyInDB(): ?string
+    public function copyInDB(): string|null
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
@@ -862,10 +861,10 @@ class PDO extends DBClass
             $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
 
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'copy' && $condition['situation'] == 'pre') {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
@@ -882,9 +881,9 @@ class PDO extends DBClass
         }
         $defaultValues = array();
         $noCopy = $tableInfo['no-default-values-on-copy'] ?? false;
-        if (!$this->isSuppressDefaultValuesOnCopy && !$noCopy && isset($tableInfo['default-values'])) {
+        if (!$this->isSuppressDefaultValuesOnCopy && !$noCopy && is_array($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
-                $defaultValues[$itemDef['field']] = $itemDef['value'];
+                $defaultValues[(string)$itemDef['field']] = $itemDef['value'];
             }
         }
         $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null, $defaultValues);
@@ -897,17 +896,17 @@ class PDO extends DBClass
         $assocArray = $this->dbSettings->getAssociated();
         if ($assocArray) {
             foreach ($assocArray as $assocInfo) {
-                $assocContextDef = $this->dbSettings->getDataSourceDefinition($assocInfo['name']);
-                $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
-                    $this->link->quote($assocInfo["value"]);
+                $assocContextDef = $this->dbSettings->getDataSourceDefinition((string)$assocInfo['name']);
+                $queryClause = $this->handler->quotedEntityName((string)$assocInfo["field"]) . "=" .
+                    $this->link->quote((string)$assocInfo["value"]);
                 $defaultValues = array();
                 $noCopy = $assocContextDef['no-default-values-on-copy'] ?? false;
-                if (!$this->isSuppressDefaultValuesOnCopyAssoc && !$noCopy && isset($assocContextDef['default-values'])) {
+                if (!$this->isSuppressDefaultValuesOnCopyAssoc && !$noCopy && is_array($assocContextDef['default-values'])) {
                     foreach ($assocContextDef['default-values'] as $itemDef) {
-                        $defaultValues[$itemDef['field']] = $itemDef['value'];
+                        $defaultValues[(string)$itemDef['field']] = $itemDef['value'];
                     }
                 }
-                $this->handler->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue, $defaultValues);
+                $this->handler->copyRecords($assocContextDef, $queryClause, (string)$assocInfo["field"], $lastKeyValue, $defaultValues);
             }
         }
         //======
@@ -922,10 +921,10 @@ class PDO extends DBClass
             $sqlResult = $this->getResultRelation($result, $timeFields);
             $this->updatedRecord = $sqlResult;
         }
-        if (isset($tableInfo['script'])) {
+        if (is_array($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'copy' && $condition['situation'] == 'post') {
-                    $sql = $condition['definition'];
+                    $sql = (string)$condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {

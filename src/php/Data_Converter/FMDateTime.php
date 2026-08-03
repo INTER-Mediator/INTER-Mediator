@@ -42,11 +42,11 @@ class FMDateTime
         date_default_timezone_set($this->tz);
     }
 
-    /** @param ?string $str
+    /** @param string|null $str
      * @return string
      * @throws Exception
      */
-    public function converterFromDBtoUser(?string $str): string
+    public function converterFromDBtoUser(string|null $str): string
     {
         if (is_null($str)) {
             return '';

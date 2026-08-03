@@ -466,7 +466,7 @@ class IMUtil
      * @param string|null $str Input string.
      * @return string JavaScript-safe string.
      */
-    public static function valueForJSInsert(?string $str): string
+    public static function valueForJSInsert(string|null $str): string
     {
         if (is_null($str)) {
             return "";
@@ -740,7 +740,7 @@ class IMUtil
      * @param string $toPath Destination path.
      * @return string|null Relative path or null if invalid.
      */
-    public static function relativePath(string $fromPath, string $toPath): ?string
+    public static function relativePath(string $fromPath, string $toPath): string|null
     {
         if (!$fromPath || !$toPath) {
             return null;
@@ -771,7 +771,7 @@ class IMUtil
      * @param string|null $dir Directory.
      * @return bool True if inside, false otherwise.
      */
-    public static function isInsideOf(?string $checkPath, ?string $dir): bool
+    public static function isInsideOf(string|null $checkPath, string|null $dir): bool
     {
         if (!$checkPath || !$dir) { // Both parameters have not to falsy.
             return false;
@@ -857,14 +857,11 @@ class IMUtil
     }
 
     /** Gets a value from a profile file if available, otherwise returns the input string.
-     * @param string|null $str Input string or profile descriptor.
+     * @param string $str Input string or profile descriptor.
      * @return string|null Value from profile or original string/null.
      */
-    public static function getFromProfileIfAvailable(?string $str): string|null
+    public static function getFromProfileIfAvailable(string $str): string|null
     {
-        if (is_null($str)) {
-            return null;
-        }
         $comp = array_map(function ($elm) {
             return strtolower(trim($elm));
         }, explode('|', $str));
@@ -942,11 +939,11 @@ class IMUtil
     - If `$str` is null/too short or `$currentRecord` is empty, the input
       string is returned as-is.
      *
-     * @param ?string $str Template source string that may contain `@@...@@` placeholders.
+     * @param string|null $str Template source string that may contain `@@...@@` placeholders.
      * @param array<array-key, mixed> $currentRecord Associative array representing the current record.
-     * @return ?string The rendered string after placeholder substitution.
+     * @return string|null The rendered string after placeholder substitution.
      */
-    public static function templating(?string $str, array $currentRecord): ?string
+    public static function templating(string|null $str, array $currentRecord): string|null
     {
         if (is_null($str) || strlen($str) < 5 || count($currentRecord) < 1) {
             return $str;

@@ -109,7 +109,7 @@ class RESTAPI
          * @param string $validStatement The valid inclusion statement.
          * @return string|null The modified source code.
          */
-        $changeIncludeIMPath = function (?string $src, string $validStatement) {
+        $changeIncludeIMPath = function (string|null $src, string $validStatement) {
             $includeFunctions = array('require_once', 'include_once', 'require', 'include');
             foreach ($includeFunctions as $targetFunction) {
                 $pattern = '/' . $targetFunction . '\\(.+INTER-Mediator.php.+\\);/';

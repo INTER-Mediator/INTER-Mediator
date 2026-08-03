@@ -25,9 +25,9 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
      * @return mixed
      * @throws Exception Always throws; not supported in base class.
      */
-    public function getWhereClauseForTest(string $currentOperation)
+    public function getWhereClauseForTest(string $currentOperation): mixed
     {
-        $currentClass = get_class($this);
+        $currentClass = $this::class;
         throw new Exception("This '{$currentClass}' class doesn't support the getWhereClauseForTest method.");
     }
 
@@ -36,9 +36,9 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
      * @return mixed
      * @throws Exception Always throws; not supported in base class.
      */
-    public function setupWithDSN(string $dsnString)
+    public function setupWithDSN(string $dsnString): mixed
     {
-        $currentClass = get_class($this);
+        $currentClass = $this::class;
         throw new Exception("This '{$currentClass}' class doesn't support the setupWithDSN method.");
     }
 
@@ -47,35 +47,35 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
      * @return mixed
      * @throws Exception Always throws; not supported in base class.
      */
-    public function getSchema(string $dataSourceName)
+    public function getSchema(string $dataSourceName): mixed
     {
-        $currentClass = get_class($this);
-        throw new Exception("This '{$currentClass}' class doesn't support the getSchema method.");
+        $currentClass = $this::class;
+        throw new Exception("This '{$currentClass}' class doesn't support the getSchema('{$dataSourceName}') method.");
     }
 
     /** Throws an exception; should only be used by FileMaker subclasses.
      * @param string $layoutName The layout name.
-     * @return mixed
+     * @return void
      * @throws Exception Always throws; not supported in base class.
      */
-    public function setupFMDataAPIforDB(string $layoutName)
+    public function setupFMDataAPIforDB(string $layoutName): void
     {
-        $currentClass = get_class($this);
+        $currentClass = $this::class;
         throw new Exception("This '{$currentClass}' class doesn't support the setupFMDataAPIforDB method.");
     }
 
     /** Throws an exception; should only be used by FileMaker subclasses.
-     * @return FMDataAPI
+     * @return FMDataAPI|null
      * @throws Exception Always throws; not supported in base class.
      */
     public function getFMDataInstance(): ?FMDataAPI
     {
-        $currentClass = get_class($this);
+        $currentClass = $this::class;
         throw new Exception("This '{$currentClass}' class doesn't support the getFMDataInstance method.");
     }
 
     /** Returns the record limit parameter based on table info and settings.
-     * @param array<string, number|string|bool|null> $tableInfo Table information array.
+     * @param array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>> $tableInfo Table information array.
      * @return int The limit parameter.
      */
     protected function getLimitParam(array $tableInfo): int

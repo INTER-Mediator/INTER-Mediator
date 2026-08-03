@@ -339,7 +339,7 @@ class TextFile extends DBClass
      * @param bool $isReplace
      * @return string|null
      */
-    public function createInDB(bool $isReplace = false): ?string
+    public function createInDB(bool $isReplace = false): string|null
     {
         return "created";
     }
@@ -356,7 +356,7 @@ class TextFile extends DBClass
     /** Copy a record in the database.
      * @return string|null
      */
-    public function copyInDB(): ?string
+    public function copyInDB(): string|null
     {
         return null;
     }
@@ -373,7 +373,7 @@ class TextFile extends DBClass
      * @param string|null $dsn
      * @return void
      */
-    public function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(string|null $dsn = null): void
     {
     }
 

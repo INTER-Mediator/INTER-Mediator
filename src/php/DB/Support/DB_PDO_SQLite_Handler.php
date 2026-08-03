@@ -155,7 +155,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
      * @param string $tableName Table name.
      * @return string|null Auto-increment field or null if not found.
      */
-    protected function getAutoIncrementField(string $tableName): ?string
+    protected function getAutoIncrementField(string $tableName): string|null
     {
         // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
         return '_CANCEL_THE_INCR_FIELD_DETECT_';
@@ -180,7 +180,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
      * @return array<array-key, mixed> Field lists.
      * @throws Exception If an error occurs.
      */
-    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+    protected function getFieldListsForCopy(string $tableName, string $keyField, string|null $assocField, string|null $assocValue,
                                             ?array $defaultValues): array
     {
         try {
@@ -213,7 +213,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
      * @param string $entityName Entity name.
      * @return string|null Quoted entity name or null if not found.
      */
-    public function quotedEntityName(string $entityName): ?string
+    public function quotedEntityName(string $entityName): string|null
     {
         $q = '"';
         if (strpos($entityName, ".") !== false) {

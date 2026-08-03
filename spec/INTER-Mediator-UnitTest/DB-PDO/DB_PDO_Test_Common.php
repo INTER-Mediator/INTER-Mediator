@@ -74,10 +74,10 @@ abstract class DB_PDO_Test_Common extends TestCase
      *
      * @param string $contextName The context name.
      * @param int $maxRecord The max record.
-     * @param ?string $subContextName The sub context name.
+     * @param string|null $subContextName The sub context name.
      * @return void
      */
-    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void;
+    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, string|null $subContextName = null): void;
 
     /**
      * Set up the DB proxy for auth.
@@ -154,10 +154,14 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertCount(10, $result, "After the query, 10 records should be retrieved.");
         $this->assertEquals(10, $recordCount, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
-        $this->assertEquals(substr($result[0]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(1).");
+        $this->assertEquals(
+            substr((string)$result[0]["item_name"], 0, strlen($cStr)), $cStr,
+            "Field value is not same as the definition(1).");
         $this->assertEquals(219510, $result[0]["total"], "Field value is not same as the definition(2).");
         $cStr = "Broccoli";
-        $this->assertEquals(substr($result[9]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(3).");
+        $this->assertEquals(
+            substr((string)$result[9]["item_name"], 0, strlen($cStr)), $cStr,
+            "Field value is not same as the definition(3).");
         $this->assertEquals(91225, $result[9]["total"], "Field value is not same as the definition(4).");
         // the data in the name filed of the item_master table have trailing garbage. OMG
     }
@@ -406,7 +410,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person", 1000000, "contact");
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
-        $this->db_proxy->dbSettings->addAssociated("contact", "person_id", $parentId);
+        $this->db_proxy->dbSettings->addAssociated("contact", "person_id", (string)$parentId);
         $this->db_proxy->copyInDB();
 
 //        var_export($this->db_proxy->logger->getErrorMessages());
@@ -436,7 +440,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess("person", 1);
 
-        $className = get_class($this->db_proxy->dbClass->specHandler);
+        $className = $this->db_proxy->dbClass->specHandler::class;
         $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
     }
 

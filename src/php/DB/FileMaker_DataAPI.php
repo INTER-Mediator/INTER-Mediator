@@ -41,7 +41,7 @@ class FileMaker_DataAPI extends DBClass
     /** Target layout name for FileMaker operations.
      * @var string|null
      */
-    private ?string $targetLayout = null;
+    private string|null $targetLayout = null;
 
     /** Main table record count for the current context.
      * @var int
@@ -62,11 +62,11 @@ class FileMaker_DataAPI extends DBClass
     /** Field name used for soft deletion.
      * @var string|null
      */
-    private ?string $softDeleteField = null;
+    private string|null $softDeleteField = null;
     /** Value used for soft deletion.
      * @var string|null
      */
-    private ?string $softDeleteValue = null;
+    private null|string|int $softDeleteValue = null;
     /** Whether setDataToUpdatedRecord was used.
      * @var bool
      */
@@ -89,7 +89,7 @@ class FileMaker_DataAPI extends DBClass
         $this->logger->setErrorMessage("[FileMaker_DataAPI] Error: {$str}]");
     }
 
-    /** Setup the connection to FileMaker Data API.
+    /** Set up the connection to FileMaker Data API.
      * @return bool True if setup is successful, false otherwise.
      */
     public function setupConnection(): bool
@@ -161,7 +161,7 @@ class FileMaker_DataAPI extends DBClass
 
     /** Activate soft deletion.
      * @param string $field The field name for soft deletion.
-     * @param string $value The value for soft deletion.
+     * @param string|int $value The value for soft deletion.
      * @return void
      */
     public function softDeleteActivate(string $field, string|int $value): void
@@ -257,7 +257,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string|null $dsn The DSN string (default: null).
      * @return void
      */
-    public function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(string|null $dsn = null): void
     {
         $this->authHandler = new Support\DB_Auth_Handler_FileMaker_DataAPI($this);
         $this->notifyHandler = new Support\DB_Notification_Handler_FileMaker_DataAPI($this);
@@ -279,7 +279,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string|null $str The input string.
      * @return string The string without credentials.
      */
-    public function stringWithoutCredential(?string $str): string
+    public function stringWithoutCredential(string|null $str): string
     {
         if (is_null($this->fmData)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
@@ -295,7 +295,7 @@ class FileMaker_DataAPI extends DBClass
      * @return string The string with only return characters.
      * @phpstan-ignore method.unused
      */
-    private function stringReturnOnly(?string $str): string
+    private function stringReturnOnly(string|null $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
@@ -304,18 +304,18 @@ class FileMaker_DataAPI extends DBClass
      * @param string|null $str The input string.
      * @return string The string with unified CRLF characters.
      */
-    private function unifyCRLF(?string $str): string
+    private function unifyCRLF(string|null $str): string
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
     /** Set search conditions for compound found.
      * @param string $field The field name.
-     * @param string $value The field value.
+     * @param number|string|bool|null $value The field value.
      * @param string|null $operator The operator (default: null).
-     * @return array<string>|null The search conditions or null.
+     * @return array<number|string|bool|null>|null The search conditions or null.
      */
-    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): ?array
+    private function setSearchConditionsForCompoundFound(string $field, mixed $value, string|null $operator = NULL): ?array
     {
         if ($operator === NULL) {
             return array($field, $value);
@@ -349,10 +349,10 @@ class FileMaker_DataAPI extends DBClass
         if (is_array($scriptContext)) {
             foreach ($scriptContext as $condition) {
                 if (isset($condition['situation']) && isset($condition['definition'])) {
-                    $scriptName = str_replace('&', '', $condition['definition']);
+                    $scriptName = str_replace('&', '', (string)$condition['definition']);
                     $parameter = '';
                     if (!empty($condition['parameter'])) {
-                        $parameter = str_replace('&', '', $condition['parameter']);
+                        $parameter = str_replace('&', '', (string)$condition['parameter']);
                     }
                     switch ($condition['situation']) {
                         case 'post':
@@ -413,12 +413,12 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                    $this->stringWithoutCredential($result::class . ': ' . $this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -449,15 +449,17 @@ class FileMaker_DataAPI extends DBClass
         $usePortal = FALSE;
         $portalParentKeyField = NULL;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
-            foreach ($context['relation'] as $relDef) {
-                if (isset($relDef['portal']) && $relDef['portal']) {
-                    $usePortal = TRUE;
-                    $context['records'] = 1;
-                    $context['paging'] = TRUE;
+            if (is_array($context['relation'])) {
+                foreach ($context['relation'] as $relDef) {
+                    if (isset($relDef['portal']) && $relDef['portal']) {
+                        $usePortal = TRUE;
+                        $context['records'] = 1;
+                        $context['paging'] = TRUE;
+                    }
                 }
             }
             if ($usePortal === TRUE) {
-                $this->dbSettings->setDataSourceName($context['view']);
+                $this->dbSettings->setDataSourceName(is_string($context['view']) ? $context['view'] : '');
                 $parentTable = $this->dbSettings->getDataSourceTargetArray();
                 $portalParentKeyField = $parentTable['key'];
             }
@@ -471,21 +473,21 @@ class FileMaker_DataAPI extends DBClass
         $searchConditions = array();
         $neqConditions = array();
 
-        if (isset($context['query'])) {
+        if (isset($context['query']) && is_array($context['query'])) {
             foreach ($context['query'] as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
                     $useOrOperation = true;
                 } else {
                     if (isset($condition['operator'])) {
                         $condition = $this->normalizedCondition($condition);
-                        if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                        if (!$this->specHandler->isPossibleOperator((string)$condition['operator'])) {
                             throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                            $condition['field'], $condition['value'], $condition['operator']);
+                            (string)$condition['field'], $condition['value'], (string)$condition['operator']);
                     } else {
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                            $condition['field'], $condition['value']);
+                            (string)$condition['field'], $condition['value']);
                     }
 
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
@@ -499,16 +501,16 @@ class FileMaker_DataAPI extends DBClass
 
         if ($this->dbSettings->getExtraCriteria()) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
-                if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'or') {
+                if ($condition['field'] == '__operation__' && strtolower((string)$condition['operator']) == 'or') {
                     $useOrOperation = true;
-                } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
+                } else if ($condition['field'] == '__operation__' && strtolower((string)$condition['operator']) == 'ex') {
                     $useOrOperation = true;
-                } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
+                } else if ($condition['field'] == '__operation__' && str_starts_with((string)$condition['operator'], 'block/')) {
                     // just ignore it
                     $dummy = 1;
                 } else {
                     $condition = $this->normalizedCondition($condition);
-                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                    if (!$this->specHandler->isPossibleOperator((string)$condition['operator'])) {
                         throw new Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
                     }
 
@@ -519,7 +521,7 @@ class FileMaker_DataAPI extends DBClass
                     }
 
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                        $condition['field'], $condition['value'], $condition['operator']);
+                        (string)$condition['field'], $condition['value'], (string)$condition['operator']);
 
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
                         $neqConditions[] = TRUE;
@@ -534,29 +536,31 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
-            foreach ($context['relation'] as $relDef) {
-                foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
-                    if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
-                        $foreignField = $relDef['foreign-key'];
-                        $foreignValue = $foreignDef['value'];
-                        $relDef = $this->normalizedCondition($relDef);
-                        $foreignOperator = $relDef['operator'] ?? 'eq';
-                        $formattedValue = $this->formatter->formatterToDB(
-                            "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
-                        if (!$this->specHandler->isPossibleOperator($foreignOperator)) {
-                            throw new Exception("Invalid Operator.: {$relDef['operator']}");
-                        }
-                        if ($useOrOperation) {
-                            throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
-                        }
-                        $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                            $foreignField, $formattedValue, $foreignOperator);
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
+            if (is_array($context['relation'])) {
+                foreach ($context['relation'] as $relDef) {
+                    foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
+                        if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
+                            $foreignField = $relDef['foreign-key'];
+                            $foreignValue = $foreignDef['value'];
+                            $relDef = $this->normalizedCondition($relDef);
+                            $foreignOperator = $relDef['operator'] ?? 'eq';
+                            $formattedValue = $this->formatter->formatterToDB(
+                                "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
+                            if (!$this->specHandler->isPossibleOperator((string)$foreignOperator)) {
+                                throw new Exception("Invalid Operator.: {$relDef['operator']}");
+                            }
+                            if ($useOrOperation) {
+                                throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                            }
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                (string)$foreignField, $formattedValue, (string)$foreignOperator);
 
-                        if ($foreignOperator === 'neq') {
-                            $neqConditions[] = TRUE;
-                        } else {
-                            $neqConditions[] = FALSE;
+                            if ($foreignOperator === 'neq') {
+                                $neqConditions[] = TRUE;
+                            } else {
+                                $neqConditions[] = FALSE;
+                            }
                         }
                     }
                 }
@@ -614,13 +618,13 @@ class FileMaker_DataAPI extends DBClass
         }
 
         $sort = array();
-        if (isset($context['sort'])) {
+        if (is_array($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
-                    if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
+                    if (!$this->specHandler->isPossibleOrderSpecifier((string)$condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
-                    $sort[] = array($condition['field'], $this->_adjustSortDirection($condition['direction']));
+                    $sort[] = array($condition['field'], $this->_adjustSortDirection((string)$condition['direction']));
                 } else {
                     $sort[] = array($condition['field']);
                 }
@@ -637,11 +641,11 @@ class FileMaker_DataAPI extends DBClass
                 foreach ($searchConditions as $searchCondition) {
                     if ($neqConditions[$i] === TRUE) {
                         $conditions[] = array(
-                            $searchCondition[0] => $searchCondition[1],
+                            (string)$searchCondition[0] => $searchCondition[1],
                             'omit' => 'true'
                         );
                     } else {
-                        array_unshift($conditions, array($searchCondition[0] => $searchCondition[1]));
+                        array_unshift($conditions, array((string)$searchCondition[0] => $searchCondition[1]));
                     }
                     $i++;
                 }
@@ -651,11 +655,11 @@ class FileMaker_DataAPI extends DBClass
                 foreach ($searchConditions as $searchCondition) {
                     if ($neqConditions[$i] === TRUE) {
                         $conditions[] = array(
-                            $searchCondition[0] => $searchCondition[1],
+                            (string)$searchCondition[0] => $searchCondition[1],
                             'omit' => 'true'
                         );
                     } else {
-                        $tmpCondition[$searchCondition[0]] = $searchCondition[1];
+                        $tmpCondition[(string)$searchCondition[0]] = $searchCondition[1];
                     }
                     $i++;
                 }
@@ -668,18 +672,18 @@ class FileMaker_DataAPI extends DBClass
             $conditions = NULL;
         }
 
-        if (isset($tableInfo['global'])) {
-            foreach ($tableInfo['global'] as $condition) {
+        if (is_array($context['global'])) {
+            foreach ($context['global'] as $condition) {
                 if (isset($condition['db-operation']) && in_array($condition['db-operation'], array('load', 'read'))) {
                     $this->fmData->{$layout}->setGlobalField(
-                        array($condition['field'] => $condition['value'])
+                        array((string)$condition['field'] => $condition['value'])
                     );
                 }
             }
         }
 
         $script = NULL;
-        if (isset($context['script'])) {
+        if (is_array($context['script'])) {
             foreach ($context['script'] as $condition) {
                 if (isset($condition['db-operation']) && in_array($condition['db-operation'], array('load', 'read'))) {
                     $script = $this->executeScripts($context['script']);
@@ -688,7 +692,7 @@ class FileMaker_DataAPI extends DBClass
         }
 
         $request = filter_input_array(INPUT_POST);
-        if (!is_null($request)) {
+        if (is_array($request)) {
             foreach ($request as $key => $val) {
                 if (str_starts_with($key, 'sortkey') && str_ends_with($key, 'field')) {
                     $orderNum = substr($key, 7, 1);
@@ -722,7 +726,7 @@ class FileMaker_DataAPI extends DBClass
 
             $result = null;
             if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId'])) {
-                $recordId = str_replace('=', '', $conditions[0]['recordId']);
+                $recordId = str_replace('=', '', (string)$conditions[0]['recordId']);
                 if (is_numeric($recordId)) {
                     $conditions[0]['recordId'] = $recordId;
                     $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -781,7 +785,7 @@ class FileMaker_DataAPI extends DBClass
                             foreach ($result->{$portalName}->getFieldNames() as $relatedFieldName) {
                                 if (str_contains($relatedFieldName, '::')) {
                                     $dotPos = strpos($relatedFieldName, '::');
-                                    $tableOccurrence = substr($relatedFieldName, 0, $dotPos);
+                                    $tableOccurrence = substr($relatedFieldName, 0, (int)$dotPos);
                                     if (!isset($relatedArray[$tableOccurrence][$recId])) {
                                         $relatedArray[$tableOccurrence][$recId] = ['recordId' => $recId];
                                     }
@@ -843,7 +847,7 @@ class FileMaker_DataAPI extends DBClass
         foreach ($resultData as $oneRecord) {
             $oneRecordArray = array();
 
-            $recId = $resultData->getRecordId();
+            $recId = $resultData->getRecordId(); // returned type are int|null
             $oneRecordArray[$this->specHandler->getDefaultKey()] = $recId;
 
             foreach ($resultData->getFieldNames() as $field) {
@@ -851,7 +855,7 @@ class FileMaker_DataAPI extends DBClass
                     "{$tableName}{$this->dbSettings->getSeparator()}$field", $oneRecord->$field);
                 foreach ($resultData->getPortalNames() as $portalName) {
                     foreach ($resultData->{$portalName} as $relatedRecord) {
-                        $oneRecordArray[$portalName][$relatedRecord->getRecordId()] = array();
+                        $oneRecordArray[$portalName][(int)$relatedRecord->getRecordId()] = array();
                         foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
                             if (str_contains($relatedField, '::') &&
                                 !in_array($relatedField, array('recordId', 'modId'))) {
@@ -897,7 +901,7 @@ class FileMaker_DataAPI extends DBClass
         $data = array();
 
         $usePortal = false;
-        if (isset($context['relation'])) {
+        if (is_array($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
@@ -915,17 +919,17 @@ class FileMaker_DataAPI extends DBClass
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $primaryKey = $tableInfo['key'] ?? $this->specHandler->getDefaultKey();
 
-        if (isset($tableInfo['query'])) {
+        if (is_array($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $condition = $this->normalizedCondition($condition);
-                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                    if (!$this->specHandler->isPossibleOperator((string)$condition['operator'])) {
                         throw new Exception("Invalid Operator.");
                     }
                     $convertedValue = $this->formatter->formatterToDB(
                         "{$tableSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
-                        $condition['value']);
-                    $data += array($condition['field'] => $convertedValue);
+                        (string)$condition['value']);
+                    $data += array((string)$condition['field'] => $convertedValue);
                 }
             }
         }
@@ -933,12 +937,12 @@ class FileMaker_DataAPI extends DBClass
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $value = $this->normalizedCondition($value);
-                if (!$this->specHandler->isPossibleOperator($value['operator'])) {
+                if (!$this->specHandler->isPossibleOperator((string)$value['operator'])) {
                     throw new Exception("Invalid Operator.: {$value['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
-                    "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
-                $data += array($value['field'] => $convertedValue);
+                    "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", (string)$value['value']);
+                $data += array((string)$value['field'] => $convertedValue);
             }
         }
         if (isset($tableInfo['authentication'])
@@ -990,7 +994,7 @@ class FileMaker_DataAPI extends DBClass
         $data = array();
         $portal = array();
         if (isset($condition[0]['recordId']) && count($condition) === 1) { // @phpstan-ignore-line identical.alwaysTrue
-            $recordId = str_replace('=', '', $condition[0]['recordId']);
+            $recordId = str_replace('=', '', (string)$condition[0]['recordId']);
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
             }
@@ -1007,13 +1011,13 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') { // @phpstan-ignore-line notIdentical.alwaysTrue
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') { // @phpstan-ignore-line notIdentical.alwaysTrue
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
                     $this->stringWithoutCredential(
-                        get_class((object)$result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                        $result::class . ': ' . $this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -1049,20 +1053,20 @@ class FileMaker_DataAPI extends DBClass
                     if (str_contains($field, '.')) {
                         // remove dot + recid number if contains recid (example: "TO::FIELD.0" -> "TO::FIELD")
                         $dotPos = strpos($field, '.');
-                        $originalfield = substr($field, 0, $dotPos);
+                        $originalfield = substr($field, 0, (int)$dotPos);
                     } else {
                         $originalfield = $field;
                     }
                     $value = $fieldValues[$counter];
 
-                    if (str_starts_with($value, "[increment]")) {
-                        $value = $record->$originalfield + intval(substr($value, 11));
-                    } else if (str_starts_with($value, "[decrement]")) {
-                        $value = $record->$originalfield - intval(substr($value, 11));
+                    if (str_starts_with((string)$value, "[increment]")) {
+                        $value = $record->$originalfield + intval(substr((string)$value, 11));
+                    } else if (str_starts_with((string)$value, "[decrement]")) {
+                        $value = $record->$originalfield - intval(substr((string)$value, 11));
                     }
 
                     $counter++;
-                    $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
+                    $convVal = $this->stringReturnOnly((string)$value);
                     $convVal = $this->formatter->formatterToDB(
                         $this->getFieldForFormatter($tableSourceName, $originalfield), $convVal);
                     $data += array($field => $convVal);
@@ -1071,17 +1075,17 @@ class FileMaker_DataAPI extends DBClass
                     $this->logger->setErrorMessage('No data to update.');
                     return false;
                 }
-                if (isset($tableInfo['global'])) {
+                if (is_array($tableInfo['global'])) {
                     foreach ($tableInfo['global'] as $condition) {
                         if ($condition['db-operation'] == 'update') {
                             $this->fmData->{$layout}->setGlobalField(
-                                array($condition['field'] => $condition['value'])
+                                array((string)$condition['field'] => $condition['value'])
                             );
                         }
                     }
                 }
                 $script = NULL;
-                if (isset($context['script'])) {
+                if (is_array($context['script'])) {
                     foreach ($context['script'] as $condition) {
                         if ($condition['db-operation'] == 'update') {
                             $script = $this->executeScripts($context['script']);
@@ -1094,7 +1098,7 @@ class FileMaker_DataAPI extends DBClass
 
                 $fieldName = filter_input(INPUT_POST, '_im_field');
                 $useContainer = FALSE;
-                if (isset($context['file-upload'])) {
+                if (is_array($context['file-upload'])) {
                     foreach ($context['file-upload'] as $item) {
                         if (isset($item['field']) &&
                             $item['field'] === $fieldName &&
@@ -1116,8 +1120,8 @@ class FileMaker_DataAPI extends DBClass
                         $tmpDir = sys_get_temp_dir();
                     }
                     $temp = 'IM_TEMP_' . str_replace(DIRECTORY_SEPARATOR, '-',
-                            base64_encode(IMUtil::randomString(12)) ?? "") . '.jpg';
-                    if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
+                            base64_encode(IMUtil::randomString(12))) . '.jpg';
+                    if (mb_substr((string)$tmpDir, 1) === DIRECTORY_SEPARATOR) {
                         $tempPath = $tmpDir . $temp;
                     } else {
                         $tempPath = $tmpDir . DIRECTORY_SEPARATOR . $temp;
@@ -1134,7 +1138,7 @@ class FileMaker_DataAPI extends DBClass
                     $originalfield = filter_input(INPUT_POST, 'field_0');
                     $value = filter_input(INPUT_POST, 'value_0');
                     $convVal = $this->formatter->formatterToDB(
-                        $this->getFieldForFormatter($tableSourceName, $originalfield), $value);
+                        $this->getFieldForFormatter($tableSourceName, (string)$originalfield), (string)$value);
                     if ($originalfield !== FALSE && $originalfield !== NULL) {
                         $data += array($originalfield => $convVal);
                     }
@@ -1148,9 +1152,9 @@ class FileMaker_DataAPI extends DBClass
                     $this->fmData->{$layout}->update($recId, $data, -1, NULL, $script);
                 }
                 $result = $this->fmData->{$layout}->getRecord($recId);
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                     $this->logger->setErrorMessage($this->stringWithoutCredential(
-                        get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                        $result::class . ': ' . $this->fmData->{$layout}->getDebugInfo()));
                     return false;
                 }
                 if ($this->fmData->errorCode() > 0) {
@@ -1173,13 +1177,13 @@ class FileMaker_DataAPI extends DBClass
      * @return string|null The created record ID or null.
      * @throws Exception
      */
-    public function createInDB(bool $isReplace = false): ?string
+    public function createInDB(bool $isReplace = false): string|null
     {
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
 
-        if (isset($context['relation'])) {
+        if (is_array($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $context['paging'] = true;
@@ -1208,18 +1212,18 @@ class FileMaker_DataAPI extends DBClass
                     $field =>
                         $this->formatter->formatterToDB(
                             "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
-                            $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
+                            $this->unifyCRLF((string)$value))
                 );
             }
         }
-        if (isset($context['default-values'])) {
+        if (is_array($context['default-values'])) {
             foreach ($context['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 if ($field != $keyFieldName) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                    $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
-                    $recordData += array($field => $this->formatter->formatterToDB($filedInForm, $convVal));
+                    $convVal = $this->unifyCRLF((string)$value);
+                    $recordData += array((string)$field => $this->formatter->formatterToDB($filedInForm, $convVal));
                 }
             }
         }
@@ -1250,23 +1254,23 @@ class FileMaker_DataAPI extends DBClass
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && array_intersect($belongGroups, $authorizedGroups)
                     ) {
-                        $authFailure = true;
+                        $this->errorMessageStore("[FileMaker_DataAPI] Authorization failed on creating record.");
                     }
                 }
             }
         }
         $layout = $this->dbSettings->getEntityForUpdate();
-        if (isset($context['global'])) {
+        if (is_array($context['global'])) {
             foreach ($context['global'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
                     $this->fmData->{$layout}->setGlobalField(
-                        array($condition['field'] => $condition['value'])
+                        array((string)$condition['field'] => $condition['value'])
                     );
                 }
             }
         }
         $script = NULL;
-        if (isset($context['script'])) {
+        if (is_array($context['script'])) {
             foreach ($context['script'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
                     $script = $this->executeScripts($context['script']);
@@ -1276,11 +1280,11 @@ class FileMaker_DataAPI extends DBClass
 
         $recId = $this->fmData->{$layout}->create($recordData, NULL, $script);
         $result = $this->fmData->{$layout}->getRecord($recId);
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessageStore(get_class($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
+                $this->errorMessageStore($result::class . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
             }
             return null;
         }
@@ -1312,7 +1316,7 @@ class FileMaker_DataAPI extends DBClass
         $condition = array();
 
         $usePortal = false;
-        if (isset($context['relation'])) {
+        if (is_array($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
@@ -1330,10 +1334,10 @@ class FileMaker_DataAPI extends DBClass
 
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $value = $this->normalizedCondition($value);
-            if (!$this->specHandler->isPossibleOperator($value['operator'])) {
+            if (!$this->specHandler->isPossibleOperator((string)$value['operator'])) {
                 throw new Exception("Invalid Operator.");
             }
-            $condition += array($value['field'] => $value['value']);
+            $condition += array((string)$value['field'] => $value['value']);
         }
         if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
@@ -1378,11 +1382,11 @@ class FileMaker_DataAPI extends DBClass
         } else {
             $result = $this->fmData->{$layout}->query(array($condition), NULL, 1, 1);
         }
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessageStore(get_class($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
+                $this->errorMessageStore($result::class . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
             }
             return false;
         }
@@ -1401,17 +1405,17 @@ class FileMaker_DataAPI extends DBClass
                     $this->notifyHandler->addQueriedPrimaryKeys($record->{$keyField});
                 }
                 $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate());
-                if (isset($context['global'])) {
+                if (is_array($context['global'])) {
                     foreach ($context['global'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
                             $this->fmData->{$layout}->setGlobalField(
-                                array($condition['field'] => $condition['value'])
+                                array((string)$condition['field'] => $condition['value'])
                             );
                         }
                     }
                 }
                 $script = NULL;
-                if (isset($context['script'])) {
+                if (is_array($context['script'])) {
                     foreach ($context['script'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
                             $script = $this->executeScripts($context['script']);
@@ -1446,7 +1450,7 @@ class FileMaker_DataAPI extends DBClass
     /** Copy in database.
      * @return string|null The copied record ID or null.
      */
-    public function copyInDB(): ?string
+    public function copyInDB(): string|null
     {
         $this->errorMessageStore("Copy operation is not implemented so far.");
         return null;
@@ -1468,11 +1472,7 @@ class FileMaker_DataAPI extends DBClass
             if ($contextDef["name"] == $fieldComp[0] ||
                 (isset($contextDef["table"]) && $contextDef["table"] == $fieldComp[0])
             ) {
-                if (isset($contextDef["relation"]) &&
-                    isset($contextDef["relation"][0]) &&
-                    isset($contextDef["relation"][0]["portal"]) &&
-                    $contextDef["relation"][0]["portal"]
-                ) {
+                if (isset($contextDef["relation"][0]["portal"]) && $contextDef["relation"][0]["portal"]) {
                     return "{$fieldComp[0]}{$this->dbSettings->getSeparator()}{$field}";
                 }
             }

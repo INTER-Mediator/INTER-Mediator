@@ -9,10 +9,10 @@ use PHPUnit\Framework\Attributes\Test;
 trait DB_PDO_Test_AuthHandler
 {
     /* Follwing methods don't have any unit test code.
-    public function getFieldForAuthorization(string $operation): ?string;
-   public function getTargetForAuthorization(string $operation): ?string;
-   public function getNoSetForAuthorization(string $operation): ?string;
-     public function authSupportCheckMediaToken(string $uid): ?string;
+    public function getFieldForAuthorization(string $operation): string|null;
+   public function getTargetForAuthorization(string $operation): string|null;
+   public function getNoSetForAuthorization(string $operation): string|null;
+     public function authSupportCheckMediaToken(string $uid): string|null;
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool;
     public function authSupportCheckMediaPrivilege(string $tableName, string $targeting, string $userField,
                                                    string $user, string $keyField, string $keyValue): ?array;

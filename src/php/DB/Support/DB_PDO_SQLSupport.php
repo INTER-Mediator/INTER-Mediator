@@ -206,7 +206,7 @@ trait DB_PDO_SQLSupport
      * @throws Exception
      */
     private function getWhereClause(string  $currentOperation, bool $includeContext = true, bool $includeExtra = true,
-                                    ?string $signedUser = '', bool $bypassAuth = false): string
+                                    string|null $signedUser = '', bool $bypassAuth = false): string
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';

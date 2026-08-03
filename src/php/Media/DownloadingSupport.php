@@ -33,5 +33,5 @@ interface DownloadingSupport
     /** @param string $file
      * @return string|null
      */
-    public function getFileName(string $file): ?string;
+    public function getFileName(string $file): string|null;
 }

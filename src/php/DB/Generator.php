@@ -399,16 +399,16 @@ class Generator
         $fields = [];
         $contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
         $excludeFields = [];
-        if (isset($contextDef['calculation'])) {
+        if (is_array($contextDef['calculation'])) {
             foreach ($contextDef['calculation'] as $item) {
                 $excludeFields[] = $item['field'];
             }
         }
         $keys = ['query', 'sort', 'default-values'];
         foreach ($keys as $key) {
-            if (isset($contextDef[$key])) {
+            if (is_array($contextDef[$key])) {
                 foreach ($contextDef[$key] as $entry) {
-                    $fields[$entry['field']] = $this->decidedFieldType($entry['field']);
+                    $fields[(string)$entry['field']] = $this->decidedFieldType((string)$entry['field']);
                 }
             }
         }

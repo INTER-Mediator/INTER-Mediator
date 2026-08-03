@@ -48,10 +48,10 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
 
     /** @var string|null Name of the last queried entity.
      */
-    private ?string $queriedEntity = null;
+    private string|null $queriedEntity = null;
     /** @var string|null Last queried condition string.
      */
-    private ?string $queriedCondition = null;
+    private string|null $queriedCondition = null;
     /**
      * @var array<array-key, mixed>|null Primary keys from the last query.
      */
@@ -60,7 +60,7 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     /** Gets the name of the last queried entity.
      * @return string|null Name of the queried entity or null if not set.
      */
-    public function queriedEntity(): ?string
+    public function queriedEntity(): string|null
     {
         return $this->queriedEntity;
     }
@@ -68,7 +68,7 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     /** Gets the last queried condition string.
      * @return string|null The queried condition or null if not set.
      */
-    public function queriedCondition(): ?string
+    public function queriedCondition(): string|null
     {
         return $this->queriedCondition;
     }
@@ -86,7 +86,7 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
      * @param string|null $name Name of the queried entity.
      * @return void
      */
-    public function setQueriedEntity(?string $name): void
+    public function setQueriedEntity(string|null $name): void
     {
         $this->queriedEntity = $name;
     }
@@ -95,7 +95,7 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
      * @param string|null $name The queried condition.
      * @return void
      */
-    public function setQueriedCondition(?string $name): void
+    public function setQueriedCondition(string|null $name): void
     {
         $this->queriedCondition = $name;
     }

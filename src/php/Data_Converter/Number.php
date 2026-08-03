@@ -43,10 +43,10 @@ class Number extends NumberBase
         }
     }
 
-    /** @param ?string $str
+    /** @param string|null $str
      * @return string
      */
-    function converterFromDBtoUser(?string $str): string
+    function converterFromDBtoUser(string|null $str): string
     {
         if ($this->isZeroNoString && (float)$str == 0) {
             return "";

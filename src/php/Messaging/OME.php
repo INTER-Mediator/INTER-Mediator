@@ -72,7 +72,7 @@ class OME
     private string $body = '';
     /** @var string|null The MIME type of the email body (e.g., 'text/html').
      */
-    private ?string $bodyType = '';
+    private string|null $bodyType = '';
     /** @var string The subject of the email.
      */
     private string $subject = '';
@@ -168,9 +168,9 @@ class OME
 
     /** Sets the email body, replacing any existing content.
      * @param string $str The body content.
-     * @param ?string $type MIME type of the body (optional).
+     * @param string|null $type MIME type of the body (optional).
      */
-    public function setBody(string $str, ?string $type = null): void
+    public function setBody(string $str, string|null $type = null): void
     {
         $this->body = $str;
         $this->bodyType = $type;
@@ -245,10 +245,10 @@ class OME
     }
 
     /** Checks if the email address is valid.
-     * @param ?string $address The email address to check.
+     * @param string|null $address The email address to check.
      * @return bool True if the address is valid, false otherwise.
      */
-    public function checkEmail(?string $address): bool
+    public function checkEmail(string|null $address): bool
     {
         if (is_null($address)) {
             $this->errorMessage = "アドレス“{$address}”は空です。";
@@ -265,11 +265,11 @@ class OME
 
     /** Sets the From field with the sender's address and name.
      * @param string $address The sender's email address.
-     * @param ?string $name The sender's name (optional).
+     * @param string|null $name The sender's name (optional).
      * @param bool $isSetToParam Whether to set the sender's address as the Return-Path (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function setFromField(string $address, ?string $name = null, bool $isSetToParam = FALSE): bool
+    public function setFromField(string $address, string|null $name = null, bool $isSetToParam = FALSE): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
@@ -298,10 +298,10 @@ class OME
 
     /** Sets the To field with the recipient's address and name.
      * @param string $address The recipient's email address.
-     * @param ?string $name The recipient's name (optional).
+     * @param string|null $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function setToField(string $address, ?string $name = null): bool
+    public function setToField(string $address, string|null $name = null): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
@@ -327,10 +327,10 @@ class OME
 
     /** Appends the To field with the recipient's address and name.
      * @param string $address The recipient's email address.
-     * @param ?string $name The recipient's name (optional).
+     * @param string|null $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function appendToField(string $address, ?string $name = null): bool
+    public function appendToField(string $address, string|null $name = null): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
@@ -359,10 +359,10 @@ class OME
 
     /** Sets the Cc field with the recipient's address and name.
      * @param string $address The recipient's email address.
-     * @param ?string $name The recipient's name (optional).
+     * @param string|null $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function setCcField(string $address, ?string $name = null): bool
+    public function setCcField(string $address, string|null $name = null): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
@@ -379,10 +379,10 @@ class OME
 
     /** Appends the Cc field with the recipient's address and name.
      * @param string $address The recipient's email address.
-     * @param ?string $name The recipient's name (optional).
+     * @param string|null $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function appendCcField(string $address, ?string $name = null): bool
+    public function appendCcField(string $address, string|null $name = null): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
@@ -411,10 +411,10 @@ class OME
 
     /** Sets the Bcc field with the recipient's address and name.
      * @param string $address The recipient's email address.
-     * @param ?string $name The recipient's name (optional).
+     * @param string|null $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function setBccField(string $address, ?string $name = null): bool
+    public function setBccField(string $address, string|null $name = null): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
@@ -431,10 +431,10 @@ class OME
 
     /** Appends the Bcc field with the recipient's address and name.
      * @param string $address The recipient's email address.
-     * @param ?string $name The recipient's name (optional).
+     * @param string|null $name The recipient's name (optional).
      * @return bool True if the address is valid, false otherwise.
      */
-    public function appendBccField(string $address, ?string $name = null): bool
+    public function appendBccField(string $address, string|null $name = null): bool
     {
         if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);

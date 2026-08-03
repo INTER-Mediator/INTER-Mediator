@@ -79,7 +79,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $layoutName = 'person_layout';
         $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
         $this->dbProxySetupForAccess($layoutName, 1);
-        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+        if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
             $expected = '/fmi/rest/api/find/TestDB/person_layout';
         }
         $this->db_proxy->readFromDB();
@@ -91,6 +91,7 @@ abstract class DB_FMS_Test_Common extends TestCase
      * Test execute Scriptsfor Loading.
      *
      * @return void
+     * @throws ReflectionException
      */
     #[RunInSeparateProcess]
     public function testExecuteScriptsforLoading(): void
@@ -99,11 +100,11 @@ abstract class DB_FMS_Test_Common extends TestCase
             $layoutName = 'person_layout';
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB();
-            $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
+            $reflectionClass = new ReflectionClass($this->db_proxy->dbClass::class);
             $method = null; // For PHPStan level 2
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_FX') {
                 $method = $reflectionClass->getMethod('executeScriptsforLoading');
-            } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            } else if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $method = $reflectionClass->getMethod('executeScripts');
             }
             $method->setAccessible(true);
@@ -134,7 +135,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script' => 'testscript');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -148,7 +149,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script' => 'testscript');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -162,7 +163,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script=testscript&-script.param=1';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script' => 'testscript', 'script.param' => '1');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -175,7 +176,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script.prefind=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script.prerequest' => 'testscript');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -189,7 +190,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script.prefind=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script.prerequest' => 'testscript');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -203,7 +204,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script.prefind=testscript&-script.prefind.param=1';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script.prerequest' => 'testscript', 'script.prerequest.param' => '1');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -216,7 +217,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script.presort=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script.presort' => 'testscript');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -230,7 +231,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script.presort=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script.presort' => 'testscript');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -244,7 +245,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                 )
             );
             $expected = '&-script.presort=testscript&-script.presort.param=1';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
                 $expected = array('script.presort' => 'testscript', 'script.presort.param' => '1');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
@@ -391,6 +392,7 @@ abstract class DB_FMS_Test_Common extends TestCase
      * Test adjust Sort Direction.
      *
      * @return void
+     * @throws ReflectionException
      */
     #[RunInSeparateProcess]
     public function testAdjustSortDirection(): void
@@ -401,7 +403,7 @@ abstract class DB_FMS_Test_Common extends TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB();
 
-            $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
+            $reflectionClass = new ReflectionClass($this->db_proxy->dbClass::class);
             $method = $reflectionClass->getMethod('_adjustSortDirection');
             $method->setAccessible(true);
 
@@ -654,10 +656,10 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+        if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_FX') {
             $recId = $result[0]['-recid'];
             $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
-        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+        } else if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
             foreach ($result as $record) {
                 $recId = $record['recordId'];
                 $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
@@ -667,9 +669,9 @@ abstract class DB_FMS_Test_Common extends TestCase
         $result = $this->db_proxy->readFromDB();
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertCount(1, $result);
-        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+        if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_FX') {
             $this->assertEquals(3654, $totalCount);
-        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+        } else if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
             $this->assertEquals(1, $totalCount);
         }
         $this->assertEquals('1000000', $result[0]['f3']);
@@ -901,7 +903,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+        if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_FX') {
             foreach ($result as $index => $record) {
                 if ($record['id'] == 2) {
                     $this->assertTrue($result[1]['id'] == 2, $testName);
@@ -909,7 +911,7 @@ abstract class DB_FMS_Test_Common extends TestCase
                     $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
                 }
             }
-        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+        } else if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
             // [WIP]
             if (!is_null($result)) {
                 foreach ($result as $record) {
@@ -1055,10 +1057,10 @@ abstract class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess('person_layout', 1);
 
-        $className = get_class($this->db_proxy->dbClass->specHandler);
-        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+        $className = $this->db_proxy->dbClass->specHandler::class;
+        if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_FX') {
             $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
-        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+        } else if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
             $this->assertEquals('recordId', call_user_func(array($className, 'defaultKey')));
         }
         $this->db_proxy->closeDBOperation();
@@ -1074,9 +1076,9 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $value = $this->db_proxy->dbClass->specHandler->getDefaultKey();
-        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+        if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_FX') {
             $this->assertEquals('-recid', $value);
-        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+        } else if ($this->db_proxy->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') {
             $this->assertEquals('recordId', $value);
         }
         $this->db_proxy->closeDBOperation();

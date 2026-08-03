@@ -87,7 +87,7 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
  * @param string|null $origin The path to the definition file.
  * @throws Exception
  */
-function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug = 0, ?string $origin = null): void
+function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug = 0, string|null $origin = null): void
 {
     // Read from params.php
     $defaultTimezone = Params::getParameterValue("defaultTimezone", "UTC");

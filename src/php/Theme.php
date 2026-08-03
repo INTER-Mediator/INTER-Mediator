@@ -25,7 +25,7 @@ class Theme
     /** Alternate theme path if specified in the configuration.
      * @var string|null
      */
-    private ?string $altThemePath;
+    private string|null $altThemePath;
     /** Access log level setting from configuration.
      * @var bool
      */
@@ -61,7 +61,7 @@ class Theme
      * @param string|null $deffile
      * @return void
      */
-    public function processing(?string $deffile): void
+    public function processing(string|null $deffile): void
     {
         $docRootPath = $_SERVER['DOCUMENT_ROOT'];
         $deffilePath = null;
@@ -102,7 +102,7 @@ class Theme
      * @param string|null $themeName Name of the theme.
      * @return string|null Path to the theme directory or null if not found.
      */
-    private function pathToTheme(?string $themeName): ?string
+    private function pathToTheme(string|null $themeName): string|null
     {
         $imPath = IMUtil::pathToINTERMediator();
         $themeName = str_replace('..', '', $themeName ?? "");

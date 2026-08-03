@@ -29,7 +29,7 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
      * @param string|null $target Target context.
      * @return bool True on success, false otherwise.
      */
-    function initialize(?array $dataSource, ?array $options, ?array $dbSpec, int|false $debug, ?string $target = null): bool;
+    function initialize(?array $dataSource, ?array $options, ?array $dbSpec, int|false $debug, string|null $target = null): bool;
 
     /** Process an incoming request.
      * @param string|null $access Access type.
@@ -37,7 +37,7 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
      * @param bool $ignoreFiles Whether to ignore file operations.
      * @return void
      */
-    public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void;
+    public function processingRequest(string|null $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void;
 
     /** Finish communication for the current request.
      * @return void

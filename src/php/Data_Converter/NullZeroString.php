@@ -29,7 +29,7 @@ class NullZeroString
     /** @param string $str
      * @return string|null
      */
-    public function converterFromUserToDB(string $str): ?string
+    public function converterFromUserToDB(string $str): string|null
     {
         return ($str == '') ? null : $str;
     }
@@ -37,7 +37,7 @@ class NullZeroString
     /** @param string|null $str
      * @return string
      */
-    public function converterFromDBtoUser(?string $str): string
+    public function converterFromDBtoUser(string|null $str): string
     {
         return is_null($str) ? '' : $str;
     }

@@ -58,7 +58,7 @@ abstract class MessagingProvider
      * @param bool $ignoreField If true, does not replace it with field value directly.
      * @return string The processed string with placeholders replaced.
      */
-    public function modernTemplating(array $record, ?string $tempStr, bool $ignoreField = false): string
+    public function modernTemplating(array $record, string|null $tempStr, bool $ignoreField = false): string
     {
         $bodyStr = $tempStr ?? "";
         if (!$ignoreField && isset($record[$tempStr])) {

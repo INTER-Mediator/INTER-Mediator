@@ -292,7 +292,7 @@ trait Proxy_Auth
      * @return string
      */
     public
-    function authSupportGetSalt(?string $username): ?string
+    function authSupportGetSalt(string|null $username): string|null
     {
         if (is_null($username)) {
             return "";
@@ -311,7 +311,7 @@ trait Proxy_Auth
      * @return void
      */
     public
-    function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void
+    function saveChallenge(string|null $username, string $challenge, string $clientId, string $prefix = ""): void
     {
         Logger::getInstance()->setDebugMessage(
             "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
@@ -366,7 +366,7 @@ trait Proxy_Auth
      * @return string
      */
     public
-    function generateCredential(?string $s1, ?string $s2, ?string $s3): string
+    function generateCredential(string|null $s1, string|null $s2, string|null $s3): string
     {
         return hash("sha256", $s1 . $s2 . $s3);
     }

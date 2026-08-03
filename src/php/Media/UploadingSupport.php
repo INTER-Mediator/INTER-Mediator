@@ -40,7 +40,7 @@ abstract class UploadingSupport
      * @return void
      */
     public function processingFile(Proxy  $db, ?array $options, string $filePath, string $filePartialPath,
-                                   string $targetFieldName, ?string $keyField, ?string $keyValue,
+                                   string $targetFieldName, string|null $keyField, string|null $keyValue,
                                    ?array $dataSource, ?array $dbSpec, int $debug): void
     {
         $db->logger->setDebugMessage("[UploadingSupport::processingFile] targetFieldName={$targetFieldName}", 2);

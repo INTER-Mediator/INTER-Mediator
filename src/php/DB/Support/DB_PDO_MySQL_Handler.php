@@ -156,7 +156,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
      * @return string|null Auto-increment field, or null if not found.
      * @throws Exception If an error occurs.
      */
-    protected function getAutoIncrementField(string $tableName): ?string
+    protected function getAutoIncrementField(string $tableName): string|null
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -190,7 +190,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
      * @return array<array-key, mixed> Field lists.
      * @throws Exception If an error occurs.
      */
-    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+    protected function getFieldListsForCopy(string $tableName, string $keyField, string|null $assocField, string|null $assocValue,
                                             ?array $defaultValues): array
     {
         try {
@@ -223,7 +223,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
      * @param string $entityName Entity name.
      * @return string|null Quoted entity name, or null if empty.
      */
-    public function quotedEntityName(string $entityName): ?string
+    public function quotedEntityName(string $entityName): string|null
     {
         if (!$entityName) {
             return null;
@@ -339,7 +339,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
      * @param string $seqObject Sequence object.
      * @return string|null Last insert ID, or null if not applicable.
      */
-    public function getLastInsertId(string $seqObject): ?string
+    public function getLastInsertId(string $seqObject): string|null
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');

@@ -484,16 +484,16 @@ class DefEditor extends DBClass
                 );
                 $seq++;
                 break;
-            case 'external-db':
-                if (isset($globalDBSpecs['external-db'])) {
-                    foreach ($globalDBSpecs['external-db'] as $rel) {
-                        $result[] = array(
-                            'id' => $seq,
-                            'db' => $rel,
-                        );
-                    }
-                }
-                break;
+//            case 'external-db':
+//                if (isset($globalDBSpecs['external-db'])) {
+//                    foreach ($globalDBSpecs['external-db'] as $rel) {
+//                        $result[] = array(
+//                            'id' => $seq,
+//                            'db' => $rel,
+//                        );
+//                    }
+//                }
+//                break;
             case 'debug':
                 $result[] = array(
                     'id' => 0,
@@ -908,21 +908,21 @@ class DefEditor extends DBClass
                 $globalDBSpecs[$theKey] = $theValue;
                 $result = array($globalDBSpecs);
                 break;
-            case 'external-db':
-                $recordID = $contextID % 10000;
-                $fieldValue = $this->dbSettings->getValueOfField('db');
-                if (!is_null($fieldValue)) {
-                    $globalDBSpecs[$dataSourceName][$recordID]['db'] = $fieldValue;
-                }
-                break;
-                if (!isset($globalDBSpecs['external-db'])) {
-                    $globalDBSpecs['external-db'] = array();
-                }
-                $globalDBSpecs['external-db'][] = array(
-                    'db' => '= new value =',
-                );
-                $result = array($globalDBSpecs['external-db']);
-                break;
+//            case 'external-db':
+//                $recordID = $contextID % 10000;
+//                $fieldValue = $this->dbSettings->getValueOfField('db');
+//                if (!is_null($fieldValue)) {
+//                    $globalDBSpecs[$dataSourceName][$recordID]['db'] = $fieldValue;
+//                }
+//                break;
+//                if (!isset($globalDBSpecs['external-db'])) {
+//                    $globalDBSpecs['external-db'] = array();
+//                }
+//                $globalDBSpecs['external-db'][] = array(
+//                    'db' => '= new value =',
+//                );
+//                $result = array($globalDBSpecs['external-db']);
+//                break;
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDebug = $this->dbSettings->getValueOfField($theKey);
@@ -957,7 +957,7 @@ class DefEditor extends DBClass
         return true;
     }
 
-    public function createInDB($isReplace = false): ?string
+    public function createInDB($isReplace = false): string|null
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -1113,14 +1113,14 @@ class DefEditor extends DBClass
                 break;
             case 'dbsettings':
                 break;
-            case 'external-db':
-                if (!isset($globalDBSpecs['external-db'])) {
-                    $globalDBSpecs['external-db'] = array();
-                }
-                $globalDBSpecs['external-db'][] = array(
-                    'db' => '= new value =',
-                );
-                break;
+//            case 'external-db':
+//                if (!isset($globalDBSpecs['external-db'])) {
+//                    $globalDBSpecs['external-db'] = array();
+//                }
+//                $globalDBSpecs['external-db'][] = array(
+//                    'db' => '= new value =',
+//                );
+//                break;
             case 'debug':
                 break;
         }
@@ -1275,7 +1275,7 @@ class DefEditor extends DBClass
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB(): ?string
+    public function copyInDB(): string|null
     {
         return null;
     }
@@ -1290,7 +1290,7 @@ class DefEditor extends DBClass
         return true;
     }
 
-    public function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(string|null $dsn = null): void
     {
         // TODO: Implement setupHandlers() method.
     }

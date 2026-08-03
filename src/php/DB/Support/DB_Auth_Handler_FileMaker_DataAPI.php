@@ -95,7 +95,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
 
 //        if ($result !== NULL) {
 //            $this->logger->setDebugMessage(
-//                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+//                $this->fmdb->stringWithoutCredential($result::class . ': ' .
 //                    $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
 //            return false;
 //        }
@@ -104,7 +104,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $className = is_object($result) ? get_class($result) : "NULL";
+        $className = is_object($result) ? $result::class : "NULL";
         if ($className === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             foreach ($result as $record) {
                 $recordId = $record->getRecordId();
@@ -116,9 +116,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     'user_id' => $uid,
                 ));
                 $result = $this->fmdb->fmDataAuth->{$hashTable}->getRecord($recordId);
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                     $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->stringWithoutCredential($result::class . ': ' .
                             $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                     return;
                 }
@@ -156,7 +156,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @return string|null Media token or null if not found.
      * @throws Exception
      */
-    public function authSupportCheckMediaToken(string $uid): ?string
+    public function authSupportCheckMediaToken(string $uid): string|null
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -175,14 +175,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return null;
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return null;
         }
@@ -241,7 +241,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                             $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
                         } catch (Exception $e) {
                             $this->logger->setDebugMessage(
-                                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                                     $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                             return null;
                         }
@@ -252,11 +252,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential(
-                    get_class($result) . ': ' . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                    $result::class . ': ' . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return null;
         }
 
-        $className = is_object($result) ? get_class($result) : "NULL";
+        $className = is_object($result) ? $result::class : "NULL";
         if ($className !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($className . ': ' .
@@ -294,7 +294,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAuth->getSessionToken();
             }
-            $className = is_object($result) ? get_class($result) : "NULL";
+            $className = is_object($result) ? $result::class : "NULL";
             if ($className !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
                     $this->fmdb->stringWithoutCredential(
@@ -317,7 +317,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return false;
         }
@@ -329,7 +329,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string $username Username.
      * @return string|null Hashed password or null if not found.
      */
-    public function authSupportRetrieveHashedPassword(string $username): ?string
+    public function authSupportRetrieveHashedPassword(string $username): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable)) {
@@ -345,7 +345,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmData->getSessionToken();
             }
         } catch (Exception $e) {
-            $className = is_object($result) ? get_class($result) : "NULL";
+            $className = is_object($result) ? $result::class : "NULL";
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential(
                     $className . ': ' . $this->fmdb->fmData->{$userTable}->getDebugInfo()));
@@ -360,7 +360,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     $this->fmdb->fmData->{$userTable}->getDebugInfo()));
             return null;
         }
-        if ((get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
+        if (($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
                 $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->fmdb->setupFMDataAPIforDB($userTable);
             $conditions = array(array('email' => str_replace('@', '\\@', $username)));
@@ -392,7 +392,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @throws Exception
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
-                                          ?string $ldapPassword = null, ?array $attrs = null): bool
+                                          string|null $ldapPassword = null, ?array $attrs = null): bool
     {
         if ($this->authSupportRetrieveHashedPassword($username)) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
@@ -447,7 +447,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $result = $this->fmdb->fmData->{$userTable}->query($conditions);
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 return false;
             }
@@ -461,9 +461,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 'hashedpasswd' => $hashednewpassword,
             ));
             $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 return false;
             }
@@ -476,7 +476,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|null $username Username.
      * @return string|null User ID or null if not found.
      */
-    public function authSupportGetUserIdFromUsername(?string $username): ?string
+    public function authSupportGetUserIdFromUsername(string|null $username): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$username) {
@@ -492,15 +492,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAlt->getSessionToken();
             }
         } catch (Exception $e) {
-            $className = is_object($result) ? get_class($result) : "NULL";
+            $className = is_object($result) ? $result::class : "NULL";
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($className . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
             return null;
         }
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
             return null;
         }
@@ -516,7 +516,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|int $userid User ID.
      * @return string|null Username or null if not found.
      */
-    public function authSupportGetUsernameFromUserId(string|int $userid): ?string
+    public function authSupportGetUsernameFromUserId(string|int $userid): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$userid) {
@@ -532,14 +532,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmData->{$userTable}->getDebugInfo()));
             return null;
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmData->{$userTable}->getDebugInfo()));
             return null;
         }
@@ -555,7 +555,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string $email Email address.
      * @return string|null User ID or null if not found.
      */
-    public function authSupportGetUserIdFromEmail(string $email): ?string
+    public function authSupportGetUserIdFromEmail(string $email): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$email) {
@@ -571,14 +571,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
             return null;
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
             return null;
         }
@@ -594,7 +594,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|null $username Username.
      * @return string|null Unified username or null if not found.
      */
-    public function authSupportUnifyUsernameAndEmail(?string $username): ?string
+    public function authSupportUnifyUsernameAndEmail(string|null $username): string|null
     {
         if (!$this->dbSettings->getEmailAsAccount() || $this->dbSettings->isDBNative()) {
             return $username;
@@ -626,7 +626,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             }
         } catch (Exception $e) {
-            $className = is_object($result) ? get_class($result) : "NULL";
+            $className = is_object($result) ? $result::class : "NULL";
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($className . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
@@ -635,7 +635,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return $usernameCandidate;
     }
 
-    public function authSupportEmailFromUnifiedUsername(?string $username): ?string
+    public function authSupportEmailFromUnifiedUsername(string|null $username): string|null
     {
         return null;
     }
@@ -644,7 +644,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|null $groupid Group ID.
      * @return void
      */
-    private function resolveGroup(?string $groupid): void
+    private function resolveGroup(string|null $groupid): void
     {
         $this->fmdb->setupFMDataAPIforDB_Alt($this->dbSettings->getCorrTable());
         if ($this->firstLevel) {
@@ -672,7 +672,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAlt->{$this->dbSettings->getCorrTable()}->getDebugInfo()));
             return;
         }
@@ -682,7 +682,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|int $groupid Group ID.
      * @return string|null Group name or null if not found.
      */
-    public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string
+    public function authSupportGetGroupNameFromGroupId(string|int $groupid): string|null
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable == null) {
@@ -699,7 +699,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAlt->{$groupTable}->getDebugInfo()));
             return null;
         }
@@ -716,7 +716,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|null $user User ID or username.
      * @return array<array-key, mixed> Groups for the user.
      */
-    public function authSupportGetGroupsOfUser(?string $user): array
+    public function authSupportGetGroupsOfUser(string|null $user): array
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -794,7 +794,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return false;
         }
@@ -855,13 +855,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$tableName}->getDebugInfo()));
             return null;
         }
         if (!is_array($result)) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$tableName}->getDebugInfo()));
             return null;
         }
@@ -910,7 +910,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string $hash Hash string.
      * @return string|null User ID or null if not found.
      */
-    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): string|null
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -932,7 +932,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                $this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return null;
         }
@@ -953,7 +953,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @throws Exception
      */
     public function authSupportUserEnrollmentActivateUser(
-        string $userID, ?string $password = null, ?string $rawPWField = null, ?string $rawPW = null): ?string
+        string $userID, string|null $password = null, string|null $rawPWField = null, string|null $rawPW = null): string|null
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -969,7 +969,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAlt->getSessionToken();
             }
         } catch (Exception $e) {
-            $this->logger->setDebugMessage($this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+            $this->logger->setDebugMessage($this->fmdb->stringWithoutCredential($result::class . ': ' .
                 $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
             return null;
         }
@@ -988,8 +988,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 ));
             }
             $result = $this->fmdb->fmDataAlt->{$userTable}->getRecord($recordId);
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
-                $this->logger->setDebugMessage($this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage($this->fmdb->stringWithoutCredential($result::class . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
                 return null;
             }
@@ -1034,7 +1034,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param null|string $userID User ID.
      * @return array<array-key, mixed> Array with three elements: [UserID, username, hashedpasswd].
      */
-    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(string|null $userID): array
     {
         if (!$userID) {
             return [null, null, null];
@@ -1068,7 +1068,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 return [$record->id, $usernameCandidate, $record->hashedpasswd];
             }
         } catch (Exception $e) {
-            $className = is_object($result) ? get_class($result) : "NULL";
+            $className = is_object($result) ? $result::class : "NULL";
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($className . ': ' .
                     $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
@@ -1103,13 +1103,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1172,13 +1172,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1201,9 +1201,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 'publicKeyCredentialId' => $publicKeyCredentialId,
             ));
             $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in UPDATE");
             }
@@ -1239,13 +1239,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1268,9 +1268,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 'publicKeyCredentialId' => '',
             ));
             $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in UPDATE");
             }
@@ -1307,13 +1307,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1369,13 +1369,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1397,9 +1397,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 'secret' => $secret ?? '',
             ));
             $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in Update");
             }
@@ -1436,13 +1436,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
                 throw new Exception("ERROR in SELECT");
             }
@@ -1479,13 +1479,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
                 throw new Exception("ERROR in SELECT");
             }
@@ -1498,7 +1498,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     $this->fmdb->fmData->{$failTable}->delete($recordId);// @phpstan-ignore property.notFound
                 } catch (Exception $e) {
                     $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->stringWithoutCredential($result::class . ': ' .
                             $this->fmdb->fmData->{$failTable}->getDebugInfo()));// @phpstan-ignore property.notFound
                     throw new Exception("ERROR in DELETE");
                 }
@@ -1547,13 +1547,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1596,13 +1596,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 }
             } catch (Exception $e) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->stringWithoutCredential($result::class . ': ' .
                         $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                 throw new Exception("ERROR in SELECT");
             }
@@ -1615,9 +1615,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     'inactive' => $value ? 1 : 0,
                 ));
                 $result = $this->fmdb->fmData->{$userTable}->getRecord($recordId);
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                if ($result::class !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                     $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->stringWithoutCredential($result::class . ': ' .
                             $this->fmdb->fmData->{$userTable}->getDebugInfo()));
                     throw new Exception("ERROR in UPDATE");
                 }

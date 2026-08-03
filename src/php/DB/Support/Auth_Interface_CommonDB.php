@@ -28,33 +28,33 @@ interface Auth_Interface_CommonDB
      * @param string $operation The operation type (e.g., 'select', 'update').
      * @return string|null The field name, or null if not set.
      */
-    public function getFieldForAuthorization(string $operation): ?string;
+    public function getFieldForAuthorization(string $operation): string|null;
 
     /** Returns the target value used for authorization for a given operation.
      * @param string $operation The operation type.
      * @return string|null The target value, or null if not set.
      */
-    public function getTargetForAuthorization(string $operation): ?string;
+    public function getTargetForAuthorization(string $operation): string|null;
 
     /** Returns the value for 'no set' authorization for a given operation.
      * @param string $operation The operation type.
      * @return string|null The value, or null if not set.
      */
-    public function getNoSetForAuthorization(string $operation): ?string;
+    public function getNoSetForAuthorization(string $operation): string|null;
 
     /**
      * Returns a list of authorized users for a given operation.
      * @param string|null $operation The operation type, or null for all.
      * @return array<array-key, mixed> List of authorized users.
      */
-    public function getAuthorizedUsers(?string $operation = null): array;
+    public function getAuthorizedUsers(string|null $operation = null): array;
 
     /**
      * Returns a list of authorized groups for a given operation.
      * @param string|null $operation The operation type, or null for all.
      * @return array<array-key, mixed> List of authorized groups.
      */
-    public function getAuthorizedGroups(?string $operation = null): array;
+    public function getAuthorizedGroups(string|null $operation = null): array;
 
     /** Stores a challenge in the issuedhash authentication table.
      * @param string|null|int $uid The user ID.
@@ -94,13 +94,13 @@ interface Auth_Interface_CommonDB
      * @param string $uid The user ID.
      * @return string|null The media token, or null if not found.
      */
-    public function authSupportCheckMediaToken(string $uid): ?string;
+    public function authSupportCheckMediaToken(string $uid): string|null;
 
     /** Retrieves the hashed password for a user from the authuser authentication table.
      * @param string $username The username.
      * @return string|null The hashed password, or null if not found.
      */
-    public function authSupportRetrieveHashedPassword(string $username): ?string;
+    public function authSupportRetrieveHashedPassword(string $username): string|null;
 
     /**
      * Creates a new user in the authuser authentication table.
@@ -138,44 +138,44 @@ interface Auth_Interface_CommonDB
      * @param string $email The email address.
      * @return string|null The user ID, or null if not found.
      */
-    public function authSupportGetUserIdFromEmail(string $email): ?string;
+    public function authSupportGetUserIdFromEmail(string $email): string|null;
 
     /** Retrieves the user ID from a username in the authuser authentication table.
      * @param string|null $username The username.
      * @return string|null The user ID, or null if not found.
      */
-    public function authSupportGetUserIdFromUsername(?string $username): ?string;
+    public function authSupportGetUserIdFromUsername(string|null $username): string|null;
 
     /** Retrieves the username from a user ID in the authuser authentication table.
      * @param string|int $userid The user ID.
      * @return string|null The username, or null if not found.
      */
-    public function authSupportGetUsernameFromUserId(string|int $userid): ?string;
+    public function authSupportGetUsernameFromUserId(string|int $userid): string|null;
 
     /** Retrieves the group name from a group ID in the authgroup authentication table.
      * @param string|int $groupid The group ID.
      * @return string|null The group name, or null if not found.
      */
-    public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string;
+    public function authSupportGetGroupNameFromGroupId(string|int $groupid): string|null;
 
     /**
      * Retrieves the groups for a user in the authuser and authgroup authentication tables.
      * @param string|null $user The user value.
      * @return array<array-key, mixed> The groups for the user.
      */
-    public function authSupportGetGroupsOfUser(?string $user): array;
+    public function authSupportGetGroupsOfUser(string|null $user): array;
 
     /** Unifies a username and email address in the authuser authentication table.
      * @param string|null $username The username.
      * @return string|null The unified username, or null if not found.
      */
-    public function authSupportUnifyUsernameAndEmail(?string $username): ?string;
+    public function authSupportUnifyUsernameAndEmail(string|null $username): string|null;
 
     /** Retrieves the email address from a unified username in the authuser authentication table.
      * @param string|null $username The unified username.
      * @return string|null The email address, or null if not found.
      */
-    public function authSupportEmailFromUnifiedUsername(?string $username): ?string;
+    public function authSupportEmailFromUnifiedUsername(string|null $username): string|null;
 
     /** Stores an issued hash for a user in the issuedhash authentication table.
      * @param string $userid The user ID.
@@ -206,7 +206,7 @@ interface Auth_Interface_CommonDB
      * @param string $hash The hash value.
      * @return string|null The enrolling user, or null if not found.
      */
-    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string;
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): string|null;
 
     /** Activates a user in the authuser authentication table.
      * @param string $userID The user ID.
@@ -216,7 +216,7 @@ interface Auth_Interface_CommonDB
      * @return string|null The activation result, or null if not found.
      */
     public function authSupportUserEnrollmentActivateUser(
-        string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string;
+        string $userID, string|null $password, string|null $rawPWField, string|null $rawPW): string|null;
 
     /** Checks if a user is within the SAML limit in the authuser authentication table.
      * @param string $userID The user ID.
@@ -241,7 +241,7 @@ interface Auth_Interface_CommonDB
      * @param string|null $userID The user ID.
      * @return array<array-key, mixed> The unified data.
      */
-    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array;
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(string|null $userID): array;
 
     /**
      * Retrieves login user information from the authuser authentication table.

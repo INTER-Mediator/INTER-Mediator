@@ -149,7 +149,7 @@ class SAMLAuth
      * @param string|null $url Optional URL to redirect to after login.
      * @return string|null The login URL.
      */
-    public function samlLoginURL(?string $url = null): ?string
+    public function samlLoginURL(string|null $url = null): string|null
     {
         return $this->authSimple->getLoginURL($url);
     }
@@ -158,7 +158,7 @@ class SAMLAuth
      * @param string|null $url Optional URL to redirect to after logout.
      * @return string|null The logout URL.
      */
-    public function samlLogoutURL(?string $url = null): ?string
+    public function samlLogoutURL(string|null $url = null): string|null
     {
         return $this->authSimple->getLogoutURL($url);
     }

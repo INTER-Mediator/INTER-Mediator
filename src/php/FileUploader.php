@@ -87,7 +87,7 @@ class FileUploader
      * @return void
      * @throws Exception
      */
-    public function processingAsError(?array $dataSource, ?array $options, ?array $dbSpec, int $debug, ?string $contextName, bool $noOutput): void
+    public function processingAsError(?array $dataSource, ?array $options, ?array $dbSpec, int $debug, string|null $contextName, bool $noOutput): void
     {
         $this->db = new Proxy();
         $this->db->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
@@ -172,7 +172,7 @@ class FileUploader
      * @throws Exception
      */
     public function processingWithParameters(?array  $dataSource, ?array $options, ?array $dbSpec, int $debug,
-                                             ?string $contextName, ?string $keyField, ?string $keyValue, ?array $field,
+                                             string|null $contextName, string|null $keyField, string|null $keyValue, ?array $field,
                                              ?array  $files, bool $noOutput): void
     {
         $this->db = new DB\Proxy();
@@ -257,7 +257,7 @@ class FileUploader
      * @param string|null $url The URL to validate.
      * @return string|null The validated URL or NULL if invalid.
      */
-    protected function getRedirectUrl(?string $url): ?string
+    protected function getRedirectUrl(string|null $url): string|null
     {
         if (str_contains(strtolower($url), '%0a') || str_contains(strtolower($url), '%0d')) {
             return NULL;
@@ -297,7 +297,7 @@ class FileUploader
      * @param string|null $webServerName The allowed web server name.
      * @return bool True if the URL is allowed, false otherwise.
      */
-    protected function checkRedirectUrl(?string $url, ?string $webServerName): bool
+    protected function checkRedirectUrl(string|null $url, string|null $webServerName): bool
     {
         if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
             $parsedUrl = parse_url($url);

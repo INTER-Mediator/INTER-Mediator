@@ -41,34 +41,34 @@ abstract class ProviderAdapter
     /** The client ID issued by the OAuth provider.
      * @var string|null
      */
-    protected ?string $clientId = "";
+    protected string|null $clientId = "";
     /** The client secret issued by the OAuth provider.
      * @var string|null
      */
-    protected ?string $clientSecret = "";
+    protected string|null $clientSecret = "";
     /** The URL where the provider will redirect after authentication.
      * @var string|null
      */
-    protected ?string $redirectURL = "";
+    protected string|null $redirectURL = "";
     /** The scope of information requested from the provider.
      * @var string|null
      */
-    protected ?string $infoScope = "";
+    protected string|null $infoScope = "";
 
     /** The issuer URL of the authorization server.
      * @var string|null
      */
-    protected ?string $issuer = "";
+    protected string|null $issuer = "";
     /** The URL where JSON Web Key Set can be retrieved.
      * @var string|null
      */
-    protected ?string $jwksURL = "";
+    protected string|null $jwksURL = "";
     /** The path to the private key file for signing JWTs.
      * @var string|null
      */
-    protected ?string $keyFilePath = "";
+    protected string|null $keyFilePath = "";
 
-    protected ?string $stateValue = null;
+    protected string|null $stateValue = null;
 
     /** Sets the debug mode. If true, debug messages will be printed to the log.
      * @param bool $debugMode The debug mode flag.
@@ -187,7 +187,7 @@ abstract class ProviderAdapter
      * The returned URL is a string.
      * @return string|null The back URL associated with the state, or null if no such state exists.
      */
-    public function getBackURL(): ?string
+    public function getBackURL(): string|null
     {
         return $this->retrieveCode($this->stateValue, "@backurl@")[0] ?? null;
     }
@@ -218,7 +218,7 @@ abstract class ProviderAdapter
     {
         $providerName = $provider;
         if(str_contains($providerName, "_")) {
-            $providerName = substr($providerName, 0, strpos($providerName, "_"));
+            $providerName = substr($providerName, 0, (int)strpos($providerName, "_"));
         }
         $adapter = null;
         // Switch based on the provider name
@@ -272,7 +272,7 @@ abstract class ProviderAdapter
     protected function communication(string  $url,
                                      bool    $isPost = false,
                                      ?array  $params = null,
-                                     ?string $access_token = null): mixed
+                                     string|null $access_token = null): mixed
     {
         $postParam = "";
         if ($params) {
@@ -309,7 +309,7 @@ abstract class ProviderAdapter
         if ($httpCode != 200) {
             throw new Exception("HTTP Error[{$httpCode}]: {$url}\nDescription: {$content}");
         }
-        $response = json_decode($content);
+        $response = json_decode((string)$content);
         if (!$response) {
             throw new Exception("Communication Error: " . var_export($content, true));
         }
@@ -363,7 +363,7 @@ abstract class ProviderAdapter
         $payloadIDToken = json_decode($this->base64url_decode($jWebToken[1]));
 
         // Get the JWK from the JWK set
-        $jwkSet = JWKSet::createFromJson(json_encode($certficate));
+        $jwkSet = JWKSet::createFromJson((string)json_encode($certficate));
         $key = $jwkSet->get($headerIDToken->kid);
 
         // Verify the signature of the ID token
@@ -438,7 +438,7 @@ abstract class ProviderAdapter
      *                         If null, use the client ID.
      * @return void
      */
-    protected function storeCode(string $code, string $prefix, ?string $key = null): void
+    protected function storeCode(string $code, string $prefix, string|null $key = null): void
     {
         // Create a new Proxy instance to access the database
         $dbProxy = new Proxy(true);

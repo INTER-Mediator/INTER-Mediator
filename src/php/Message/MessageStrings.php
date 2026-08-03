@@ -34,7 +34,7 @@ class MessageStrings
      */
     public function getTerms(?array $options): array
     {
-        $className = get_class($this);
+        $className = $this::class;
         $underLine = strpos($className, '_');
         $terms = Params::getParameterValue("terms", null);
         $thisLang = ($underLine === false) ? 'en' : substr($className, $underLine + 1);
@@ -56,7 +56,7 @@ class MessageStrings
     public function getMessages(): array
     {
         $altMessages = Params::getParameterValue("messages", null);
-        $className = get_class($this);
+        $className = $this::class;
         $underLine = strpos($className, '_');
         $thisLang = ($underLine === false) ? 'default' : substr($className, $underLine + 1);
         if (is_array($altMessages)) {

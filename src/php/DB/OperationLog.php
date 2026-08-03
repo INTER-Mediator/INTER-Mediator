@@ -32,19 +32,19 @@ class OperationLog
     /** Database class log name.
      * @var string|null
      */
-    private ?string $dbClassLog;
+    private string|null $dbClassLog;
     /** Database user log name.
      * @var string|null
      */
-    private ?string $dbUserLog;
+    private string|null $dbUserLog;
     /** Database password log.
      * @var string|null
      */
-    private ?string $dbPasswordLog;
+    private string|null $dbPasswordLog;
     /** Database DSN log.
      * @var string|null
      */
-    private ?string $dbDSNLog;
+    private string|null $dbDSNLog;
     /**
      * Contexts to record.
      * @var array<array-key, mixed>|null
@@ -79,7 +79,7 @@ class OperationLog
     /** Access log extension class name.
      * @var string|null
      */
-    private ?string $accessLogExtensionClass;
+    private string|null $accessLogExtensionClass;
 
     /**
      * Constructor for OperationLog.
@@ -150,7 +150,7 @@ class OperationLog
                 $cookieNameUser = "_im_username";
                 if (isset($this->contextOptions['authentication']['realm'])) {
                     $cookieNameUser .= ('_' . str_replace(" ", "_",
-                            str_replace(".", "_", $this->contextOptions['authentication']['realm'])));
+                            str_replace(".", "_", (string)$this->contextOptions['authentication']['realm'])));
                 }
                 $userValue = $_COOKIE[$cookieNameUser] ?? '';
             }
@@ -188,7 +188,7 @@ class OperationLog
      * @param array<array-key, mixed>|null $ar Array to convert.
      * @return string|null String representation of the array.
      */
-    private function arrayToString(?array $ar): ?string
+    private function arrayToString(?array $ar): string|null
     {
         if (is_null($ar) || count($ar) === 0) {
             return null;

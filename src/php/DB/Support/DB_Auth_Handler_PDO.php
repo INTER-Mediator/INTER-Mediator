@@ -123,11 +123,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Checks a media token for authentication.
      * @param string $uid User ID.
-     * @return ?string Media token or null if not found.
+     * @return string|null Media token or null if not found.
      * Using 'issuedhash'.
      * @throws Exception
      */
-    public function authSupportCheckMediaToken(string $uid): ?string
+    public function authSupportCheckMediaToken(string $uid): string|null
     {
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}", 2);
 
@@ -314,10 +314,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Retrieves a hashed password for a user.
      * @param string $username Username.
-     * @return ?string Hashed password or null if not found.
+     * @return string|null Hashed password or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportRetrieveHashedPassword(string $username): ?string
+    public function authSupportRetrieveHashedPassword(string $username): string|null
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
         if (is_null($signedUser)) {
@@ -358,13 +358,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $username Username.
      * @param string $hashedpassword Hashed password.
      * @param bool $isSAML SAML authentication flag.
-     * @param ?string $ldapPassword LDAP password.
+     * @param string|null $ldapPassword LDAP password.
      * @param array<array-key, mixed>|null $attrs Additional attributes.
      * @return bool True if successful, false otherwise.
     Using 'authuser'.
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
-                                          ?string $ldapPassword = null, ?array $attrs = null): bool
+                                          string|null $ldapPassword = null, ?array $attrs = null): bool
     {
         $this->logger->setDebugMessage("[authSupportCreateUser] username ={$username}, isSAML ={$isSAML}", 2);
 
@@ -521,9 +521,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Gets a user ID from a username.
      * @param string|null $username Username.
-     * @return ?string User ID or null if not found.
+     * @return string|null User ID or null if not found.
      */
-    public function authSupportGetUserIdFromUsername(?string $username): ?string
+    public function authSupportGetUserIdFromUsername(string|null $username): string|null
     {
         return $this->privateGetUserIdFromUsername($username, true);
     }
@@ -531,9 +531,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     /** Gets a user ID from a username.
      * @param string|null $username Username.
      * @param bool $isCheckLimit Check limit flag.
-     * @return ?string User ID or null if not found.
+     * @return string|null User ID or null if not found.
      */
-    private function privateGetUserIdFromUsername(?string $username, bool $isCheckLimit): ?string
+    private function privateGetUserIdFromUsername(string|null $username, bool $isCheckLimit): string|null
     {
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username ={$username}", 2);
 
@@ -562,10 +562,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Gets a group name from a group ID.
      * @param string|int $groupid Group ID.
-     * @return ?string Group name or null if not found.
+     * @return string|null Group name or null if not found.
      * Using 'authgroup'.
      */
-    public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string
+    public function authSupportGetGroupNameFromGroupId(string|int $groupid): string|null
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if (is_null($groupTable) || !$this->pdoDB->setupConnection()) {
@@ -587,11 +587,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /**
      * Gets groups for a user.
-     * @param ?string $user User ID or username.
+     * @param string|null $user User ID or username.
      * @return array<array-key, mixed> Groups for the user.
     Using 'authcor'.
      */
-    public function authSupportGetGroupsOfUser(?string $user): array
+    public function authSupportGetGroupsOfUser(string|null $user): array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
@@ -612,7 +612,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param bool $isCheckLimit Check limit flag.
      * @return array<array-key, mixed>|null Groups for the user or null if not found.
      */
-    private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
+    private function privateGetGroupsOfUser(string|null $user, bool $isCheckLimit): ?array
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if (is_null($corrTable)) {
@@ -661,7 +661,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @return void
      * Using 'authcor'.
      */
-    private function resolveGroup(?string $groupid): void
+    private function resolveGroup(string|null $groupid): void
     {
         if (!$groupid) {
             return;
@@ -758,10 +758,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Gets a user ID from an email.
      * @param string $email Email.
-     * @return ?string User ID or null if not found.
+     * @return string|null User ID or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportGetUserIdFromEmail(string $email): ?string
+    public function authSupportGetUserIdFromEmail(string $email): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$email || !$this->pdoDB->setupConnection()) {
@@ -787,10 +787,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Gets a username from a user ID.
      * @param string|int $userid User ID.
-     * @return ?string Username or null if not found.
+     * @return string|null Username or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportGetUsernameFromUserId(string|int $userid): ?string
+    public function authSupportGetUsernameFromUserId(string|int $userid): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$userid || !$this->pdoDB->setupConnection()) {
@@ -812,10 +812,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Unifies a username and email.
      * @param string|null $username Username.
-     * @return ?string Unified username or null if not found.
+     * @return string|null Unified username or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportUnifyUsernameAndEmail(?string $username): ?string
+    public function authSupportUnifyUsernameAndEmail(string|null $username): string|null
     {
         if (!$username) {
             return null;
@@ -862,10 +862,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Gets an email from a unified username.
      * @param string|null $username Unified username.
-     * @return ?string Email or null if not found.
+     * @return string|null Email or null if not found.
      * Using 'authuser'.
      */
-    public function authSupportEmailFromUnifiedUsername(?string $username): ?string
+    public function authSupportEmailFromUnifiedUsername(string|null $username): string|null
     {
         if (!$username) {
             return null;
@@ -997,9 +997,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /** Gets the enrolling user.
      * @param string $hash Hash.
-     * @return ?string Enrolling user ID or null if not found.
+     * @return string|null Enrolling user ID or null if not found.
      */
-    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): string|null
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -1034,10 +1034,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string|null $password Password.
      * @param string|null $rawPWField Raw password field.
      * @param string|null $rawPW Raw password.
-     * @return ?string Activated user ID or null if not found.
+     * @return string|null Activated user ID or null if not found.
      */
     public function authSupportUserEnrollmentActivateUser(
-        string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string
+        string $userID, string|null $password, string|null $rawPWField, string|null $rawPW): string|null
     {
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable)) {
@@ -1145,7 +1145,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param null|string $userID User ID or username.
      * @return array<array-key, mixed> User information.
      */
-    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(string|null $userID): array
     {
         if (!$userID) {
             return [null, null, null];

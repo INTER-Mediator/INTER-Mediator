@@ -1,8 +1,10 @@
 parameters:
-    level: 7
+    level: 6
     paths:
         - ../src/php
         - INTER-Mediator-UnitTest
     fileExtensions:
         - php
     reportUnmatchedIgnoredErrors: false
+    bootstrapFiles:
+        - ../vendor/autoload.php

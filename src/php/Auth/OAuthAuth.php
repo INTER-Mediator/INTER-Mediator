@@ -69,7 +69,7 @@ class OAuthAuth
     /** The generated password for OAuth user
      * @var string|null The password string in plain text format
      */
-    private ?string $generatedPassword = null;
+    private string|null $generatedPassword = null;
 
     /** @return string
      */
@@ -122,7 +122,7 @@ class OAuthAuth
         return $this->userInfo;
     }
 
-    public function getGeneratedPassword(): ?string
+    public function getGeneratedPassword(): string|null
     {
         return $this->generatedPassword;
     }
@@ -215,7 +215,7 @@ class OAuthAuth
      * @param bool $isSetPassword Whether to set the generated password as initialPassword.
      * @param bool $isSetLogin Whether to automatically login the user after creation.
      */
-    public function userInfoToLogin(?string $currentUser = null, ?string $password = null, bool $isSetPassword = false, bool $isSetLogin = true): void
+    public function userInfoToLogin(string|null $currentUser = null, string|null $password = null, bool $isSetPassword = false, bool $isSetLogin = true): void
     {
         try {
             $oAuthRealm = Params::getParameterValue("authRealm", "");

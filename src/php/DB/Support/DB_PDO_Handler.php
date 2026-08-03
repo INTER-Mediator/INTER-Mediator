@@ -245,7 +245,7 @@ abstract class DB_PDO_Handler
      * @param string $separator Separator.
      * @return string|null Quoted data or null if data is null.
      */
-    public function quotedData(string $data, string $separator = ''): ?string
+    public function quotedData(string $data, string $separator = ''): string|null
     {
         $pos = strpos($data, $separator);
         if ($pos !== false) {
@@ -307,8 +307,8 @@ abstract class DB_PDO_Handler
      * @param array<array-key, mixed>|null $defaultValues Default values.
      * @return string|null Last insert ID or null if an error occurs.
      */
-    public function copyRecords(?array  $tableInfo, ?string $queryClause, ?string $assocField,
-                                ?string $assocValue, ?array $defaultValues): ?string
+    public function copyRecords(?array  $tableInfo, string|null $queryClause, string|null $assocField,
+                                string|null $assocValue, ?array $defaultValues): string|null
     {
         $returnValue = null;
         $tableName = $tableInfo["table"] ?? $tableInfo["name"];
@@ -340,7 +340,7 @@ abstract class DB_PDO_Handler
      * @return array<array-key, mixed> Numeric fields.
      * @throws Exception If an error occurs.
      */
-    public function getNumericFields(?string $tableName): array
+    public function getNumericFields(string|null $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -449,7 +449,7 @@ abstract class DB_PDO_Handler
      * @param string|null $tableName Table name.
      * @return array<array-key, mixed> Boolean fields.
      */
-    public function getBooleanFields(?string $tableName): array
+    public function getBooleanFields(string|null $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -518,7 +518,7 @@ abstract class DB_PDO_Handler
      * @param string $entityName Entity name.
      * @return string|null Quoted entity name or null if entity name is null.
      */
-    public abstract function quotedEntityName(string $entityName): ?string;
+    public abstract function quotedEntityName(string $entityName): string|null;
 
     /** Performs optional operations in setup.
      * @return void
@@ -541,7 +541,7 @@ abstract class DB_PDO_Handler
      * @param string|null $tableName Table name.
      * @return array<array-key, mixed> Table information.
      */
-    public function getTableInfo(?string $tableName): array
+    public function getTableInfo(string|null $tableName): array
     {
         if (is_null($tableName)){
             return [];
@@ -587,7 +587,7 @@ abstract class DB_PDO_Handler
      * @param string $tableName Table name.
      * @return string|null Auto increment field or null if not found.
      */
-    protected abstract function getAutoIncrementField(string $tableName): ?string;
+    protected abstract function getAutoIncrementField(string $tableName): string|null;
 
     /** Returns the SQL to get table information for a table.
      * @param string $tableName Table name.
@@ -619,7 +619,7 @@ abstract class DB_PDO_Handler
      * @param string|null $d Value to check.
      * @return bool Whether the value is true.
      */
-    private function isTrue(?string $d): bool
+    private function isTrue(string|null $d): bool
     {
         if (is_null($d)) {
             return false;
@@ -645,7 +645,7 @@ abstract class DB_PDO_Handler
      * @param string $seqObject Sequence object.
      * @return string|null Last insert ID or null if not found.
      */
-    public function getLastInsertId(string $seqObject): ?string
+    public function getLastInsertId(string $seqObject): string|null
     {
         if (!$this->dbClassObj->link) {
             return null;
@@ -658,7 +658,7 @@ abstract class DB_PDO_Handler
      * @param string $tableName Table name.
      * @return string|null Last insert ID or null if not found.
      */
-    public function lastInsertIdAlt(string $seqObject, string $tableName): ?string
+    public function lastInsertIdAlt(string $seqObject, string $tableName): string|null
     {
         $incrementField = $this->getAutoIncrementField($tableName);
         $contextDef = $this->dbClassObj->dbSettings->getDataSourceTargetArray();

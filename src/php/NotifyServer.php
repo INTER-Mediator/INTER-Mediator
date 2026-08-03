@@ -33,7 +33,7 @@ class NotifyServer
     /** The client ID associated with the notification session.
      * @var string|null
      */
-    private ?string $clientId;
+    private string|null $clientId;
 
     /** Initializes the NotifyServer with a DBClass and client ID.
      * Checks if the notification handler and required table exist.
@@ -41,7 +41,7 @@ class NotifyServer
      * @param string|null $clientId Client ID for this session.
      * @return bool True if initialization successful, false otherwise.
      */
-    public function initialize(DBClass $dbClass, ?string $clientId): bool
+    public function initialize(DBClass $dbClass, string|null $clientId): bool
     {
         $this->dbClass = $dbClass;
         $this->clientId = $clientId;
@@ -81,7 +81,7 @@ class NotifyServer
      * @param array<array-key, mixed> $pkArray Primary key values for the entity.
      * @return string|null Registration result or null on failure.
      */
-    public function register(string $entity, string $condition, array $pkArray): ?string
+    public function register(string $entity, string $condition, array $pkArray): string|null
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
         return $this->dbClass->notifyHandler?->register($this->clientId, $entity, $condition, $pkArray);
@@ -93,7 +93,7 @@ class NotifyServer
      * @param array<array-key, mixed>|null $tableKeys Table keys to unregister.
      * @return bool True if successfully unregistered, false otherwise.
      */
-    public function unregister(?string $client, ?array $tableKeys): bool
+    public function unregister(string|null $client, ?array $tableKeys): bool
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass->notifyHandler) {
@@ -112,7 +112,7 @@ class NotifyServer
      * @param bool $isNotify Whether to just notify or not.
      * @return void
      */
-    public function updated(?string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
+    public function updated(string|null $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
         if ($this->dbClass->notifyHandler) {
@@ -132,7 +132,7 @@ class NotifyServer
      * @param bool $isNotify Whether to just notify or not.
      * @return void
      */
-    public function created(?string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
+    public function created(string|null $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
         if ($this->dbClass->notifyHandler) {
@@ -149,7 +149,7 @@ class NotifyServer
      * @param array<array-key, mixed> $pkArray Primary key values.
      * @return void
      */
-    public function deleted(?string $clientId, string $entity, array $pkArray): void
+    public function deleted(string|null $clientId, string $entity, array $pkArray): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
         if ($this->dbClass->notifyHandler) {

@@ -32,28 +32,28 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
     /** Dropbox API App Key
      * @var string|null
      */
-    private ?string $appKey;
+    private string|null $appKey;
     /** Dropbox API App Secret
      * @var string|null
      */
-    private ?string $appSecret;
+    private string|null $appSecret;
     /** Dropbox API Refresh Token
      * @var string|null
      */
-    private ?string $refreshToken;
+    private string|null $refreshToken;
     /** Path to store the Dropbox API Access Token
      * @var string|null
      */
-    private ?string $accessTokenPath;
+    private string|null $accessTokenPath;
     /** Root directory in Dropbox for file operations
      * @var string|null
      */
-    private ?string $rootInDropbox;
+    private string|null $rootInDropbox;
     /** The file name of the current file being processed
      * @var string|null
      */
-    private ?string $fileName = null;
-    private ?string $customFileName = null;
+    private string|null $fileName = null;
+    private string|null $customFileName = null;
 
     /** Dropbox constructor. Initializes Dropbox API credentials and settings from parameters.
      */
@@ -90,7 +90,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
      * @param string $file The file path (unused).
      * @return string|null The file name, or null if not set.
      */
-    public function getFileName(string $file): ?string
+    public function getFileName(string $file): string|null
     {
         return $this->fileName;
     }
@@ -112,9 +112,9 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception If an error occurs during processing.
      */
-    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string $contextName, ?string $keyField, ?string $keyValue,
-                               ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
+    public function processing(Proxy  $db, string|null $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextName, string|null $keyField, string|null $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug, string|null $customFileName): void
     {
         $this->customFileName = $customFileName;
         $counter = -1;

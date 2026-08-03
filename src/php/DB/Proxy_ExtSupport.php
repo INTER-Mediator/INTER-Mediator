@@ -35,7 +35,7 @@ trait Proxy_ExtSupport
     /** Fixed key for operations.
      * @var string|null
      */
-    private ?string $fixedKey = null;
+    private string|null $fixedKey = null;
     /** Test mode flag.
      * @var bool
      */
@@ -58,7 +58,7 @@ trait Proxy_ExtSupport
      * @param string|null $key
      * @return void
      */
-    public function setFixedKey(?string $key = null): void
+    public function setFixedKey(string|null $key = null): void
     {
         $this->fixedKey = $key;
     }

@@ -59,7 +59,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
      * @return string|null Registration identifier or null on failure.
      * @throws Exception
      */
-    public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
+    public function register(string|null $clientId, string $entity, string $condition, array $pkArray): string|null
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -122,7 +122,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
      * @param array<array-key, mixed>|null $tableKeys Array of table keys.
      * @return bool True on success, false on failure.
      */
-    public function unregister(?string $clientId, ?array $tableKeys): bool
+    public function unregister(string|null $clientId, ?array $tableKeys): bool
     {
         $regTable = $this->dbSettings->registerTableName;
 
@@ -170,7 +170,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return array<array-key, mixed>|null Array of matching client identifiers or null on failure.
      */
-    public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
+    public function matchInRegistered(string|null $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -236,7 +236,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
      * @return array<array-key, mixed>|null Array of client identifiers or null on failure.
      * @throws Exception
      */
-    public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
+    public function appendIntoRegistered(string|null $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -292,7 +292,7 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return array<array-key, mixed>|null Array of client identifiers or null on failure.
      */
-    public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
+    public function removeFromRegistered(string|null $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;

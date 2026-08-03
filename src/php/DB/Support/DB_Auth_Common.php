@@ -76,7 +76,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
      * @param string $operation The operation type.
      * @return string|null The authorization field or null if not found.
      */
-    public function getFieldForAuthorization(string $operation): ?string
+    public function getFieldForAuthorization(string $operation): string|null
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -97,7 +97,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
      * @param string $operation The operation type.
      * @return string|null The authorization target or null if not found.
      */
-    public function getTargetForAuthorization(string $operation): ?string
+    public function getTargetForAuthorization(string $operation): string|null
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -118,7 +118,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
      * @param string $operation The operation type.
      * @return string|null The no-set value or null if not found.
      */
-    public function getNoSetForAuthorization(string $operation): ?string
+    public function getNoSetForAuthorization(string $operation): string|null
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -140,7 +140,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
      * @param string|null $operation The operation type or null for all operations.
      * @return array<array-key, mixed> Authorized users.
      */
-    public function getAuthorizedUsers(?string $operation = null): array
+    public function getAuthorizedUsers(string|null $operation = null): array
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -165,7 +165,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
      * @param string|null $operation The operation type or null for all operations.
      * @return array<array-key, mixed> Authorized groups.
      */
-    public function getAuthorizedGroups(?string $operation = null): array
+    public function getAuthorizedGroups(string|null $operation = null): array
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();

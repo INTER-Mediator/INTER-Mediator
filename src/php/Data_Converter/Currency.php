@@ -38,7 +38,7 @@ class Currency extends NumberBase
     /** @param string|null $str
      * @return string
      */
-    function converterFromDBtoUser(?string $str):string
+    function converterFromDBtoUser(string|null $str):string
     {
         $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
         return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);

@@ -32,19 +32,19 @@ class MediaAccess
     /** Target key field extracted from the request (set by analyzeTarget).
      * @var string|null
      */
-    private ?string $targetKeyField;    // set with the analyzeTarget method.
+    private string|null $targetKeyField;    // set with the analyzeTarget method.
     /** Target key value extracted from the request (set by analyzeTarget).
      * @var string|null
      */
-    private ?string $targetKeyValue;  // set with the analyzeTarget method.
+    private string|null $targetKeyValue;  // set with the analyzeTarget method.
     /** Target context name extracted from the request (set by analyzeTarget).
      * @var string|null
      */
-    private ?string $targetContextName = null;  // set with the analyzeTarget method.
+    private string|null $targetContextName = null;  // set with the analyzeTarget method.
     /** Authenticated user from cookie (set by checkAuthentication).
      * @var string|null
      */
-    private ?string $cookieUser = null;    // set with the checkAuthentication method.
+    private string|null $cookieUser = null;    // set with the checkAuthentication method.
     /** Access log level setting.
      * @var int
      */

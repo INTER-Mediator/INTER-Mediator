@@ -49,10 +49,10 @@ class HTMLString
         return $str;
     }
 
-    /** @param ?string $str
+    /** @param string|null $str
      * @return string
      */
-    public function converterFromDBtoUser(?string $str): string
+    public function converterFromDBtoUser(string|null $str): string
     {
         if (is_null($str)) {
             return "";
@@ -70,7 +70,7 @@ class HTMLString
     /** @param string|null $str
      * @return string|null
      */
-    protected function replaceTags(?string $str): ?string
+    protected function replaceTags(string|null $str): string|null
     {
         if (is_null($str)) {
             return null;
@@ -86,7 +86,7 @@ class HTMLString
     /** @param string|null $str
      * @return string|null
      */
-    protected function replaceCRLF(?string $str): ?string
+    protected function replaceCRLF(string|null $str): string|null
     {
         if (is_null($str)) {
             return null;
@@ -99,7 +99,7 @@ class HTMLString
     /** @param string|null $str
      * @return string|null
      */
-    protected function replaceLinkToATag(?string $str): ?string
+    protected function replaceLinkToATag(string|null $str): string|null
     {
         if (is_null($str)) {
             return null;

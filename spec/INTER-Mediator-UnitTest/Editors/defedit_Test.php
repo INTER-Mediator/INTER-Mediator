@@ -39,7 +39,7 @@ class defedit_Test extends TestCase
         $imPath = IMUtil::pathToINTERMediator();
         require_once($imPath . '/editors/defedit.php');
         $output = ob_get_contents();
-        $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', $output);
+        $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', (string)$output);
         ob_end_clean();
     }
 }

@@ -46,10 +46,10 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
      *
      * @param string $contextName The context name.
      * @param int $maxRecord The max record.
-     * @param ?string $subContextName The sub context name.
+     * @param string|null $subContextName The sub context name.
      * @return void
      */
-    function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void
+    function dbProxySetupForAccess(string $contextName, int $maxRecord, string|null $subContextName = null): void
     {
         $this->schemaName = "";
         $contexts = array(

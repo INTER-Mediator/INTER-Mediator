@@ -37,7 +37,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         $parsedUrl = parse_url($target);
-        if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
+        if ($dbProxyInstance->dbClass::class === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
             if (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
                 $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
                 if (function_exists('curl_init')) {
@@ -92,7 +92,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
      * @param string $file The file path.
      * @return string|null The base file name.
      */
-    public function getFileName(string $file): ?string
+    public function getFileName(string $file): string|null
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -119,9 +119,9 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
      * @throws Exception If an error occurs during processing.
      * @return void
      */
-    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string $contextName, ?string $keyField, ?string $keyValue,
-                               ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
+    public function processing(Proxy  $db, string|null $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextName, string|null $keyField, string|null $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug, string|null $customFileName): void
     {
         $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
         if (!$mediaRootDir) {

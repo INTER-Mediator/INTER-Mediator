@@ -29,11 +29,11 @@ class SendSlack extends MessagingProvider
 {
     /** @var string|null Slack API token for authentication.
      */
-    private ?string $token = null;
+    private string|null $token = null;
 
     /** @var string|null Slack channel ID or name to send messages to.
      */
-    private ?string $channel = null;
+    private string|null $channel = null;
 
     /** SendSlack constructor.
      * Initializes Slack token and channel from parameters if available.

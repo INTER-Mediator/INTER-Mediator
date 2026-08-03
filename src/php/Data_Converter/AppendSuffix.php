@@ -34,7 +34,7 @@ class AppendSuffix
     /** @param string|null $str
      * @return string
      */
-    function converterFromDBtoUser(?string $str): string
+    function converterFromDBtoUser(string|null $str): string
     {
         return $str . $this->appendStr;
     }

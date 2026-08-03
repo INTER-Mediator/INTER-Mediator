@@ -19,7 +19,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 trait PasskeySupport
 {
-    protected function publicKeyCredentialCreationOptions(?string $userName, ?string $challenge = ""): PublicKeyCredentialCreationOptions
+    protected function publicKeyCredentialCreationOptions(string|null $userName, string|null $challenge = ""): PublicKeyCredentialCreationOptions
     {
         Logger::getInstance()->setDebugMessage(
             "[publicKeyCredentialCreationOptions] userName={$userName} for host {$_SERVER["SERVER_NAME"]}", 2);
@@ -35,7 +35,7 @@ trait PasskeySupport
         return PublicKeyCredentialCreationOptions::create($rpEntity, $userEntity, $challenge);
     }
 
-    protected function createPublicKeyCredentialRequestOptions(?string $challenge = "", string $clientId = ""): PublicKeyCredentialRequestOptions
+    protected function createPublicKeyCredentialRequestOptions(string|null $challenge = "", string $clientId = ""): PublicKeyCredentialRequestOptions
     {
         Logger::getInstance()->setDebugMessage(
             "[createPublicKeyCredentialRequestOptions] for host {$_SERVER["SERVER_NAME"]}", 2);

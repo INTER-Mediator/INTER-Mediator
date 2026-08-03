@@ -41,11 +41,11 @@ class MySQLDateTime
         date_default_timezone_set($this->tz);
     }
 
-    /** @param ?string $str
+    /** @param string|null $str
      * @return string
      * @throws Exception
      */
-    function converterFromDBtoUser(?string $str): string
+    function converterFromDBtoUser(string|null $str): string
     {
         if ($str === NULL || $str === '' || $str === '0000-00-00') {
             return '';
@@ -82,7 +82,7 @@ class MySQLDateTime
     /** @param string $str
      * @return string
      */
-    function converterFromUserToDB(string $str): ?string
+    function converterFromUserToDB(string $str): string|null
     {
         if ($str == "") {
             return null;

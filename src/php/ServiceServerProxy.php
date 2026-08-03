@@ -48,7 +48,7 @@ class ServiceServerProxy
     /** Path to the forever log file, from params.php.
      * @var string|null
      */
-    private ?string $foreverLog;
+    private string|null $foreverLog;
     /** Path of a Key file for wss protocol, from params.php.
      * @var string
      */
@@ -228,7 +228,7 @@ class ServiceServerProxy
      * @param array<array-key, mixed>|null $postData Data to be sent with the request.
      * @return string|null Response from the server, or null on failure.
      */
-    private function callServer(string $path, ?array $postData = null): ?string
+    private function callServer(string $path, ?array $postData = null): string|null
     {
         $url = "{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);

@@ -22,7 +22,7 @@
         const params = INTERMediatorOnPage.getURLParametersAsArray()
         const contextsArray = ['contexts', 'relation', 'query', 'sort', 'default-values', 'validation',
           'script', 'global', 'file-upload', 'send-mail', 'options', 'aliases', 'browser-compatibility', 'calculation',
-          'formatter', 'dbsettings', 'external-db', 'debug', 'local-context']
+          'formatter', 'dbsettings', /*'external-db', */'debug', 'local-context']
         for (let i = 0; i < contextsArray.length; i++) {
           INTERMediator.clearCondition(contextsArray[i])
           INTERMediator.addCondition(contextsArray[i], {field: 'target', value: params.target})

@@ -30,7 +30,7 @@ use INTERMediator\Params;
  */
 class FileURL extends UploadingSupport implements DownloadingSupport
 {
-    private ?string $customFileName = null;
+    private string|null $customFileName = null;
 
     /**
      * Handles file upload processing, including CSV import if specified.
@@ -49,9 +49,9 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception If an error occurs during processing.
      */
-    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string $contextName, ?string $keyField, ?string $keyValue,
-                               ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
+    public function processing(Proxy  $db, string|null $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextName, string|null $keyField, string|null $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug, string|null $customFileName): void
     {
         $this->customFileName = $customFileName;
         $counter = -1;
@@ -117,7 +117,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return string|null The base file name.
      */
     public
-    function getFileName(string $file): ?string
+    function getFileName(string $file): string|null
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -221,7 +221,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return string The justified path component.
      */
     private
-    function justifyPathComponent(string $str, ?string $mode = "default"): string
+    function justifyPathComponent(string $str, string|null $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
@@ -313,7 +313,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         $nineCode = ord('9');
 
         $userExpanded = $db->getUserExpanded();
-        $expandedClassName = is_null($userExpanded) ? '' : get_class((object)$userExpanded);
+        $expandedClassName = is_null($userExpanded) ? '' : $userExpanded::class;
         if ($userExpanded && method_exists($userExpanded, 'doBeforeImportToDB')) {
             $db->logger->setDebugMessage(
                 "[FileURL::csvImportOperation] The method 'doBeforeImportToDB' of the class '{$expandedClassName}' is calling.", 2);

@@ -148,7 +148,7 @@ class MyNumberCardAdapter extends ProviderAdapter
             'redirect_uri' => $this->redirectURL,
             'code_verifier' => $verifier,
             'client_assertion_type' => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-            'client_assertion' => $this->createJWT(json_encode([
+            'client_assertion' => $this->createJWT((string)json_encode([
                 'iss' => (string)$this->clientId,
                 'sub' => (string)$this->clientId,
                 'aud' => $this->getTokenURL,

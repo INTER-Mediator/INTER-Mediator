@@ -29,18 +29,18 @@ interface DB_Interface_Registering
     /** Gets the name of the last queried entity.
      * @return string|null Name of the queried entity or null if not set.
      */
-    public function queriedEntity(): ?string;
+    public function queriedEntity(): string|null;
 
     /** Sets the name of the last queried entity.
      * @param string|null $name Name of the queried entity.
      * @return void
      */
-    public function setQueriedEntity(?string $name): void;
+    public function setQueriedEntity(string|null $name): void;
 
     /** Gets the last queried condition string.
      * @return string|null The queried condition or null if not set.
      */
-    public function queriedCondition(): ?string;
+    public function queriedCondition(): string|null;
 
     /** Sets the last queried condition string.
      * @param string $name The queried condition.
@@ -75,7 +75,7 @@ interface DB_Interface_Registering
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return string|null Registration identifier or null on failure.
      */
-    public function register(?string $clientId, string $entity, string $condition, array $pkArray):?string;
+    public function register(string|null $clientId, string $entity, string $condition, array $pkArray):string|null;
 
     /**
      * Unregisters a record for a client.
@@ -83,7 +83,7 @@ interface DB_Interface_Registering
      * @param array<array-key, mixed>|null $tableKeys Array of table keys to unregister.
      * @return bool True if successful, false otherwise.
      */
-    public function unregister(?string $clientId, ?array $tableKeys):bool;
+    public function unregister(string|null $clientId, ?array $tableKeys):bool;
 
     /**
      * Checks if a record is registered for a client.
@@ -92,7 +92,7 @@ interface DB_Interface_Registering
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return array<array-key, mixed>|null Matching registration details or null if not found.
      */
-    public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array;
+    public function matchInRegistered(string|null $clientId, string $entity, array $pkArray): ?array;
 
     /**
      * Appends a primary key into the registered records for a client.
@@ -102,7 +102,7 @@ interface DB_Interface_Registering
      * @param array<array-key, mixed> $pkArray Array of primary keys to append.
      * @return array<array-key, mixed>|null Updated registration details or null on failure.
      */
-    public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray):?array;
+    public function appendIntoRegistered(string|null $clientId, string $entity, string $pkField, array $pkArray):?array;
 
     /**
      * Removes a primary key from the registered records for a client.
@@ -111,5 +111,5 @@ interface DB_Interface_Registering
      * @param array<array-key, mixed> $pkArray Array of primary keys to remove.
      * @return array<array-key, mixed>|null Updated registration details or null on failure.
      */
-    public function removeFromRegistered(?string $clientId, string $entity, array $pkArray):?array;
+    public function removeFromRegistered(string|null $clientId, string $entity, array $pkArray):?array;
 }

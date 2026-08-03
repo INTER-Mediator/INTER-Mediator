@@ -76,7 +76,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return string|null Registration identifier or null on failure.
      */
-    public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
+    public function register(string|null $clientId, string $entity, string $condition, array $pkArray): string|null
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerPKTableName);
@@ -162,7 +162,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
      * @param array<array-key, mixed>|null $tableKeys Array of table keys.
      * @return bool True on success, false on failure.
      */
-    public function unregister(?string $clientId, ?array $tableKeys): bool
+    public function unregister(string|null $clientId, ?array $tableKeys): bool
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
@@ -212,7 +212,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return array<array-key, mixed>|null Array of matching client identifiers or null on failure.
      */
-    public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
+    public function matchInRegistered(string|null $clientId, string $entity, array $pkArray): ?array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] matchInRegistered / clientId={$clientId}, entity={$entity}, pkArray=" . var_export($pkArray, true));
 
@@ -251,7 +251,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return array<array-key, mixed>|null Array of matching client identifiers or null on failure.
      */
-    public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
+    public function appendIntoRegistered(string|null $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] appendIntoRegistered / clientId={$clientId}, entity={$entity}, pkField={$pkField}, pkArray=" . var_export($pkArray, true));
         //$this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
@@ -322,7 +322,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
      * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return array<array-key, mixed>|null Array of matching client identifiers or null on failure.
      */
-    public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
+    public function removeFromRegistered(string|null $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerPKTableName);

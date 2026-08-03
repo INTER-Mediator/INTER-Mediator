@@ -203,7 +203,6 @@ class DefinitionChecker
         'port' => 'string',
         'protocol' => 'string',
         'datatype' => 'string',
-        'external-db' => ['#' => 'string'],
         'cert-verifying' => 'boolean',
     ];
     /**

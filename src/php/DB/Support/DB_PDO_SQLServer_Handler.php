@@ -182,7 +182,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      * @return array<array-key, mixed> Field lists.
      * @throws Exception
      */
-    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+    protected function getFieldListsForCopy(string $tableName, string $keyField, string|null $assocField, string|null $assocValue,
                                             ?array $defaultValues): array
     {
         try {
@@ -222,7 +222,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      * @param $entityName Entity name.
      * @return string|null Quoted entity name.
      */
-    public function quotedEntityName($entityName): ?string
+    public function quotedEntityName($entityName): string|null
     {
         return "{$entityName}";
     }
@@ -284,7 +284,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      * @param $tableName Table name.
      * @return string|null Auto-increment field.
      */
-    protected function getAutoIncrementField($tableName): ?string
+    protected function getAutoIncrementField($tableName): string|null
     {
         return "unknown";
     }

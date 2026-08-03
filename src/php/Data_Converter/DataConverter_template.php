@@ -36,10 +36,10 @@ class DataConverter_template
 
     /** This method converts to the data on a web browser from the data on database.
      * Requires to show the data on database.
-     * @param ?string $str This parameter is the data on database.
+     * @param string|null $str This parameter is the data on database.
      * @return string The data for display on a web browser.
      */
-    function converterFromDBtoUser(?string $str): string
+    function converterFromDBtoUser(string|null $str): string
     {
         return $str;
     }

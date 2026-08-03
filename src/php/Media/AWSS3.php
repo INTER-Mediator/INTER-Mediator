@@ -32,15 +32,15 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
     /** AWS region for S3 operations.
      * @var string|null
      */
-    private ?string $accessRegion;
+    private string|null $accessRegion;
     /** Root S3 bucket name.
      * @var string|null
      */
-    private ?string $rootBucket;
+    private string|null $rootBucket;
     /** ACL to apply to uploaded S3 objects.
      * @var string|null
      */
-    private ?string $applyingACL;
+    private string|null $applyingACL;
     /** Whether secret credentials are supplied directly.
      * @var bool
      */
@@ -48,15 +48,15 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
     /** AWS access key for S3.
      * @var string|null
      */
-    private ?string $s3AccessKey;
+    private string|null $s3AccessKey;
     /** AWS secret access key for S3.
      * @var string|null
      */
-    private ?string $s3AccessSecret;
+    private string|null $s3AccessSecret;
     /** AWS credentials profile for S3.
      * @var string|null
      */
-    private ?string $s3AccessProfile;
+    private string|null $s3AccessProfile;
     /** Whether to customize S3 URL format.
      * @var bool
      */
@@ -64,8 +64,8 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
     /** The file name of the current file being processed or retrieved.
      * @var string|null
      */
-    private ?string $fileName = null;
-    private ?string $customFileName = null;
+    private string|null $fileName = null;
+    private string|null $customFileName = null;
 
     /** AWSS3 constructor. Initializes S3 credentials and configuration from parameters.
      */
@@ -109,7 +109,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
      * @param string $file The file path (unused).
      * @return string|null The file name, or null if not set.
      */
-    public function getFileName(string $file): ?string
+    public function getFileName(string $file): string|null
     {
         return $this->fileName;
     }
@@ -131,9 +131,9 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception If an error occurs during processing.
      */
-    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string $contextName, ?string $keyField, ?string $keyValue,
-                               ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
+    public function processing(Proxy  $db, string|null $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextName, string|null $keyField, string|null $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug, string|null $customFileName): void
     {
         $this->customFileName = $customFileName;
         $counter = -1;

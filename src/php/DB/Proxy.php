@@ -52,31 +52,31 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Auth user parameter.
      * @var string|null
      */
-    public ?string $paramAuthUser = null;
+    public string|null $paramAuthUser = null;
     /** Hashed password.
      * @var string|null
      */
-    public ?string $hashedPassword = null;
+    public string|null $hashedPassword = null;
     /** Response parameter.
      * @var string|null
      */
-    public ?string $paramResponse = null;
+    public string|null $paramResponse = null;
     /** Response2m parameter.
      * @var string|null
      */
-    public ?string $paramResponse2m = null;
+    public string|null $paramResponse2m = null;
     /** Response2 parameter.
      * @var string|null
      */
-    public ?string $paramResponse2 = null;
+    public string|null $paramResponse2 = null;
     /** Credential string.
      * @var string|null
      */
-    public ?string $credential = null;
+    public string|null $credential = null;
     /** Credential for 2FA.
      * @var string|null
      */
-    public ?string $credential2FA = null;
+    public string|null $credential2FA = null;
     /** Authentication success flag.
      * @var bool
      */
@@ -84,11 +84,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Client ID.
      * @var string|null
      */
-    public ?string $clientId;
+    public string|null $clientId;
     /** Password hash.
      * @var string|null
      */
-    public ?string $passwordHash;
+    public string|null $passwordHash;
     /** Always generate SHA2 flag.
      * @var bool
      */
@@ -138,7 +138,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Credential cookie domain.
      * @var string|null
      */
-    public ?string $credentialCookieDomain;
+    public string|null $credentialCookieDomain;
     /** Activate generator flag.
      * @var bool
      */
@@ -178,11 +178,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Signed user.
      * @var string|null
      */
-    public ?string $signedUser = "";
+    public string|null $signedUser = "";
     /** Generated client ID.
      * @var string|null
      */
-    public ?string $generatedClientID = null;
+    public string|null $generatedClientID = null;
     /** Passkey or not.
      * @var bool
      */
@@ -255,7 +255,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Get default key.
      * @return string|null
      */
-    public static function defaultKey(): ?string
+    public static function defaultKey(): string|null
     {
         trigger_error("Don't call the static method defaultKey of Proxy class.");
         return null;
@@ -264,7 +264,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Get default key.
      * @return string|null
      */
-    public function getDefaultKey(): ?string
+    public function getDefaultKey(): string|null
     {
         return $this->dbClass->specHandler->getDefaultKey();
     }
@@ -363,7 +363,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
-                $className = get_class((object)$this->userExpanded);
+                $className = $this->userExpanded::class;
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeReadFromDB();
                 if ($returnBefore === false) {
@@ -395,7 +395,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterReadFromDB")) {
-                $className = get_class($this->userExpanded);
+                $className = $this->userExpanded::class;
                 $this->logger->setDebugMessage("The method 'doAfterReadFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
@@ -437,7 +437,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $result = null;
         if ($this->userExpanded && method_exists($this->userExpanded, "countQueryResult")) {
-            $className = get_class($this->userExpanded);
+            $className = $this->userExpanded::class;
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->countQueryResult();
         }
@@ -454,7 +454,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $result = null;
         if ($this->userExpanded && method_exists($this->userExpanded, "getTotalCount")) {
-            $className = get_class($this->userExpanded);
+            $className = $this->userExpanded::class;
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->getTotalCount();
         }
@@ -475,7 +475,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
-                $className = get_class((object)$this->userExpanded);
+                $className = $this->userExpanded::class;
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeUpdateDB(false);
@@ -499,7 +499,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
-                $className = get_class((object)$this->userExpanded);
+                $className = $this->userExpanded::class;
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $this->clearUseSetDataToUpdatedRecord();
@@ -552,14 +552,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $isReplace
      * @return string|null
      */
-    public function createInDB(bool $isReplace = false): ?string
+    public function createInDB(bool $isReplace = false): string|null
     {
         $result = null;
         $resultOfCreate = null;
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
-                $className = get_class((object)$this->userExpanded);
+                $className = $this->userExpanded::class;
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeCreateToDB();
@@ -583,7 +583,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
-                $className = get_class((object)$this->userExpanded);
+                $className = $this->userExpanded::class;
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $this->clearUseSetDataToUpdatedRecord();
@@ -635,7 +635,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $result = null;
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class((object)$this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : $this->userExpanded::class;
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
                 $this->logger->setDebugMessage("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeDeleteFromDB();
@@ -693,13 +693,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Copy in DB.
      * @return string|null
      */
-    public function copyInDB(): ?string
+    public function copyInDB(): string|null
     {
         $result = null;
         $resultOfCopy = null;
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : $this->userExpanded::class;
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
                 $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeCopyInDB();
@@ -784,7 +784,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @return bool
      * @throws Exception
      */
-    public function initialize(?array $dataSource, ?array $options, ?array $dbSpec, int|false $debug, ?string $target = null): bool
+    public function initialize(?array $dataSource, ?array $options, ?array $dbSpec, int|false $debug, string|null $target = null): bool
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
@@ -980,7 +980,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $ignoreFiles
      * @throws Exception
      */
-    public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
+    public function processingRequest(string|null $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $this->bypassAuth = $bypassAuth;
@@ -1060,7 +1060,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Get database new record key.
      * @return string|null
      */
-    public function getDatabaseNewRecordKey(): ?string
+    public function getDatabaseNewRecordKey(): string|null
     {
         if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
@@ -1107,7 +1107,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $newpassword
      * @return bool
      */
-    public function resetPasswordSequenceReturnBack(?string $username, ?string $email, string $randdata, string $newpassword): bool
+    public function resetPasswordSequenceReturnBack(string|null $username, string|null $email, string $randdata, string $newpassword): bool
     {
         $userid = null;
         if (is_null($username) && !is_null($email)) {
@@ -1147,7 +1147,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string|null $rawPWField
      * @return string|null
      */
-    public function userEnrollmentActivateUser(string $challenge, string $password, ?string $rawPWField = null): ?string
+    public function userEnrollmentActivateUser(string $challenge, string $password, string|null $rawPWField = null): string|null
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
         if (!$userID) {
@@ -1206,7 +1206,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $fieldValues = $this->dbSettings->getValue();
             foreach ($this->dbSettings->getFieldsRequired() as $field) {
                 $value = $fieldValues[$counter];
-                $requestedFieldValue[$field] = (is_array($value)) ? implode("\n", $value) : $value;
+                $requestedFieldValue[$field] = $value;
                 $counter++;
             }
 
@@ -1238,7 +1238,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /** Setup handlers.
      * @param string|null $dsn
      */
-    public function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(string|null $dsn = null): void
     {
         // TODO: Implement setupHandlers() method.
     }

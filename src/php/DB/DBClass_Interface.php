@@ -15,8 +15,6 @@
 
 namespace INTERMediator\DB;
 
-use staabm\SideEffectsDetector\SideEffect;
-
 /**
  * Interface for database class operations in INTER-Mediator, defining required methods for DB access, transactions, and record management.
  */
@@ -31,7 +29,7 @@ interface DBClass_Interface
      * @param string|null $dsn Optional DSN string.
      * @return void
      */
-    public function setupHandlers(?string $dsn = null): void;
+    public function setupHandlers(string|null $dsn = null): void;
 
     /** Read records from the database.
      * @return array<array<string, number|string|bool|null>>|null The result set as an array, or null if none.
@@ -58,7 +56,7 @@ interface DBClass_Interface
      * @param bool $isReplace Whether to replace an existing record.
      * @return string|null The new record's ID, or null on failure.
      */
-    public function createInDB(bool $isReplace = false): ?string;
+    public function createInDB(bool $isReplace = false): string|null;
 
     /** Delete a record from the database.
      * @return bool True on success, false otherwise.
@@ -68,7 +66,7 @@ interface DBClass_Interface
     /** Copy a record in the database.
      * @return string|null The new record's ID, or null on failure.
      */
-    public function copyInDB(): ?string;
+    public function copyInDB(): string|null;
 
     /** Normalize a condition array (FileMaker only).
      * @param array<string, number|string|bool|null> $condition The condition array.
@@ -78,7 +76,7 @@ interface DBClass_Interface
 
     /** Activate soft delete on a field with a value.
      * @param string $field The field name.
-     * @param string $value The value to set.
+     * @param string|int $value The value to set.
      * @return void
      */
     public function softDeleteActivate(string $field, string|int $value): void;

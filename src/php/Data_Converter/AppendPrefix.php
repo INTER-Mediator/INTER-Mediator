@@ -39,7 +39,7 @@ class AppendPrefix
      * @param string|null $str The original value from the database.
      * @return string The value with the prefix appended.
      */
-    function converterFromDBtoUser(?string $str): string
+    function converterFromDBtoUser(string|null $str): string
     {
         return $this->appendStr . $str;
     }

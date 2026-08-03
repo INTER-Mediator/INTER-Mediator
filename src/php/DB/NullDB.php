@@ -59,7 +59,7 @@ class NullDB extends DBClass
      * @param bool $isReplace Whether to replace existing data.
      * @return string|null Always returns null.
      */
-    public function createInDB(bool $isReplace = false): ?string
+    public function createInDB(bool $isReplace = false): string|null
     {
         return null;
     }
@@ -81,7 +81,7 @@ class NullDB extends DBClass
         return null;
     }
 
-    /** Setup the database connection (no-op).
+    /** Set up the database connection (no-op).
      * @return bool Always returns true.
      */
     public function setupConnection(): bool
@@ -123,7 +123,7 @@ class NullDB extends DBClass
 
     /** Soft delete or activate a record (no-op).
      * @param string $field The field to update.
-     * @param string $value The value to set.
+     * @param string|int $value The value to set.
      * @return void
      */
     public function softDeleteActivate(string $field, string|int $value): void
@@ -134,7 +134,7 @@ class NullDB extends DBClass
     /** Copy a record in the database (no-op).
      * @return string|null Always returns null.
      */
-    public function copyInDB(): ?string
+    public function copyInDB(): string|null
     {
         return null;
     }
@@ -143,7 +143,7 @@ class NullDB extends DBClass
      * @param string|null $dsn The data source name.
      * @return void
      */
-    public function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(string|null $dsn = null): void
     {
     }
 
