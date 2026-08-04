@@ -10,6 +10,7 @@ on:
       - Ver.16-PHP8.1
       - Ver.16-PHP8.2
       - Ver.16-PHP8.3
+      - Ver.16-PHP8.4
 
 jobs:
   run:
@@ -29,7 +30,7 @@ jobs:
             branch: 'Ver.16-PHP8.3'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.4'
-            branch: 'default'
+            branch: 'Ver.16-PHP8.4'
           - operating-system: 'ubuntu-latest'
             php-versions: '8.5'
             branch: 'default'
@@ -103,9 +104,9 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
-#      - name: Update dependencies
-#        if: steps.branch-check.outputs.should_run == 'true'
-#        run: composer update
+      - name: Update dependencies
+        if: steps.branch-check.outputs.should_run == 'true'
+        run: composer update
       - name: Install dependencies
         if: steps.branch-check.outputs.should_run == 'true'
         run: composer install --prefer-dist --no-progress
