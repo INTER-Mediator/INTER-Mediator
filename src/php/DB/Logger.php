@@ -98,12 +98,12 @@ class Logger
     }
 
     /** Get the namespace of the caller if the setting is true or matches the namespace.
-     * @param string|true $setting
+     * @param string $setting
      * @return bool
      */
-    private function getCallersNamespace(string|true $setting): bool
+    private function getCallersNamespace(string $setting): bool
     {
-        if ($setting === true) { // $setting === "*"
+        if ($setting === "") {
             return true;
         }
         $returnValue = false;

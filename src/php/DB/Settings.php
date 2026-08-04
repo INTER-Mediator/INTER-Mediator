@@ -382,7 +382,7 @@ class Settings
      * @param string $contextName The context name.
      * @return array|null Array of attached files or null if not set.
      */
-    public function getAttachedFiles(string $contextName): ?array
+    public function getAttachedFiles(?string $contextName): ?array
     {
         if ($contextName && $this->attachedFiles && isset($this->attachedFiles[$contextName])) {
             return $this->attachedFiles[$contextName];

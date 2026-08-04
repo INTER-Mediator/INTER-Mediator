@@ -486,7 +486,7 @@ class MediaAccess
                             $util->outputSecurityHeaders();
                             ob_end_flush();
                         }
-                        imagedestroy($image);
+                        // imagedestroy($image); // PHP Deprecated:  Function imagedestroy() is deprecated since 8.5, as it has no effect since PHP 8.0
                     }
                     unlink($tempPath);
                 }
