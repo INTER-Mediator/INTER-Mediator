@@ -18,6 +18,8 @@ Ver.16 (in Development)
 - The $allowedMediaFileRootDirs variable can be set to limit the file path of the media file in FileURL media type.
 - The TestDB.fp7 is removed from the repository because it's so old version.
 - Some missing tables in TestDB.fmp12 are defined.
+- The big "Debugging" text on the page when the debug mode is active. Don't forget to disable the debug mode when
+  you release your application.
 
 Ver.15 (May 24, 2026)
 - Passkey authentication is supported. The $authStoring variable or the "storing" key value have to set the "passkey".
