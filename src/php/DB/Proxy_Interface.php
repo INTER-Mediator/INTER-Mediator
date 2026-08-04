@@ -22,9 +22,9 @@ namespace INTERMediator\DB;
 interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communication
 {
     /** Initialize the proxy with data source, options, DB spec, debug level, and target.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $options Options for proxy operation.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array<string, number|string|bool|null>>|null $dataSource Data source definition.
+     * @param array<array<string, number|string|bool|null>>|null $options Options for proxy operation.
+     * @param array<string, number|string|bool|null>|null $dbSpec Database specification.
      * @param int|false $debug Debug level.
      * @param string|null $target Target context.
      * @return bool True on success, false otherwise.

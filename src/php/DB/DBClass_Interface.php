@@ -96,12 +96,12 @@ interface DBClass_Interface
     public function requireUpdatedRecord(bool $value): void;
 
     /** Get the updated record.
-     * @return array<array<string, number|string|bool|null>|null The updated record or null.
+     * @return array<array<string, number|string|bool|null>>|null The updated record or null.
      */
     public function getUpdatedRecord(): ?array;
 
     /** Get the updated record (compatibility method).
-     * @return null|array<array<string, number|string|bool|null>>
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function updatedRecord(): null|array;
 
@@ -129,16 +129,17 @@ interface DBClass_Interface
      */
     public function clearUseSetDataToUpdatedRecord(): void;
 
-    /** Query the database for testing.
+    /**
+     * Query the database for testing.
      * @param string $table The table name.
      * @param array<string, number|string|bool|null>|null $conditions Optional conditions.
-     * @return array<array<array, number|string|bool|null>>|null Result set or null.
+     * @return array<array<array-key, number|string|bool|null>>|null Result set or null.
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array;
 
     /** Delete records for testing.
      * @param string $table The table name.
-     * @param queryForTest|null $conditions Optional conditions.
+     * @param array<array<string, number|string|bool|null>>|null $conditions Optional conditions.
      * @return bool True on success, false otherwise.
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool;
@@ -173,5 +174,8 @@ interface DBClass_Interface
      */
     public function closeDBOperation(): void;
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array;
 }

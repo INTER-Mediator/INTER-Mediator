@@ -25,7 +25,8 @@ use PDO;
  */
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
-    /** @var array Table information for schema inspection.
+    /**
+     * @var array<array-key, mixed> Table information for schema inspection.
      */
     protected array $tableInfo = array();
     /** @var string Field name for column field.
@@ -37,17 +38,21 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'Null';
-    /** @var array|string[] List of numeric field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
         'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
-    /** @var array|string[] List of time field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-    /** @var array|string[] List of date field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
-    /** @var array|string[] List of boolean field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of boolean field types.
      */
     protected array $booleanFieldTypes = ['boolean', 'bool'];
 
@@ -113,11 +118,12 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    /** Returns the SQL SET clause for MySQL.
+    /**
+     * Returns the SQL SET clause for MySQL.
      * @param string $tableName Table name.
-     * @param array $setColumnNames Set column names.
+     * @param array<array-key, mixed> $setColumnNames Set column names.
      * @param string $keyField Key field.
-     * @param array $setValues Set values.
+     * @param array<array-key, mixed> $setValues Set values.
      * @return string SQL SET clause.
      * @throws Exception If an error occurs.
      */
@@ -174,13 +180,14 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
     }
 
-    /** Returns the field lists for copying data.
+    /**
+     * Returns the field lists for copying data.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
      * @param string|null $assocValue Associated value.
-     * @param array|null $defaultValues Default values.
-     * @return array Field lists.
+     * @param array<array-key, mixed>|null $defaultValues Default values.
+     * @return array<array-key, mixed> Field lists.
      * @throws Exception If an error occurs.
      */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
@@ -239,10 +246,11 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         //$this->dbClassObj->link->setAttribute(Pdo\Mysql::ATTR_USE_BUFFERED_QUERY, true);
     }
 
-    /** Checks if the SHA256 hash can be migrated.
+    /**
+     * Checks if the SHA256 hash can be migrated.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
-     * @return array|null Migration result, or null if not applicable.
+     * @return array<array-key, mixed>|null Migration result, or null if not applicable.
      */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array // authuser, issuedhash
     {

@@ -49,8 +49,9 @@ class MediaAccess
      * @var int
      */
     private int $accessLogLevel;
-    /** Output message array for logging.
-     * @var array
+    /**
+     * Output message array for logging.
+     * @var array<array-key, mixed>
      */
     private array $outputMessage = [];
     /** Whether an exception was thrown during processing.
@@ -70,8 +71,9 @@ class MediaAccess
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
-    /** Gets the result message array for access logging.
-     * @return array Output message array for logging.
+    /**
+     * Gets the result message array for access logging.
+     * @return array<array-key, mixed> Output message array for logging.
      */
     public function getResultForLog(): array
     {
@@ -101,10 +103,11 @@ class MediaAccess
         $this->dbProxyInstance->logger->setErrorMessage($message);
     }
 
-    /** Main processing method for serving media files.
-     * Handles authentication, authorization, and file delivery.
+    /**
+     * Main processing method for serving media files.
+    Handles authentication, authorization, and file delivery.
      * @param Proxy $dbProxyInstance Database proxy instance.
-     * @param array|null $options Options for media access.
+     * @param array<array-key, mixed>|null $options Options for media access.
      * @param string $file Requested file path or URL.
      * @return void
      * @throws Exception If processing fails.
@@ -289,11 +292,12 @@ class MediaAccess
         throw new Exception('Respond HTTP Error.');
     }
 
-    /** Checks if the target URL is a FileMaker media URL and adjusts it accordingly.
+    /**
+     * Checks if the target URL is a FileMaker media URL and adjusts it accordingly.
      * @param Proxy $dbProxyInstance Database proxy instance.
      * @param string $file Target URL or file path.
      * @param bool $isURL Whether the target is a URL.
-     * @return array Adjusted target URL and whether it is a URL.
+     * @return array<array-key, mixed> Adjusted target URL and whether it is a URL.
      */
     private function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
     {
@@ -328,9 +332,10 @@ class MediaAccess
         return array($file, $isURL);
     }
 
-    /** Checks the authentication and authorization for media access.
+    /**
+     * Checks the authentication and authorization for media access.
      * @param Proxy $dbProxyInstance Database proxy instance.
-     * @param array|null $options Options for media access.
+     * @param array<array-key, mixed>|null $options Options for media access.
      * @return string Authentication result ('context_auth', 'no_auth', 'field_user', 'field_group').
      * @throws Exception If authentication fails.
      */

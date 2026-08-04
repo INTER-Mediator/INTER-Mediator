@@ -72,9 +72,9 @@ trait Proxy_ExtSupport
     }
 
     /** Initialize the proxy and operation settings.
-     * @param array|null $dataSource
-     * @param array|null $options
-     * @param array|null $dbSpec
+     * @param array<array<string, number|string|bool|null>>|null $dataSource
+     * @param array<array<string, number|string|bool|null>>|null $options
+     * @param array<string, number|string|bool|null>|null $dbSpec
      * @param int|false $debug
      * @return void
      */
@@ -171,7 +171,7 @@ trait Proxy_ExtSupport
      * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
      * @param array<array<string, string>>|array<string, string>|null $sort
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function dbCopy(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
@@ -220,7 +220,7 @@ trait Proxy_ExtSupport
     }
 
     /** Set up the query for the operation.
-     * @param array<array<string, number|string|bool|null>>|null $query
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
      * @return void
      */
     private function setupQuery(?array $query): void

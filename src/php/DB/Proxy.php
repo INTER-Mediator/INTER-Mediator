@@ -44,8 +44,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @var object|null
      */
     private ?object $userExpanded = null;
-    /** Output of processing.
-     * @var array|null
+    /**
+     * Output of processing.
+     * @var array<array-key, mixed>|null
      */
     public ?array $outputOfProcessing = null;
     /** Auth user parameter.
@@ -104,8 +105,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @var bool
      */
     private bool $ignorePost = false;
-    /** Post data.
-     * @var array|null
+    /**
+     * Post data.
+     * @var array<array-key, mixed>|null
      */
     public ?array $PostData;
     /** Access string.
@@ -116,8 +118,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @var int
      */
     private int $accessLogLevel;
-    /** Result for log.
-     * @var array
+    /**
+     * Result for log.
+     * @var array<array-key, mixed>
      */
     private array $result4Log = [];
     /** Stop notify and messaging flag.
@@ -235,7 +238,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Set param response for test.
-     * @param $res
+     * @param string|array<int, string> $res
      * @return void
      */
     public function setParamResponse($res): void // For testing, $res could be an array or a string
@@ -276,7 +279,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /** Add output data.
      * @param string $key
-     * @param $value
+     * @param string|array<array-key, mixed> $value
      * @return void
      */
     public function addOutputData(string $key, $value): void // $value could be an array or a string.
@@ -771,10 +774,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->ignorePost = true;
     }
 
-    /** Initialize.
-     * @param array|null $dataSource
-     * @param array|null $options
-     * @param array|null $dbSpec
+    /**
+     * Initialize.
+     * @param array<array-key, mixed>|null $dataSource
+     * @param array<array-key, mixed>|null $options
+     * @param array<array-key, mixed>|null $dbSpec
      * @param int|false $debug
      * @param string|null $target
      * @return bool
@@ -1272,7 +1276,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Updated record.
-     * @return array<array<string, number|string|bool|null>>|null
+     * @return array<array<string, bool|float|int|string|null>>|null
      */
     public function updatedRecord(): ?array
     {
@@ -1280,7 +1284,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Set updated record.
-     * @param array $record
+     * @param array<array<string, bool|float|int|string|null>> $record
      */
     public function setUpdatedRecord(array $record): void
     {
@@ -1419,6 +1423,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $access;
     }
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array
     {
         return $this->dbClass->getSortKeys();

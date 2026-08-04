@@ -114,7 +114,7 @@ class NullDB extends DBClass
     }
 
     /** Set the updated record (no-op).
-     * @param array $record The record to set.
+     * @param array<array<string, number|string|bool|null>> $record The record to set.
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -182,9 +182,10 @@ class NullDB extends DBClass
         return null;
     }
 
-    /** Delete records for testing (no-op).
+    /**
+     * Delete records for testing (no-op).
      * @param string $table The table to delete from.
-     * @param array|null $conditions The delete conditions.
+     * @param array<array-key, mixed>|null $conditions The delete conditions.
      * @return bool Always returns false.
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool
@@ -236,6 +237,9 @@ class NullDB extends DBClass
     {
     }
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array
     {
         return [];

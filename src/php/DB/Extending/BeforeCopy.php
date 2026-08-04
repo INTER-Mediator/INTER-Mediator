@@ -15,7 +15,15 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface BeforeCopy
+ * @package INTERMediator\DB\Extending
+ */
 interface BeforeCopy
 {
-    public function doBeforeCopyInDB();
+    /**
+     * Do before copy in DB.
+     * @return bool|string|null
+     */
+    public function doBeforeCopyInDB(): mixed;
 }

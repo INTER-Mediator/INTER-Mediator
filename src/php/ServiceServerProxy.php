@@ -27,12 +27,14 @@ class ServiceServerProxy
      * @var bool
      */
     private bool $dontUse;
-    /** List of error messages.
-     * @var array
+    /**
+     * List of error messages.
+     * @var array<array-key, mixed>
      */
     private array $errors = [];
-    /** List of informational messages.
-     * @var array
+    /**
+     * List of informational messages.
+     * @var array<array-key, mixed>
      */
     private array $messages = [];
     /** Prefix for log and message headers.
@@ -220,9 +222,10 @@ class ServiceServerProxy
         return $this->serverInfoCached;
     }
 
-    /** Calls the service server with the specified path and post-data.
+    /**
+     * Calls the service server with the specified path and post-data.
      * @param string $path Path for the server request.
-     * @param array|null $postData Data to be sent with the request.
+     * @param array<array-key, mixed>|null $postData Data to be sent with the request.
      * @return string|null Response from the server, or null on failure.
      */
     private function callServer(string $path, ?array $postData = null): ?string
@@ -319,9 +322,10 @@ class ServiceServerProxy
         $this->executeCommand("$cmd >> {$logFile} &");
     }
 
-    /** Validates an expression on the service server.
+    /**
+     * Validates an expression on the service server.
      * @param string $expression Expression to be validated.
-     * @param array $values Values for the expression.
+     * @param array<array-key, mixed> $values Values for the expression.
      * @return bool True if the expression is valid, false otherwise.
      */
     public function validate(string $expression, array $values): bool
@@ -344,10 +348,11 @@ class ServiceServerProxy
         return true;
     }
 
-    /** Synchronizes data with the service server.
-     * @param array $channels Channels to be synchronized.
+    /**
+     * Synchronizes data with the service server.
+     * @param array<array-key, mixed> $channels Channels to be synchronized.
      * @param string $operation Operation to be performed.
-     * @param array $data Data to be synchronized.
+     * @param array<array-key, mixed> $data Data to be synchronized.
      * @return bool True if the synchronization is successful, false otherwise.
      */
     public function sync(array $channels, string $operation, array $data): bool

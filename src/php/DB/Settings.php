@@ -48,17 +48,21 @@ class Settings
     /** @var string|null
      */
     private ?string $dbSpecDSN = null;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $dbSpecOption = null;
 
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $dataSource = null;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $options = null;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $dbSpec = null;
     /** @var string
@@ -74,19 +78,24 @@ class Settings
      */
     private ?string $separator = null;
 
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $extraCriteria = array();
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $extraSortKey = array();
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $fieldsRequired = array();
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $fieldsValues = array();
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $foreignFieldAndValue = array();
     /** @var DBClass|null
@@ -96,7 +105,8 @@ class Settings
     /** @var string|null
      */
     private ?string $currentUser = null;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $authentication = null;
     /** @var string|null
@@ -121,10 +131,12 @@ class Settings
     /** @var bool
      */
     private bool $emailAsAccount = false;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $smtpConfiguration = null;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $associated = null;
     /** @var NotifyServer|null
@@ -148,10 +160,12 @@ class Settings
     /** @var string|null
      */
     private ?string $samlAuthSource = '';
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $samlAttrRules = null;
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $samlAdditionalRules = null;
 
@@ -165,10 +179,12 @@ class Settings
      */
     private ?string $aggregation_group_by = null;
 
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $attachedFiles = [];
-    /** @var array|null
+    /**
+     * @var array<array-key, mixed>|null
      */
     private ?array $attachedFields = null;
     /** @var bool
@@ -278,8 +294,9 @@ class Settings
         return $this->timezoneOffset;
     }
 
-    /** Set the SAML additional rules.
-     * @param array|null $value SAML additional rules array.
+    /**
+     * Set the SAML additional rules.
+     * @param array<array-key, mixed>|null $value SAML additional rules array.
      * @return void
      */
     public function setSAMLAdditionalRules(?array $value): void
@@ -287,16 +304,18 @@ class Settings
         $this->samlAdditionalRules = $value;
     }
 
-    /** Get the SAML additional rules.
-     * @return array|null SAML additional rules array.
+    /**
+     * Get the SAML additional rules.
+     * @return array<array-key, mixed>|null SAML additional rules array.
      */
     public function getSAMLAdditionalRules(): ?array
     {
         return $this->samlAdditionalRules;
     }
 
-    /** Set the SAML attribute rules.
-     * @param array|null $value SAML attribute rules array.
+    /**
+     * Set the SAML attribute rules.
+     * @param array<array-key, mixed>|null $value SAML attribute rules array.
      * @return void
      */
     public function setSAMLAttrRules(?array $value): void
@@ -304,8 +323,9 @@ class Settings
         $this->samlAttrRules = $value;
     }
 
-    /** Get the SAML attribute rules.
-     * @return array|null SAML attribute rules array.
+    /**
+     * Get the SAML attribute rules.
+     * @return array<array-key, mixed>|null SAML attribute rules array.
      */
     public function getSAMLAttrRules(): ?array
     {
@@ -363,9 +383,10 @@ class Settings
         return $this->certVerifying;
     }
 
-    /** Set attached files for a context.
+    /**
+     * Set attached files for a context.
      * @param string|null $contextName The context name.
-     * @param array $files Array of attached files.
+     * @param array<array-key, mixed> $files Array of attached files.
      * @return void
      */
     public function setAttachedFiles(string|null $contextName, array $files): void
@@ -378,9 +399,10 @@ class Settings
         }
     }
 
-    /** Get attached files for a context.
+    /**
+     * Get attached files for a context.
      * @param string $contextName The context name.
-     * @return array|null Array of attached files or null if not set.
+     * @return array<array-key, mixed>|null Array of attached files or null if not set.
      */
     public function getAttachedFiles(?string $contextName): ?array
     {
@@ -390,8 +412,9 @@ class Settings
         return null;
     }
 
-    /** Get attached fields.
-     * @return array|null Array of attached fields or null if not set.
+    /**
+     * Get attached fields.
+     * @return array<array-key, mixed>|null Array of attached fields or null if not set.
      */
     public function getAttachedFields(): ?array
     {
@@ -469,16 +492,18 @@ class Settings
         $this->associated[] = array("name" => $name, "field" => $field, "value" => $value);
     }
 
-    /** Get the associated array.
-     * @return array|null Associated array.
+    /**
+     * Get the associated array.
+     * @return array<array-key, mixed>|null Associated array.
      */
     public function getAssociated(): ?array
     {
         return $this->associated;
     }
 
-    /** Set SMTP configuration.
-     * @param array|null $config SMTP configuration array.
+    /**
+     * Set SMTP configuration.
+     * @param array<array-key, mixed>|null $config SMTP configuration array.
      * @return void
      */
     public function setSmtpConfiguration(?array $config): void
@@ -505,8 +530,9 @@ class Settings
         }
     }
 
-    /** Get SMTP configuration.
-     * @return array|null SMTP configuration array.
+    /**
+     * Get SMTP configuration.
+     * @return array<array-key, mixed>|null SMTP configuration array.
      */
     public function getSmtpConfiguration(): ?array
     {
@@ -547,8 +573,9 @@ class Settings
         return $this->dataSourceName;
     }
 
-    /** Set the fields required.
-     * @param array|null $fieldsRequired Fields required array.
+    /**
+     * Set the fields required.
+     * @param array<array-key, mixed>|null $fieldsRequired Fields required array.
      * @return void
      */
     public function setFieldsRequired(?array $fieldsRequired): void
@@ -556,24 +583,27 @@ class Settings
         $this->fieldsRequired = $fieldsRequired;
     }
 
-    /** Get the fields required.
-     * @return array|null Fields required array.
+    /**
+     * Get the fields required.
+     * @return array<array-key, mixed>|null Fields required array.
      */
     public function getFieldsRequired(): ?array
     {
         return $this->fieldsRequired;
     }
 
-    /** Get the value.
-     * @return array|null Value array.
+    /**
+     * Get the value.
+     * @return array<array-key, mixed>|null Value array.
      */
     public function getValue(): ?array
     {
         return $this->fieldsValues;
     }
 
-    /** Get the values with fields.
-     * @return array|null Values with fields array.
+    /**
+     * Get the values with fields.
+     * @return array<array-key, mixed>|null Values with fields array.
      */
     public function getValuesWithFields(): ?array
     {
@@ -600,8 +630,9 @@ class Settings
         $this->fieldsRequired[] = $field;
     }
 
-    /** Set the foreign field and value.
-     * @param array|null $foreignFieldAndValue Foreign field and value array.
+    /**
+     * Set the foreign field and value.
+     * @param array<array-key, mixed>|null $foreignFieldAndValue Foreign field and value array.
      * @return void
      */
     public function setForeignFieldAndValue(?array $foreignFieldAndValue): void
@@ -609,8 +640,9 @@ class Settings
         $this->foreignFieldAndValue = $foreignFieldAndValue;
     }
 
-    /** Get the foreign field and value.
-     * @return array|null Foreign field and value array.
+    /**
+     * Get the foreign field and value.
+     * @return array<array-key, mixed>|null Foreign field and value array.
      */
     public function getForeignFieldAndValue(): ?array
     {
@@ -855,8 +887,9 @@ class Settings
         return $this->dbSpecDSN;
     }
 
-    /** Set the database specification option.
-     * @param array|null $options Database specification option array.
+    /**
+     * Set the database specification option.
+     * @param array<array-key, mixed>|null $options Database specification option array.
      * @return void
      */
     public function setDbSpecOption(?array $options): void
@@ -864,8 +897,9 @@ class Settings
         $this->dbSpecOption = $options;
     }
 
-    /** Get the database specification option.
-     * @return array|null Database specification option array.
+    /**
+     * Get the database specification option.
+     * @return array<array-key, mixed>|null Database specification option array.
      */
     public function getDbSpecOption(): ?array
     {
@@ -901,8 +935,9 @@ class Settings
 
     /* Call on INTER-Mediator.php */
 
-    /** Set the authentication.
-     * @param array|null $authentication Authentication array.
+    /**
+     * Set the authentication.
+     * @param array<array-key, mixed>|null $authentication Authentication array.
      * @return void
      */
     public function setAuthentication(?array $authentication): void
@@ -913,8 +948,9 @@ class Settings
         $this->authentication = $authentication;
     }
 
-    /** Get the authentication.
-     * @return array|null Authentication array.
+    /**
+     * Get the authentication.
+     * @return array<array-key, mixed>|null Authentication array.
      */
     public function getAuthentication(): ?array
     {
@@ -1015,8 +1051,9 @@ class Settings
         return $this->currentUser;
     }
 
-    /** Set the data source.
-     * @param array|null $src Data source array.
+    /**
+     * Set the data source.
+     * @param array<array-key, mixed>|null $src Data source array.
      * @return void
      */
     public function setDataSource(?array $src): void
@@ -1024,17 +1061,19 @@ class Settings
         $this->dataSource = $src;
     }
 
-    /** Get the data source.
-     * @return array|null Data source array.
+    /**
+     * Get the data source.
+     * @return array<array-key, mixed>|null Data source array.
      */
     public function getDataSource(): ?array
     {
         return $this->dataSource;
     }
 
-    /** Get the data source definition.
+    /**
+     * Get the data source definition.
      * @param string|null $dataSourceName Data source name.
-     * @return array|null Data source definition array.
+     * @return array<array-key, mixed>|null Data source definition array.
      */
     public function getDataSourceDefinition(?string $dataSourceName): ?array
     {
@@ -1046,8 +1085,9 @@ class Settings
         return null;
     }
 
-    /** Set the options.
-     * @param array|null $src Options array.
+    /**
+     * Set the options.
+     * @param array<array-key, mixed>|null $src Options array.
      * @return void
      */
     public function setOptions(?array $src): void
@@ -1055,16 +1095,18 @@ class Settings
         $this->options = $src;
     }
 
-    /** Get the options.
-     * @return array|null Options array.
+    /**
+     * Get the options.
+     * @return array<array-key, mixed>|null Options array.
      */
     public function getOptions(): ?array
     {
         return $this->options;
     }
 
-    /** Set the database specification.
-     * @param array|null $src Database specification array.
+    /**
+     * Set the database specification.
+     * @param array<array-key, mixed>|null $src Database specification array.
      * @return void
      */
     public function setDbSpec(?array $src): void
@@ -1072,8 +1114,9 @@ class Settings
         $this->dbSpec = $src;
     }
 
-    /** Get the database specification.
-     * @return array|null Database specification array.
+    /**
+     * Get the database specification.
+     * @return array<array-key, mixed>|null Database specification array.
      */
     public function getDbSpec(): ?array
     {
@@ -1124,8 +1167,9 @@ class Settings
         $this->fieldsValues[] = $value;
     }
 
-    /** Set the value.
-     * @param array|null $values Value array.
+    /**
+     * Set the value.
+     * @param array<array-key, mixed>|null $values Value array.
      * @return void
      */
     public function setValue(?array $values): void
@@ -1183,8 +1227,9 @@ class Settings
         $this->recordCount = intval(mb_ereg_replace('[^0-9]', '', $sk));
     }
 
-    /** Get the extra criteria.
-     * @return array|null Extra criteria array.
+    /**
+     * Get the extra criteria.
+     * @return array<array-key, mixed>|null Extra criteria array.
      */
     public function getExtraCriteria(): ?array
     {
@@ -1249,8 +1294,9 @@ class Settings
         $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
     }
 
-    /** Get the extra sort key.
-     * @return array|null Extra sort key array.
+    /**
+     * Get the extra sort key.
+     * @return array<array-key, mixed>|null Extra sort key array.
      */
     public function getExtraSortKey(): ?array
     {
@@ -1322,8 +1368,9 @@ class Settings
     }
 
     /* get the information for the 'name'. */
-    /** Get the data source target array.
-     * @return array|null Data source target array.
+    /**
+     * Get the data source target array.
+     * @return array<array-key, mixed>|null Data source target array.
      */
     public function getDataSourceTargetArray(): ?array
     {

@@ -56,11 +56,11 @@ class FileMaker_DataAPI extends DBClass
      */
     private mixed $fieldInfo;
     /** The most recently updated record.
-     * @var array<string, string>|null
+     * @var array<array<string, number|string|bool|null>>|null
      */
     private ?array $updatedRecord = null;
     /** Field name used for soft deletion.
-     * @var string<array<string, number|string|bool|null>>|null
+     * @var string|null
      */
     private ?string $softDeleteField = null;
     /** Value used for soft deletion.
@@ -107,7 +107,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the updated record.
-     * @return array<araay<string, number|string|bool|null>>|null The updated record or null.
+     * @return array<array<string, number|string|bool|null>>|null The updated record or null.
      */
     public function getUpdatedRecord(): ?array
     {
@@ -115,7 +115,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the updated record (alias for getUpdatedRecord).
-     * @return array<araay<string, number|string|bool|null>>|null The updated record or null.
+     * @return array<array<string, number|string|bool|null>>|null The updated record or null.
      */
     public function updatedRecord(): ?array
     {
@@ -123,7 +123,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Set the updated record.
-     * @param array<araay<string, number|string|bool|null>> $record The updated record.
+     * @param array<array<string, number|string|bool|null>> $record The updated record.
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -313,7 +313,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string $field The field name.
      * @param string $value The field value.
      * @param string|null $operator The operator (default: null).
-     * @return array<araay<string, number|string|bool|null>>|null The search conditions or null.
+     * @return array<string>|null The search conditions or null.
      */
     private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): ?array
     {
@@ -340,8 +340,8 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Execute scripts.
-     * @param araay<string, array<string, number|string|bool|null>>|null $scriptContext The script context.
-     * @return array<araay<string, number|string|bool|null>>|string[]|null The script result or null.
+     * @param array<string, array<string, number|string|bool|null>>|null $scriptContext The script context.
+     * @return array<array<string, number|string|bool|null>>|string[]|null The script result or null.
      */
     private function executeScripts(?array $scriptContext): ?array
     {
@@ -431,8 +431,9 @@ class FileMaker_DataAPI extends DBClass
         return $returnArray;
     }
 
-    /** Read from database.
-     * @return array<array<string, number|string|bool|null>>|array[]|null The read result or null.
+    /**
+     * Read from database.
+     * @return array<array<string, number|string|bool|null>>|array<array-key, array<array-key, mixed>>|null The read result or null.
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -1098,7 +1099,7 @@ class FileMaker_DataAPI extends DBClass
                         if (isset($item['field']) &&
                             $item['field'] === $fieldName &&
                             isset($item['container']) &&
-                            (boolean)$item['container'] === TRUE) {
+                            (bool)$item['container'] === TRUE) {
                             $useContainer = TRUE;
                         }
                     }
@@ -1609,7 +1610,7 @@ class FileMaker_DataAPI extends DBClass
     /** Get portal data for updating.
      * @param array<array<string, number|string|bool|null>> $data The data array.
      * @param FileMakerRelation $result The result object.
-     * @return array<array<string, number|string|bool|null>> The portal data array.
+     * @return array<int, array<array<int|string, array<string, array<string, bool|float|int|string|null>|string>|bool|float|int|string|null>>|null> The portal data array.
      */
     protected function _getPortalDataForUpdating(array $data, FileMakerRelation $result): array
     {
@@ -1683,6 +1684,9 @@ class FileMaker_DataAPI extends DBClass
     {
     }
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array
     {
         return [];

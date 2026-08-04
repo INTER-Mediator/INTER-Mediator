@@ -77,10 +77,11 @@ class GenerateJSCode
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
-    /** Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
-     * @param array|null $dataSource Data source definitions for contexts.
-     * @param array|null $options Options for INTER-Mediator.
-     * @param array|null $dbSpecification Database specification.
+    /**
+     * Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
+     * @param array<array-key, mixed>|null $dataSource Data source definitions for contexts.
+     * @param array<array-key, mixed>|null $options Options for INTER-Mediator.
+     * @param array<array-key, mixed>|null $dbSpecification Database specification.
      * @param int|false $debug Debug mode level.
      * @return void
      */

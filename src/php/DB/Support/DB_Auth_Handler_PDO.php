@@ -159,14 +159,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** Retrieves a challenge for authentication.
+    /**
+     * Retrieves a challenge for authentication.
      * @param null|string|int $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
      * @param bool $isMulti Retrieve multiple challenges.
-     * @return null|string|array Challenge string or null if not found.
-     * Using 'issuedhash'.
+     * @return null|string|array<array-key, mixed> Challenge string or null if not found.
+    Using 'issuedhash'.
      * @throws Exception
      */
     public function authSupportRetrieveChallenge(null|string|int $uid,
@@ -269,7 +270,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Handles OAuth user authentication.
-     * @param array $keyValues Key-value pairs for user authentication.
+     * @param array<string, string> $keyValues Key-value pairs for user authentication.
      * @return ?bool True if user is created, false if user is reused, null on error.
      */
     public function authSupportOAuthUserHandling(array $keyValues): ?bool
@@ -352,14 +353,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** Creates a new user.
+    /**
+     * Creates a new user.
      * @param string $username Username.
      * @param string $hashedpassword Hashed password.
      * @param bool $isSAML SAML authentication flag.
      * @param ?string $ldapPassword LDAP password.
-     * @param ?array $attrs Additional attributes.
+     * @param array<array-key, mixed>|null $attrs Additional attributes.
      * @return bool True if successful, false otherwise.
-     * Using 'authuser'.
+    Using 'authuser'.
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
                                           ?string $ldapPassword = null, ?array $attrs = null): bool
@@ -583,29 +585,32 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** Gets groups for a user.
+    /**
+     * Gets groups for a user.
      * @param ?string $user User ID or username.
-     * @return array Groups for the user.
-     * Using 'authcor'.
+     * @return array<array-key, mixed> Groups for the user.
+    Using 'authcor'.
      */
     public function authSupportGetGroupsOfUser(?string $user): array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    /** Gets groups for a user.
+    /**
+     * Gets groups for a user.
      * @param string $user User ID or username.
-     * @return ?array Groups for the user or null if not found.
+     * @return array<array-key, mixed>|null Groups for the user or null if not found.
      */
     public function authTableGetGroupsOfUser(string $user): ?array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    /** Gets groups for a user.
+    /**
+     * Gets groups for a user.
      * @param string|null $user User ID or username.
      * @param bool $isCheckLimit Check limit flag.
-     * @return ?array Groups for the user or null if not found.
+     * @return array<array-key, mixed>|null Groups for the user or null if not found.
      */
     private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
     {
@@ -643,7 +648,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $candidateGroups;
     }
 
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $belongGroups;
     /** @var bool
@@ -688,15 +694,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
-    /** Checks media privileges.
+    /**
+     * Checks media privileges.
      * @param string $tableName Table name.
      * @param string $targeting Targeting type.
      * @param string $userField User field.
      * @param string $user User ID or username.
      * @param string $keyField Key field.
      * @param string $keyValue Key value.
-     * @return ?array Media privileges or null if not found.
-     * Using any table.
+     * @return array<array-key, mixed>|null Media privileges or null if not found.
+    Using any table.
      * @throws Exception
      */
     public function authSupportCheckMediaPrivilege(
@@ -744,7 +751,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
 
@@ -1132,9 +1140,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /** Unifies a username and email and gets user information.
+    /**
+     * Unifies a username and email and gets user information.
      * @param null|string $userID User ID or username.
-     * @return array User information.
+     * @return array<array-key, mixed> User information.
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
     {
@@ -1182,9 +1191,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return [null, null, null];
     }
 
-    /** Retrieves login user information from the authuser table.
+    /**
+     * Retrieves login user information from the authuser table.
      * @param string $userID User ID or username.
-     * @return array [user ID, real name, email, public key, secret]
+     * @return array<array-key, mixed> [user ID, real name, email, public key, secret]
      * @throws Exception If the user table is not configured, connection fails, or multiple/no users are found.
      */
     public function getLoginUserInfo(string $userID): array
@@ -1318,9 +1328,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
-    /** Retrieves user information from the authuser table by public key credential ID.
+    /**
+     * Retrieves user information from the authuser table by public key credential ID.
      * @param string $pkid The public key credential ID.
-     * @return array Array of user information, or empty array if not found.
+     * @return array<array-key, mixed> Array of user information, or empty array if not found.
      * @throws Exception If the public key ID is invalid, the user table is not configured, or multiple users are found.
      */
     public function authSupportUserInfoFromPublickeyId(string $pkid): array
