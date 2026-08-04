@@ -173,6 +173,14 @@ const INTERMediatorLog = {
     if (INTERMediatorLog.errorMessageByAlert) {
       INTERMediatorLog.suppressErrorMessageOnPage = true
     }
+    if (INTERMediatorLog.debugMode && !document.querySelector("DIV._im_debugging-mark")) {
+      const pageRoot = document.querySelector("BODY")
+      const debuggingMark = document.createElement("DIV")
+      debuggingMark.setAttribute("class", "_im_debugging-mark")
+      const debuggingString = document.createTextNode("Debugging")
+      debuggingMark.appendChild(debuggingString)
+      pageRoot.appendChild(debuggingMark)
+    }
     if (!INTERMediatorLog.suppressErrorMessageOnPage &&
       INTERMediatorLog.errorMessages.length > 0) {
       let debugNode = document.getElementById('_im_error_panel_4873643897897')
