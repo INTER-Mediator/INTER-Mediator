@@ -15,8 +15,18 @@ use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 {
+    /**
+     * The dsn.
+     *
+     * @var string
+     */
     public string $dsn;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
@@ -26,12 +36,25 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
     }
 
+    /**
+     * Test aggregation.
+     *
+     * @return void
+     */
     #[DoesNotPerformAssertions]
     public function testAggregation():void
     {
         // The sample schema doesn't have a data to check this feature.
     }
 
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param ?string $subContextName The sub context name.
+     * @return void
+     */
     function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null):void
     {
         $this->schemaName = "im_sample.";
@@ -73,6 +96,14 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
+    /**
+     * Set up the DB proxy for access Set Key.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param string $keyName The key name.
+     * @return void
+     */
     function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName):void
     {
         $this->schemaName = "im_sample.";
@@ -100,6 +131,11 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
+    /**
+     * Set up the DB proxy for auth.
+     *
+     * @return void
+     */
     function dbProxySetupForAuth():void
     {
         $this->schemaName = "im_sample.";
@@ -140,6 +176,11 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
+    /**
+     * Set up the DB proxy for aggregation.
+     *
+     * @return void
+     */
     function dbProxySetupForAggregation():void
     {
         $this->schemaName = "im_sample.";
@@ -175,6 +216,12 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
+    /**
+     * Set up the DB proxy for condition.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $queryArray The query array.
+     * @return void
+     */
     function dbProxySetupForCondition(?array $queryArray):void
     {
         $this->schemaName = "im_sample.";
@@ -201,13 +248,33 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
+    /**
+     * The sql set clause 1.
+     *
+     * @var string
+     */
     protected string $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(100,200,'2022-04-01','2022-04-01','10:21:31','10:21:31','2022-04-01 10:21:31','2022-04-01 10:21:31','TEST','TEST','TEST','TEST')";
+    /**
+     * The sql set clause 2.
+     *
+     * @var string
+     */
     protected string $sqlSETClause2 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,'',NULL)";
+    /**
+     * The sql set clause 3.
+     *
+     * @var string
+     */
     protected string $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,0,'','','','','','','','','','')";
 
+    /**
+     * The lc condition like.
+     *
+     * @var string
+     */
     protected string $lcConditionLike = '((("num0" = \'100\' OR "num0" < \'300\') AND ("num1" = 100 OR "num1" < 300))'
     . ' AND ((CAST("num1" AS TEXT) LIKE \'%999%\')))';
 

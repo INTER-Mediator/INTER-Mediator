@@ -32,18 +32,19 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
 {
     private ?string $customFileName = null;
 
-    /** Handles file upload processing, including CSV import if specified.
+    /**
+     * Handles file upload processing, including CSV import if specified.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
-     * @param array|null $options Additional options for processing.
-     * @param array $files Uploaded files array.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
+     * @param array<array-key, mixed> $files Uploaded files array.
      * @param bool $noOutput Whether to suppress output.
-     * @param array $field Array of target field names.
+     * @param array<array-key, mixed> $field Array of target field names.
      * @param string $contextName The context name for processing.
      * @param string|null $keyField The key field for database update.
      * @param string|null $keyValue The key value for database update.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array-key, mixed>|null $dataSource Data source definition.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
      * @param string|null $customFileName
      * @return void
@@ -114,9 +115,10 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return $fileName;
     }
 
-    /** Extracts file name and temporary name from file info array.
-     * @param array $info The file info array.
-     * @return array Array containing the file name and temporary file name.
+    /**
+     * Extracts file name and temporary name from file info array.
+     * @param array<array-key, mixed> $info The file info array.
+     * @return array<array-key, mixed> Array containing the file name and temporary file name.
      */
     private function getFileNames(array $info): array
     {
@@ -147,16 +149,17 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         }
     }
 
-    /** Determines the file path and partial path for storing an uploaded file.
+    /**
+     * Determines the file path and partial path for storing an uploaded file.
      * @param Proxy $db The database proxy instance.
      * @param bool $noOutput Whether to suppress output.
-     * @param array|null $options Additional options for processing.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
      * @param string $contextName The context name.
      * @param string $keyField The key field name.
      * @param string $keyValue The key value.
      * @param string $targetFieldName The target field name.
-     * @param array $filePathInfo Information about the file path.
-     * @return array Array containing result status, full file path, and partial file path.
+     * @param array<array-key, mixed> $filePathInfo Information about the file path.
+     * @return array<array-key, mixed> Array containing result status, full file path, and partial file path.
      * @throws Exception If the path is invalid or directory creation fails.
      */
     private function decideFilePath(Proxy  $db, bool $noOutput, ?array $options, string $contextName,
@@ -221,11 +224,12 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         return $jStr;
     }
 
-    /** Handles CSV import operation from an uploaded file.
+    /**
+     * Handles CSV import operation from an uploaded file.
      * @param Proxy $db The database proxy instance.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $options Additional options for processing.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array-key, mixed>|null $dataSource Data source definition.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
      * @param string $contextName The context name.
      * @param string $fileInfoTemp The temporary file name of the uploaded CSV.

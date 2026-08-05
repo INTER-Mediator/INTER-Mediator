@@ -10,8 +10,18 @@ use PHPUnit\Framework\TestCase;
 
 class GenerateJSCode_Test extends TestCase
 {
+    /**
+     * The generater.
+     *
+     * @var GenerateJSCode
+     */
     private GenerateJSCode $generater;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     protected function setUp(): void
@@ -20,25 +30,40 @@ class GenerateJSCode_Test extends TestCase
         $this->generater = new GenerateJSCode();
     }
 
+    /**
+     * Test generate Assign JS.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    function test_generateAssignJS()
+    function test_generateAssignJS(): void
     {
         $this->expectOutputString('INTERMediatorOnPage.getEditorPath=function(){return \'\';};' . "\n");
         $this->generater->generateAssignJS('INTERMediatorOnPage.getEditorPath', 'function(){return \'\';}');
     }
 
+    /**
+     * Test generate Error Message JS.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    function test_generateErrorMessageJS()
+    function test_generateErrorMessageJS(): void
     {
         $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
         $this->generater->generateErrorMessageJS('PHP extension "mbstring" is required for running INTER-Mediator.' . "\n");
     }
 
+    /**
+     * Test generate Initial JS Code.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    function test_generateInitialJSCode()
+    function test_generateInitialJSCode(): void
     {
         $_SERVER['HTTP_HOST'] = 'localhost';
         $_SERVER['HTTP_REFERER'] = '';
@@ -47,9 +72,14 @@ class GenerateJSCode_Test extends TestCase
         $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
+    /**
+     * Test generate Initial JS Code 2.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    function test_generateInitialJSCode2()
+    function test_generateInitialJSCode2(): void
     {
         $_SERVER['HTTP_HOST'] = 'localhost:80';
         $_SERVER['HTTP_REFERER'] = '';
@@ -58,9 +88,14 @@ class GenerateJSCode_Test extends TestCase
         $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
+    /**
+     * Test generate Initial JS Code 3.
+     *
+     * @return void
+     */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    function test_generateInitialJSCode3()
+    function test_generateInitialJSCode3(): void
     {
         //$_SERVER['HTTP_HOST'] = '';
         $_SERVER['HTTP_REFERER'] = '';
@@ -90,11 +125,13 @@ class GenerateJSCode_Test extends TestCase
 //    }
 //
     /**
-     * @throws ReflectionException
+     * Test combine Scripts.
+     *
+     * @return void
      */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    public function test_combineScripts()
+    public function test_combineScripts(): void
     {
         if (((float)phpversion()) >= 5.3) {
             $reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');

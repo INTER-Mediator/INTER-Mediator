@@ -140,7 +140,7 @@ class GoogleAdapter extends ProviderAdapter
     /** Retrieves authenticated user information from Google
      * Handles the OAuth callback, validates the state parameter, exchanges the code for tokens,
      * and fetches user information from Google's userinfo endpoint
-     * @return array Array containing user information (realname, username, email)
+     * @return array<string, string> Array containing user information (realname, username, email)
      * @throws Exception When authentication fails, tokens are invalid, or user info is incomplete
      */
     public function getUserInfo(): array

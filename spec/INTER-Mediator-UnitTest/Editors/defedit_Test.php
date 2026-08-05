@@ -13,6 +13,11 @@ use PHPUnit\Framework\TestCase;
 
 class defedit_Test extends TestCase
 {
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
@@ -20,10 +25,15 @@ class defedit_Test extends TestCase
         $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
     }
 
+    /**
+     * Test construct.
+     *
+     * @return void
+     */
     #[BackupGlobals(true)]
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    public function test___construct()
+    public function test___construct(): void
     {
         ob_start();
         $imPath = IMUtil::pathToINTERMediator();

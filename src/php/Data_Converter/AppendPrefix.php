@@ -37,9 +37,9 @@ class AppendPrefix
 
     /** Converts a value from database format to user format by appending the prefix.
      * @param string|null $str The original value from the database.
-     * @return string The value with the prefix appended.
+     * @return string|null The value with the prefix appended.
      */
-    function converterFromDBtoUser(?string $str): string
+    function converterFromDBtoUser(?string $str): ?string
     {
         return $this->appendStr . $str;
     }

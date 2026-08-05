@@ -15,14 +15,16 @@ abstract class OperationLogExtension
      */
     protected Proxy $proxy;
 
-    /** Result array containing operation results or null if not set.
-     * @var array|null
+    /**
+     * Result array containing operation results or null if not set.
+     * @var array<array-key, mixed>|null
      */
     protected ?array $result;
 
-    /** Constructor for OperationLogExtension.
+    /**
+     * Constructor for OperationLogExtension.
      * @param Proxy $proxy Proxy object for database operations.
-     * @param array|null $result Result array for operation results (optional).
+     * @param array<array-key, mixed>|null $result Result array for operation results (optional).
      */
     public function __construct(Proxy $proxy, ?array $result = null)
     {
@@ -30,8 +32,9 @@ abstract class OperationLogExtension
         $this->result = $result;
     }
 
-    /** Returns an array of additional field names to be included in the operation log.
-     * @return array List of field names to be added to the log.
+    /**
+     * Returns an array of additional field names to be included in the operation log.
+     * @return array<array-key, mixed> List of field names to be added to the log.
      */
     public abstract function extendingFields(): array;
 

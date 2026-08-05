@@ -15,7 +15,15 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface BeforeImport
+ * @package INTERMediator\DB\Extending
+ */
 interface BeforeImport
 {
-    public function doBeforeImportToDB();
+    /**
+     * Do before import to DB.
+     * @return bool|string|null
+     */
+    public function doBeforeImportToDB(): mixed;
 }
