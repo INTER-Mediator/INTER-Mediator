@@ -24,7 +24,8 @@ use Exception;
  */
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
-    /** @var array Table information for schema inspection.
+    /**
+     * @var array<array-key, mixed> Table information for schema inspection.
      */
     protected array $tableInfo = array();
     /** @var string Field name for column field.
@@ -36,17 +37,21 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'is_nullable';
-    /** @var array|string[] List of numeric field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid',
         'int', 'money', 'numeric', 'real', 'smallint', 'smallmoney', 'tinyint',);
-    /** @var array|string[] List of time field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
-    /** @var array|string[] List of date field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
-    /** @var array List of boolean field types.
+    /**
+     * @var array<array-key, mixed> List of boolean field types.
      */
     protected array $booleanFieldTypes = [];
 
@@ -130,11 +135,12 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    /** Returns the SQL SET clause for SQL Server.
+    /**
+     * Returns the SQL SET clause for SQL Server.
      * @param string $tableName Table name.
-     * @param array $setColumnNames Column names.
+     * @param array<array-key, mixed> $setColumnNames Column names.
      * @param string $keyField Key field.
-     * @param array $setValues Values.
+     * @param array<array-key, mixed> $setValues Values.
      * @return string SQL SET clause.
      * @throws Exception
      */
@@ -166,13 +172,14 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
     }
 
-    /** Returns the field lists for copying data.
+    /**
+     * Returns the field lists for copying data.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
      * @param string|null $assocValue Associated value.
-     * @param array|null $defaultValues Default values.
-     * @return array Field lists.
+     * @param array<array-key, mixed>|null $defaultValues Default values.
+     * @return array<array-key, mixed> Field lists.
      * @throws Exception
      */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
@@ -226,10 +233,11 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     {
     }
 
-    /** Checks if the SHA256 hash can be migrated.
+    /**
+     * Checks if the SHA256 hash can be migrated.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
-     * @return array|null Migration result.
+     * @return array<array-key, mixed>|null Migration result.
      */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array
     {

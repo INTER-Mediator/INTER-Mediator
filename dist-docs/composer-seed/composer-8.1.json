@@ -18,6 +18,7 @@
     "ext-gd": "*",
     "ext-intl": "*",
     "ext-fileinfo": "*",
+    "ext-bcmath": "*",
     "inter-mediator/fmdataapi": ">=37",
     "tecnickcom/tcpdf": "~6.7",
     "aws/aws-sdk-php": "~3",

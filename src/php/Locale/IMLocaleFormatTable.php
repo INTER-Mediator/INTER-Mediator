@@ -24,8 +24,9 @@ use INTERMediator\IMUtil;
  */
 class IMLocaleFormatTable
 {
-    /** Returns the current locale's formatting information, merged with static overrides if available.
-     * @return array Associative array of formatting information for the current locale.
+    /**
+     * Returns the current locale's formatting information, merged with static overrides if available.
+     * @return array<array-key, mixed> Associative array of formatting information for the current locale.
      */
     public static function getCurrentLocaleFormat(): array
     {
@@ -93,9 +94,10 @@ class IMLocaleFormatTable
         return $info;
     }
 
-    /** Returns formatting information for a specified locale code.
+    /**
+     * Returns formatting information for a specified locale code.
      * @param string $localeCode The locale code (e.g., 'en_US', 'ja_JP').
-     * @return array Associative array of formatting information for the locale.
+     * @return array<array-key, mixed> Associative array of formatting information for the locale.
      */
     public static function getLocaleFormat(string $localeCode): array
     {
@@ -129,8 +131,9 @@ class IMLocaleFormatTable
         );
     }
 
-    /** Static table with additional locale-specific information for days, months, and date/time formats.
-     * @var array|array[]
+    /**
+     * Static table with additional locale-specific information for days, months, and date/time formats.
+     * @var array<array-key, mixed>|array<array-key, array<array-key, mixed>>
      */
     private static array $localeInfoTable = array(
         'en' => array(  // Default
@@ -177,9 +180,10 @@ class IMLocaleFormatTable
         ),
     );
 
-    /** Static table for currency and number formatting for each locale.
-     * Each entry is an array: [decimal_point, thousands_separator, currency_symbol].
-     * @var array|array[]
+    /**
+     * Static table for currency and number formatting for each locale.
+    Each entry is an array: [decimal_point, thousands_separator, currency_symbol].
+     * @var array<array-key, mixed>|array<array-key, array<array-key, mixed>>
      */
     private static array $localeFormatTable = array(
         'ja' => array('.', ',', '￥'),

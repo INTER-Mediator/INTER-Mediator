@@ -15,7 +15,15 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface BeforeUpdate
+ * @package INTERMediator\DB\Extending
+ */
 interface BeforeUpdate
 {
-    public function doBeforeUpdateDB();
+    /**
+     * Do before update to DB.
+     * @return bool|string|null
+     */
+    public function doBeforeUpdateDB(): mixed;
 }

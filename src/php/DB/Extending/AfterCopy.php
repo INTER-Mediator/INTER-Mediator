@@ -15,7 +15,16 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface AfterCopy
+ * @package INTERMediator\DB\Extending
+ */
 interface AfterCopy
 {
-    public function doAfterCopyInDB($result);
+    /**
+     * Do after copy in DB.
+     * @param array<array<string, number|string|bool|null>> $result The result of copy operation.
+     * @return array<array<string, number|string|bool|null>>|null The result of after copy operation.
+     */
+    public function doAfterCopyInDB($result): ?array;
 }

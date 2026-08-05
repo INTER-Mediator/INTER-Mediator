@@ -166,7 +166,7 @@ class IMUtil
     }
 
     /** Combines an array of path components into a single path string.
-     * @param $ar array Array of path components.
+     * @param array<int, string> $ar Array of path components.
      * @return string Combined path.
      */
     public static function combinePathComponents(array $ar): string
@@ -237,9 +237,10 @@ class IMUtil
         return $osName == "Linux" || $osName == "FreeBSD";
     }
 
-    /** Removes null bytes from a string.
+    /**
+     * Removes null bytes from a string.
      * @param $str string Input string.
-     * @return array|string String with null bytes removed.
+     * @return array<array-key, mixed>|string String with null bytes removed.
      */
     public static function removeNull(string $str): array|string
     {
@@ -428,8 +429,9 @@ class IMUtil
         return FALSE;
     }
 
-    /** Outputs security-related HTTP headers.
-     * @param array|null $params Optional parameters for headers (for testing).
+    /**
+     * Outputs security-related HTTP headers.
+     * @param array<array-key, mixed>|null $params Optional parameters for headers (for testing).
      * @return void
      */
     public function outputSecurityHeaders(?array $params = NULL): void
@@ -481,8 +483,9 @@ class IMUtil
                                             str_replace("\\", "\\\\", $str))))))))));
     }
 
-    /** Converts an array to a JavaScript object string.
-     * @param array $ar Input array.
+    /**
+     * Converts an array to a JavaScript object string.
+     * @param array<array-key, mixed> $ar Input array.
      * @param string $prefix Prefix for keys.
      * @return string JavaScript object as a string.
      */
@@ -516,10 +519,11 @@ class IMUtil
         return $returnStr;
     }
 
-    /** Converts an array to a JavaScript object string, excluding specified keys.
-     * @param array $ar Input array.
+    /**
+     * Converts an array to a JavaScript object string, excluding specified keys.
+     * @param array<array-key, mixed> $ar Input array.
      * @param string $prefix Prefix for keys.
-     * @param array|null $exarray Keys to exclude.
+     * @param array<array-key, mixed>|null $exarray Keys to exclude.
      * @return string JavaScript object as a string.
      */
     public static function arrayToJSExcluding(array $ar, string $prefix, ?array $exarray): string
@@ -548,10 +552,11 @@ class IMUtil
         return $returnStr;
     }
 
-    /** Converts a string to a JavaScript key-value string, excluding specified keys.
+    /**
+     * Converts a string to a JavaScript key-value string, excluding specified keys.
      * @param string $ar Input string.
      * @param string $prefix Prefix for the key.
-     * @param array|null $exarray Keys to exclude.
+     * @param array<array-key, mixed>|null $exarray Keys to exclude.
      * @return string JavaScript key-value string.
      */
     public static function stringToJSExcluding(string $ar, string $prefix, ?array $exarray): string
@@ -780,8 +785,9 @@ class IMUtil
         return false;
     }
 
-    /** Loads and parses YAML definition file content.
-     * @return array Parsed YAML content and file path.
+    /**
+     * Loads and parses YAML definition file content.
+     * @return array<array-key, mixed> Parsed YAML content and file path.
      * @throws Exception If the YAML file does not exist or is outside permitted paths.
      */
     public static function getYAMLDefContent(): array
@@ -829,9 +835,10 @@ class IMUtil
         // OMG! Yaml parser can parse JSON data!! Really??
     }
 
-    /** Parses a YAML string and returns the definition array.
+    /**
+     * Parses a YAML string and returns the definition array.
      * @param string $yaml YAML string.
-     * @return array|null Parsed array or null on failure.
+     * @return array<array-key, mixed>|null Parsed array or null on failure.
      */
     public static function getDefinitionFromYAML(string $yaml): ?array
     {
@@ -925,18 +932,18 @@ class IMUtil
 
     /**
      * Apply a very small template substitution to the given string.
-     *
-     * This method replaces all occurrences of placeholders in the form of
-     * `@@ field_name @@` (i.e. text surrounded by `@@`) with the corresponding
-     * value from the current record.
-     *
-     * - If the placeholder field does not exist in `$currentRecord`, it is
-     *   replaced with an empty string.
-     * - If `$str` is null/too short or `$currentRecord` is empty, the input
-     *   string is returned as-is.
+    
+    This method replaces all occurrences of placeholders in the form of
+    `@@ field_name @@` (i.e. text surrounded by `@@`) with the corresponding
+    value from the current record.
+    
+    - If the placeholder field does not exist in `$currentRecord`, it is
+      replaced with an empty string.
+    - If `$str` is null/too short or `$currentRecord` is empty, the input
+      string is returned as-is.
      *
      * @param ?string $str Template source string that may contain `@@...@@` placeholders.
-     * @param array $currentRecord Associative array representing the current record.
+     * @param array<array-key, mixed> $currentRecord Associative array representing the current record.
      * @return ?string The rendered string after placeholder substitution.
      */
     public static function templating(?string $str, array $currentRecord): ?string

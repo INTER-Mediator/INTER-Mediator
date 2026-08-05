@@ -22,8 +22,9 @@ namespace INTERMediator;
  */
 class Params
 {
-    /** Stores all global variables loaded from params.php.
-     * @var array|null
+    /**
+     * Stores all global variables loaded from params.php.
+     * @var array<array-key, mixed>|null
      */
     private static ?array $vars = null;
 
@@ -58,9 +59,10 @@ class Params
         }
     }
 
-    /** Retrieves the value of a parameter or an array of parameters.
-     * If the parameter does not exist, returns the default value.
-     * @param string|array $vName Name or array of names in the parameter(s).
+    /**
+     * Retrieves the value of a parameter or an array of parameters.
+    If the parameter does not exist, returns the default value.
+     * @param string|array<array-key, mixed> $vName Name or array of names in the parameter(s).
      * @param mixed $defValue Default value(s) to return if parameter is not set.
      * @return mixed Parameter value(s) or default value(s).
      */
@@ -98,7 +100,7 @@ class Params
     }
 
     /** Returns all loaded parameter variables as an array.
-     * @return array|null Array of all variables, or null if not loaded.
+     * @return array<string, number|string|bool|null>|null Array of all variables, or null if not loaded.
      */
     public static function getVars(): ?array
     {

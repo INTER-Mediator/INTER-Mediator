@@ -11,8 +11,18 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_NumberBase_Test extends TestCase
 {
+    /**
+     * The dataconverter.
+     *
+     * @var mixed
+     */
     private $dataconverter;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
@@ -27,7 +37,12 @@ class DataConverter_NumberBase_Test extends TestCase
 //        $this->thSepMark = $locInfo['mon_thousands_sep'];
     }
 
-    public function test_converterFromUserToDBIMLocale()
+    /**
+     * Test converter From User To DBIM Locale.
+     *
+     * @return void
+     */
+    public function test_converterFromUserToDBIMLocale(): void
     {
         $expected = '100';
         $string = '100';
@@ -54,7 +69,12 @@ class DataConverter_NumberBase_Test extends TestCase
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
     }
 
-    public function test_converterFromUserToDBIntlLocale()
+    /**
+     * Test converter From User To DB Intl Locale.
+     *
+     * @return void
+     */
+    public function test_converterFromUserToDBIntlLocale(): void
     {
         $expected = '100';
         $string = '100';

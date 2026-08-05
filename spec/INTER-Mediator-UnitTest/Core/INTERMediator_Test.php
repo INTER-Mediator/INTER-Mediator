@@ -12,6 +12,11 @@ use PHPUnit\Framework\TestCase;
 class INTERMediator_Test extends TestCase
 {
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         mb_internal_encoding('UTF-8');
@@ -41,7 +46,12 @@ class INTERMediator_Test extends TestCase
             false);
     }
 
-    public function test_params()
+    /**
+     * Test params.
+     *
+     * @return void
+     */
+    public function test_params(): void
     {
         $testName = "Check parameters in params.php.";
 
@@ -54,7 +64,12 @@ class INTERMediator_Test extends TestCase
         $this->assertFalse($oAuthClientSecret, $testName);
     }
 
-    public function test_checkParamsFileDefault()
+    /**
+     * Test check Params File Default.
+     *
+     * @return void
+     */
+    public function test_checkParamsFileDefault(): void
     {
         $params = Params::getParameterValue([
             "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
@@ -113,13 +128,26 @@ class INTERMediator_Test extends TestCase
 //        $this->assertFalse(isset($params[$key]), $message);
     }
 
-    private function checkNotDefined($key){
+    /**
+     * Check Not Defined.
+     *
+     * @param string $key The key.
+     * @return void
+     */
+    private function checkNotDefined(string $key): void
+    {
         $message = "The variable {$key} in the params.php should not be defined for distribution.";
         $value = Params::getParameterValue($key, 'Not defined');
         $this->assertEquals('Not defined', $value, $message);
     }
 
-    public function test_checkParamsFileDefaultAWSS3(){
+    /**
+     * Test check Params File Default AWSS 3.
+     *
+     * @return void
+     */
+    public function test_checkParamsFileDefaultAWSS3(): void
+    {
         $this->checkNotDefined('accessRegion');
         $this->checkNotDefined('rootBucket');
         $this->checkNotDefined('applyingACL');
@@ -134,7 +162,12 @@ class INTERMediator_Test extends TestCase
         $this->checkNotDefined('rootInDropbox');
     }
 
-    public function test_valueForJSInsert()
+    /**
+     * Test value For JS Insert.
+     *
+     * @return void
+     */
+    public function test_valueForJSInsert(): void
     {
         $expected = "\\'";
         $string = "'";
@@ -177,7 +210,12 @@ class INTERMediator_Test extends TestCase
         $this->assertSame($expected, IMUtil::valueForJSInsert($string));
     }
 
-    public function test_arrayToJS()
+    /**
+     * Test array To JS.
+     *
+     * @return void
+     */
+    public function test_arrayToJS(): void
     {
         $testName = 'Check arrayToJS function in INTER-Mediator.php.';
 
@@ -188,7 +226,12 @@ class INTERMediator_Test extends TestCase
         $this->assertSame(IMUtil::arrayToJS($ar, $prefix), $resultString, $testName);
     }
 
-    public function test_arrayToJSExcluding()
+    /**
+     * Test array To JS Excluding.
+     *
+     * @return void
+     */
+    public function test_arrayToJSExcluding(): void
     {
         $testName = 'Check arrayToJSExcluding function in INTER-Mediator.php.';
 
@@ -205,7 +248,12 @@ class INTERMediator_Test extends TestCase
         $this->assertSame(IMUtil::arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
     }
 
-    public function test_getLocaleFromBrowser()
+    /**
+     * Test get Locale From Browser.
+     *
+     * @return void
+     */
+    public function test_getLocaleFromBrowser(): void
     {
         $testName = "Check getLocaleFromBrowser function in INTER-Mediator.php.";
         $headerStr = "ja";

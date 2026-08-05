@@ -24,16 +24,17 @@ use INTERMediator\DB\Proxy;
  */
 abstract class UploadingSupport
 {
-    /** Processes an uploaded file and updates the database record accordingly.
+    /**
+     * Processes an uploaded file and updates the database record accordingly.
      * @param Proxy $db The database proxy instance for performing operations.
-     * @param array|null $options Additional options for processing.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
      * @param string $filePath The full path to the uploaded file.
      * @param string $filePartialPath The relative path to the uploaded file to be stored in the database.
      * @param string $targetFieldName The name of the database field to update with the file path.
      * @param string|null $keyField The key field name for identifying the record to update.
      * @param string|null $keyValue The key value for identifying the record to update.
-     * @param array|null $dataSource The data source definition for related context.
-     * @param array|null $dbSpec The database specification array.
+     * @param array<array-key, mixed>|null $dataSource The data source definition for related context.
+     * @param array<array-key, mixed>|null $dbSpec The database specification array.
      * @param int $debug Debug level.
      * @throws Exception If an error occurs during processing.
      * @return void
