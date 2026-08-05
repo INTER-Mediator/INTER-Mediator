@@ -9,13 +9,25 @@ use INTERMediator\DB\Proxy;
 
 class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
 {
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    public function dbProxySetupForAccess(string $contextName, int $maxRecord)
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @return void
+     */
+    public function dbProxySetupForAccess(string $contextName, int $maxRecord): void
     {
         $this->schemaName = "";
         $contexts = array(
@@ -41,7 +53,12 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    public function dbProxySetupForAuth()
+    /**
+     * Set up the DB proxy for auth.
+     *
+     * @return void
+     */
+    public function dbProxySetupForAuth(): void
     {
         $this->db_proxy = new Proxy(true);
         $resultInit = $this->db_proxy->initialize(array(

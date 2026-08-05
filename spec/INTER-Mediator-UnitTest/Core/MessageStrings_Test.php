@@ -8,14 +8,29 @@ use INTERMediator\Message\MessageStrings;
 
 class MessageStrings_Test extends TestCase
 {
+    /**
+     * The messagestrings.
+     *
+     * @var MessageStrings
+     */
     private MessageStrings $messagestrings;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $this->messagestrings = new MessageStrings();
     }
 
-    public function test_getMessages()
+    /**
+     * Test get Messages.
+     *
+     * @return void
+     */
+    public function test_getMessages(): void
     {
         $expected = 'Are you sure to delete?';
         $messages = $this->messagestrings->getMessages();
@@ -28,7 +43,12 @@ class MessageStrings_Test extends TestCase
         $this->assertEquals($expected, $messages[$number]);
     }
 
-    public function test_getCustomizedMessages()
+    /**
+     * Test get Customized Messages.
+     *
+     * @return void
+     */
+    public function test_getCustomizedMessages(): void
     {
         $expected = "Changed";
         $messages = $this->messagestrings->getMessages();
@@ -36,7 +56,12 @@ class MessageStrings_Test extends TestCase
         $this->assertEquals($expected, $messages[$number]);
     }
 
-    public function test_getMessagesAs()
+    /**
+     * Test get Messages As.
+     *
+     * @return void
+     */
+    public function test_getMessagesAs(): void
     {
         $expected = 'Record #';
         $message = $this->messagestrings->getMessageAs(1, array());

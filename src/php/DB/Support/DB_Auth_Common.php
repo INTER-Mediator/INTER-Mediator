@@ -52,9 +52,10 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         }
     }
 
-    /** Returns an array of operation aliases for a given operation.
+    /**
+     * Returns an array of operation aliases for a given operation.
      * @param string $operation The operation type.
-     * @return array Operation aliases.
+     * @return array<array-key, mixed> Operation aliases.
      */
     private function getOperationSeries(string $operation): array
     {
@@ -134,9 +135,10 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoNoSet;
     }
 
-    /** Returns an array of authorized users for a given operation.
+    /**
+     * Returns an array of authorized users for a given operation.
      * @param string|null $operation The operation type or null for all operations.
-     * @return array Authorized users.
+     * @return array<array-key, mixed> Authorized users.
      */
     public function getAuthorizedUsers(?string $operation = null): array
     {
@@ -158,9 +160,10 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return array_values(array_unique($usersArray));
     }
 
-    /** Returns an array of authorized groups for a given operation.
+    /**
+     * Returns an array of authorized groups for a given operation.
      * @param string|null $operation The operation type or null for all operations.
-     * @return array Authorized groups.
+     * @return array<array-key, mixed> Authorized groups.
      */
     public function getAuthorizedGroups(?string $operation = null): array
     {

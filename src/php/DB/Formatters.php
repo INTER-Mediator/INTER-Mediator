@@ -21,15 +21,15 @@ namespace INTERMediator\DB;
 class Formatters
 {
     /** Array of formatter objects for each field.
-     * @var array
+     * @var array<string, object>
      */
     private array $formatter = [];
 
     /** Set formatter objects for fields.
-     * @param mixed $fmt Array of formatter definitions.
+     * @param array<array<string, number|string|bool|null>>|null $fmt Array of formatter definitions.
      * @return void
      */
-    public function setFormatter($fmt)
+    public function setFormatter($fmt): void
     {
         if (is_array($fmt)) {
             $this->formatter = array();
@@ -44,11 +44,11 @@ class Formatters
     }
 
     /** Convert field data from DB format to user format using the field's formatter.
-     * @param mixed $field Field name.
-     * @param mixed $data Data from the database.
-     * @return mixed Converted data for user display.
+     * @param string $field Field name.
+     * @param string|null $data Data from the database.
+     * @return string|null Converted data for user display.
      */
-    public function formatterFromDB($field, $data)
+    public function formatterFromDB(string $field, ?string $data): ?string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromDBtoUser($data);
@@ -57,11 +57,11 @@ class Formatters
     }
 
     /** Convert field data from user format to DB format using the field's formatter.
-     * @param mixed $field Field name.
-     * @param mixed $data Data from the user.
-     * @return mixed Converted data for DB storage.
+     * @param string $field Field name.
+     * @param string|null $data Data from the user.
+     * @return string Converted data for DB storage.
      */
-    public function formatterToDB($field, $data)
+    public function formatterToDB(string $field, ?string $data): string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromUserToDB($data);

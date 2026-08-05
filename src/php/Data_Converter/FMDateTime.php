@@ -77,9 +77,9 @@ class FMDateTime
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
-    public function converterFromUserToDB(string $str): string
+    public function converterFromUserToDB(string $str): ?string
     {
         $dtAr = date_parse($str);
         if (!$dtAr) {
@@ -98,8 +98,9 @@ class FMDateTime
         return $dt;
     }
 
-    /** @param string $d
-     * @return array
+    /**
+     * @param string $d
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     public function dateArrayFromFMDate(string $d): ?array

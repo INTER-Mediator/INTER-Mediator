@@ -113,7 +113,7 @@ class MyNumberCardAdapter extends ProviderAdapter
      * 2. Exchanging authorization code for tokens
      * 3. Validating the received tokens
      * 4. Fetching user information from the userinfo endpoint
-     * @return array User information including:
+     * @return array<string, string> User information including:
      *               - sub (subject identifier)
      *               - username (formatted as sub@provider)
      *               - realname (if name scope granted)

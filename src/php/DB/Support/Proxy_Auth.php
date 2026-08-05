@@ -32,8 +32,9 @@ use INTERMediator\Params;
  */
 trait Proxy_Auth
 {
-    /** Calling from Proxy::initialize method to initialize parameters for authentication and outholization.
-     * @param array|null $options
+    /**
+     * Calling from Proxy::initialize method to initialize parameters for authentication and outholization.
+     * @param array<array-key, mixed>|null $options
      * @return void
      * @throws Exception
      */
@@ -241,11 +242,12 @@ trait Proxy_Auth
         $this->visitor = new $visitorClasName($this);
     }
 
-    /** @param string $username
+    /**
+     * @param string $username
      * @param string $password
      * @param bool $isSAML
-     * @param ?array $attrs
-     * @return array
+     * @param array<array-key, mixed>|null $attrs
+     * @return array<array-key, mixed>
      */
     public
     function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array

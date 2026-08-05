@@ -55,9 +55,9 @@ class NumberBase
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
-    public function converterFromUserToDB(string $str): string
+    public function converterFromUserToDB(string $str): ?string
     {
         $str = mb_convert_kana($str, "a");
         $comp = explode($this->decimalMark, $str);

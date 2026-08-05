@@ -25,10 +25,11 @@ namespace INTERMediator;
 class DefinitionChecker
 {
 
-    /** Checks the main definitions (data source, options, db specification) for invalid or prohibited keywords.
-     * @param array|null $dataSource Data source definitions.
-     * @param array|null $options Options for INTER-Mediator.
-     * @param array|null $dbSpecification Database specification.
+    /**
+     * Checks the main definitions (data source, options, db specification) for invalid or prohibited keywords.
+     * @param array<array-key, mixed>|null $dataSource Data source definitions.
+     * @param array<array-key, mixed>|null $options Options for INTER-Mediator.
+     * @param array<array-key, mixed>|null $dbSpecification Database specification.
      * @return string Aggregated error or warning messages.
      */
     public function checkDefinitions(?array $dataSource, ?array $options, ?array $dbSpecification): string
@@ -55,9 +56,10 @@ class DefinitionChecker
         return $allMessage;
     }
 
-    /** Checks a single definition array against a set of prohibited keywords and types.
-     * @param array|null $definition The definition array to check.
-     * @param array $prohibit The prohibited keywords and structure.
+    /**
+     * Checks a single definition array against a set of prohibited keywords and types.
+     * @param array<array-key, mixed>|null $definition The definition array to check.
+     * @param array<array-key, mixed> $prohibit The prohibited keywords and structure.
      * @return void
      */
     public function checkDefinition(?array $definition, array $prohibit): void
@@ -179,13 +181,16 @@ class DefinitionChecker
     /** @var string Holds the latest error or warning message.
      */
     private string $message = '';
-    /** @var array Path stack for recursive checking.
+    /**
+     * @var array<array-key, mixed> Path stack for recursive checking.
      */
     private array $path = [];
-    /** @var array Currently active prohibited keyword structure.
+    /**
+     * @var array<array-key, mixed> Currently active prohibited keyword structure.
      */
     private array $currentProhibit;
-    /** @var array Prohibited keywords and types for database specification.
+    /**
+     * @var array<array-key, mixed> Prohibited keywords and types for database specification.
      */
     private array $prohibitKeywordsForDBSpec = [
         'db-class' => 'string',
@@ -201,7 +206,8 @@ class DefinitionChecker
         'external-db' => ['#' => 'string'],
         'cert-verifying' => 'boolean',
     ];
-    /** @var array Prohibited keywords and types for options.
+    /**
+     * @var array<array-key, mixed> Prohibited keywords and types for options.
      */
     private array $prohibitKeywordsForOption = [
         'separator' => 'string',
@@ -278,7 +284,8 @@ class DefinitionChecker
         ],
         'terms' => 'array',
     ];
-    /** @var array|string[] Prohibited keywords and types for messaging.
+    /**
+     * @var array<array-key, mixed>|string[] Prohibited keywords and types for messaging.
      */
     private array $prohibitKeywordsMessaging = [
         'from' => 'string',
@@ -301,7 +308,8 @@ class DefinitionChecker
         'attachment' => 'string',
         'template-context' => 'string',
     ];
-    /** @var array|array[] Prohibited keywords and types for data sources.
+    /**
+     * @var array<array-key, mixed>|array<array-key, array<array-key, mixed>> Prohibited keywords and types for data sources.
      */
     private array $prohibitKeywordsForDataSource = [
         '*' => [

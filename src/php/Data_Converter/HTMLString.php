@@ -42,9 +42,9 @@ class HTMLString
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
-    public function converterFromUserToDB(string $str): string
+    public function converterFromUserToDB(string $str): ?string
     {
         return $str;
     }

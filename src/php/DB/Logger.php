@@ -31,15 +31,15 @@ class Logger
      */
     private int|bool $debugLevel = false;
     /** Array of error messages.
-     * @var array
+     * @var array<string>
      */
     private array $errorMessage = array();
     /** Array of warning messages.
-     * @var array
+     * @var array<string>
      */
     private array $warningMessage = array();
     /** Array of debug messages.
-     * @var array
+     * @var array<string>
      */
     private array $debugMessage = array();
     /** Whether error message logging is enabled.
@@ -115,6 +115,8 @@ class Logger
                 $returnValue = str_starts_with($ref->getNamespaceName(), $setting);
             }
         } catch (ReflectionException $e) {
+            $dt = (new DateTime())->format("y:m:d h:i:s.v");
+            error_log("[INTER-Mediator Exception] [Logger::getCallersNamespace] {$dt} {$e->getMessage()}");
         }
         return $returnValue;
     }
@@ -136,7 +138,7 @@ class Logger
     }
 
     /** Set multiple debug messages with a specified level.
-     * @param array $msgs
+     * @param array<string> $msgs
      * @param int $level
      * @return void
      */
@@ -167,7 +169,7 @@ class Logger
     }
 
     /** Set multiple warning messages.
-     * @param array $msgs
+     * @param array<string> $msgs
      * @return void
      */
     public function setWarningMessages(array $msgs): void
@@ -195,7 +197,7 @@ class Logger
     }
 
     /** Set multiple error messages.
-     * @param array $msgs
+     * @param array<string> $msgs
      * @return void
      */
     public function setErrorMessages(array $msgs): void
@@ -210,7 +212,7 @@ class Logger
     }
 
     /** Get messages for JavaScript output.
-     * @return array
+     * @return array<string>
      */
     public function getMessagesForJS(): array
     {
@@ -232,7 +234,7 @@ class Logger
     }
 
     /** Get error messages.
-     * @return array
+     * @return array<string>
      */
     public function getErrorMessages(): array
     {
@@ -240,7 +242,7 @@ class Logger
     }
 
     /** Get warning messages.
-     * @return array
+     * @return array<string>
      */
     public function getWarningMessages(): array
     {
@@ -248,7 +250,7 @@ class Logger
     }
 
     /** Get debug messages.
-     * @return array
+     * @return array<string>
      */
     public function getDebugMessages(): array
     {
@@ -268,10 +270,10 @@ class Logger
     }
 
     /** Set debug mode.
-     * @param $val
+     * @param int|bool $val
      * @return void
      */
-    public function setDebugMode($val): void
+    public function setDebugMode(int|bool $val): void
     {
         if ($val === true) {
             $this->debugLevel = 1;
@@ -281,7 +283,7 @@ class Logger
     }
 
     /** Get debug messages.
-     * @return array
+     * @return array<string>
      */
     public function getDebugMessage(): array
     {
