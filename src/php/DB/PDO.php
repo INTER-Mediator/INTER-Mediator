@@ -46,8 +46,9 @@ class PDO extends DBClass
      */
     private int $mainTableTotalCount = 0;
 
-    /** Field information for the current layout.
-     * @var array|null
+    /**
+     * Field information for the current layout.
+     * @var array<array-key, mixed>|null
      */
     private ?array $fieldInfo = null;
 
@@ -61,8 +62,9 @@ class PDO extends DBClass
      */
     private bool $isRequiredUpdated = false;
 
-    /** The most recently updated record.
-     * @var array|null
+    /**
+     * The most recently updated record.
+     * @var array<array-key, mixed>|null
      */
     private ?array $updatedRecord = null;
 
@@ -106,6 +108,9 @@ class PDO extends DBClass
      */
     private string $defaultTimezone;
 
+    /** Sort keys for the current context.
+     * @var array<string, string>
+     */
     private array $sortKeys = [];
 
     /** PDO constructor. Initializes timezone and suppression flags from parameters.
@@ -120,7 +125,7 @@ class PDO extends DBClass
     }
 
     /** Returns the updated record.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getUpdatedRecord(): ?array
     {
@@ -128,7 +133,7 @@ class PDO extends DBClass
     }
 
     /** Returns the updated record.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function updatedRecord(): ?array
     {
@@ -136,7 +141,7 @@ class PDO extends DBClass
     }
 
     /** Sets the updated record.
-     * @param array $record
+     * @param array<array<string, bool|float|int|string|null>> $record
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -208,7 +213,7 @@ class PDO extends DBClass
 
     /** Handles PDO error.
      * @param string $sql
-     * @param $result
+     * @param \PDOStatement|bool|null $result
      * @return bool
      */
     private function errorHandlingPDO(string $sql, $result): bool
@@ -293,7 +298,7 @@ class PDO extends DBClass
     }
 
     /** Reads data from the database.
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -556,11 +561,11 @@ class PDO extends DBClass
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $value = $this->formatter->formatterToDB($filedInForm, $value);
-                if ($this->isFollowingTimezones && in_array($field, $timeFields) && !is_null($value) && $value !== '') {
+                if ($this->isFollowingTimezones && in_array($field, $timeFields) && $value !== '') {
                     $value = $this->getDateTimeExpression($value, true);
-                } else if (in_array($field, $nullableFields)) {
+                }/* else if (in_array($field, $nullableFields)) {
                     $value = $value ?? NULL;
-                }
+                }*/
             }
             $setParameter[] = $value;
             $this->logger->setDebugMessage("field={$field}, value={$value}/original={$origValue}/, len={$valueLen}");
@@ -932,8 +937,9 @@ class PDO extends DBClass
         return $lastKeyValue;
     }
 
-    /** Returns the key field of the context.
-     * @param array $context
+    /**
+     * Returns the key field of the context.
+     * @param array<array-key, mixed> $context
      * @return string
      */
     private function getKeyFieldOfContext(array $context): string
@@ -943,7 +949,7 @@ class PDO extends DBClass
 
     /** Returns the field information.
      * @param string $dataSourceName
-     * @return array|null
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -951,7 +957,7 @@ class PDO extends DBClass
     }
 
     /** Checks if the value is true.
-     * @param $d
+     * @param mixed $d
      * @return bool
      */
     private function isTrue($d): bool // $d is mixed
@@ -969,8 +975,8 @@ class PDO extends DBClass
 
     /** Queries for test.
      * @param string $table
-     * @param array|null $conditions
-     * @return array|null
+     * @param array<string, number|string|bool|null>|null $conditions
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
@@ -1003,9 +1009,10 @@ class PDO extends DBClass
         return $recordSet;
     }
 
-    /** Deletes for test.
+    /**
+     * Deletes for test.
      * @param string $table
-     * @param array|null $conditions
+     * @param array<array-key, mixed>|null $conditions
      * @return bool
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool
@@ -1031,8 +1038,9 @@ class PDO extends DBClass
         return true;
     }
 
-    /** Generates conditions.
-     * @param array|null $conditions
+    /**
+     * Generates conditions.
+     * @param array<array-key, mixed>|null $conditions
      * @return string
      */
     private function generateConditions(?array $conditions): string
@@ -1092,10 +1100,11 @@ class PDO extends DBClass
         $this->link->rollBack();
     }
 
-    /** Returns the result relation.
-     * @param $result
-     * @param array $timeFields
-     * @return array
+    /**
+     * Returns the result relation.
+     * @param \PDOStatement|false|null $result
+     * @param array<array-key, mixed> $timeFields
+     * @return list<array<string, bool|float|int|string|null>>
      * @throws Exception
      */
     private function getResultRelation($result, array $timeFields): array
@@ -1117,11 +1126,12 @@ class PDO extends DBClass
         // Do nothing
     }
 
-    /** Returns the result record.
-     * @param array $row
+    /**
+     * Returns the result record.
+     * @param array<array-key, mixed> $row
      * @param bool $isFirstRow
-     * @param array $timeFields
-     * @return array
+     * @param array<array-key, mixed> $timeFields
+     * @return array<string, number|string|bool|null>
      * @throws Exception
      */
     private function getResultRecord(array $row, bool $isFirstRow, array $timeFields): array

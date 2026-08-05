@@ -29,6 +29,11 @@ use PHPUnit\Framework\TestSuite;
 
 class INTERMediator_AllTests extends TestCase
 {
+    /**
+     * Suite.
+     *
+     * @return mixed The result.
+     */
     public static function suite()
     {
         $dontTestDB = false;

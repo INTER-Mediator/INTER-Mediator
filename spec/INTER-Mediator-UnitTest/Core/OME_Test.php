@@ -25,14 +25,25 @@ class OME_Test extends TestCase
       * just on his testing only. Usually this password might be wrong.
       */
 
-    public function testAddressDividing()
+    /**
+     * Test address Dividing.
+     *
+     * @return void
+     */
+    public function testAddressDividing(): void
     {
         $addrString = "Masayuki Nii <msyk@msyk.net>";
         $ome = new OME();
         $ome->setToField($addrString);
         $this->assertTrue($ome->getToField() === $addrString, "[ERROR] in parse mail address string.");
     }
-    public function testAddressCheck()
+
+    /**
+     * Test address Check.
+     *
+     * @return void
+     */
+    public function testAddressCheck(): void
     {
         $addrString = "Masayuki Nii <msyk@msyk.net>";
         $ome = new OME();
@@ -54,7 +65,13 @@ class OME_Test extends TestCase
         $result = $ome->checkEmail($addrString);
         $this->assertFalse($result, "[ERROR] in checking mail address.");
     }
-    public function testAddressAppend()
+
+    /**
+     * Test address Append.
+     *
+     * @return void
+     */
+    public function testAddressAppend(): void
     {
         $addrString = "Masayuki Nii <msyk@msyk.net>";
         $ome = new OME();
@@ -101,43 +118,43 @@ class OME_Test extends TestCase
         $this->assertTrue($ome->getBccField() === $prevToField,
             "[ERROR] in appending mail address string. Compare [{$ome->getBccField()}] [{$prevToField}]");
     }
-/*
-    public function testSendSimpleMail()
-    {
-        $ome = new OME();
-        $ome->setToField($this->mailAddress, "Masayuki Nii");
-        $ome->setFromField($this->mailAddress, "新居雅行");
-        $ome->setSubject("INTER-Mediator ユニットテスト: testSendSimpleMail");
-        $ome->setBody("INTER-Mediator Uni Test: testSendSimpleMail");
-        $ome->appendBody("\nINTER-Mediator Uni Test: testSendSimpleMail");
-        $ome->appendBody("\nINTER-Mediator ユニットテスト: testSendSimpleMail");
-        $ome->appendBody("\nINTER-Mediator Uni Test: testSendSimpleMail");
-        $result = $ome->send();
-        $this->assertEquals($result, true, "[ERROR] in sending mail");
-    }
-
-    public function testSendMailSMTP()
-    {
-        date_default_timezone_set("Asia/Tokyo");
-
-        $ome = new OME();
-        $ome->setSmtpInfo($this->smtpSettings);
-
-        $ome->setToField($this->mailAddress, "Masayuki Nii");
-        $ome->setFromField($this->mailAddress, "新居雅行");
-        $ome->setCurrentDateToHead();
-        $ome->setSubject("INTER-Mediator ユニットテスト: testSendMailSMTP");
-        $ome->setBody("INTER-Mediator Uni Test: testSendMailSMTP");
-        $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
-        $ome->appendBody("\nINTER-Mediator ユニットテスト: testSendMailSMTP");
-        $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
-        for ($i = 0; $i < 100; $i++) {
-            $ome->appendBody("日本語の「複雑な」構造を、持った文章(sentence)を、書いてみたら、こうなったですぞ。");
+    /*
+        public function testSendSimpleMail()
+        {
+            $ome = new OME();
+            $ome->setToField($this->mailAddress, "Masayuki Nii");
+            $ome->setFromField($this->mailAddress, "新居雅行");
+            $ome->setSubject("INTER-Mediator ユニットテスト: testSendSimpleMail");
+            $ome->setBody("INTER-Mediator Uni Test: testSendSimpleMail");
+            $ome->appendBody("\nINTER-Mediator Uni Test: testSendSimpleMail");
+            $ome->appendBody("\nINTER-Mediator ユニットテスト: testSendSimpleMail");
+            $ome->appendBody("\nINTER-Mediator Uni Test: testSendSimpleMail");
+            $result = $ome->send();
+            $this->assertEquals($result, true, "[ERROR] in sending mail");
         }
-        $ome->appendBody("\nこれが最後です。");
-        $result = $ome->send();
-        $this->assertEquals($result, true, "[ERROR] in sending mail");
-    }
-*/
+
+        public function testSendMailSMTP()
+        {
+            date_default_timezone_set("Asia/Tokyo");
+
+            $ome = new OME();
+            $ome->setSmtpInfo($this->smtpSettings);
+
+            $ome->setToField($this->mailAddress, "Masayuki Nii");
+            $ome->setFromField($this->mailAddress, "新居雅行");
+            $ome->setCurrentDateToHead();
+            $ome->setSubject("INTER-Mediator ユニットテスト: testSendMailSMTP");
+            $ome->setBody("INTER-Mediator Uni Test: testSendMailSMTP");
+            $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
+            $ome->appendBody("\nINTER-Mediator ユニットテスト: testSendMailSMTP");
+            $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
+            for ($i = 0; $i < 100; $i++) {
+                $ome->appendBody("日本語の「複雑な」構造を、持った文章(sentence)を、書いてみたら、こうなったですぞ。");
+            }
+            $ome->appendBody("\nこれが最後です。");
+            $result = $ome->send();
+            $this->assertEquals($result, true, "[ERROR] in sending mail");
+        }
+    */
 }
  

@@ -15,7 +15,15 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface BeforeRead
+ * @package INTERMediator\DB\Extending
+ */
 interface BeforeRead
 {
-    public function doBeforeReadFromDB();
+    /**
+     * Do before read from DB.
+     * @return bool|string|null
+     */
+    public function doBeforeReadFromDB(): mixed;
 }

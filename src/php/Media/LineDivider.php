@@ -18,6 +18,7 @@ use Iterator;
  * Class LineDivider
  *
  * Splits a string into lines and allows iteration over each line.
+ * @implements Iterator<int, string>
  */
 class LineDivider implements Iterator
 {
@@ -44,8 +45,9 @@ class LineDivider implements Iterator
         $this->key = 0;
     }
 
-    /** Finds the start and end positions of the next line in the data string.
-     * @return array Array containing start and end positions of the next line, or -1 if not found.
+    /**
+     * Finds the start and end positions of the next line in the data string.
+     * @return array<array-key, mixed> Array containing start and end positions of the next line, or -1 if not found.
      */
     private function getNextLinePosition(): array
     {

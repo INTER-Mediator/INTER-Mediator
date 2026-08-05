@@ -9,6 +9,11 @@ require_once(dirname(__FILE__) . '/../DataConverter_Currency_Base_Test.php');
 
 class DataConverter_Currency_DollerIntl_Test extends DataConverter_Currency_Base_Test
 {
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         \INTERMediator\Locale\IMLocale::$localForTest = 'en_US';

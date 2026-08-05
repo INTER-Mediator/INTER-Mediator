@@ -18,8 +18,13 @@ trait DB_PDO_Test_AuthHandler
                                                    string $user, string $keyField, string $keyValue): ?array;
 */
 
+    /**
+     * Get Authorized Groups Test.
+     *
+     * @return void
+     */
     #[Test]
-    function getAuthorizedGroups_Test()
+    function getAuthorizedGroups_Test(): void
     {
         $this->dbProxySetupForAuth();
         $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups("read");
@@ -28,8 +33,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertNotContains('group3', $aGroup);
     }
 
+    /**
+     * Get Authorized Users Test.
+     *
+     * @return void
+     */
     #[Test]
-    function getAuthorizedUsers_Test()
+    function getAuthorizedUsers_Test(): void
     {
         $this->dbProxySetupForAuth();
         $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers("read");
@@ -40,16 +50,26 @@ trait DB_PDO_Test_AuthHandler
         $this->assertNotContains('user5', $aGroup);
     }
 
+    /**
+     * Remove Outdated Challenges Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function removeOutdatedChallenges_Test()
+    public function removeOutdatedChallenges_Test(): void
     {
         $this->dbProxySetupForAuth();
         $result = $this->db_proxy->dbClass->authHandler->authSupportRemoveOutdatedChallenges();
         $this->assertTrue($result, "Some sql commands have to be executed to remove outdated challenges.");
     }
 
+    /**
+     * Create User Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function createUser_Test()
+    public function createUser_Test(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -63,8 +83,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals($hashedPasswd, $retrievedPasswd, "Password hash has to be retrieved.");
     }
 
+    /**
+     * Retrieve Hashed Password Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function retrieveHashedPassword_Test()
+    public function retrieveHashedPassword_Test(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -76,7 +101,12 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
     }
 
-    public function getSalt_Test()
+    /**
+     * Get Salt Test.
+     *
+     * @return void
+     */
+    public function getSalt_Test(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -86,8 +116,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals('54455354', $retrievedSalt, $testName);
     }
 
+    /**
+     * Store Retrieve Challenge Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function storeRetrieveChallenge_Test()
+    public function storeRetrieveChallenge_Test(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -115,8 +150,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals($challenge, $retrieved, $testName);
     }
 
+    /**
+     * Get User Id From Email Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function getUserIdFromEmail_Test()
+    public function getUserIdFromEmail_Test(): void
     {
         $testName = "Test for the authSupportGetUserIdFromEmail method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -130,8 +170,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals('', $result, $testName);
     }
 
+    /**
+     * Get User Id From Username Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function getUserIdFromUsername_Test()
+    public function getUserIdFromUsername_Test(): void
     {
         $testName = "Test for the authSupportGetUserIdFromUsername method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -143,8 +188,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals(3, $result, $testName);
     }
 
+    /**
+     * Get Username From User Id Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function getUsernameFromUserId_Test()
+    public function getUsernameFromUserId_Test(): void
     {
         $testName = "Test for the authSupportGetUsernameFromUserId method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -156,8 +206,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals('user3', $result, $testName);
     }
 
+    /**
+     * Get Group Name From Group Id Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function getGroupNameFromGroupId_Test()
+    public function getGroupNameFromGroupId_Test(): void
     {
         $testName = "Test for the authSupportGetGroupNameFromGroupId method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -165,8 +220,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertEquals('group1', $result, $testName);
     }
 
+    /**
+     * Get Groups Of User Test.
+     *
+     * @return void
+     */
     #[Test]
-    function getGroupsOfUser_Test()
+    function getGroupsOfUser_Test(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -181,8 +241,13 @@ trait DB_PDO_Test_AuthHandler
     }
 
 
+    /**
+     * Unify Username And Email Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function unifyUsernameAndEmail_Test()
+    public function unifyUsernameAndEmail_Test(): void
     {
         $testName = "Test for the authSupportUnifyUsernameAndEmail method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -193,8 +258,13 @@ trait DB_PDO_Test_AuthHandler
 
     }
 
+    /**
+     * Email From Unified Username Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function emailFromUnifiedUsername_Test()
+    public function emailFromUnifiedUsername_Test(): void
     {
         $testName = "Test for the authSupportEmailFromUnifiedUsername method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -206,8 +276,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertNull($result, $testName);
     }
 
+    /**
+     * Can Migrate SHA 256 Hash Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function canMigrateSHA256Hash_Test()
+    public function canMigrateSHA256Hash_Test(): void
     {
         $testName = "Test for the authSupportCanMigrateSHA256Hash method in AuthHandler.";
         $this->dbProxySetupForAuth();
@@ -215,8 +290,13 @@ trait DB_PDO_Test_AuthHandler
         $this->assertTrue($result, $testName);
     }
 
+    /**
+     * Auth Fail Counting Test.
+     *
+     * @return void
+     */
     #[Test]
-    public function authFailCounting_Test()
+    public function authFailCounting_Test(): void
     {
 
         $testName = "Test for the AuthFail class with AuthHandler.";

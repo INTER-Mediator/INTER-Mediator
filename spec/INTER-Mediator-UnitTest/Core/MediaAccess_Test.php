@@ -8,13 +8,28 @@ use PHPUnit\Framework\TestCase;
 
 class MediaAccess_Test extends TestCase
 {
+    /**
+     * The mediaaccess.
+     *
+     * @var MediaAccess
+     */
     private MediaAccess $mediaaccess;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         $this->mediaaccess = new MediaAccess();
     }
 
+    /**
+     * Test as Attachment.
+     *
+     * @return void
+     */
     public function test_asAttachment(): void
     {
         $reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
@@ -35,6 +50,11 @@ class MediaAccess_Test extends TestCase
         $this->assertSame($expected, $disposition->getValue($this->mediaaccess));
     }
 
+    /**
+     * Test exit As Error.
+     *
+     * @return void
+     */
     public function test_exitAsError(): void
     {
         $reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');

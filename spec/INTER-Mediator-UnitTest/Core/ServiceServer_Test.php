@@ -7,7 +7,12 @@ use PHPUnit\Framework\TestCase;
 class ServiceServer_Test extends TestCase
 {
 
-    public function test_instantiate()
+    /**
+     * Test instantiate.
+     *
+     * @return void
+     */
+    public function test_instantiate(): void
     {
         $ssProxy = ServiceServerProxy::instance();
         $this->assertNotNull($ssProxy, "The ServiceServerProxy instance has to get.");

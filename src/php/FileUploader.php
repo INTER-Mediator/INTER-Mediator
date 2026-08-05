@@ -36,11 +36,13 @@ class FileUploader
      */
     private int $accessLogLevel;
 
-    /** @var array Output messages for logging or response.
+    /**
+     * @var array<array-key, mixed> Output messages for logging or response.
      */
     private array $outputMessage = [];
 
-    /** @var array|null Database result after processing (e.g., for CSV uploads).
+    /**
+     * @var array<array-key, mixed>|null Database result after processing (e.g., for CSV uploads).
      */
     public ?array $dbresult = null;
 
@@ -52,8 +54,9 @@ class FileUploader
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
-    /** Gets the log result for the current upload process.
-     * @return array Output message array if access log level is enough, otherwise empty array.
+    /**
+     * Gets the log result for the current upload process.
+     * @return array<array-key, mixed> Output message array if access log level is enough, otherwise empty array.
      */
     public function getResultForLog(): array
     {
@@ -73,10 +76,11 @@ class FileUploader
         $this->db->finishCommunication();
     }
 
-    /** Handles file upload errors and outputs error messages as JSON if needed.
-     * @param array|null $dataSource Data source definitions.
-     * @param array|null $options Options for INTER-Mediator.
-     * @param array|null $dbSpec Database specification.
+    /**
+     * Handles file upload errors and outputs error messages as JSON if needed.
+     * @param array<array-key, mixed>|null $dataSource Data source definitions.
+     * @param array<array-key, mixed>|null $options Options for INTER-Mediator.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug mode level.
      * @param string|null $contextName Context name for the upload.
      * @param bool $noOutput If true, suppresses output.
@@ -129,10 +133,11 @@ class FileUploader
         }
     }
 
-    /** Main entry point for handling a file upload request from POST/FILES.
-     * @param array|null $dataSource Data source definitions.
-     * @param array|null $options Options for INTER-Mediator.
-     * @param array|null $dbSpec Database specification.
+    /**
+     * Main entry point for handling a file upload request from POST/FILES.
+     * @param array<array-key, mixed>|null $dataSource Data source definitions.
+     * @param array<array-key, mixed>|null $options Options for INTER-Mediator.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug mode level.
      * @return void
      * @throws Exception
@@ -151,16 +156,17 @@ class FileUploader
         $this->db->exportOutputDataAsJSON();
     }
 
-    /** Handles file upload processing with explicit parameters and file data.
-     * @param array|null $dataSource Data source definitions.
-     * @param array|null $options Options for INTER-Mediator.
-     * @param array|null $dbSpec Database specification.
+    /**
+     * Handles file upload processing with explicit parameters and file data.
+     * @param array<array-key, mixed>|null $dataSource Data source definitions.
+     * @param array<array-key, mixed>|null $options Options for INTER-Mediator.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug mode level.
      * @param string|null $contextName Context name for the upload.
      * @param string|null $keyField Key field name for the record.
      * @param string|null $keyValue Key value for the record.
-     * @param array|null $field Field(s) for the upload.
-     * @param array|null $files Uploaded file(s) data.
+     * @param array<array-key, mixed>|null $field Field(s) for the upload.
+     * @param array<array-key, mixed>|null $files Uploaded file(s) data.
      * @param bool $noOutput If true, suppresses output.
      * @return void
      * @throws Exception

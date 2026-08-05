@@ -45,16 +45,19 @@ class OperationLog
      * @var string|null
      */
     private ?string $dbDSNLog;
-    /** Contexts to record.
-     * @var array|null
+    /**
+     * Contexts to record.
+     * @var array<array-key, mixed>|null
      */
     private ?array $recordingContexts;
-    /** Operations to record.
-     * @var array|null
+    /**
+     * Operations to record.
+     * @var array<array-key, mixed>|null
      */
     private ?array $recordingOperations;
-    /** Context options.
-     * @var array|null
+    /**
+     * Context options.
+     * @var array<array-key, mixed>|null
      */
     private ?array $contextOptions;
     /** Whether to not record theme.
@@ -78,8 +81,9 @@ class OperationLog
      */
     private ?string $accessLogExtensionClass;
 
-    /** Constructor for OperationLog.
-     * @param array|null $options Context options for logging.
+    /**
+     * Constructor for OperationLog.
+     * @param array<array-key, mixed>|null $options Context options for logging.
      */
     public function __construct(?array $options)
     {
@@ -100,8 +104,9 @@ class OperationLog
         $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
-    /** Sets an entry in the operation log.
-     * @param array|null $result Result data for logging.
+    /**
+     * Sets an entry in the operation log.
+     * @param array<array-key, mixed>|null $result Result data for logging.
      * @return void
      * @throws Exception
      */
@@ -178,8 +183,9 @@ class OperationLog
         }
     }
 
-    /** Converts an array to a string representation.
-     * @param array|null $ar Array to convert.
+    /**
+     * Converts an array to a string representation.
+     * @param array<array-key, mixed>|null $ar Array to convert.
      * @return string|null String representation of the array.
      */
     private function arrayToString(?array $ar): ?string

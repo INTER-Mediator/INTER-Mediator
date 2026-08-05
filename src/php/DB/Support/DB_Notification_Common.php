@@ -52,7 +52,8 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     /** @var string|null Last queried condition string.
      */
     private ?string $queriedCondition = null;
-    /** @var array|null Primary keys from the last query.
+    /**
+     * @var array<array-key, mixed>|null Primary keys from the last query.
      */
     private ?array $queriedPrimaryKeys = null;
 
@@ -72,8 +73,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
         return $this->queriedCondition;
     }
 
-    /** Gets the primary keys from the last query.
-     * @return array|null Array of primary keys or null if not set.
+    /**
+     * Gets the primary keys from the last query.
+     * @return array<array-key, mixed>|null Array of primary keys or null if not set.
      */
     public function queriedPrimaryKeys(): ?array
     {
@@ -98,8 +100,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
         $this->queriedCondition = $name;
     }
 
-    /** Sets the primary keys from the last query.
-     * @param array|null $name Array of primary keys.
+    /**
+     * Sets the primary keys from the last query.
+     * @param array<array-key, mixed>|null $name Array of primary keys.
      * @return void
      */
     public function setQueriedPrimaryKeys(?array $name): void
