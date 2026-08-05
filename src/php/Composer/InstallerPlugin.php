@@ -8,7 +8,6 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
-use function PHPUnit\Framework\isEmpty;
 
 class InstallerPlugin implements PluginInterface, EventSubscriberInterface
 {

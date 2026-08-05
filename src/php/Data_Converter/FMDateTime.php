@@ -77,9 +77,9 @@ class FMDateTime
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
-    public function converterFromUserToDB(string $str): string
+    public function converterFromUserToDB(string $str): ?string
     {
         $dtAr = date_parse($str);
         if (!$dtAr) {

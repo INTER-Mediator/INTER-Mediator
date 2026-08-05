@@ -80,7 +80,7 @@ class MySQLDateTime
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
     function converterFromUserToDB(string $str): ?string
     {
