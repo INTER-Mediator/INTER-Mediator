@@ -101,7 +101,7 @@ trait DB_PDO_SQLSupport
                         if ($condition['operator'] === 'ex') {
                             $insideOp = ' OR ';
                             $outsideOp = ' AND ';
-                        } else if (strpos($condition['operator'], 'block') === 0) {
+                        } else if (str_starts_with($condition['operator'], 'block')) {
                             // ASSUMPTION: field=__operation__, operator=block/*/*/* must be at the end of condition settings.
                             // ASSUMPTION: After 'block', there are just condition and __operation__ only item.
                             $currentConditions = $this->arrayToClause($queryClauseArray, $insideOp, $outsideOp);

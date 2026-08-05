@@ -21,9 +21,6 @@ use INTERMediator\Auth\SAMLAuth;
 use INTERMediator\DB\AuthFailCount;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
-use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -266,8 +263,9 @@ trait Proxy_Auth
     function handleMediaToken(): void
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        if (isset($tableInfo['authentication']['media-handling']) && $tableInfo['authentication']['media-handling'] === true && !$this->suppressMediaToken
-        ) {
+        if (isset($tableInfo['authentication']['media-handling'])
+            && $tableInfo['authentication']['media-handling'] === true
+            && !$this->suppressMediaToken) {
             $generatedChallenge = IMUtil::generateChallenge();
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             $cookieNameUser = '_im_username';

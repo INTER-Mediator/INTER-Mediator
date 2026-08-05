@@ -70,7 +70,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     throw new Exception("CURL doesn't installed here.");
                 }
             } else { // Other settings
-                $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL);
+                $dbProxyInstance->dbClass->setupFMDataAPIforDB('');
                 $content = base64_decode($dbProxyInstance->dbClass->getFMDataInstance()->getContainerData($target));
             }
         } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
@@ -116,8 +116,9 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
      * @param array<array-key, mixed>|null $dataSource Data source definition.
      * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
-     * @throws Exception If an error occurs during processing.
+     * @param string|null $customFileName
      * @return void
+     * @throws Exception If an error occurs during processing.
      */
     public function processing(Proxy  $db, string|null $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, string|null $keyField, string|null $keyValue,

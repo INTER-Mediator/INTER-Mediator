@@ -28,6 +28,7 @@ use INTERMediator\TypesPHPStan;
  * @phpstan-import-type SortDefinition from TypesPHPStan
  * @phpstan-import-type RelationshipDefinition from TypesPHPStan
  * @phpstan-import-type SMTPDefinition from TypesPHPStan
+ * @phpstan-import-type ForeignFieldAndValueDefinition from TypesPHPStan
  */
 class Settings
 {
@@ -101,7 +102,7 @@ class Settings
      */
     private array $fieldsValues = array();
     /**
-     * @var array<RelationshipDefinition>
+     * @var array<ForeignFieldAndValueDefinition>
      */
     private array $foreignFieldAndValue = array();
     /** @var DBClass|null
@@ -509,42 +510,26 @@ class Settings
 
     /**
      * Set SMTP configuration.
-     * @param array<string, string>|null $config SMTP configuration array.
+     * @param SMTPDefinition|null $config SMTP configuration array.
      * @return void
      */
     public function setSmtpConfiguration(?array $config): void
     {
-        $this->smtpConfiguration = $config;
-//        if (is_null($config)) {
-//            $this->smtpConfiguration = null;
-//            return;
-//        }
-//        if ($config["server"] && $config["username"] && $config["password"]) {
-//            $smtpSettings = [
-//                "server" => $config["server"],
-//                "username" => IMUtil::getFromProfileIfAvailable((string)$config["username"]),
-//                "password" => IMUtil::getFromProfileIfAvailable((string)$config["password"]),
-//            ];
-//            $this->smtpConfiguration = $smtpSettings;
-//        } else {
-//            return;
-//        }
-//        if (isset($config["server"])) {
-//            $smtpSettings["server"] = $config["server"];
-//        }
-//        if (isset($config["protocol"])) {
-//            $smtpSettings["protocol"] = $config["protocol"];
-//        }
-//        if (isset($config["port"])) {
-//            $smtpSettings["port"] = $config["port"];
-//        }
-        if (isset($config["username"])) {
-            $smtpSettings["username"] = IMUtil::getFromProfileIfAvailable((string)$config["username"]);
+        if (is_null($config)) {
+            $this->smtpConfiguration = null;
+            return;
         }
-        if (isset($config["password"])) {
-            $smtpSettings["password"] = IMUtil::getFromProfileIfAvailable((string)$config["password"]);
+        if ($config["server"] && $config["username"] && $config["password"]) {
+            $this->smtpConfiguration = array(
+                "server" => $config["server"],
+                "port" => $config["port"] ?? 0,
+                "protocol" => $config["protocol"] ?? "",
+                "username" => IMUtil::getFromProfileIfAvailable((string)$config["username"]),
+                "password" => IMUtil::getFromProfileIfAvailable((string)$config["password"]),
+            );
+        } else {
+            $this->smtpConfiguration = null;
         }
-
     }
 
     /**
@@ -649,7 +634,7 @@ class Settings
 
     /**
      * Set the foreign field and value.
-     * @param array<array-key, mixed>|null $foreignFieldAndValue Foreign field and value array.
+     * @param array<ForeignFieldAndValueDefinition>|null $foreignFieldAndValue Foreign field and value array.
      * @return void
      */
     public function setForeignFieldAndValue(?array $foreignFieldAndValue): void
@@ -659,7 +644,7 @@ class Settings
 
     /**
      * Get the foreign field and value.
-     * @return array<array-key, mixed>|null Foreign field and value array.
+     * @return array<ForeignFieldAndValueDefinition>|null Foreign field and value array.
      */
     public function getForeignFieldAndValue(): ?array
     {
@@ -1070,7 +1055,7 @@ class Settings
 
     /**
      * Set the data source.
-     * @param array<array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>>>|null $src Data source array.
+     * @param array<ContextDefiniton>|null $src Data source array.
      * @return void
      */
     public function setDataSource(?array $src): void
@@ -1080,7 +1065,7 @@ class Settings
 
     /**
      * Get the data source.
-     * @return array<array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>>>|null Data source array.
+     * @return array<ContextDefiniton>|null Data source array.
      */
     public function getDataSource(): ?array
     {
@@ -1090,7 +1075,7 @@ class Settings
     /**
      * Get the data source definition.
      * @param string|null $dataSourceName Data source name.
-     * @return array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>>|null Data source definition array.
+     * @return ContextDefiniton|null Data source definition array.
      */
     public function getDataSourceDefinition(string|null $dataSourceName): ?array
     {
@@ -1104,7 +1089,7 @@ class Settings
 
     /**
      * Set the options.
-     * @param array<array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>>>|null $src Options array.
+     * @param OptionDefinition|null $src Options array.
      * @return void
      */
     public function setOptions(?array $src): void
@@ -1114,7 +1099,7 @@ class Settings
 
     /**
      * Get the options.
-     * @return array<array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>>>|null Options array.
+     * @return OptionDefinition|null Options array.
      */
     public function getOptions(): ?array
     {
@@ -1123,7 +1108,7 @@ class Settings
 
     /**
      * Set the database specification.
-     * @param array<array-key, string|number|bool|null>|null $src Database specification array.
+     * @param DBSpec|null $src Database specification array.
      * @return void
      */
     public function setDbSpec(?array $src): void
@@ -1133,7 +1118,7 @@ class Settings
 
     /**
      * Get the database specification.
-     * @return array<array-key, string|number|bool|null>|null Database specification array.
+     * @return DBSpec|null Database specification array.
      */
     public function getDbSpec(): ?array
     {
@@ -1337,7 +1322,7 @@ class Settings
     public function getForeignKeysValue(string|null $targetField): bool|float|int|string|null
     {
         foreach ($this->foreignFieldAndValue as $ar) {
-            if ($targetField == $ar["field"]) {
+            if ($targetField === $ar["field"]) {
                 return $ar["value"];
             }
         }
@@ -1375,12 +1360,10 @@ class Settings
                 if (!isset($this->dataSource[$index]['global'])) {
                     $this->dataSource[$index]['global'] = array();
                 }
-                if (is_array($this->dataSource[$index]['global'])) {
-                    $this->dataSource[$index]['global'][] = array(
-                        'db-operation' => $operation,
-                        'field' => $field,
-                        'value' => $value);
-                }
+                $this->dataSource[$index]['global'][] = array(
+                    'db-operation' => $operation,
+                    'field' => $field,
+                    'value' => $value);
                 return;
             }
         }
@@ -1389,7 +1372,7 @@ class Settings
     /* get the information for the 'name'. */
     /**
      * Get the data source target array.
-     * @return array<array-key, string|number|bool|null|array<array<array-key, string|number|bool|null>>>|null Data source target array.
+     * @return ContextDefiniton|null Data source target array.
      */
     public function getDataSourceTargetArray(): ?array
     {
@@ -1409,13 +1392,11 @@ class Settings
      */
     public function getEntityForRetrieve(): string|null
     {
-        $dsrc = $this->getDataSourceTargetArray();
-        if (is_null($dsrc)) {
+        $dataSource = $this->getDataSourceTargetArray();
+        if (is_null($dataSource)) {
             return null;
         }
-        $viewName = (!is_array($dsrc['view']) && !is_null($dsrc['view'])) ? $dsrc['view'] : null;
-        $nameName = (!is_array($dsrc['name']) && !is_null($dsrc['name'])) ? $dsrc['name'] : null;
-        $entity = $viewName ?? $nameName ?? null;
+        $entity = $dataSource['view'] ?? $dataSource['name'] ?? null;
         return (string)$entity;
     }
 
@@ -1424,14 +1405,11 @@ class Settings
      */
     public function getEntityForCount(): string|null
     {
-        $dsrc = $this->getDataSourceTargetArray();
-        if (is_null($dsrc)) {
+        $dataSource = $this->getDataSourceTargetArray();
+        if (is_null($dataSource)) {
             return null;
         }
-        $countName = (!is_array($dsrc['count']) && !is_null($dsrc['count'])) ? $dsrc['count'] : null;
-        $viewName = (!is_array($dsrc['view']) && !is_null($dsrc['view'])) ? $dsrc['view'] : null;
-        $nameName = (!is_array($dsrc['name']) && !is_null($dsrc['name'])) ? $dsrc['name'] : null;
-        $entity = $countName ?? $viewName ?? $nameName ?? null;
+         $entity = $dataSource['count'] ?? $dataSource['view'] ?? $dataSource['name'] ?? null;
         return (string)$entity;
     }
 
@@ -1440,13 +1418,11 @@ class Settings
      */
     public function getEntityForUpdate(): string|null
     {
-        $dsrc = $this->getDataSourceTargetArray();
-        if (is_null($dsrc)) {
+        $dataSource = $this->getDataSourceTargetArray();
+        if (is_null($dataSource)) {
             return null;
         }
-        $tableName = (!is_array($dsrc['table']) && !is_null($dsrc['table'])) ? $dsrc['table'] : null;
-        $nameName = (!is_array($dsrc['name']) && !is_null($dsrc['name'])) ? $dsrc['name'] : null;
-        $entity = $tableName ?? $nameName ?? null;
+        $entity = $dataSource['table'] ?? $dataSource['name'] ?? null;
         return (string)$entity;
     }
 
@@ -1455,14 +1431,11 @@ class Settings
      */
     public function getEntityAsSource(): string|null
     {
-        $dsrc = $this->getDataSourceTargetArray();
-        if (is_null($dsrc)) {
+        $dataSource = $this->getDataSourceTargetArray();
+        if (is_null($dataSource)) {
             return null;
         }
-        $sourceName = (!is_array($dsrc['source']) && !is_null($dsrc['count'])) ? $dsrc['source'] : null;
-        $tableName = (!is_array($dsrc['table']) && !is_null($dsrc['table'])) ? $dsrc['table'] : null;
-        $nameName = (!is_array($dsrc['name']) && !is_null($dsrc['name'])) ? $dsrc['name'] : null;
-        $entity = $sourceName ?? $tableName ?? $nameName ?? null;
+        $entity = $dataSource['source'] ?? $dataSource['table'] ?? $dataSource['name'] ?? null;
         return (string)$entity;
     }
 

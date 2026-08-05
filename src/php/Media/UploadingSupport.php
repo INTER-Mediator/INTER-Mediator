@@ -72,7 +72,7 @@ abstract class UploadingSupport
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if (isset($item['field']) && $item['field'] == $targetFieldName && isset($item['context'])) {
                     $relatedContext = new Proxy();
-                    $relatedContext->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
+                    $relatedContext->initialize($dataSource, $options, $dbSpec, $debug, $item['context']);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                     $db->logger->setDebugMessage("[FileSystem::processing] context={$item['context']} relatedContextInfo=" . var_export($relatedContextInfo, true), 2);
                     $fields = array();

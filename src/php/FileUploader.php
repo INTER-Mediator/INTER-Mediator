@@ -17,7 +17,6 @@
 namespace INTERMediator;
 
 use Exception;
-use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 
 /**
@@ -319,17 +318,7 @@ class FileUploader
     {
         $className = "FileSystem";
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
-
-        if (($dbclass === 'FileMaker_FX' || $dbclass === 'FileMaker_DataAPI') &&
-            isset($contextDef['file-upload'])) {
-            foreach ($contextDef['file-upload'] as $item) {
-                if (isset($item['container'])
-                    && (($item['container'] === TRUE) || ($item['container'] === 'FileMaker'))) {
-                    $className = "FileMakerContainer";
-                    break;
-                }
-            }
-        }
+        $isFileMaker = $dbclass === 'FileMaker_FX' || $dbclass === 'FileMaker_DataAPI';
         if (isset($contextDef['file-upload'])) {
             foreach ($contextDef['file-upload'] as $item) {
                 if (isset($item['container']) && (strtolower($item['container']) === 's3')) {
@@ -340,6 +329,10 @@ class FileUploader
                     break;
                 } else if (isset($item['container']) && (strtolower($item['container']) === 'fileurl')) {
                     $className = "FileURL";
+                    break;
+                } else if ($isFileMaker && isset($item['container'])
+                    && (($item['container'] === TRUE) || ($item['container'] === 'FileMaker'))) {
+                    $className = "FileMakerContainer";
                     break;
                 }
             }

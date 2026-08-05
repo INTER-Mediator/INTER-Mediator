@@ -74,7 +74,7 @@ class SendMail extends MessagingProvider
                         'protocol' => $smtpConfig['protocol'] ?? 'smtp',
                         'user' => $smtpConfig['username'],
                         'pass' => $smtpConfig['password'],
-                        'encryption' => $smtpConfig['encryption'] ?? null,
+//                        'encryption' => $smtpConfig['encryption'] ?? null,
                     ));
                 } else {
                     $ome->setSmtpInfo(array(
