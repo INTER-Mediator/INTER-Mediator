@@ -39,8 +39,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      */
     protected FileMaker_DataAPI $fmdb;
 
-    /** Array of group IDs the user belongs to (used for group resolution).
-     * @var array
+    /**
+     * Array of group IDs the user belongs to (used for group resolution).
+     * @var array<array-key, mixed>
      */
     private array $belongGroups;
 
@@ -200,13 +201,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return null;
     }
 
-    /** Retrieves a challenge for authentication.
+    /**
+     * Retrieves a challenge for authentication.
      * @param null|string|int $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
      * @param bool $isMulti Allow multiple challenges.
-     * @return string|null|array Challenge string or null if not found.
+     * @return string|null|array<array-key, mixed> Challenge string or null if not found.
      */
     public function authSupportRetrieveChallenge(null|string|int $uid,
                                                  string          $clientId,
@@ -379,12 +381,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return null;
     }
 
-    /** Creates a new user in the authentication system.
+    /**
+     * Creates a new user in the authentication system.
      * @param string $username Username.
      * @param string $hashedpassword Hashed password.
      * @param bool $isSAML SAML authentication flag.
      * @param string|null $ldapPassword LDAP password.
-     * @param array|null $attrs Additional attributes.
+     * @param array<array-key, mixed>|null $attrs Additional attributes.
      * @return bool True if successful, false otherwise.
      * @throws Exception
      */
@@ -708,9 +711,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return null;
     }
 
-    /** Retrieves all groups for a user.
+    /**
+     * Retrieves all groups for a user.
      * @param string|null $user User ID or username.
-     * @return array Groups for the user.
+     * @return array<array-key, mixed> Groups for the user.
      */
     public function authSupportGetGroupsOfUser(?string $user): array
     {
@@ -816,14 +820,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return false;
     }
 
-    /** Checks the media privilege for a user in a given table.
+    /**
+     * Checks the media privilege for a user in a given table.
      * @param string $tableName Table name.
      * @param string $targeting Targeting value.
      * @param string $userField User field name.
      * @param string $user User value.
      * @param string $keyField Key field name.
      * @param string $keyValue Key value.
-     * @return array|null The media privilege data, or null if not found.
+     * @return array<array-key, mixed>|null The media privilege data, or null if not found.
      * @throws Exception
      */
     public function authSupportCheckMediaPrivilege(
@@ -1013,8 +1018,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return true;
     }
 
-    /** Handles OAuth user registration or update.
-     * @param array $keyValues Key-value pairs for OAuth user handling.
+    /**
+     * Handles OAuth user registration or update.
+     * @param array<array-key, mixed> $keyValues Key-value pairs for OAuth user handling.
      * @return bool True if successful, false otherwise.
      */
     public function authSupportOAuthUserHandling(array $keyValues): bool
@@ -1023,9 +1029,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return false;
     }
 
-    /** Retrieves unified username and email information (array: [UserID, username, hashedpasswd]).
+    /**
+     * Retrieves unified username and email information (array: [UserID, username, hashedpasswd]).
      * @param null|string $userID User ID.
-     * @return array Array with three elements: [UserID, username, hashedpasswd].
+     * @return array<array-key, mixed> Array with three elements: [UserID, username, hashedpasswd].
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
     {
@@ -1069,9 +1076,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return [null, null, null];
     }
 
-    /** Retrieves login user information from the authuser table.
+    /**
+     * Retrieves login user information from the authuser table.
      * @param string $userID User ID or username.
-     * @return array Array containing [user ID, real name, email, public key, secret].
+     * @return array<array-key, mixed> Array containing [user ID, real name, email, public key, secret].
      * @throws Exception If the user table is not configured, connection fails, or multiple/no users are found.
      */
     public function getLoginUserInfo(string $userID): array
@@ -1273,9 +1281,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         }
     }
 
-    /** Retrieves user information from the authuser table by public key credential ID.
+    /**
+     * Retrieves user information from the authuser table by public key credential ID.
      * @param string $pkid The public key credential ID.
-     * @return array Array of user information, or empty array if not found.
+     * @return array<array-key, mixed> Array of user information, or empty array if not found.
      * @throws Exception If the public key ID is invalid, the user table is not configured, or multiple users are found.
      */
     public function authSupportUserInfoFromPublickeyId(string $pkid): array

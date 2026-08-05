@@ -9,9 +9,9 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * A placeholder entry point for REST API.
- * @param null|array $dataSource The data source definitions.
- * @param array|null $options The option definitions.
- * @param null|array $dbSpecification The database connection specifications.
+ * @param null|array<array-key, mixed> $dataSource The data source definitions.
+ * @param array<array-key, mixed>|null $options The option definitions.
+ * @param null|array<array-key, mixed> $dbSpecification The database connection specifications.
  * @param null|bool $debug If true, enables debug mode.
  */
 function IM_Dummy_Entry_RESTAPI(?array $dataSource, ?array $options, ?array $dbSpecification, ?bool $debug = false): void
@@ -27,13 +27,16 @@ class RESTAPI
 {
     use Proxy_ExtSupport;
 
-    /** @var array The data source definitions.
+    /**
+     * @var array<array-key, mixed> The data source definitions.
      */
     private array $dataSource;
-    /** @var array The option definitions.
+    /**
+     * @var array<array-key, mixed> The option definitions.
      */
     private array $options;
-    /** @var array The database connection specifications.
+    /**
+     * @var array<array-key, mixed> The database connection specifications.
      */
     private array $dbSpecification;
 
@@ -234,9 +237,10 @@ class RESTAPI
         echo json_encode($result);
     }
 
-    /** Gets information about a context.
-     * @param array $contextDef The context definition.
-     * @return array An array containing context information.
+    /**
+     * Gets information about a context.
+     * @param array<array-key, mixed> $contextDef The context definition.
+     * @return array<array-key, mixed> An array containing context information.
      * @throws Exception
      */
     private function contextInfo(array $contextDef): array

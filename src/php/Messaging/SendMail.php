@@ -43,8 +43,8 @@ class SendMail extends MessagingProvider
     /** Sends emails based on the provided parameters and result set.
      * Handles both legacy and new email architectures, supports attachments and storing sent mail data.
      * @param Proxy $dbProxy A Proxy class's instance for logging and settings.
-     * @param array $sendMailParam Parameters for email sending (recipients, subject, body, etc.).
-     * @param array $result Result set from database operations.
+     * @param array<string, string> $sendMailParam Parameters for email sending (recipients, subject, body, etc.).
+     * @param array<array<string, number|string|bool|null>> $result Result set from database operations.
      * @return bool True if all emails sent successfully, false if any error occurred.
      * @throws TransportExceptionInterface
      */
@@ -59,11 +59,11 @@ class SendMail extends MessagingProvider
             $isErrorThisRecord = false;
             $ome = new OME();
 
-            if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
+            if (isset($sendMailParam['f-option']) && $sendMailParam['f-option']) {
                 $ome->useSendMailParam();
             }
             if (isset($sendMailParam['body-wrap']) && $sendMailParam['body-wrap'] > 1) {
-                $ome->setBodyWidth($sendMailParam['body-wrap']);
+                $ome->setBodyWidth(intval($sendMailParam['body-wrap']));
             }
 
             if (isset($smtpConfig)) {

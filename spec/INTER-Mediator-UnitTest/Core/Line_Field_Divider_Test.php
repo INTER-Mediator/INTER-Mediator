@@ -14,7 +14,13 @@ use INTERMediator\Media\FieldDivider;
 class Line_Field_Divider_Test extends TestCase
 {
 
-    private function checkLines($d)
+    /**
+     * Check Lines.
+     *
+     * @param LineDivider $d The d.
+     * @return void
+     */
+    private function checkLines(LineDivider $d): void
     {
         $ar = array();
         foreach ($d as $line) {
@@ -26,7 +32,12 @@ class Line_Field_Divider_Test extends TestCase
         $this->assertEquals("ccc", $ar[2]);
     }
 
-    public function testLineDivider()
+    /**
+     * Test line Divider.
+     *
+     * @return void
+     */
+    public function testLineDivider(): void
     {
         $this->checkLines(new LineDivider("aaa\nbbb\nccc\n"));
         $this->checkLines(new LineDivider("aaa\rbbb\rccc\r"));
@@ -35,7 +46,12 @@ class Line_Field_Divider_Test extends TestCase
         $this->checkLines(new LineDivider("aaa\nbbb\nccc"));
     }
 
-    public function testFieldDivider()
+    /**
+     * Test field Divider.
+     *
+     * @return void
+     */
+    public function testFieldDivider(): void
     {
         $dq = '"';
         $sq = "'";

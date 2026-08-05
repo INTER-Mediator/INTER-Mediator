@@ -46,9 +46,10 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return false;
     }
 
-    /** Checks if the given field name is in the provided list of field names, with FileMaker-specific rules.
+    /**
+     * Checks if the given field name is in the provided list of field names, with FileMaker-specific rules.
      * @param string $fname Field name to check.
-     * @param array $fieldnames Array of available field names.
+     * @param array<array-key, mixed> $fieldnames Array of available field names.
      * @return bool True if $fname is in $fieldnames or matches FileMaker conventions, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool

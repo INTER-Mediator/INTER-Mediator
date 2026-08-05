@@ -34,11 +34,11 @@ class SAMLAuth
      */
     private Simple $authSimple;
     /** SAML attribute extraction rules, mapping logical names to SAML attribute keys.
-     * @var array|null
+     * @var array<string, string>|null
      */
     private ?array $samlAttrRules = null;
     /** Additional SAML attribute rules for further validation.
-     * @var array|null
+     * @var array<string, string>|null
      */
     private ?array $samlAdditionalRules = null;
 
@@ -51,7 +51,7 @@ class SAMLAuth
     }
 
     /** Sets the SAML attribute extraction rules.
-     * @param array|null $value Attribute rules to use for extraction.
+     * @param array<string, string>|null $value Attribute rules to use for extraction.
      * @return void
      */
     public function setSAMLAttrRules(?array $value): void
@@ -60,7 +60,7 @@ class SAMLAuth
     }
 
     /** Sets additional SAML attribute rules for further validation.
-     * @param array|null $value Additional attribute rules for validation.
+     * @param array<string, string>|null $value Additional attribute rules for validation.
      * @return void
      */
     public function setSAMLAdditionalRules(?array $value): void
@@ -69,14 +69,12 @@ class SAMLAuth
     }
 
     /** Checks SAML login status and validates additional rules if present.
-     * @return array [bool $additional, string|null $user] Whether additional rules passed and the username.
+     * @return array<bool|string|null> Whether additional rules passed and the username.
      */
     public function samlLoginCheck(): array
     {
-        $additional = true;
         $user = null;
         if ($this->authSimple->isAuthenticated()) {
-            $additional = true;
             if (is_array($this->samlAdditionalRules)) {
                 $totalJudge = true;
                 $attrs = $this->getValuesFromAttributes();
@@ -86,18 +84,17 @@ class SAMLAuth
                     }
                 }
                 if (!$totalJudge) {
-                    $additional = false;
-                    return [$additional, $user];
+                    return [FALSE, $user];
                 }
             }
             $rule = $this->samlAttrRules['username'] ?? 'uid|0';
             $user = $this->getValuesWithRule($rule);
         }
-        return [$additional, $user];
+        return [TRUE, $user];
     }
 
     /** Returns all SAML attributes from the authentication object.
-     * @return array|null The SAML attributes, or null if unavailable.
+     * @return array<string, string>|null The SAML attributes, or null if unavailable.
      */
     public function getAttributes(): ?array
     {
@@ -105,7 +102,7 @@ class SAMLAuth
     }
 
     /** Extracts values from SAML attributes according to configured rules.
-     * @return array|null Associative array of extracted attribute values, or null if no rules are set.
+     * @return array<string, string>|null Associative array of extracted attribute values, or null if no rules are set.
      */
     public function getValuesFromAttributes(): ?array
     {
@@ -119,10 +116,10 @@ class SAMLAuth
     }
 
     /** Extracts a value from SAML attributes using a rule string or array.
-     * @param string|array $rule Rule or array of rules for attribute extraction.
+     * @param array<string, string>|string $rule Rule or array of rules for attribute extraction.
      * @return string The extracted value or an empty string if not found.
      */
-    private function getValuesWithRule($rule): string
+    private function getValuesWithRule(mixed $rule): string
     {
         $returnValue = null;
         $attributes = $this->authSimple->getAttributes();

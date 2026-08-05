@@ -47,9 +47,9 @@ class DataConverter_template
     /** This method converts to the data for database from the data a user entered.
      * Requires to store to database.
      * @param string $str The data a user entered.
-     * @return string The data for database
+     * @return string|null The data for database
      */
-    function converterFromUserToDB(string $str): string
+    function converterFromUserToDB(string $str): ?string
     {
         return $str;
     }
