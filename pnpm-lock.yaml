@@ -67,7 +67,7 @@ importers:
         version: 3.3.1
       node:
         specifier: ^24.16.0
-        version: 24.18.0
+        version: 24.18.1
       nodemon:
         specifier: 3.1.14
         version: 3.1.14
@@ -740,8 +740,8 @@ packages:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
     engines: {node: ^4.5.0 || >= 5.9}
 
-  baseline-browser-mapping@2.11.6:
-    resolution: {integrity: sha512-69D/imtToCsIcAl8WBS2YaRwA4jO/j0HhU+hELqMEu9f54MoUtI6+XH5mrKU8rEFNEk/Ui1I2MK4/JkWacclGw==}
+  baseline-browser-mapping@2.11.7:
+    resolution: {integrity: sha512-APw5YuIQAg6L9w4sHDI6j26DGFJI6RpYOhnkMPdC9lWbkKvsyPHzDsve1yd73lk21yz7Y09Kci8B2Pp9FonzWA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -768,8 +768,8 @@ packages:
     resolution: {integrity: sha512-2cGmJupaNgg+QUwVLAucDuWuoMZ6EX9iHDRswZ5lsNYEmwPaRknMPCLZz07yTzVq/83p4o/wzbDZbBrTvGGTIw==}
     engines: {node: '>=18'}
 
-  brace-expansion@1.1.16:
-    resolution: {integrity: sha512-IDw48K2/2kRkg9LdJxurvq3lV3aBgq0REY89duEqFRthjlPdXHKMj7EnQOXVckxzgisinf3nHfrcE2FufFLXMw==}
+  brace-expansion@1.1.17:
+    resolution: {integrity: sha512-w+aeW/mkgM4PyRMOJCgi3fOrTm5Q8QY1OSfn2TO2iuDj3ezIHqejmuxbjfPrqUkgqRew1iqkyAn0tr0ZwHD9+w==}
 
   brace-expansion@2.1.3:
     resolution: {integrity: sha512-DRdx5neNsG/QXbniLFWi2YmC/68oeOOmKz6zOjVk6ZS1ZLXgLIKqVEc6hWsmkjBbgii0SwaBTcJ5XKj5gzY/4A==}
@@ -1781,8 +1781,8 @@ packages:
     resolution: {integrity: sha512-wRNIrw4DmVLKQlbgOMdkMx27Wrpzes2hh5Jtbi2bjPd+4wJstWIqP5A+lscnqbm0xxmT5Bpg8Lec5ItEBwx6BQ==}
     engines: {node: '>=18'}
 
-  node@24.18.0:
-    resolution: {integrity: sha512-NksNey0LbJUitVSdYoN71VT3I/9BX9BY/7gHdIDgqTsfpAjtJfgqCYCmEBwYcp6FCkYLGce9X1M3J2n42Yw3Uw==}
+  node@24.18.1:
+    resolution: {integrity: sha512-6gb04mOf2vQWpll6WAAXG8o4Dg9QpTXbaWikhTomgOvI0tJaVoFHqrWTDmxtBIA232QOzpmvDVXAQjN3VF0xaQ==}
     engines: {npm: '>=5.0.0'}
     hasBin: true
 
@@ -3273,7 +3273,7 @@ snapshots:
 
   base64id@2.0.0: {}
 
-  baseline-browser-mapping@2.11.6: {}
+  baseline-browser-mapping@2.11.7: {}
 
   binary-extensions@2.3.0: {}
 
@@ -3308,7 +3308,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  brace-expansion@1.1.16:
+  brace-expansion@1.1.17:
     dependencies:
       balanced-match: 1.0.2
       concat-map: 0.0.1
@@ -3327,7 +3327,7 @@ snapshots:
 
   browserslist@4.28.7:
     dependencies:
-      baseline-browser-mapping: 2.11.6
+      baseline-browser-mapping: 2.11.7
       caniuse-lite: 1.0.30001806
       electron-to-chromium: 1.5.398
       node-releases: 2.0.51
@@ -4580,7 +4580,7 @@ snapshots:
 
   minimatch@3.1.5:
     dependencies:
-      brace-expansion: 1.1.16
+      brace-expansion: 1.1.17
 
   minimatch@9.0.9:
     dependencies:
@@ -4604,7 +4604,7 @@ snapshots:
 
   node-releases@2.0.51: {}
 
-  node@24.18.0:
+  node@24.18.1:
     dependencies:
       node-bin-setup: 1.1.4
 
