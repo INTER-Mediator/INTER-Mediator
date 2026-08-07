@@ -2,8 +2,7 @@ name: e2e-test-auth-chrome
 
 on:
   push:
-    branches:
-      - "*"
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
