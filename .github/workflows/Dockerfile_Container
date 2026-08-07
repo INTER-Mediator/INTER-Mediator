@@ -9,8 +9,9 @@ RUN chmod +x /usr/local/bin/install-php-extensions && sync \
 && install-php-extensions @composer-${composer_ver}
 
 # その他パッケージ、PHP拡張
-RUN apt-get update
-RUN apt-get install -y git unzip npm
+RUN apt-get update -y
+RUN apt-get upgrade -y
+RUN apt-get install -y git unzip npm nodejs nano
 # PHP intl
 RUN apt-get install -y libicu-dev
 RUN docker-php-ext-install intl
