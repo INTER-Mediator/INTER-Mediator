@@ -1,11 +1,12 @@
-FROM php:8.4-apache
+FROM php:8.5-apache
 
 # Refer to https://tt-computing.com/docker-php8_0-lamp, Thanks!
 
 # Composer
+ARG composer_ver=2.10.2
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions && sync \
-&& install-php-extensions @composer
+&& install-php-extensions @composer-${composer_ver}
 
 # その他パッケージ、PHP拡張
 RUN apt-get update
@@ -15,6 +16,8 @@ RUN apt-get install -y libicu-dev
 RUN docker-php-ext-install intl
 # PHP EXIF
 RUN docker-php-ext-install exif
+# PHP BC-Math
+RUN docker-php-ext-install bcmath
 # PHP GD
 RUN apt-get install -y zlib1g-dev libpng-dev libjpeg62-turbo-dev
 RUN docker-php-ext-configure gd --with-jpeg
