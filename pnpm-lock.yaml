@@ -60,8 +60,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       inter-mediator-plugin-uppy:
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.0.1
+        version: 1.0.1
       inter-mediator-queue:
         specifier: 1.0.9
         version: 1.0.9
@@ -1341,8 +1341,8 @@ packages:
   inter-mediator-plugin-qrcode@1.1.0:
     resolution: {integrity: sha512-BdAyhVPY2aW6r6YpCrm//89xyt8XF6X9pdr+PQbSgJpJL1kFJQHF9MlzvpbKysfj0im/5avTnvplkUGTkpLc/w==}
 
-  inter-mediator-plugin-uppy@1.0.0:
-    resolution: {integrity: sha512-z1j/Fk2dnnWbdkHTO3HUclP+G2ecDIqmAjm/l7iUT2kfysbI/zIoXS9rrV8BwGTjXidRNS0J3hMVVhB44iJRVQ==}
+  inter-mediator-plugin-uppy@1.0.1:
+    resolution: {integrity: sha512-xs8Sm0RRHvnbZ7oOMhUb1wzNk+eeYGHz9UFZrL5xwis+3kfULVwjKRT9qVnGkOv+YW+TcF2rdsmTJVH6kW//Zw==}
 
   inter-mediator-queue@1.0.9:
     resolution: {integrity: sha512-jug4QXrB699eZ7mYyIrSIubJyYHCPqyaZX1NRyWN75H4ivDFl32t61VlHYCZW7JaKsa4Cny0+1Bqb7W9YbPX3g==}
@@ -3992,7 +3992,7 @@ snapshots:
 
   inter-mediator-plugin-qrcode@1.1.0: {}
 
-  inter-mediator-plugin-uppy@1.0.0: {}
+  inter-mediator-plugin-uppy@1.0.1: {}
 
   inter-mediator-queue@1.0.9: {}
 
