@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# This script is for creating branches for each PHP version.
+# 1. Start installfiles.sh
+# 2. Comit and push the "master" branch
+# 3. Start installbranches.sh
+# 4. Create Pull Request for every branch (Ver.8.1-PHP8.1, Ver.8.1-PHP8.2, Ver.8.1-PHP8.3, Ver.8.1-PHP8.4)
+# 5. Start installtags.sh
+
 distDocDir=$(cd $(dirname "$0"); pwd)
 seedComposer="${distDocDir}/composer-seed/composer-"
 versions="8.1,8.2,8.3,8.4,8.5"

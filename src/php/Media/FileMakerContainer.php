@@ -138,19 +138,13 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
             return;
         }
 
-        $counter = -1;
-        foreach ($files as $fileInfo) {
-            $counter += 1;
-            if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
-                $fileInfoName = $fileInfo['name'][0];
-                $fileInfoTemp = $fileInfo['tmp_name'][0];
-            } else {
-                $fileInfoName = $fileInfo['name'];
-                $fileInfoTemp = $fileInfo['tmp_name'];
-            }
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-
-            $targetFieldName = $field[$counter];
+            $targetFieldName = $field[0];
             // for uploading to FileMaker's container field
             $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
             $tmpDir = ini_get('upload_tmp_dir');

@@ -55,18 +55,19 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                                ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
     {
         $this->customFileName = $customFileName;
-        $counter = -1;
-        foreach ($files as $fileInfo) {
-            $counter += 1;
-            list($fileInfoName, $fileInfoTemp) = $this->getFileNames($fileInfo);
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-            $targetFieldName = $field[$counter];
+            $targetFieldName = $field[0];
 
             if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
                 $this->csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp);
             } else {  // Any kind of files uploaded.
                 list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
-                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo, $counter);
+                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo, $i);
                 if ($result === false) {
                     return;
                 }
@@ -82,7 +83,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                 $this->processingFile($db, $options, $filePath, $filePartialPath, $targetFieldName,
                     $keyField, $keyValue, $dataSource, $dbSpec, $debug);
             }
-            return; // Stop this loop just once.
+//            return; // Stop this loop just once.
         }
     }
 
