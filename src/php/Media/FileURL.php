@@ -54,18 +54,19 @@ class FileURL extends UploadingSupport implements DownloadingSupport
                                ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
     {
         $this->customFileName = $customFileName;
-        $counter = -1;
-        foreach ($files as $fileInfo) {
-            $counter += 1;
-            list($fileInfoName, $fileInfoTemp) = $this->getFileNames($fileInfo);
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-            $targetFieldName = $field[$counter];
+            $targetFieldName = $field[0];
 
             if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
                 $this->csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp);
             } else {
                 list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
-                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo, $counter);
+                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo, $i);
                 if ($result === false) {
                     return;
                 }
@@ -132,18 +133,17 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param array<array-key, mixed> $info The file info array.
      * @return array<array-key, mixed> Array containing the file name and temporary file name.
      */
-    private
-    function getFileNames(array $info): array
-    {
-        if (is_array($info['name'])) {   // JQuery File Upload Style
-            $fileInfoName = $info['name'][0];
-            $fileInfoTemp = $info['tmp_name'][0];
-        } else {
-            $fileInfoName = $info['name'];
-            $fileInfoTemp = $info['tmp_name'];
-        }
-        return [$fileInfoName, $fileInfoTemp];
-    }
+//    private function getFileNames(array $info): array
+//    {
+//        if (is_array($info['name'])) {   // JQuery File Upload Style
+//            $fileInfoName = $info['name'][0];
+//            $fileInfoTemp = $info['tmp_name'][0];
+//        } else {
+//            $fileInfoName = $info['name'];
+//            $fileInfoTemp = $info['tmp_name'];
+//        }
+//        return [$fileInfoName, $fileInfoTemp];
+//    }
 
     /** Outputs an error message and stops further processing.
      * @param Proxy $db The database proxy instance.
