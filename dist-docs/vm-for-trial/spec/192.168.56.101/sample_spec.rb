@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+IS_DOCKER = host_inventory['virtualization'][:system] == 'docker' || File.exist?('/.im_docker') || ENV['container'] == 'docker'
+
 if ENV['CIRCLECI']
   class Docker::Container
     def remove(options={}); end
@@ -76,7 +78,7 @@ describe service('org.apache.httpd'), :if => os[:family] == 'darwin' do
   it { should be_running }
 end
 
-describe port(80), :if => host_inventory['virtualization'][:system] != 'docker' do
+describe port(80), :if => !IS_DOCKER do
   it { should be_listening }
 end
 
@@ -541,10 +543,10 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
+describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && !IS_DOCKER do
   it { should be_installed }
 end
-describe package('virtualbox-guest-modules-vanilla'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
+describe package('virtualbox-guest-modules-vanilla'), :if => os[:family] == 'alpine' && !IS_DOCKER do
   it { should be_installed }
 end
 
@@ -852,7 +854,7 @@ end
 describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 && os[:release].to_f < 7 do
   its(:content) { should match /-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT/ }
 end
-describe file('/etc/firewalld/zones/public.xml'), :if => host_inventory['virtualization'][:system] != 'docker' && os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe file('/etc/firewalld/zones/public.xml'), :if => !IS_DOCKER && os[:family] == 'redhat' && os[:release].to_f >= 7 do
   its(:content) { should match /<service name="http"\/>/ }
 end
 
@@ -908,10 +910,10 @@ end
 
 
 # SELinux
-describe package('python3-policycoreutils'), :if => host_inventory['virtualization'][:system] != 'docker' && os[:family] == 'redhat' && os[:release].to_f >= 8 do
+describe package('python3-policycoreutils'), :if => !IS_DOCKER && os[:family] == 'redhat' && os[:release].to_f >= 8 do
   it { should be_installed }
 end
-describe package('policycoreutils-python-utils'), :if => host_inventory['virtualization'][:system] != 'docker' && os[:family] == 'redhat' && os[:release].to_f >= 8 do
+describe package('policycoreutils-python-utils'), :if => !IS_DOCKER && os[:family] == 'redhat' && os[:release].to_f >= 8 do
   it { should be_installed }
 end
 

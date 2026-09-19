@@ -150,6 +150,74 @@ class FileUploader
         $field = [$_POST["_im_field"]];
         $files = $_FILES;
 
+//        file_put_contents("/tmp/1.txt", json_encode($files));
+//        file_put_contents("/tmp/2.txt", json_encode($_POST));
+
+        /*
+1 File uploaded <$_FILES>
+{
+    "files": {
+		"name": ["20190653_新居雅行.jpeg"],
+		"full_path": ["20190653_新居雅行.jpeg"],
+		"type": ["image/jpeg"],
+		"tmp_name": ["/private/var/folders/19/_y61zdrd1gzf4kcb345rpnbw0000gn/T/phpdlgfufredmj23GLlaJj"],
+		"error": [0],
+		"size": [30290]
+	}
+}
+        <<In case of Post-only Mode>>
+[
+	{
+		"name": "DSC00031.jpg",
+		"full_path": "DSC00031.jpg",
+		"type": "image/jpeg",
+		"tmp_name": "/private/var/folders/19/_y61zdrd1gzf4kcb345rpnbw0000gn/T/phpei6r9vpiamq1f0FWst8",
+		"error": 0,
+		"size": 40974
+	}
+]
+        <$_POST>
+{
+	"access": "uploadfile",
+	"_im_contextname": "testtable",
+	"_im_field": "vc1",
+	"_im_keyfield": "id",
+	"_im_keyvalue": "2",
+	"authuser": "null",
+	"clientid": "undefined",
+	"response": "undefined",
+	"response2m": "undefined",
+	"response2": "undefined"
+}
+2 Files uploaded <$_FILES>
+{
+	"files": {
+		"name": ["20190653_新居雅行.jpeg","face.png"],
+		"full_path": ["20190653_新居雅行.jpeg","face.png"],
+		"type": ["image/jpeg","image/png"],
+		"tmp_name": [
+			"/private/var/folders/19/_y61zdrd1gzf4kcb345rpnbw0000gn/T/phpmmbd9vk3o13v3DsAgde",
+			"/private/var/folders/19/_y61zdrd1gzf4kcb345rpnbw0000gn/T/phpv6mn36d3533nep6Z86h"
+		],
+		"error": [0,0],
+		"size": [30290,242584]
+	}
+}
+        <$_POST>
+{
+	"access": "uploadfile",
+	"_im_contextname": "testtable",
+	"_im_field": "vc1",
+	"_im_keyfield": "id",
+	"_im_keyvalue": "2",
+	"authuser": "null",
+	"clientid": "undefined",
+	"response": "undefined",
+	"response2m": "undefined",
+	"response2": "undefined"
+}
+         */
+
         $this->processingWithParameters($dataSource, $options, $dbSpec, $debug,
             $contextName, $keyField, $keyValue, $field, $files, false);
         $this->db->finishCommunication();
