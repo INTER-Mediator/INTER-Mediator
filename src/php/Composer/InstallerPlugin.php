@@ -202,7 +202,8 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
                 } else {
                     // macOS / Linux: download, verify the checksum, then run the pnpm installer.
                     $scriptPath = self::downloadVerifiedPnpmInstaller($io, false);
-                    self::executeCommand($io, $baseDir, 'sh ' . escapeshellarg($scriptPath));
+                    $preScript = self::isRunningInDocker() ? '$HOME/.shrc SHELL="$(which sh)" ' : '';
+                    self::executeCommand($io, $baseDir, $preScript . 'sh ' . escapeshellarg($scriptPath));
                     self::executeCommand($io, $baseDir, "{$pnpmPath} ci");
                 }
             }
@@ -306,6 +307,44 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
     protected static function isInstalledAsDependency(\Composer\Composer $composer): bool
     {
         return $composer->getPackage()->getName() !== self::PACKAGE_NAME;
+    }
+
+    /**
+     * Detect whether the current process is running inside a Docker container.
+     *
+     * This combines several common heuristics: an explicit environment flag,
+     * the legacy /.dockerenv marker, container hints in /proc/.../cgroup,
+     * and the "container" environment variable used by some CI systems.
+     */
+    protected static function isRunningInDocker(): bool
+    {
+        if (getenv('INTERMEDIATOR_DOCKER') === '1' || getenv('IM_IN_DOCKER') === '1') {
+            return true;
+        }
+        if (getenv('container') === 'docker') {
+            return true;
+        }
+        if (is_file('/.dockerenv')) {
+            return true;
+        }
+
+        $cgroupFiles = ['/proc/self/cgroup', '/proc/1/cgroup'];
+        foreach ($cgroupFiles as $cgroupFile) {
+            if (!is_file($cgroupFile)) {
+                continue;
+            }
+            $contents = @file_get_contents($cgroupFile);
+            if (!is_string($contents) || $contents === '') {
+                continue;
+            }
+            foreach (['docker', 'containerd', 'lxc', 'kubepods'] as $needle) {
+                if (str_contains($contents, $needle)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

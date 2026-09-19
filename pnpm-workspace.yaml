@@ -5,3 +5,5 @@ allowBuilds:
 minimumReleaseAge: 10080
 ignoredOptionalDependencies:
   - '@unrs/resolver-binding-wasm32-wasi'
+minimumReleaseAgeExclude:
+  - inter-mediator-plugin-uppy@1.0.0
