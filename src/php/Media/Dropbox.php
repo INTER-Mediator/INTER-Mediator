@@ -117,28 +117,23 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
                                ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
     {
         $this->customFileName = $customFileName;
-        $counter = -1;
-        foreach ($files as $fileInfo) { // Single file only
-            $counter += 1;
-            if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
-                $fileInfoName = $fileInfo['name'][0];
-                $fileInfoTemp = $fileInfo['tmp_name'][0];
-            } else {
-                $fileInfoName = $fileInfo['name'];
-                $fileInfoTemp = $fileInfo['tmp_name'];
-            }
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
+            $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
+            $targetFieldName = $field[0];
             if (!is_uploaded_file($fileInfoTemp)) { // Security check
                 return;
             }
-            $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-            $targetFieldName = $field[$counter];
             $dirPath = $contextName . DIRECTORY_SEPARATOR
                 . $keyField . "=" . $keyValue . DIRECTORY_SEPARATOR . $targetFieldName;
             $rand4Digits = random_int(1000, 9999);
 
             $objectPath = $this->rootInDropbox . '/' . $dirPath . '/'
                 . (!is_null($this->customFileName)
-                    ? ($this->customFileName . ($counter > 1 ? "_" . $counter : ""))
+                    ? ($this->customFileName . ($i > 0 ? "_" . $i : ""))
                     : ($filePathInfo['filename'] . '_' . $rand4Digits)) . '.' . $filePathInfo['extension'];
             $storedURL = "dropbox://$objectPath";
 

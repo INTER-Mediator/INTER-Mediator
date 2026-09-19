@@ -1,5 +1,7 @@
 # coding: utf-8
 
+IS_DOCKER = node[:virtualization][:system] == 'docker' || File.exist?('/.im_docker')
+
 # Recipe file of Itamae for Ubuntu Server 20.04 LTS, AlmaLinux 8.8 and Alpine Linux 3.13
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
@@ -29,7 +31,7 @@ SMBCONF = "/etc/samba/smb.conf"
 
 
 if node[:platform] == 'alpine'
-  if node[:virtualization][:system] != 'docker'
+  if !IS_DOCKER
     execute 'ip addr add 192.168.56.101/24 dev eth1' do
       command 'ip addr add 192.168.56.101/24 dev eth1'
     end
@@ -82,7 +84,7 @@ if node[:platform] == 'alpine'
     action :install
   end
 end
-if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+if IS_DOCKER && node[:platform] == 'alpine'
   directory '/run/openrc' do
     action :create
   end
@@ -178,7 +180,7 @@ if node[:platform] == 'ubuntu'
     command 'apt update'
   end
 
-  if node[:virtualization][:system] != 'docker'
+  if !IS_DOCKER
     execute 'apt upgrade' do
       command 'apt upgrade --assume-yes'
     end
@@ -234,7 +236,7 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  if node[:virtualization][:system] == 'docker'
+  if IS_DOCKER
     user "postgres" do
       action :create
     end
@@ -245,12 +247,12 @@ if node[:platform] == 'alpine'
   execute 'echo "*********" | sudo /etc/init.d/postgresql setup' do
     command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
   end
-  if node[:virtualization][:system] != 'docker'
+  if !IS_DOCKER
     service 'postgresql' do
       action [ :enable, :start ]
     end
   else
-    if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+    if IS_DOCKER && node[:platform] == 'alpine'
       directory '/run/postgresql' do
         action :create
         owner 'postgres'
@@ -280,7 +282,7 @@ if node[:platform] == 'alpine'
   package 'mariadb' do
     action :install
   end
-  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+  if IS_DOCKER && node[:platform] == 'alpine'
     directory '/run/mysqld' do
       action :create
       owner 'mysql'
@@ -315,7 +317,7 @@ EOF
   execute 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf' do
     command 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf'
   end
-  if node[:virtualization][:system] != 'docker'
+  if !IS_DOCKER
     execute '/etc/init.d/mariadb setup' do
       command '/etc/init.d/mariadb setup'
     end
@@ -490,7 +492,7 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:pl
   execute 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false' do
     command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
   end
-  if node[:virtualization][:system] == 'docker'
+  if IS_DOCKER
     execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_LCID=1041 MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
       command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_LCID=1041 MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
     end
@@ -869,7 +871,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       command 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf'
     end
   end
-  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+  if IS_DOCKER && node[:platform] == 'alpine'
     directory '/run/apache2/' do
       action :create
       owner 'apache'
@@ -1024,7 +1026,7 @@ else
       action [ :enable, :start ]
     end
   else
-    if node[:virtualization][:system] != 'docker'
+    if !IS_DOCKER
       service 'samba' do
         action [ :enable, :start ]
       end
@@ -1220,7 +1222,7 @@ EOF
   end
 end
 
-if node[:virtualization][:system] != 'docker'
+if !IS_DOCKER
   file "#{WEBROOT}/params.php" do
     action :edit
     block do |content|
@@ -1369,7 +1371,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
+if node[:platform] == 'alpine' && !IS_DOCKER
   #package 'virtualbox-additions-grsec' do
   #  action :install
   #end
@@ -1430,7 +1432,7 @@ EOF
         command 'service iptables restart'
       end
     else
-      if node[:virtualization][:system] != 'docker'
+      if !IS_DOCKER
         package 'firewalld' do
           action :install
         end
@@ -2004,7 +2006,7 @@ end
 
 
 # SELinux
-if node[:platform] == 'redhat' && node[:virtualization][:system] != 'docker'
+if node[:platform] == 'redhat' && !IS_DOCKER
   package 'policycoreutils' do
     action :install
   end
@@ -2353,7 +2355,7 @@ EOF
   execute 'rc-update add local default' do
     command 'rc-update add local default'
   end
-  if node[:virtualization][:system] == 'docker'
+  if IS_DOCKER
     execute '/etc/local.d/buster-server.start' do
       command '/etc/local.d/buster-server.start'
     end
@@ -2379,12 +2381,12 @@ if node[:platform] == 'alpine'
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
   end
 end
-#if node[:platform] == 'ubuntu' && node[:virtualization][:system] == 'docker'
+#if node[:platform] == 'ubuntu' && IS_DOCKER
 #  execute 'sudo /etc/rc.local &' do
 #      command 'sudo /etc/rc.local &'
 #  end
 #end
-if node[:virtualization][:system] != 'docker'
+if !IS_DOCKER
   if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
     service 'smb' do
       action [ :stop ]
