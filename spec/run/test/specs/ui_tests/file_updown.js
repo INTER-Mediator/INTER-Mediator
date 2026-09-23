@@ -1,4 +1,4 @@
-module.exports = (AuthPage, isUserAuth = false) => {
+module.exports = (AuthPage, isUserAuth = false, isUppy = false) => {
   describe('Login required page with images', () => {
     const waiting = 1000
 
@@ -22,6 +22,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
       await AuthPage.authLoginButton.click() // Finally login succeed.
       await browser.pause(waiting)
       await expect(AuthPage.auth2FAPanel).not.toExist()
+      await browser.pause(waiting)
     })
     it('3-Send a picture file and checking to show.', async () => {
       await browser.refresh()
@@ -36,7 +37,9 @@ module.exports = (AuthPage, isUserAuth = false) => {
       await expect(AuthPage.fieldsItemUploading).toBeElementsArrayOfSize(currentRecords + 1)
       // const lastPicture = await AuthPage.fieldsItemPic[currentRecords]
       expect(await AuthPage.fieldsItemPic[currentRecords]).toExist()
-      const lastWidget = await AuthPage.fieldsItemWidget[currentRecords]
+      const lastWidget = isUppy
+        ? (await AuthPage.fieldsItemWidgetUppy[currentRecords])
+        : (await AuthPage.fieldsItemWidget[currentRecords])
       await expect(lastWidget).toExist()
       await expect(await AuthPage.fieldsItemPic[currentRecords].getSize('width')).toBeLessThan(20)
       // console.log(await lastPicture.getSize('width')) // This returns the value "16".
@@ -47,10 +50,18 @@ module.exports = (AuthPage, isUserAuth = false) => {
 
       const remoteFilePath = await browser.uploadFile(filePath1)
       const targetId = await lastWidget.getAttribute('id')
-      const fileElement = await $(`#${targetId}-fileupload`)
-      await expect(fileElement).toExist()
-      await fileElement.setValue(remoteFilePath)
-      const sendButton = await lastWidget.$('.filesend-button')
+      const fileElement = isUppy
+        ? (await lastWidget.$('input.uppy-Dashboard-input[type="file"]'))
+        : (await $(`#${targetId}-fileupload`))
+      if (isUppy) {
+        await fileElement.addValue(remoteFilePath)
+      } else {
+        await fileElement.setValue(remoteFilePath)
+      }
+      await browser.pause(waiting)
+      const sendButton = isUppy
+        ? (await lastWidget.$('.uppy-StatusBar-actionBtn--upload'))
+        : (await lastWidget.$('.filesend-button'))
       await sendButton.waitForClickable()
       await expect(sendButton).toExist()
       await sendButton.click()
@@ -101,16 +112,27 @@ module.exports = (AuthPage, isUserAuth = false) => {
         await browser.pause(waiting)
         {
           await expect(await AuthPage.fieldsItemPic[currentRecords]).toExist()
-          const lastWidget = await AuthPage.fieldsItemWidget[currentRecords]
+          const lastWidget = isUppy
+            ? (await AuthPage.fieldsItemWidgetUppy[currentRecords])
+            : (await AuthPage.fieldsItemWidget[currentRecords])
           await expect(lastWidget).toExist()
           // Remove temporarily below for passing postgresql/php8.1-8.3 test reporting the width as 50. 2025-8-30 msyk
           //expect(await AuthPage.fieldsItemPic[currentRecords].getSize('width')).toBeLessThan(20)
           const remoteFilePath = await browser.uploadFile(filePath2)
           const targetId = await lastWidget.getAttribute('id')
-          const fileElement = await $(`#${targetId}-fileupload`)
+          const fileElement = isUppy
+            ? (await lastWidget.$('input.uppy-Dashboard-input[type="file"]'))
+            : (await $(`#${targetId}-fileupload`))
           await expect(fileElement).toExist()
-          await fileElement.setValue(remoteFilePath)
-          const sendButton = await lastWidget.$('.filesend-button')
+          if (isUppy) {
+            await fileElement.addValue(remoteFilePath)
+          } else {
+            await fileElement.setValue(remoteFilePath)
+          }
+          await browser.pause(waiting)
+          const sendButton = isUppy
+            ? (await lastWidget.$('.uppy-StatusBar-actionBtn--upload'))
+            : (await lastWidget.$('.filesend-button'))
           await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
@@ -121,15 +143,26 @@ module.exports = (AuthPage, isUserAuth = false) => {
         await browser.pause(waiting)
         {
           await expect(await AuthPage.fieldsItemPic[currentRecords]).toExist()
-          const lastWidget = await AuthPage.fieldsItemWidget[currentRecords]
+          const lastWidget = isUppy
+            ? (await AuthPage.fieldsItemWidgetUppy[currentRecords])
+            : (await AuthPage.fieldsItemWidget[currentRecords])
           await expect(lastWidget).toExist()
           await expect(await AuthPage.fieldsItemPic[currentRecords].getSize('width')).toBeGreaterThan(20)
           const remoteFilePath = await browser.uploadFile(filePath3)
           const targetId = await lastWidget.getAttribute('id')
-          const fileElement = await $(`#${targetId}-fileupload`)
+          const fileElement = isUppy
+            ? (await lastWidget.$('input.uppy-Dashboard-input[type="file"]'))
+            : (await $(`#${targetId}-fileupload`))
           await expect(fileElement).toExist()
-          await fileElement.setValue(remoteFilePath)
-          const sendButton = await lastWidget.$('.filesend-button')
+          if (isUppy) {
+            await fileElement.addValue(remoteFilePath)
+          } else {
+            await fileElement.setValue(remoteFilePath)
+          }
+          await browser.pause(waiting)
+          const sendButton = isUppy
+            ? (await lastWidget.$('.uppy-StatusBar-actionBtn--upload'))
+            : (await lastWidget.$('.filesend-button'))
           await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()

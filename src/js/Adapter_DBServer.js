@@ -562,6 +562,7 @@ const INTERMediator_DBAdapter = {
     INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
     INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, false)
     IMLibAuthentication.clientId(jsonObject.clientid ?? '')
+    IMLibAuthentication.authUser(jsonObject.authUser ?? '')
     if (jsonObject.requireAuth) {
       INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
       IMLibAuthentication.clearCredentials()

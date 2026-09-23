@@ -59,9 +59,9 @@ class Formatters
     /** Convert field data from user format to DB format using the field's formatter.
      * @param string $field Field name.
      * @param string|null $data Data from the user.
-     * @return string Converted data for DB storage.
+     * @return string|null Converted data for DB storage.
      */
-    public function formatterToDB(string $field, ?string $data): string
+    public function formatterToDB(string $field, ?string $data): ?string
     {
         if (isset($this->formatter[$field])) {
             return $this->formatter[$field]->converterFromUserToDB($data);
