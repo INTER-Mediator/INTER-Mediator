@@ -1,5 +1,8 @@
 allowBuilds:
   core-js: true
+  edgedriver: true
+  esbuild: true
+  geckodriver: true
   node: true
   unrs-resolver: true
 minimumReleaseAge: 10080
