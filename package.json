@@ -64,7 +64,7 @@
     "inter-mediator-plugin-mermaid": "1.2.0",
     "inter-mediator-plugin-popupselector": "1.1.0",
     "inter-mediator-plugin-qrcode": "1.1.0",
-    "inter-mediator-plugin-uppy": "1.0.1",
+    "inter-mediator-plugin-uppy": "1.0.2",
     "inter-mediator-queue": "1.0.9",
     "jssha": "3.3.1",
     "node": "^24.16.0",
