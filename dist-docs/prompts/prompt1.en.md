@@ -1,8 +1,9 @@
 # Sample prompt for Windsurf
 
 2024-12-31 Masayuki Nii (nii@msyk.net)
+2026-09-26 Revised by Masayuki Nii
 
-This is a prompt for creating an INTER-Mediator application from scratch using Windsurf.
+This is a prompt for creating an INTER-Mediator application from scratch using AI tools.
 Provide the string after the "Prompt Example" section below, and try copying and executing it as is.
 It seems best to input it with the markup intact.
 Of course, you can also modify the prompt itself as needed. Currently, it will create an SQLite database and automatically generate a user interface for list and detail pages.
@@ -27,19 +28,17 @@ For information about INTER-Mediator, refer to the following.
 # Installing INTER-Mediator
 - INTER-Mediator can be installed via Composer. The identifier is `inter-mediator/inter-mediator`. Specify the version as "dev-master".
 - For Composer installation, you need to allow the following plugins:
-  - ```mouf/nodejs-installer```
   - ```simplesamlphp/composer-module-installer```
   - ```simplesamlphp/composer-xmlprovider-installer```
-- After installation, move to vendor/inter-mediator/inter-mediator and run the ```npm install --before 2025-09-14``` command.
-- Then, run the ```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` script.
+  - ```inter-mediator/inter-mediator```
 
 # Post-Installation Tasks for INTER-Mediator
 - Create a lib directory at the project root.
 - Copy the file vendor/inter-mediator/inter-mediator/params.php to the lib directory.
 - Edit the contents of the copied lib/params.php file as follows:
   - Assign 'PDO' to the $dbClass variable.
-  - Specify the username for database connection in the $dbUser variable.
-  - Specify the password for database connection in the $dbPassword variable.
+  - Specify the username for the database connection in the $dbUser variable.
+  - Specify the password for the database connection in the $dbPassword variable.
   - Specify the connection string required for PDO in the $dbDSN variable. For SQLite, specify a string starting with 'sqlite:', followed by the absolute path to the SQLite database file.
   - Assign an empty array to the $dbOption variable.
 
