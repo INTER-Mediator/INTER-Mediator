@@ -214,7 +214,7 @@ class ServiceServerProxy
             $this->serverInfoCached = false;
         } else { // Service Server is booted.
             $this->serverInfoCached = true;
-            if (!str_contains($result, "Service Server is active.")) {
+            if (!str_contains(strval($result), "Service Server is active.")) {
                 $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
                 $this->serverInfoCached = false;
             }
@@ -226,9 +226,9 @@ class ServiceServerProxy
      * Calls the service server with the specified path and post-data.
      * @param string $path Path for the server request.
      * @param array<array-key, mixed>|null $postData Data to be sent with the request.
-     * @return string|null Response from the server, or null on failure.
+     * @return string|bool Response from the server, or null on failure.
      */
-    private function callServer(string $path, ?array $postData = null): ?string
+    private function callServer(string $path, ?array $postData = null): string|bool
     {
         $url = "{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
@@ -240,7 +240,8 @@ class ServiceServerProxy
         if (is_array($postData)) {
             $postData['vcode'] = $this->getSSVersionCode();
             curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+            $postData = json_encode($postData);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData ? $postData : '');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
         }
@@ -250,7 +251,7 @@ class ServiceServerProxy
         if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
             $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
             $this->messages[] = $this->messageHead . curl_error($ch);
-            return null;
+            return false;
         }
         return $result;
     }
@@ -341,7 +342,7 @@ class ServiceServerProxy
         if (!$result) {
             return false;
         }
-        if (!str_contains($result, 'true') && !str_contains($result, 'false')) {
+        if (!str_contains(strval($result), 'true') && !str_contains(strval($result), 'false')) {
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }
@@ -373,7 +374,8 @@ class ServiceServerProxy
      */
     private function getSSVersionCode(): string
     {
-        $composer = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json"));
+        $contents = file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json");
+        $composer = json_decode($contents ? $contents : '');
         return hash("sha256", $composer->time . $composer->version);
     }
 }
