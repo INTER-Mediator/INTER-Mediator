@@ -352,8 +352,8 @@ class MediaAccess
         $cookieNameUser = "_im_username";
         $cookieNameToken = "_im_mediatoken";
         if (isset($options['authentication']['realm'])) {
-            $realm = str_replace(" ", "_",
-                str_replace(".", "_", $options['authentication']['realm']));
+            $realm = strval(str_replace(" ", "_",
+                str_replace(".", "_", $options['authentication']['realm'])));
             $cookieNameUser .= ('_' . $realm);
             $cookieNameToken .= ('_' . $realm);
         }

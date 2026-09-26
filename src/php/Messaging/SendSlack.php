@@ -80,6 +80,7 @@ class SendSlack extends MessagingProvider
             $msgURL = "https://slack.com/api/chat.postMessage";
             $header = ["Content-Type: application/json; charset=utf-8", "Authorization: Bearer {$this->token}"];
             $body = json_encode(['channel' => $channel, 'text' => $message]);
+            $body = $body ? $body : '';
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $msgURL);
             curl_setopt($ch, CURLOPT_PORT, 443);
