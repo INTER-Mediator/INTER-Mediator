@@ -121,17 +121,17 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
      * @param array<array-key, mixed> $info The file info array.
      * @return array<array-key, mixed> Array containing the file name and temporary file name.
      */
-    private function getFileNames(array $info): array
-    {
-        if (is_array($info['name'])) {   // JQuery File Upload Style
-            $fileInfoName = $info['name'][0];
-            $fileInfoTemp = $info['tmp_name'][0];
-        } else {
-            $fileInfoName = $info['name'];
-            $fileInfoTemp = $info['tmp_name'];
-        }
-        return [$fileInfoName, $fileInfoTemp];
-    }
+//    private function getFileNames(array $info): array
+//    {
+//        if (is_array($info['name'])) {   // JQuery File Upload Style
+//            $fileInfoName = $info['name'][0];
+//            $fileInfoTemp = $info['tmp_name'][0];
+//        } else {
+//            $fileInfoName = $info['name'];
+//            $fileInfoTemp = $info['tmp_name'];
+//        }
+//        return [$fileInfoName, $fileInfoTemp];
+//    }
 
     /** Outputs an error message and stops further processing.
      * @param Proxy $db The database proxy instance.
