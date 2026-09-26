@@ -1,8 +1,9 @@
 # Sample prompt for Windsurf
 
 2024-12-31 Masayuki Nii (nii@msyk.net)
+2026-09-26 Revised by Masayuki Nii
 
-This is a prompt to create an INTER-Mediator application from scratch using Windsurf.
+This is a prompt to create an INTER-Mediator application from scratch using AI tools.
 It assumes adding new functionality to a project created using another file, `prompt1.ja.md`.
 Let's provide the string after "Prompt Example" below, and at that time, copy and paste the content after the prompt example as is to execute it.
 It seems best to input it as markup. Of course, you can also modify the prompt itself if necessary.
