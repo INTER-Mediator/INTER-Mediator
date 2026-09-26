@@ -1,9 +1,12 @@
 allowBuilds:
   core-js: true
+  edgedriver: true
+  esbuild: true
+  geckodriver: true
   node: true
   unrs-resolver: true
 minimumReleaseAge: 10080
 ignoredOptionalDependencies:
   - '@unrs/resolver-binding-wasm32-wasi'
 minimumReleaseAgeExclude:
-  - inter-mediator-plugin-uppy@1.0.0
+  - inter-mediator-plugin-uppy@1.0.0 || 1.0.1 || 1.0.2

@@ -20,6 +20,10 @@ module.exports = class AuthPage extends IMPage {
     return $$('[data-im-widget="jquery_fileupload"]')
   }
 
+  get fieldsItemWidgetUppy() {
+    return $$('[data-im-widget="uppy"]')
+  }
+
   get fieldsItemUploading() {
     return $$("._im_test-file_comp")
   }
