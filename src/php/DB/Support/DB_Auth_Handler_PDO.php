@@ -217,6 +217,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 if (!$isMulti) {
                     return null;
                 }
+                continue;
             }
             if ($isMulti && strlen($hashValue) > 0) {
                 $hashValue .= "\n";
