@@ -196,7 +196,7 @@ class MediaAccess
 //              if (!$isOneRec && (!$isClass || ($isClass && $isNoRec))) {
             if (!$condition) {
                 $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
-                echo $erMessage;
+                echo htmlspecialchars($erMessage, ENT_QUOTES, 'UTF-8');
                 $this->errorHandling($erMessage);
                 $this->exitAsError(500);
             }
@@ -207,6 +207,12 @@ class MediaAccess
             if (stripos($target, 'class://') === 0) { // class url is special handling.
                 $noscheme = substr($target, 8);
                 $className = substr($noscheme, 0, strpos($noscheme, "/"));
+                if (!$this->isPermittedProcessingClass($className, $options)) {
+                    $erMessage = "[INTER-Mediator] The class specified with the 'class://' scheme isn't permitted.";
+                    echo $erMessage;
+                    $this->errorHandling($erMessage);
+                    $this->exitAsError(403);
+                }
                 $processingObject = new $className();
                 $processingObject->processing($contextRecord, $options);
             } else {
@@ -252,6 +258,32 @@ class MediaAccess
         return "INTERMediator\\Media\\{$className}";
     }
 
+    /** Checks if the class specified with the class:// scheme can be instantiated.
+     * If the 'media-class-allowed' option or $mediaClassAllowed in params.php is set, only listed classes are permitted.
+     * Otherwise, framework classes except INTERMediator\DB\Export are rejected.
+     * @param string $className Class name.
+     * @param array<array-key, mixed>|null $options Options of the definition file.
+     * @return bool True if permitted.
+     */
+    private function isPermittedProcessingClass(string $className, ?array $options): bool
+    {
+        $className = ltrim($className, '\\');
+        if ($className === '' || !preg_match('/^[A-Za-z_][A-Za-z0-9_\\\\]*$/', $className)) {
+            return false;
+        }
+        $allowed = $options['media-class-allowed'] ?? Params::getParameterValue('mediaClassAllowed', null);
+        if (is_array($allowed)) {
+            $allowed = array_map(fn($c) => strtolower(ltrim($c, '\\')), $allowed);
+            if (!in_array(strtolower($className), $allowed, true)) {
+                return false;
+            }
+        } else if (stripos($className, 'INTERMediator\\') === 0
+            && strcasecmp($className, 'INTERMediator\\DB\\Export') !== 0) {
+            return false;
+        }
+        return class_exists($className) && method_exists($className, 'processing');
+    }
+
     /** Checks if the target URL has a known schema.
      * @param string $file Target URL or file path.
      * @return bool Whether the target URL has a known schema.
@@ -283,6 +315,9 @@ class MediaAccess
                 break;
             case 401:
                 header("HTTP/1.1 401 Unauthorized");
+                break;
+            case 403:
+                header("HTTP/1.1 403 Forbidden");
                 break;
             case 500:
                 header("HTTP/1.1 500 Internal Server Error");

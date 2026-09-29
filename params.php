@@ -111,7 +111,7 @@ $xFrameOptions = "SAMEORIGIN";
 /* Append the Access-Control-Allow-Origin header
  * This header will be appended for another server url than the origin.
  */
-$accessControlAllowOrigin = "http://localhost:9000";
+//$accessControlAllowOrigin = "http://localhost:9000";
 
 /* Browser Compatibility Check:
  * ===================

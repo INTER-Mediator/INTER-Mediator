@@ -429,6 +429,21 @@ class IMUtil
         return FALSE;
     }
 
+    /** Returns whether cookies should have the Secure attribute.
+     * The $credentialCookieSecure in params.php (true/false) overrides the detection of HTTPS.
+     * @return bool True if the request is over HTTPS or the setting is true.
+     */
+    public static function isSecureCookie(): bool
+    {
+        $setting = Params::getParameterValue('credentialCookieSecure', null);
+        if (is_bool($setting)) {
+            return $setting;
+        }
+        return (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' && $_SERVER['HTTPS'] !== '')
+            || (($_SERVER['SERVER_PORT'] ?? '') == 443)
+            || strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    }
+
     /**
      * Outputs security-related HTTP headers.
      * @param array<array-key, mixed>|null $params Optional parameters for headers (for testing).
@@ -458,7 +473,6 @@ class IMUtil
         if ($accessControlAllowOrigin !== '') {
             header("Access-Control-Allow-Origin: {$accessControlAllowOrigin}");
         }
-        header('X-XSS-Protection: 1; mode=block');
     }
 
 

@@ -167,6 +167,18 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                                     string $keyField, string $keyValue, string $targetFieldName, array $filePathInfo, int $counter): array
     {
         $result = true;
+        $extension = strtolower($filePathInfo['extension'] ?? '');
+        $allowedExt = $options['upload-allowed-extensions']
+            ?? Params::getParameterValue('uploadAllowedExtensions', null);
+        $deniedExt = ['php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phps', 'phar', 'inc',
+            'cgi', 'pl', 'py', 'rb', 'sh', 'asp', 'aspx', 'jsp', 'shtml', 'htaccess', 'htpasswd'];
+        if ((is_array($allowedExt) && !in_array($extension, array_map('strtolower', $allowedExt), true))
+            || in_array($extension, $deniedExt, true)
+            || str_starts_with($filePathInfo['filename'] ?? '', '.') || ($filePathInfo['filename'] ?? '') === ''
+            || preg_match('/\.(php[0-9]?|phtml|phar|pht)(\.|$)/i', $filePathInfo['filename'] ?? '')) {
+            $this->prepareErrorOut($db, $noOutput, "The file extension isn't permitted.");
+            return [false, '', ''];
+        }
         $fileRoot = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
         if (!str_ends_with($fileRoot, '/')) {
             $fileRoot .= '/';
