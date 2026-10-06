@@ -32,7 +32,7 @@ trait PasskeySupport
             $challenge = hex2bin($this->generateAndSaveChallenge(
                 $userName ?? "", $this->proxy->generatedClientID ?? "", "$", "", $challenge));
         }
-        return PublicKeyCredentialCreationOptions::create($rpEntity, $userEntity, $challenge);
+        return PublicKeyCredentialCreationOptions::create($rpEntity, $userEntity, strval($challenge));
     }
 
     protected function createPublicKeyCredentialRequestOptions(?string $challenge = "", string $clientId = ""): PublicKeyCredentialRequestOptions
@@ -42,7 +42,7 @@ trait PasskeySupport
         if (!$challenge) {
             $challenge = hex2bin($this->generateAndSaveChallenge(null, $clientId, "$", "", $challenge));
         }
-        return PublicKeyCredentialRequestOptions::create($challenge,
+        return PublicKeyCredentialRequestOptions::create(strval($challenge),
             userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED
         );
     }

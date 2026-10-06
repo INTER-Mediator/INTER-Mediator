@@ -508,7 +508,7 @@ class GenerateJSCode
      */
     private function readJSSource(string $filename): string
     {
-        $content = file_get_contents($filename);
+        $content = strval(file_get_contents($filename));
         $pos = strpos($content, "@@IM@@IgnoringRestOfFile");
         if ($pos !== false) {
             $content = substr($content, 0, $pos) . "\n";
