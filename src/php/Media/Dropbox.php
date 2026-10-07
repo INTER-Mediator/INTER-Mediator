@@ -141,7 +141,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
                 $tokenProvider = new AutoRefreshingDropBoxTokenService(
                     $this->refreshToken, $this->appKey, $this->appSecret, $this->accessTokenPath);
                 $client = new Client($tokenProvider);
-                $client->upload($objectPath, file_get_contents($fileInfoTemp), 'add');
+                $client->upload($objectPath, strval(file_get_contents($fileInfoTemp)), 'add');
             } catch (Exception $ex) {
                 if (!is_null($url)) {
                     header('Location: ' . $url);

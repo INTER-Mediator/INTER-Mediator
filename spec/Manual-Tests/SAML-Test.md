@@ -2,52 +2,52 @@
 
 by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
-INTER-Mediator supports SAML for authentication, but it can't test within the github action's ci environment. So the
-SAML feature has to be tested manually. We have a test environment within the demo server with the simplesamlphp's IdP
+INTER-Mediator supports SAML for authentication, but it can't test within the GitHub Action's ci environment. So the
+SAML feature has to be tested manually. We have a test environment within the demo server with the simplesamlphp's IdP,
 which just have test accounts. After someone tests the SAML features, the result has to be recorded here.
 
 ## Latest Test Record
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
-- commit 51b60d401f775cfdab28a2b28dade90292a28cdf (Sun May 18 16:45:01 2025 +0900)
-  INTER-Mediator Ver.14 (2025-05-18) with SimpleSAMLphp Ver.2.4.1,
-  PHP 8.1.2-1ubuntu2.19+MySQL 8.0.40-0ubuntu0.22.04.1+Chrome (136.0.7103.114) on mac,
-  by Masayuki Nii <nii@msyk.net>, OK
+- commit 3d33e5254f63416bb455c7bfe9a4ec99fbd79db9 (Thu Oct 1 09:21:00 2026 +0900)
+  INTER-Mediator Ver.16 (2026-06-05) with SimpleSAMLphp Ver.2.4.9.3,
+  PHP 8.3.6+MySQL Ver 8.0.46-0ubuntu0.24.04.4+Brave 1.95.101 on mac,
+  by Masayuki Nii (2026-10-01), OK
 
 ## Test Procedure
 
 The test application(https://github.com/INTER-Mediator/IMTesting_SAML) is deployed to our server. 
 
 - Open the web app menu page(https://demo.inter-mediator.com/IMTesting_SAML).
-- Here is the starting point of following tests.
+- Here is the starting point of the following tests.
 
 Set the SAML is active ($isSAML = true;), but the built-in auth is inactive ($samlWithBuiltInAuth = false;).
 
 - Open the "isSaml = true, samlWithBuiltInAuth = false" page. 
-- Check to show the IdP's login page not the built-in login page.
-- Try the wrong account, and check not to log in and repeatedly show the login panel.
-- Try the valid built-in account, and check not to log in.
-- Try the valid SAML account, and check to log in correctly.
+- Check to show the IdP's login page, not the built-in login page.
+- Try the wrong account and check not to log in and repeatedly show the login panel.
+- Try the valid built-in account and check not to log in.
+- Try the valid SAML account and check to log in correctly.
 
 Set the SAML is active ($isSAML = true;), but the built-in auth is also active ($samlWithBuiltInAuth = true;).
 
 - Open the web app menu page
 - Open the "isSaml = true, samlWithBuiltInAuth = true" page.
 - Check to show the built-in login page with the SAML Auth button.
-- Try the wrong account on built-in login panel, and check not to log in and repeatedly show the login panel.
-- Try the valid built-in account on built-in login panel, and check to log in correctly.
-- Try the valid SAML account on built-in login panel, and check not to log in.
-- Push the SAML Auth button, and check to show the IdP's login panel.
-- After that, try the valid SAML account, and check to log in correctly.
-- Try the valid built-in account on the IdP's login panel, and check not to log in.
+- Try the wrong account on a built-in login panel and check not to log in and repeatedly show the login panel.
+- Try the valid built-in account on the built-in login panel and check to log in correctly.
+- Try the valid SAML account on a built-in login panel and check not to log in.
+- Push the SAML Auth button and check to show the IdP's login panel.
+- After that, try the valid SAML account and check to log in correctly.
+- Try the valid built-in account on the IdP's login panel and check not to log in.
 
 Set the SAML is active($isSAML = true;), and limited users can log in with adding "user=>['user1','user01']" to the definition file.
 
 - Open the web app menu page
 - Open the "isSaml = true, samlWithBuiltInAuth = true, user=user01 or mig2" page.
-- Push the SAML Auth button, and check to show the IdP's login panel.
-- After that, try the invalid SAML account (ex. user02), and check not to log in.
+- Push the SAML Auth button and check to show the IdP's login panel.
+- After that, try the invalid SAML account (ex. user02) and check not to log in.
 - Try the valid SAML account (ex. user01), and check to log in correctly.
 
 Set the SAML is inactive ($isSAML = false;), and the built-in auth is inactive ($samlWithBuiltInAuth = false;).
@@ -55,15 +55,25 @@ Set the SAML is inactive ($isSAML = false;), and the built-in auth is inactive (
 - Open the web app menu page
 - Open the "isSaml = false, samlWithBuiltInAuth = false" page.
 - Check to show the built-in login page not to IdP's login page.
-- Try to the wrong account, and check not to log in and repeatedly show the login panel.
-- Try to the valid built-in account, and check to log in correctly.
-- Try to the valid SAML account, and check not to log in.
+- Try to the wrong account and check not to log in and repeatedly show the login panel.
+- Try to the valid built-in account and check to log in correctly.
+- Try to the valid SAML account and check not to log in.
 
 ## Past Test Record
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
 ### Before developing "IMTesting_SAML" app
+
+- commit 3d33e5254f63416bb455c7bfe9a4ec99fbd79db9 (Thu Oct 1 09:21:00 2026 +0900)
+  INTER-Mediator Ver.16 (2026-06-05) with SimpleSAMLphp Ver.2.4.9.3,
+  PHP 8.3.6+MySQL Ver 8.0.46-0ubuntu0.24.04.4+Brave 1.95.101 on mac,
+  by Masayuki Nii (2026-10-01), OK
+
+- commit 51b60d401f775cfdab28a2b28dade90292a28cdf (Sun May 18 16:45:01 2025 +0900)
+  INTER-Mediator Ver.14 (2025-05-18) with SimpleSAMLphp Ver.2.4.1,
+  PHP 8.1.2-1ubuntu2.19+MySQL 8.0.40-0ubuntu0.22.04.1+Chrome (136.0.7103.114) on mac,
+  by Masayuki Nii <nii@msyk.net>, OK
 
 - commit c8a22da1ac3981cb637118cad6b4292e0f37643c (Sun May 3 12:55:26 2026 +0900),
   INTER-Mediator Ver.15(2026-04-05) with SimpleSAMLphp Ver.2.4.5,

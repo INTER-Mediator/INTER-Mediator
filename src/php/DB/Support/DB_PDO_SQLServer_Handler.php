@@ -220,11 +220,22 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 
     /** Returns the quoted entity name.
      * @param $entityName Entity name.
-     * @return string|null Quoted entity name.
+     * @return string|null Quoted entity name, or null if empty.
      */
     public function quotedEntityName($entityName): ?string
     {
-        return "{$entityName}";
+        if (!$entityName) {
+            return null;
+        }
+        if (strpos($entityName, ".") !== false) {
+            $components = explode(".", $entityName);
+            $quotedName = array();
+            foreach ($components as $item) {
+                $quotedName[] = "[" . str_replace("]", "]]", $item) . "]";
+            }
+            return implode(".", $quotedName);
+        }
+        return "[" . str_replace("]", "]]", $entityName) . "]";
     }
 
     /** Optional operation in setup.

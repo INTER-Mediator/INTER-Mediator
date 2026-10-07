@@ -141,14 +141,14 @@ class MediaAccess
              */
             list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $file, $isURL);
             // Set the target variable
-            $file = IMUtil::removeNull($file);
+            $file = IMUtil::removeNull(strval($file));
             if (str_contains($file, '../')) { // Stop for security reason.
                 $erMessage = "[INTER-Mediator] The '..' path component isn't permitted.";
                 echo $erMessage;
                 $this->errorHandling($erMessage);
                 $this->exitAsError(200);
             }
-            $target = $isURL ? $file : "{$mediaRootDir}/{$file}";
+            $target = strval($isURL ? $file : "{$mediaRootDir}/{$file}");
             // Analyze the target variable if it contains a context name and key parameters.
             $analyzeResult = $this->analyzeTarget($target);  // Check the context name and key fields.
             if ($analyzeResult) {
@@ -196,7 +196,7 @@ class MediaAccess
 //              if (!$isOneRec && (!$isClass || ($isClass && $isNoRec))) {
             if (!$condition) {
                 $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
-                echo $erMessage;
+                echo htmlspecialchars($erMessage, ENT_QUOTES, 'UTF-8');
                 $this->errorHandling($erMessage);
                 $this->exitAsError(500);
             }
@@ -206,7 +206,13 @@ class MediaAccess
 
             if (stripos($target, 'class://') === 0) { // class url is special handling.
                 $noscheme = substr($target, 8);
-                $className = substr($noscheme, 0, strpos($noscheme, "/"));
+                $className = substr($noscheme, 0, intval(strpos($noscheme, "/")));
+                if (!$this->isPermittedProcessingClass($className, $options)) {
+                    $erMessage = "[INTER-Mediator] The class specified with the 'class://' scheme isn't permitted.";
+                    echo $erMessage;
+                    $this->errorHandling($erMessage);
+                    $this->exitAsError(403);
+                }
                 $processingObject = new $className();
                 $processingObject->processing($contextRecord, $options);
             } else {
@@ -252,6 +258,32 @@ class MediaAccess
         return "INTERMediator\\Media\\{$className}";
     }
 
+    /** Checks if the class specified with the class:// scheme can be instantiated.
+     * If the 'media-class-allowed' option or $mediaClassAllowed in params.php is set, only listed classes are permitted.
+     * Otherwise, framework classes except INTERMediator\DB\Export are rejected.
+     * @param string $className Class name.
+     * @param array<array-key, mixed>|null $options Options of the definition file.
+     * @return bool True if permitted.
+     */
+    private function isPermittedProcessingClass(string $className, ?array $options): bool
+    {
+        $className = ltrim($className, '\\');
+        if ($className === '' || !preg_match('/^[A-Za-z_][A-Za-z0-9_\\\\]*$/', $className)) {
+            return false;
+        }
+        $allowed = $options['media-class-allowed'] ?? Params::getParameterValue('mediaClassAllowed', null);
+        if (is_array($allowed)) {
+            $allowed = array_map(fn($c) => strtolower(ltrim($c, '\\')), $allowed);
+            if (!in_array(strtolower($className), $allowed, true)) {
+                return false;
+            }
+        } else if (stripos($className, 'INTERMediator\\') === 0
+            && strcasecmp($className, 'INTERMediator\\DB\\Export') !== 0) {
+            return false;
+        }
+        return class_exists($className) && method_exists($className, 'processing');
+    }
+
     /** Checks if the target URL has a known schema.
      * @param string $file Target URL or file path.
      * @return bool Whether the target URL has a known schema.
@@ -284,6 +316,9 @@ class MediaAccess
             case 401:
                 header("HTTP/1.1 401 Unauthorized");
                 break;
+            case 403:
+                header("HTTP/1.1 403 Forbidden");
+                break;
             case 500:
                 header("HTTP/1.1 500 Internal Server Error");
                 break;
@@ -312,9 +347,9 @@ class MediaAccess
             $file = $urlHost . $file;
             $oldLocale = setlocale(LC_CTYPE, "0");
             setlocale(LC_CTYPE, 'C');
-            $path = parse_url($file, PHP_URL_PATH);
-            $query = parse_url($file, PHP_URL_QUERY);
-            setlocale(LC_CTYPE, $oldLocale);
+            $path = strval(parse_url($file, PHP_URL_PATH));
+            $query = strval(parse_url($file, PHP_URL_QUERY));
+            setlocale(LC_CTYPE, strval($oldLocale));
             parse_str($query, $get_array);
             $get_array = $get_array + $_GET;
             foreach ($get_array as $key => $value) {
@@ -324,7 +359,7 @@ class MediaAccess
                     } else {
                         $path .= '?';
                     }
-                    $path .= urlencode($key) . '=' . urlencode($value);
+                    $path .= urlencode(strval($key)) . '=' . urlencode(strval($value));
                 }
             }
             return array($urlHost . $path, true);
@@ -353,7 +388,7 @@ class MediaAccess
         $cookieNameToken = "_im_mediatoken";
         if (isset($options['authentication']['realm'])) {
             $realm = strval(str_replace(" ", "_",
-                str_replace(".", "_", $options['authentication']['realm'])));
+                strval(str_replace(".", "_", $options['authentication']['realm']))));
             $cookieNameUser .= ('_' . $realm);
             $cookieNameToken .= ('_' . $realm);
         }
@@ -437,7 +472,7 @@ class MediaAccess
         if (function_exists('exif_imagetype') && function_exists('imagejpeg') &&
             strlen($content) > 0
         ) {
-            $tmpDir = ini_get('upload_tmp_dir');
+            $tmpDir = strval(ini_get('upload_tmp_dir'));
             if ($tmpDir === '') {
                 $tmpDir = sys_get_temp_dir();
             }
@@ -455,7 +490,7 @@ class MediaAccess
                 fclose($fp);
 
                 if (file_exists($tempPath)) {
-                    $imageType = image_type_to_mime_type(exif_imagetype($tempPath));
+                    $imageType = image_type_to_mime_type(intval(exif_imagetype($tempPath)));
                     if ($imageType === 'image/jpeg') {
                         $image = imagecreatefromstring($content);
                         if ($image !== false) {
@@ -467,24 +502,24 @@ class MediaAccess
                             if ($exif !== false && !empty($exif['Orientation'])) {
                                 switch ($exif['Orientation']) {
                                     case 3:
-                                        $content = imagerotate($image, 180, 0);
+                                        $image = imagerotate($image, 180, 0);
                                         $rotate = true;
                                         break;
                                     case 6:
-                                        $content = imagerotate($image, -90, 0);
+                                        $image = imagerotate($image, -90, 0);
                                         $rotate = true;
                                         break;
                                     case 8:
-                                        $content = imagerotate($image, 90, 0);
+                                        $image = imagerotate($image, 90, 0);
                                         $rotate = true;
                                         break;
                                 }
                             }
                         }
-                        if ($rotate === true) {
+                        if ($rotate === true && $image) {
                             header('Content-Type: image/jpeg');
                             ob_start();
-                            imagejpeg($content);
+                            imagejpeg($image);
                             $size = ob_get_length();
                             header('Content-Length: ' . $size);
                             $util = new IMUtil();

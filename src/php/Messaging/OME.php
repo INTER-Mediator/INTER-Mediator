@@ -513,7 +513,7 @@ class OME
      */
     private function checkControlCodeNothing(string $str): bool
     {
-        return mb_ereg_match("/[[:cntrl:]]/", $str);
+        return preg_match('/[\x00-\x1F\x7F]/', $str) === 1;
     }
 
     /** Adds an attachment to the email.
@@ -540,6 +540,14 @@ class OME
         }
         if ($this->checkControlCodeNothing($this->bccField)) {
             $this->errorMessage = '宛先の情報にコントロールコードが含まれています。';
+            return false;
+        }
+        if ($this->checkControlCodeNothing($this->fromField)) {
+            $this->errorMessage = '差出人の情報にコントロールコードが含まれています。';
+            return false;
+        }
+        if ($this->checkControlCodeNothing($this->subject)) {
+            $this->errorMessage = '件名にコントロールコードが含まれています。';
             return false;
         }
         $headerField = "X-Mailer: Open Mail Envrionment for PHP on INTER-Mediator(https://inter-mediator.org)\n";
