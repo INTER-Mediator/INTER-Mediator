@@ -7,6 +7,6 @@ describe('Auth Page with PostgreSQL', () => {
   basicTest(AuthPage)
 })
 
-describe('Auth Page with Uppy and MySQL', () => {
+describe('Auth Page with Uppy and PostgreSQL', () => {
   basicTest(AuthPageUppy)
 })

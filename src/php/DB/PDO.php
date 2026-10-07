@@ -205,10 +205,14 @@ class PDO extends DBClass
     {
         if ($this->link) {
             $errorInfo = var_export($this->link->errorInfo(), true);
-            $this->logger->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
+            $message = "Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}";
+            $publicMessage = "Query Error: Code={$this->link->errorCode()}";
         } else {
-            $this->logger->setErrorMessage("Query Error: [{$str}]");
+            $message = "Query Error: [{$str}]";
+            $publicMessage = "Query Error.";
         }
+        error_log("[INTER-Mediator] {$message}");
+        $this->logger->setErrorMessage($this->logger->getDebugLevel() ? $message : $publicMessage);
     }
 
     /** Handles PDO error.

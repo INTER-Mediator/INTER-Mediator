@@ -280,10 +280,10 @@ trait Proxy_Auth
             }
             setcookie($cookieNameToken, $generatedChallenge,
                 ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
-                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                    'domain' => $this->credentialCookieDomain, 'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
             setcookie($cookieNameUser, $this->paramAuthUser,
                 ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
-                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                    'domain' => $this->credentialCookieDomain, 'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
             $this->logger->setDebugMessage("mediatoken stored", 2);
         }
     }
