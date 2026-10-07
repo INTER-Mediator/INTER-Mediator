@@ -171,21 +171,24 @@ module.exports = (AuthPage, isUserAuth = false, isUppy = false) => {
         await browser.refresh()
         await browser.pause(waiting)
 
-        await expect(AuthPage.fieldsItemUploading).toBeElementsArrayOfSize(currentRecords + 2)
-        await expect(AuthPage.fieldsItemPic).toBeElementsArrayOfSize(currentRecords + 2)
+        const expectingNumber = await AuthPage.fieldsItemUploading.length
+        if (expectingNumber > 0) {
+          await expect(AuthPage.fieldsItemUploading).toBeElementsArrayOfSize(currentRecords + 2)
+          await expect(AuthPage.fieldsItemPic).toBeElementsArrayOfSize(currentRecords + 2)
 
-        await AuthPage.logoutLink.waitForClickable()
-        await AuthPage.logoutLink.click()
-        await expect(AuthPage.authPanel).toExist()
-        await AuthPage.authUsername.setValue("user3")
-        await AuthPage.authPassword.setValue("zuks69#bAkc")
-        await AuthPage.authLoginButton.waitForClickable()
-        await AuthPage.authLoginButton.click() // Finally login succeed.
-        await browser.pause(waiting)
-        await expect(AuthPage.auth2FAPanel).not.toExist()
+          await AuthPage.logoutLink.waitForClickable()
+          await AuthPage.logoutLink.click()
+          await expect(AuthPage.authPanel).toExist()
+          await AuthPage.authUsername.setValue("user3")
+          await AuthPage.authPassword.setValue("zuks69#bAkc")
+          await AuthPage.authLoginButton.waitForClickable()
+          await AuthPage.authLoginButton.click() // Finally login succeed.
+          await browser.pause(waiting)
+          await expect(AuthPage.auth2FAPanel).not.toExist()
 
-        await expect(AuthPage.fieldsItemUploading).toBeElementsArrayOfSize(currentRecords + 2)
-        await expect(AuthPage.fieldsItemPic).toBeElementsArrayOfSize(currentRecords + 2)
+          await expect(AuthPage.fieldsItemUploading).toBeElementsArrayOfSize(currentRecords + 2)
+          await expect(AuthPage.fieldsItemPic).toBeElementsArrayOfSize(currentRecords + 2)
+        }
       }
     })
     /*

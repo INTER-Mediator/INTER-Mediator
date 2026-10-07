@@ -424,7 +424,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setWarningMessage($e->getMessage());
             return null;
         } catch (Exception $e) {
-            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} \nTrace:{$e->getTraceAsString()}");
+            error_log("[INTER-Mediator] Exception:[1] {$e->getMessage()} \nTrace:{$e->getTraceAsString()}");
+            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}"
+                . ($this->logger->getDebugLevel() ? " \nTrace:{$e->getTraceAsString()}" : ""));
             return null;
         }
         return $result;

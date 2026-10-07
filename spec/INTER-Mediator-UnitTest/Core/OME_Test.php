@@ -118,6 +118,22 @@ class OME_Test extends TestCase
         $this->assertTrue($ome->getBccField() === $prevToField,
             "[ERROR] in appending mail address string. Compare [{$ome->getBccField()}] [{$prevToField}]");
     }
+    public function testRejectControlCodeInHeaders(): void
+    {
+        $ome = new OME();
+        $ome->setToField("msyk@msyk.net", "Name\r\nBcc: attacker@example.com");
+        $this->assertFalse($ome->send(), "[ERROR] control code in To field must be rejected.");
+
+        $ome = new OME();
+        $ome->setToField("msyk@msyk.net");
+        $ome->setSubject("Subject\r\nBcc: attacker@example.com");
+        $this->assertFalse($ome->send(), "[ERROR] control code in Subject must be rejected.");
+
+        $ome = new OME();
+        $ome->setToField("msyk@msyk.net");
+        $ome->setFromField("msyk@msyk.net", "Name\nBcc: attacker@example.com");
+        $this->assertFalse($ome->send(), "[ERROR] control code in From field must be rejected.");
+    }
     /*
         public function testSendSimpleMail()
         {

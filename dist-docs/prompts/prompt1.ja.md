@@ -1,8 +1,9 @@
 # Sample prompt for Windsurf
 
 2024-12-31 Masayuki Nii (nii@msyk.net)
+2026-09-26 Revised by Masayuki Nii
 
-Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く何もないところから（スクラッチから）作成するためのプロンプトです。
+AIツールを利用して、INTER-Mediatorのアプリケーションを、全く何もないところから（スクラッチから）作成するためのプロンプトです。
 以下の「プロンプト例」以降の文字列を与えますが、その時、プロンプト例以降の内容をそのままコピペして実行してみましょう。
 マークアップのままで入力するのが良いようです。もちろん、必要ならプロンプト自体の変更もしてOKです。
 SQLiteのデータベースを作成し、一覧と詳細のページを表示するユーザインタフェースを自動生成します。
@@ -22,12 +23,9 @@ Windsurf上で、実際に試したところ、モデルとして、Sonet 4、Ge
 # INTER-Mediatorのインストール
 - INTER-MediatorはComposerでインストール可能です。識別子は```inter-mediator/inter-mediator```です。バージョンは"dev-master"を指定します。
 - Composerでのインストールでは、以下のプラグインの許可が必要です。
-  - ```mouf/nodejs-installer```
   - ```simplesamlphp/composer-module-installer```
   - ```simplesamlphp/composer-xmlprovider-installer```
-- インストール後に、vendor/inter-mediator/inter-mediatorに移動して、```npm install --before 2025-09-14```コマンドを実行します。
-- その後に、```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` スクリプトを実行します。
-- 後々のアップデート作業のため、composer.jsonファイルには、installあるいはupdate実行後のスクリプトを定義して、```npm install --before 2025-09-14```の実行とgenerateminifyjshere.shスクリプトの実行が行われるようにしておきます。
+  - ```inter-mediator/inter-mediator```
 
 # INTER-Mediatorインストール後の作業
 - プロジェクトのルートにlibディレクトリを作成してください。

@@ -110,7 +110,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         if (!empty($file) && !file_exists($target)) {
             throw new Exception("[INTER-Mediator] The file does't exist: {$target}.");
         }
-        return file_get_contents($target);
+        return strval(file_get_contents($target));
     }
 
     /** Returns the base file name from a given file path, removing query parameters if present.
@@ -339,9 +339,9 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         }
         $is1stLine = true;
         $createdKeys = [];
-        $fileContent = file_get_contents(IMUtil::removeNull($fileInfoTemp));
+        $fileContent = strval(file_get_contents(IMUtil::removeNull($fileInfoTemp)));
         if ($encoding) {
-            $fileContent = mb_convert_encoding($fileContent, "UTF-8", $encoding);
+            $fileContent = strval(mb_convert_encoding($fileContent, "UTF-8", $encoding));
         }
         $lineNumber = 0;
         $result = [];

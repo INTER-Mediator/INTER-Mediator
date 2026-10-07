@@ -37,34 +37,46 @@ direct `npx wdio <config>` commands below, run `pnpm run seed-drivers` once firs
 
 ## Other commands
 
-Just run the test with Google Chrome
+Just run a test with Google Chrome.
 
 ```
-npx wdio wdio-auth-chrome.conf.js 
+pnpm exec wdio wdio-auth-chrome.conf.js 
 ```
 
-Just run the test with Microsoft Edge
+There are a lot of test settings.
 
 ```
-npx wdio wdio-form-edge.conf.js 
+pnpm exec wdio wdio-auth-chrome.conf.js 
+pnpm exec wdio wdio-auth-firefox.conf.js 
+pnpm exec wdio wdio-auth-edge.conf.js 
+pnpm exec wdio wdio-editing-chrome.conf.js 
+pnpm exec wdio wdio-editing-edge.conf.js 
+pnpm exec wdio wdio-editing-firefox.conf.js 
+pnpm exec wdio wdio-form-chrome.conf.js 
+pnpm exec wdio wdio-form-edge.conf.js 
+pnpm exec wdio wdio-form-firefox.conf.js 
+pnpm exec wdio wdio-form-md-chrome.conf.jp
+pnpm exec wdio wdio-form-md-edge.conf.jp
+pnpm exec wdio wdio-form-md-firefox.conf.jp
+pnpm exec wdio wdio-sync-chrome.conf.jp
 ```
 
-Just run the test with Firefox
+Some tests aren't adapted to the latest webdriver.io. These tests are stored in run_v8 directory.
 
 ```
-npx wdio wdio-auth-firefox.conf.js 
+cd /spec/run_v8
+pnpm exec wdio wdio-sync-firefox.conf.js
+pnpm exec wdio wdio-sync-edge.conf.js
+pnpm exec wdio wdio-sync-chrome.conf.js
+pnpm exec wdio wdio-search-firefox.conf.js
+pnpm exec wdio wdio-search-edge.conf.js
+pnpm exec wdio wdio-search-chrome.conf.js
 ```
 
 Just run the test with Safari. This test works on the /spec/run-safari directory.
 
 ```
 cd /spec/run-safari
-npx wdio wdio-safari.conf.js 
-```
-
-Another syncing between clients test.
-
-```
-npx wdio wdio-sync-chrome.conf.jp
+pnpm exec wdio-safari.conf.js 
 ```
 

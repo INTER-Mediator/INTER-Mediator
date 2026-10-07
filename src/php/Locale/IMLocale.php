@@ -119,8 +119,8 @@ class IMLocale
         }
 
         // Extracting the first item and cutting the priority information.
-        if (str_contains($lstr, ',')) $lstr = substr($lstr, 0, strpos($lstr, ','));
-        if (str_contains($lstr, ';')) $lstr = substr($lstr, 0, strpos($lstr, ';'));
+        if (str_contains($lstr, ',')) $lstr = substr($lstr, 0, intval(strpos($lstr, ',')));
+        if (str_contains($lstr, ';')) $lstr = substr($lstr, 0, intval(strpos($lstr, ';')));
 
         // Convert to the right locale identifier.
         if (str_contains($lstr, '-')) {

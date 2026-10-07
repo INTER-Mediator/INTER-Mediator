@@ -255,6 +255,8 @@ class DefinitionChecker
             'is-pass-through-2FA' => 'boolean',
         ],
         'media-root-dir' => 'string',
+        'upload-allowed-extensions' => 'array',
+        'media-class-allowed' => 'array',
 //        'media-context' => 'string',
         'smtp' => [
             'protocol' => 'string',

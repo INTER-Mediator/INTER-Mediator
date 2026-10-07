@@ -168,6 +168,28 @@ const INTERMediatorLog = {
     return Array.from(tpl.content.childNodes).some(n => n.nodeType === Node.ELEMENT_NODE)
   },
 
+  sanitizedFragment: function (str) {
+    'use strict'
+    const tpl = document.createElement('template')
+    tpl.innerHTML = str
+    const forbidden = 'script,style,iframe,frame,frameset,object,embed,link,meta,base,form,input,button,textarea,select,svg,math'
+    for (const node of tpl.content.querySelectorAll(forbidden)) {
+      node.remove()
+    }
+    for (const elm of tpl.content.querySelectorAll('*')) {
+      for (const attr of Array.from(elm.attributes)) {
+        const name = attr.name.toLowerCase()
+        const value = attr.value.replace(/[\s\u0000-\u001F]/g, '').toLowerCase()
+        if (name.startsWith('on') || name === 'style' || name === 'srcdoc' ||
+          (['href', 'src', 'action', 'formaction', 'xlink:href'].includes(name) &&
+            (value.startsWith('javascript:') || value.startsWith('data:') || value.startsWith('vbscript:')))) {
+          elm.removeAttribute(attr.name)
+        }
+      }
+    }
+    return tpl.content
+  },
+
   flushMessage: function () {
     'use strict'
     if (INTERMediatorLog.errorMessageByAlert) {
@@ -201,7 +223,7 @@ const INTERMediatorLog = {
       for (let i = 0; i < INTERMediatorLog.errorMessages.length; i += 1) {
         if (INTERMediatorLog.isHTML(INTERMediatorLog.errorMessages[i])) {
           const boxnode = document.createElement('div')
-          boxnode.innerHTML = INTERMediatorLog.errorMessages[i]
+          boxnode.appendChild(INTERMediatorLog.sanitizedFragment(INTERMediatorLog.errorMessages[i]))
           debugNode.appendChild(boxnode)
         } else {
           const lines = INTERMediatorLog.errorMessages[i].split(IMLib.nl_char)
