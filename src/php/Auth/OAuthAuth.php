@@ -260,13 +260,13 @@ class OAuthAuth
                 $dbProxy->saveChallenge($param["username"], $challenge, $generatedClientID, "+");
                 setcookie('_im_credential_token', $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
                     ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                        'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                        'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
                 setcookie("_im_username_{$oAuthRealm}", $param["username"],
                     ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                        'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                        'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
                 setcookie("_im_clientid_{$oAuthRealm}", $generatedClientID,
                     ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                        'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                        'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
             }
 
             if ($this->debugMode) {
@@ -276,11 +276,35 @@ class OAuthAuth
             }
             if ($this->doRedirect && !$this->debugMode) {
                 $backURL = $this->providerObj->getBackURL();
-                $this->jsCode = $backURL ? ("location.href = '{$backURL}';") : "";
+                $this->jsCode = ($backURL && $this->isSafeBackURL($backURL))
+                    ? ("location.href = " . json_encode($backURL,
+                            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) . ";")
+                    : "";
             }
         } catch (Exception $e) {
             $this->errorMessage[] = $e->getMessage();
         }
+    }
+
+    /** Checks the back URL points to this host (or is a site-relative path).
+     * @param string $url The URL to check.
+     * @return bool True if the URL is safe to redirect.
+     */
+    private function isSafeBackURL(string $url): bool
+    {
+        if (preg_match('/[\x00-\x1F\x7F\\\\]/', $url)) {
+            return false;
+        }
+        if (str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            return true;
+        }
+        $parts = parse_url($url);
+        if (!$parts || !isset($parts['scheme'], $parts['host'])
+            || !in_array(strtolower($parts['scheme']), ['http', 'https'])) {
+            return false;
+        }
+        $host = strtolower(explode(':', $_SERVER['HTTP_HOST'] ?? '')[0]);
+        return $host !== '' && strtolower($parts['host']) === $host;
     }
 }
 

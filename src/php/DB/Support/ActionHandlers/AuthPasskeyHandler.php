@@ -135,13 +135,13 @@ class AuthPasskeyHandler extends ActionHandler
             $this->proxy->saveChallenge($this->username, $challenge, $generatedClientID, "+");
             setcookie('_im_credential_token', $this->proxy->generateCredential($challenge, $generatedClientID, $this->credential),
                 ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                    'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                    'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
             setcookie("_im_username_{$authRealm}", $this->username,
                 ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                    'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
             setcookie("_im_clientid_{$authRealm}", $generatedClientID,
                 ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                    'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
         }
     }
 }

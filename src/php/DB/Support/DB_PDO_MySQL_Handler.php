@@ -228,15 +228,16 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         if (!$entityName) {
             return null;
         }
+        $q = '`';
         if (strpos($entityName, ".") !== false) {
             $components = explode(".", $entityName);
             $quotedName = array();
             foreach ($components as $item) {
-                $quotedName[] = "`{$item}`";
+                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
             }
             return implode(".", $quotedName);
         }
-        return "`{$entityName}`";
+        return $q . str_replace($q, $q . $q, $entityName) . $q;
     }
 
     /** Performs optional operations in setup.

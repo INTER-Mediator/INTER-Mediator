@@ -36,7 +36,7 @@ class MessagingProxy extends MessagingProvider
      */
     public function __construct(string $driver)
     {
-        $className = ucfirst(strtolower(mb_ereg_replace('([a-zA-Z]+)', '\\1', $driver)));
+        $className = ucfirst(strtolower(strval(mb_ereg_replace('([a-zA-Z]+)', '\\1', $driver))));
         $className = "INTERMediator\\Messaging\\Send{$className}";
         $this->msgProvider = new $className;
     }
