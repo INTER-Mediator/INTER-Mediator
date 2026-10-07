@@ -10,14 +10,54 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_HTMLString_Test extends TestCase
 {
+    /**
+     * The dataconverter.
+     *
+     * @var mixed
+     */
     private $dataconverter;
+    /**
+     * The dataconverter 2.
+     *
+     * @var mixed
+     */
     private $dataconverter2;
+    /**
+     * The dataconverter 3.
+     *
+     * @var mixed
+     */
     private $dataconverter3;
+    /**
+     * The dataconverter for linking.
+     *
+     * @var mixed
+     */
     private $dataconverterForLinking;
+    /**
+     * The dataconverter for linking 2.
+     *
+     * @var mixed
+     */
     private $dataconverterForLinking2;
+    /**
+     * The dataconverter for linking 3.
+     *
+     * @var mixed
+     */
     private $dataconverterForLinking3;
+    /**
+     * The dataconverter without escaping.
+     *
+     * @var mixed
+     */
     private $dataconverterWithoutEscaping;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
@@ -31,7 +71,12 @@ class DataConverter_HTMLString_Test extends TestCase
         $this->dataconverterWithoutEscaping = new HTMLString('noescape');
     }
 
-    public function test_converterFromUserToDB()
+    /**
+     * Test converter From User To DB.
+     *
+     * @return void
+     */
+    public function test_converterFromUserToDB(): void
     {
         $expected = '';
         $string = '';
@@ -50,7 +95,12 @@ class DataConverter_HTMLString_Test extends TestCase
         $this->assertSame($expected, $this->dataconverterWithoutEscaping->converterFromUserToDB($string));
     }
 
-    public function test_converterFromDBtoUser()
+    /**
+     * Test converter From DB to User.
+     *
+     * @return void
+     */
+    public function test_converterFromDBtoUser(): void
     {
         $expected = '';
         $string = '';

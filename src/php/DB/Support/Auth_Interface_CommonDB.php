@@ -15,6 +15,8 @@
 
 namespace INTERMediator\DB\Support;
 
+use Exception;
+
 /**
  * Interface for common database authentication support.
  * Provides methods for handling authorization fields, targets, users, groups,
@@ -40,15 +42,17 @@ interface Auth_Interface_CommonDB
      */
     public function getNoSetForAuthorization(string $operation): ?string;
 
-    /** Returns a list of authorized users for a given operation.
+    /**
+     * Returns a list of authorized users for a given operation.
      * @param string|null $operation The operation type, or null for all.
-     * @return array List of authorized users.
+     * @return array<array-key, mixed> List of authorized users.
      */
     public function getAuthorizedUsers(?string $operation = null): array;
 
-    /** Returns a list of authorized groups for a given operation.
+    /**
+     * Returns a list of authorized groups for a given operation.
      * @param string|null $operation The operation type, or null for all.
-     * @return array List of authorized groups.
+     * @return array<array-key, mixed> List of authorized groups.
      */
     public function getAuthorizedGroups(?string $operation = null): array;
 
@@ -71,13 +75,14 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportRemoveOutdatedChallenges(): bool;
 
-    /** Retrieves a challenge from the issuedhash authentication table.
+    /**
+     * Retrieves a challenge from the issuedhash authentication table.
      * @param null|string|int $uid The user ID.
      * @param string $clientId The client identifier.
      * @param bool $isDelete Whether to delete the challenge after retrieval.
      * @param string $prefix Optional prefix for the challenge.
      * @param bool $isMulti Whether to support multiple challenges.
-     * @return string|null|array The challenge string, or null if not found.
+     * @return string|null|array<array-key, mixed> The challenge string, or null if not found.
      */
     public function authSupportRetrieveChallenge(null|string|int $uid,
                                                  string $clientId,
@@ -97,12 +102,13 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportRetrieveHashedPassword(string $username): ?string;
 
-    /** Creates a new user in the authuser authentication table.
+    /**
+     * Creates a new user in the authuser authentication table.
      * @param string $username The username.
      * @param string $hashedpassword The hashed password.
      * @param bool $isSAML Whether SAML authentication is used.
      * @param string|null $ldapPassword Optional LDAP password.
-     * @param array|null $attrs Optional attributes.
+     * @param array<array-key, mixed>|null $attrs Optional attributes.
      * @return bool True if successful, false otherwise.
      */
     public function authSupportCreateUser(string      $username, string $hashedpassword, bool $isSAML = false,
@@ -115,14 +121,15 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool;
 
-    /** Checks the media privilege for a user in a given table.
+    /**
+     * Checks the media privilege for a user in a given table.
      * @param string $tableName The table name.
      * @param string $targeting The targeting value.
      * @param string $userField The user field name.
      * @param string $user The user value.
      * @param string $keyField The key field name.
      * @param string $keyValue The key value.
-     * @return array|null The media privilege data, or null if not found.
+     * @return array<array-key, mixed>|null The media privilege data, or null if not found.
      */
     public function authSupportCheckMediaPrivilege(string $tableName, string $targeting, string $userField,
                                                    string $user, string $keyField, string $keyValue): ?array;
@@ -151,9 +158,10 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportGetGroupNameFromGroupId(string|int $groupid): ?string;
 
-    /** Retrieves the groups for a user in the authuser and authgroup authentication tables.
+    /**
+     * Retrieves the groups for a user in the authuser and authgroup authentication tables.
      * @param string|null $user The user value.
-     * @return array The groups for the user.
+     * @return array<array-key, mixed> The groups for the user.
      */
     public function authSupportGetGroupsOfUser(?string $user): array;
 
@@ -221,26 +229,89 @@ interface Auth_Interface_CommonDB
      */
     public function authSupportCanMigrateSHA256Hash(): bool;
 
-    /** Handles OAuth user authentication.
-     * @param array $keyValues The key-value pairs.
+    /**
+     * Handles OAuth user authentication.
+     * @param array<array-key, mixed> $keyValues The key-value pairs.
      * @return bool|null True if create user, false if reuse user, null in error.
      */
     public function authSupportOAuthUserHandling(array $keyValues): ?bool;
 
-    /** Unifies a username and email address, retrieves the hashed password, and gets the user ID.
+    /**
+     * Unifies a username and email address, retrieves the hashed password, and gets the user ID.
      * @param string|null $userID The user ID.
-     * @return array The unified data.
+     * @return array<array-key, mixed> The unified data.
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array;
 
+    /**
+     * Retrieves login user information from the authuser authentication table.
+     * @param string $userID The user ID or username.
+     * @return array<array-key, mixed> Array containing [user ID, real name, email, public key, secret].
+     * @throws Exception If the user table is not configured, connection fails, or multiple/no users are found.
+     */
     public function getLoginUserInfo(string $userID): array;
 
+    /** Stores a public key and its credential ID for a user in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @param string $publicKey The public key to store.
+     * @param string $publicKeyCredentialId The credential ID associated with the public key.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void;
+
+    /** Removes the public key and credential ID for a user from the authuser authentication table.
+     * @param string $uid The user ID.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportRemovePublicKey(string $uid): void;
+
+    /**
+     * Retrieves user information from the authuser authentication table by public key credential ID.
+     * @param string $pkid The public key credential ID.
+     * @return array<array-key, mixed> Array of user information, or empty array if not found.
+     * @throws Exception If the public key ID is invalid, the user table is not configured, or multiple users are found.
+     */
     public function authSupportUserInfoFromPublickeyId(string $pkid): array;
 
+    /** Stores or clears the 2FA secret for a user in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @param string|null $secret The 2FA secret to store, or null to clear it.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStore2FASecret(string $uid, string|null $secret): void;
 
+    /** Counts authentication failures within a specified time period from the authfail table.
+     * @param string $ip The client IP address.
+     * @param string|null $username The username, or null to count all failures for the IP.
+     * @param int $seconds The time period in seconds to look back.
+     * @return int The number of authentication failures within the period.
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int;
+
+    /** Records an authentication failure in the authfail table and removes outdated entries.
+     * @param string $ip The client IP address.
+     * @param string $username The username that failed authentication.
+     * @return void
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportAddAuthFail(string $ip, string $username): void;
+
+    /** Checks if a user is marked as inactive in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @return bool True if the user is inactive, false otherwise.
+     * @throws Exception If the user table is not configured or the database connection fails.
+     */
+    public function authSupportIsInactive(string $uid): bool;
+
+    /** Sets the inactive status for a user in the authuser authentication table.
+     * @param string $uid The user ID.
+     * @param bool $value The inactive status to set.
+     * @return void
+     * @throws Exception If the user table is not configured or the database connection fails.
+     */
+    public function authSupportSetInactive(string $uid, bool $value):void;
 }

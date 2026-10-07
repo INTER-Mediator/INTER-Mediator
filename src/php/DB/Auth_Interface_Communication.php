@@ -43,8 +43,8 @@ interface Auth_Interface_Communication
      * @param string $username The username.
      * @param string $password The password.
      * @param bool $isSAML Whether the user is SAML-based.
-     * @param array|null $attrs Optional additional attributes.
-     * @return array Result of the add operation.
+     * @param array<string, number|string|bool|null>|null $attrs Optional additional attributes.
+     * @return array<string> Result of the add operation.
      */
     public function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array;
 

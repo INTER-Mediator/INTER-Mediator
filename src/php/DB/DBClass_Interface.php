@@ -15,6 +15,8 @@
 
 namespace INTERMediator\DB;
 
+use staabm\SideEffectsDetector\SideEffect;
+
 /**
  * Interface for database class operations in INTER-Mediator, defining required methods for DB access, transactions, and record management.
  */
@@ -32,7 +34,7 @@ interface DBClass_Interface
     public function setupHandlers(?string $dsn = null): void;
 
     /** Read records from the database.
-     * @return array|null The result set as an array, or null if none.
+     * @return array<array<string, number|string|bool|null>>|null The result set as an array, or null if none.
      */
     public function readFromDB(): ?array;
 
@@ -69,8 +71,8 @@ interface DBClass_Interface
     public function copyInDB(): ?string;
 
     /** Normalize a condition array (FileMaker only).
-     * @param array $condition The condition array.
-     * @return null|array
+     * @param array<string, number|string|bool|null> $condition The condition array.
+     * @return null|array<string, number|string|bool|null>
      */
     public function normalizedCondition(array $condition): null|array;
 
@@ -83,7 +85,7 @@ interface DBClass_Interface
 
     /** Get field information for a data source.
      * @param string $dataSourceName The data source name.
-     * @return array|null Field info array or null.
+     * @return array<string, string>|null Field info array or null.
      */
     public function getFieldInfo(string $dataSourceName): ?array;
 
@@ -94,17 +96,17 @@ interface DBClass_Interface
     public function requireUpdatedRecord(bool $value): void;
 
     /** Get the updated record.
-     * @return array|null The updated record or null.
+     * @return array<array<string, number|string|bool|null>>|null The updated record or null.
      */
     public function getUpdatedRecord(): ?array;
 
     /** Get the updated record (compatibility method).
-     * @return null|array
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function updatedRecord(): null|array;
 
     /** Set the updated record data.
-     * @param array $record The record data.
+     * @param array<array<string, number|string|bool|null>> $record The record data.
      * @return void
      */
     public function setUpdatedRecord(array $record): void;
@@ -127,16 +129,17 @@ interface DBClass_Interface
      */
     public function clearUseSetDataToUpdatedRecord(): void;
 
-    /** Query the database for testing.
+    /**
+     * Query the database for testing.
      * @param string $table The table name.
-     * @param array|null $conditions Optional conditions.
-     * @return array|null Result set or null.
+     * @param array<string, number|string|bool|null>|null $conditions Optional conditions.
+     * @return array<array<array-key, number|string|bool|null>>|null Result set or null.
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array;
 
     /** Delete records for testing.
      * @param string $table The table name.
-     * @param array|null $conditions Optional conditions.
+     * @param array<array<string, number|string|bool|null>>|null $conditions Optional conditions.
      * @return bool True on success, false otherwise.
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool;
@@ -171,5 +174,8 @@ interface DBClass_Interface
      */
     public function closeDBOperation(): void;
 
+    /** Get the sort keys.
+     * @return array<string, string> The sort keys.
+     */
     public function getSortKeys(): array;
 }

@@ -7,6 +7,11 @@ require_once(dirname(__FILE__) . '/../DB_Proxy_Test_Common.php');
 class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
 {
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         parent::setUp();
@@ -20,6 +25,14 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
         $this->schemaName = "im_sample.";
     }
 
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param int $hasExtend The has extend.
+     * @return void
+     */
     function dbProxySetupForAccess(string $contextName, int $maxRecord, int $hasExtend = 0): void
     {
         $this->schemaName = "im_sample.";
@@ -46,6 +59,14 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
+    /**
+     * Set up the DB proxy for auth Access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param mixed $subContextName The sub context name.
+     * @return void
+     */
     function dbProxySetupForAuthAccess(string $contextName, int $maxRecord, $subContextName = null): void
     {
         $this->schemaName = "im_sample.";

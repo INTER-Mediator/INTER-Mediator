@@ -6,8 +6,18 @@ class DB_ExtSupport_Test extends TestCase
 {
     use INTERMediator\DB\Proxy_ExtSupport;
 
+    /**
+     * The db spec.
+     *
+     * @var mixed
+     */
     protected $dbSpec;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         $this->dbSpec = [
@@ -18,6 +28,11 @@ class DB_ExtSupport_Test extends TestCase
         ];
     }
 
+    /**
+     * Test ext Support 1.
+     *
+     * @return void
+     */
     function testExtSupport1()
     {
         $this->setTestMode();
@@ -59,6 +74,11 @@ class DB_ExtSupport_Test extends TestCase
         $this->assertCount(0, $result, 'Read from one record from the person table.');
     }
 
+    /**
+     * Test ext Support 2.
+     *
+     * @return void
+     */
     function testExtSupport2()
     {
         $this->setTestMode();

@@ -38,7 +38,7 @@ spl_autoload_register(function (string $className): void {
     $refPath = '';
     $refererPath = '';
     if (isset($_SERVER['SCRIPT_NAME']) && isset($_SERVER['HTTP_REFERER'])) {
-        $refererPath = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+        $refererPath = strval(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH));
         $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'], $refererPath));
         $refererPath = dirname($_SERVER['DOCUMENT_ROOT'] . $refererPath);
     }
@@ -80,9 +80,9 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
 
 /**
  * INTER-Mediator entry point
- * @param array|null $dataSource
- * @param array|null $options
- * @param array|null $dbSpecification
+ * @param array<array-key, mixed>|null $dataSource
+ * @param array<array-key, mixed>|null $options
+ * @param array<array-key, mixed>|null $dbSpecification
  * @param int $debug
  * @param string|null $origin The path to the definition file.
  * @throws Exception

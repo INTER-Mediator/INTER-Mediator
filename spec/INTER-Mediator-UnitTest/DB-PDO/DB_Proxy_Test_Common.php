@@ -14,16 +14,62 @@ abstract class DB_Proxy_Test_Common extends TestCase
 {
     use Proxy_ExtSupport;
 
+    /**
+     * The schema name.
+     *
+     * @var string
+     */
     public string $schemaName;
+    /**
+     * The db proxy.
+     *
+     * @var Proxy
+     */
     public Proxy $db_proxy;
+    /**
+     * The data source.
+     *
+     * @var array<int, array<string, array<int|string, array<string, list<string>|string>>|int|string|true>>|null $dataSource
+     */
     public ?array $dataSource;
+    /**
+     * The options.
+     *
+     * @var array<string, array<string, list<string>|string|false>>|null $options
+     */
     public ?array $options;
+    /**
+     * The db spec.
+     *
+     * @var array<string, string>|null $dbSpec
+     */
     public ?array $dbSpec;
 
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param int $hasExtend The has extend.
+     * @return void
+     */
     abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, int $hasExtend = 0): void;
 
+    /**
+     * Set up the DB proxy for auth Access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param mixed $subContextName The sub context name.
+     * @return void
+     */
     abstract function dbProxySetupForAuthAccess(string $contextName, int $maxRecord, $subContextName = null): void;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
@@ -54,7 +100,12 @@ abstract class DB_Proxy_Test_Common extends TestCase
 //    }
 
 
-    function testAdvisorClassOnRead()
+    /**
+     * Test advisor Class On Read.
+     *
+     * @return void
+     */
+    function testAdvisorClassOnRead(): void
     {
         $this->dbProxySetupForAccess("person", 1);
 //        $msg = $this->db_proxy->logger->clearLogs();
@@ -80,17 +131,33 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $this->assertTrue($result[0]["adding"] == 999, "Field adding has the value 999.");
     }
 
-    function testAdvisorClassOnUpdate()
+    /**
+     * Test advisor Class On Update.
+     *
+     * @return void
+     */
+    function testAdvisorClassOnUpdate(): void
     {
         $this->advisorClassOnUpdate(1);
     }
 
-    function testAdvisorClassOnUpdateNew()
+    /**
+     * Test advisor Class On Update New.
+     *
+     * @return void
+     */
+    function testAdvisorClassOnUpdateNew(): void
     {
         $this->advisorClassOnUpdate(2);
     }
 
-    private function advisorClassOnUpdate($classNum)
+    /**
+     * Advisor Class On Update.
+     *
+     * @param mixed $classNum The class num.
+     * @return void
+     */
+    private function advisorClassOnUpdate($classNum): void
     {
         $isPgsql = (strpos($this->dbSpec['dsn'], 'pgsql') === 0);
         $dataSrcPgsql = [['name' => "testtable",
@@ -152,17 +219,33 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $this->assertTrue($testResult[0]['vc2'] == $addressValue, "The testtable has one more record.");
     }
 
-    function testAdvisorClassOnCreate()
+    /**
+     * Test advisor Class On Create.
+     *
+     * @return void
+     */
+    function testAdvisorClassOnCreate(): void
     {
         $this->advisorClassOnCreate(1);
     }
 
-    function testAdvisorClassOnCreateNew()
+    /**
+     * Test advisor Class On Create New.
+     *
+     * @return void
+     */
+    function testAdvisorClassOnCreateNew(): void
     {
         $this->advisorClassOnCreate(2);
     }
 
-    private function advisorClassOnCreate($classNum)
+    /**
+     * Advisor Class On Create.
+     *
+     * @param mixed $classNum The class num.
+     * @return void
+     */
+    private function advisorClassOnCreate($classNum): void
     {
 
         $isPgsql = (strpos($this->dbSpec['dsn'], 'pgsql') === 0);
@@ -218,6 +301,12 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
 {
     use Proxy_ExtSupport;
 
+    /**
+     * Do After Read From DB.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $result The result.
+     * @return array<array<string, number|string|bool|null>>|null The result.
+     */
     public function doAfterReadFromDB($result): ?array
     {
         $modResult = [];
@@ -228,6 +317,12 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
         return $modResult;
     }
 
+    /**
+     * Do After Update To DB.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $output The output.
+     * @return array<array<string, number|string|bool|null>>|null The result.
+     */
     public function doAfterUpdateToDB($output): ?array
     {
         $result = $this->dbClass->getUpdatedRecord();
@@ -249,6 +344,12 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
         return $output;
     }
 
+    /**
+     * Do After Create To DB.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $output The output.
+     * @return array<array<string, number|string|bool|null>>|null The result.
+     */
     public function doAfterCreateToDB($output): ?array
     {
         $result = $this->dbClass->getUpdatedRecord();
@@ -264,6 +365,12 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
 {
     use Proxy_ExtSupport;
 
+    /**
+     * Do After Read From DB.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $result The result.
+     * @return array<array<string, number|string|bool|null>>|null The result.
+     */
     public function doAfterReadFromDB($result): ?array
     {
         $modResult = [];
@@ -274,6 +381,12 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
         return $modResult;
     }
 
+    /**
+     * Do After Update To DB.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $result The result.
+     * @return array<array<string, number|string|bool|null>>|null The result.
+     */
     public function doAfterUpdateToDB($result): ?array
     {
         $nameValue = $result[0]["name"];
@@ -294,6 +407,12 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
         return $result;
     }
 
+    /**
+     * Do After Create To DB.
+     *
+     * @param array<array<string, number|string|bool|null>>|null $result The result.
+     * @return array<array<string, number|string|bool|null>>|null The result.
+     */
     public function doAfterCreateToDB($result): ?array
     {
         $nameValue = $result[0]["vc1"];

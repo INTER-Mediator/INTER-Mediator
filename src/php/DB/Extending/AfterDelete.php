@@ -15,7 +15,16 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface AfterDelete
+ * @package INTERMediator\DB\Extending
+ */
 interface AfterDelete
 {
-    public function doAfterDeleteFromDB($result);
+    /**
+     * Do after delete from DB.
+     * @param array<array<string, number|string|bool|null>> $result The result of delete operation.
+     * @return array<array<string, number|string|bool|null>>|null The result of after delete operation.
+     */
+    public function doAfterDeleteFromDB($result): ?array;
 }

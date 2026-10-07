@@ -48,13 +48,15 @@ interface DB_Interface_Registering
      */
     public function setQueriedCondition(string $name): void;
 
-    /** Gets the primary keys from the last query.
-     * @return array|null Array of primary keys or null if not set.
+    /**
+     * Gets the primary keys from the last query.
+     * @return array<array-key, mixed>|null Array of primary keys or null if not set.
      */
     public function queriedPrimaryKeys(): ?array;
 
-    /** Sets the primary keys from the last query.
-     * @param array|null $name Array of primary keys.
+    /**
+     * Sets the primary keys from the last query.
+     * @param array<array-key, mixed>|null $name Array of primary keys.
      * @return void
      */
     public function setQueriedPrimaryKeys(?array $name): void;
@@ -65,44 +67,49 @@ interface DB_Interface_Registering
      */
     public function addQueriedPrimaryKeys(string $name): void;
 
-    /** Registers a new record for a client.
+    /**
+     * Registers a new record for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $condition Query condition string.
-     * @param array $pkArray Array of primary keys.
+     * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return string|null Registration identifier or null on failure.
      */
     public function register(?string $clientId, string $entity, string $condition, array $pkArray):?string;
 
-    /** Unregisters a record for a client.
+    /**
+     * Unregisters a record for a client.
      * @param string|null $clientId Client identifier.
-     * @param array|null $tableKeys Array of table keys to unregister.
+     * @param array<array-key, mixed>|null $tableKeys Array of table keys to unregister.
      * @return bool True if successful, false otherwise.
      */
     public function unregister(?string $clientId, ?array $tableKeys):bool;
 
-    /** Checks if a record is registered for a client.
+    /**
+     * Checks if a record is registered for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
-     * @param array $pkArray Array of primary keys.
-     * @return array|null Matching registration details or null if not found.
+     * @param array<array-key, mixed> $pkArray Array of primary keys.
+     * @return array<array-key, mixed>|null Matching registration details or null if not found.
      */
     public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array;
 
-    /** Appends a primary key into the registered records for a client.
+    /**
+     * Appends a primary key into the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $pkField Primary key field name.
-     * @param array $pkArray Array of primary keys to append.
-     * @return array|null Updated registration details or null on failure.
+     * @param array<array-key, mixed> $pkArray Array of primary keys to append.
+     * @return array<array-key, mixed>|null Updated registration details or null on failure.
      */
     public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray):?array;
 
-    /** Removes a primary key from the registered records for a client.
+    /**
+     * Removes a primary key from the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
-     * @param array $pkArray Array of primary keys to remove.
-     * @return array|null Updated registration details or null on failure.
+     * @param array<array-key, mixed> $pkArray Array of primary keys to remove.
+     * @return array<array-key, mixed>|null Updated registration details or null on failure.
      */
     public function removeFromRegistered(?string $clientId, string $entity, array $pkArray):?array;
 }

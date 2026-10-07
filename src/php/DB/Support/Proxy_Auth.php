@@ -32,8 +32,9 @@ use INTERMediator\Params;
  */
 trait Proxy_Auth
 {
-    /** Calling from Proxy::initialize method to initialize parameters for authentication and outholization.
-     * @param array|null $options
+    /**
+     * Calling from Proxy::initialize method to initialize parameters for authentication and outholization.
+     * @param array<array-key, mixed>|null $options
      * @return void
      * @throws Exception
      */
@@ -132,26 +133,34 @@ trait Proxy_Auth
         $this->authSucceed = false;
         // Authentication process
         if ($this->dbSettings->getRequireAuthorization() && !$isChallengeAccess) { // Authentication required
-            $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication process started.");
+            $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] Authentication process started.");
             // brute-force attack protection
             $authFail = new AuthFailCount($this->dbClass->authHandler);
-            if ($authFail->isAcceptableAuthFail($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser)) {
+            if ($authFail->isAcceptableAuthFailBruteForce($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser)) {
                 Logger::getInstance()->setWarningMessage(IMUtil::getMessageClassInstance()->getMessageAs(1067));
                 $this->accessSetToNothing();
                 sleep(1);
                 return;
             }
+            // inactivating on fails
+            if ($authFail->getInactive($this->paramAuthUser)) {
+                Logger::getInstance()->setWarningMessage(IMUtil::getMessageClassInstance()->getMessageAs(1068));
+                $this->accessSetToNothing();
+                sleep(1);
+                return;
+            }
+
             if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
             if ($this->visitor->checkAuthentication()) {
                 $this->dbSettings->setCurrentUser($this->signedUser);
-                $this->logger->setDebugMessage("[authenticationAndAuthorization] IM-built-in Authentication succeed.");
+                $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] IM-built-in Authentication succeed.");
                 $this->authSucceed = true;
             } else { // Timeout with SAML or Authentication failed
                 $this->dbSettings->setRequireAuthentication(true);
                 if (!$this->dbSettings->getIsSAML()) { // NOT Set up as SAML
-                    $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication doesn't meet valid."
+                    $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] Authentication doesn't meet valid."
                         . "{$this->signedUser}/{$this->paramResponse}/{$this->clientId}");
                     if (!$isAuthAccessing) {
                         $this->accessSetToNothing();  // Not Authenticated!
@@ -161,7 +170,7 @@ trait Proxy_Auth
                     $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                     $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
                     [$additional, $this->signedUser] = $SAMLAuth->samlLoginCheck();
-                    $this->logger->setDebugMessage("[authenticationAndAuthorization] SAML Auth result: user={$this->signedUser}, "
+                    $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] SAML Auth result: user={$this->signedUser}, "
                         . "additional={$additional}, attributes=" . var_export($SAMLAuth->getAttributes(), true));
                     $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                     $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
@@ -172,7 +181,7 @@ trait Proxy_Auth
                     if ($this->signedUser) {
                         $attrs = $SAMLAuth->getValuesFromAttributes();
                         $this->logger->setDebugMessage(
-                            "[authenticationAndAuthorization] SAML Authentication succeed. Attributes=" . var_export($attrs, true));
+                            "[Proxy_Auth][authenticationAndAuthorization] SAML Authentication succeed. Attributes=" . var_export($attrs, true));
                         $this->authSucceed = true;
                         $password = IMUtil::generateRandomPW();
                         [$addResult, $hashedpw] = $this->addUser($this->signedUser, $password, true, $attrs);
@@ -188,7 +197,7 @@ trait Proxy_Auth
             }
             if (!$this->visitor->checkAuthorization() && $this->authSucceed) {// Checking authorization.
                 Logger::getInstance()->setDebugMessage(
-                    "[authenticationAndAuthorization] Authorization doesn't meet the settings.");
+                    "[Proxy_Auth][authenticationAndAuthorization] Authorization doesn't meet the settings.");
                 $this->accessSetToNothing();  // Not Authenticated!
                 $this->dbSettings->setRequireAuthentication(true);
                 $this->authSucceed = false;
@@ -197,7 +206,7 @@ trait Proxy_Auth
                 if (!$isAuthAccessing) {
                     $this->accessSetToNothing();
                 }
-                if ($authFail->isActive()) {
+                if ($authFail->isActiveBluteForce()||$authFail->isActiveInactivating()) {
                     $authFail->addFailRecord($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser);
                 }
             }
@@ -233,19 +242,20 @@ trait Proxy_Auth
         $this->visitor = new $visitorClasName($this);
     }
 
-    /** @param string $username
+    /**
+     * @param string $username
      * @param string $password
      * @param bool $isSAML
-     * @param ?array $attrs
-     * @return array
+     * @param array<array-key, mixed>|null $attrs
+     * @return array<array-key, mixed>
      */
     public
     function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
     {
-        $this->logger->setDebugMessage("[addUser] username={$username}, isSAML={$isSAML}", 2);
+        $this->logger->setDebugMessage("[Proxy_Auth][addUser] username={$username}, isSAML={$isSAML}", 2);
         $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isSAML, $password, $attrs);
-        $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
+        $this->logger->setDebugMessage("[Proxy_Auth][addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return [$returnValue, $hashedPw];
     }
 
@@ -270,10 +280,10 @@ trait Proxy_Auth
             }
             setcookie($cookieNameToken, $generatedChallenge,
                 ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
-                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                    'domain' => $this->credentialCookieDomain, 'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
             setcookie($cookieNameUser, $this->paramAuthUser,
                 ['expires' => time() + $this->dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
-                    'domain' => $this->credentialCookieDomain, 'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                    'domain' => $this->credentialCookieDomain, 'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
             $this->logger->setDebugMessage("mediatoken stored", 2);
         }
     }
@@ -304,7 +314,7 @@ trait Proxy_Auth
     function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void
     {
         Logger::getInstance()->setDebugMessage(
-            "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
+            "[Proxy_Auth][saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId, $prefix);
@@ -335,7 +345,7 @@ trait Proxy_Auth
     public
     function checkMediaToken(string $user, string $token): bool
     {
-        $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
+        $this->logger->setDebugMessage("[Proxy_Auth][checkMediaToken] user={$user}, token={$token}", 2);
         $returnValue = false;
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0

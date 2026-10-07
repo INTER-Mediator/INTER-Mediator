@@ -50,11 +50,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return true;
     }
 
-    /** Registers a new record for a client.
+    /**
+     * Registers a new record for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $condition Query condition string.
-     * @param array $pkArray Array of primary keys.
+     * @param array<array-key, mixed> $pkArray Array of primary keys.
      * @return string|null Registration identifier or null on failure.
      * @throws Exception
      */
@@ -115,9 +116,10 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return $newContextId;
     }
 
-    /** Unregisters a client.
+    /**
+     * Unregisters a client.
      * @param string|null $clientId Client identifier.
-     * @param array|null $tableKeys Array of table keys.
+     * @param array<array-key, mixed>|null $tableKeys Array of table keys.
      * @return bool True on success, false on failure.
      */
     public function unregister(?string $clientId, ?array $tableKeys): bool
@@ -161,11 +163,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return true;
     }
 
-    /** Matches registered records for a client.
+    /**
+     * Matches registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
-     * @param array $pkArray Array of primary keys.
-     * @return array|null Array of matching client identifiers or null on failure.
+     * @param array<array-key, mixed> $pkArray Array of primary keys.
+     * @return array<array-key, mixed>|null Array of matching client identifiers or null on failure.
      */
     public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
@@ -224,12 +227,13 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return array_unique($targetClients);
     }
 
-    /** Appends a new record to the registered records for a client.
+    /**
+     * Appends a new record to the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
      * @param string $pkField Primary key field name.
-     * @param array $pkArray Array of primary keys.
-     * @return array|null Array of client identifiers or null on failure.
+     * @param array<array-key, mixed> $pkArray Array of primary keys.
+     * @return array<array-key, mixed>|null Array of client identifiers or null on failure.
      * @throws Exception
      */
     public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
@@ -281,11 +285,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    /** Removes a record from the registered records for a client.
+    /**
+     * Removes a record from the registered records for a client.
      * @param string|null $clientId Client identifier.
      * @param string $entity Entity name.
-     * @param array $pkArray Array of primary keys.
-     * @return array|null Array of client identifiers or null on failure.
+     * @param array<array-key, mixed> $pkArray Array of primary keys.
+     * @return array<array-key, mixed>|null Array of client identifiers or null on failure.
      */
     public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {

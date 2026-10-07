@@ -9,9 +9,9 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * A placeholder entry point for REST API.
- * @param null|array $dataSource The data source definitions.
- * @param array|null $options The option definitions.
- * @param null|array $dbSpecification The database connection specifications.
+ * @param null|array<array-key, mixed> $dataSource The data source definitions.
+ * @param array<array-key, mixed>|null $options The option definitions.
+ * @param null|array<array-key, mixed> $dbSpecification The database connection specifications.
  * @param null|bool $debug If true, enables debug mode.
  */
 function IM_Dummy_Entry_RESTAPI(?array $dataSource, ?array $options, ?array $dbSpecification, ?bool $debug = false): void
@@ -27,13 +27,16 @@ class RESTAPI
 {
     use Proxy_ExtSupport;
 
-    /** @var array The data source definitions.
+    /**
+     * @var array<array-key, mixed> The data source definitions.
      */
     private array $dataSource;
-    /** @var array The option definitions.
+    /**
+     * @var array<array-key, mixed> The option definitions.
      */
     private array $options;
-    /** @var array The database connection specifications.
+    /**
+     * @var array<array-key, mixed> The database connection specifications.
      */
     private array $dbSpecification;
 
@@ -102,19 +105,19 @@ class RESTAPI
 
         /**
          * Replaces the INTER-Mediator inclusion statement.
-         * @param string|null $src The source code.
+         * @param string|false $src The source code.
          * @param string $validStatement The valid inclusion statement.
          * @return string|null The modified source code.
          */
-        $changeIncludeIMPath = function (?string $src, string $validStatement) {
+        $changeIncludeIMPath = function (false|string $src, string $validStatement): string {
             $includeFunctions = array('require_once', 'include_once', 'require', 'include');
             foreach ($includeFunctions as $targetFunction) {
                 $pattern = '/' . $targetFunction . '\\(.+INTER-Mediator.php.+\\);/';
-                if (!is_null($src) && preg_match($pattern, $src)) {
-                    return preg_replace($pattern, $validStatement, $src);
+                if ($src && preg_match($pattern, $src)) {
+                    return strval(preg_replace($pattern, $validStatement, $src));
                 }
             }
-            return $src;
+            return strval($src);
         };
 
         $fileContent = file_get_contents($path);
@@ -128,7 +131,10 @@ class RESTAPI
                     $changeIncludeIMPath(
                         $fileContent,
                         "require_once('$IMRoot/INTER-Mediator.php');"
-                    ) ?? "")));
+                    )
+                )
+            )
+        );
         eval($convert);
         $this->dataSource = $globalDataSource;
         $this->options = $globalOptions;
@@ -140,7 +146,8 @@ class RESTAPI
      */
     private function parseFromYAMLFile(string $path): void
     {
-        $parsed = Yaml::parse(file_get_contents($path));
+        $contents = file_get_contents($path);
+        $parsed = Yaml::parse($contents? $contents : '');
         $this->dataSource = $parsed["contexts"];
         $this->options = $parsed["options"];
         $this->dbSpecification = $parsed["connection"];
@@ -200,7 +207,8 @@ class RESTAPI
         }
         $result = null;
         try {
-            $bodyData = json_decode(file_get_contents('php://input'), true);
+            $data = file_get_contents('php://input');
+            $bodyData = json_decode($data ? $data : '', true);
             switch ($_SERVER['REQUEST_METHOD']) {
                 case 'GET':
                     $result = $this->dbRead($this->targetContextName, $query);
@@ -234,9 +242,10 @@ class RESTAPI
         echo json_encode($result);
     }
 
-    /** Gets information about a context.
-     * @param array $contextDef The context definition.
-     * @return array An array containing context information.
+    /**
+     * Gets information about a context.
+     * @param array<array-key, mixed> $contextDef The context definition.
+     * @return array<array-key, mixed> An array containing context information.
      * @throws Exception
      */
     private function contextInfo(array $contextDef): array

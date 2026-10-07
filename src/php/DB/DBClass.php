@@ -11,8 +11,8 @@ use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
 abstract class DBClass extends UseSharedObjects implements DBClass_Interface
 {
     /** Throws an exception; should only be used by FileMaker subclasses.
-     * @param array $condition The condition array.
-     * @return null|array
+     * @param array<string, number|string|bool|null> $condition The condition array.
+     * @return null|array<string, number|string|bool|null>
      * @throws Exception Always throws; not supported in base class.
      */
     public function normalizedCondition(array $condition): null|array
@@ -75,7 +75,7 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
     }
 
     /** Returns the record limit parameter based on table info and settings.
-     * @param array $tableInfo Table information array.
+     * @param array<string, number|string|bool|null> $tableInfo Table information array.
      * @return int The limit parameter.
      */
     protected function getLimitParam(array $tableInfo): int

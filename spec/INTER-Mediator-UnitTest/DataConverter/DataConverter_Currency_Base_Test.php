@@ -9,18 +9,43 @@ use PHPUnit\Framework\TestCase;
 
 abstract class DataConverter_Currency_Base_Test extends TestCase
 {
+    /**
+     * The currency mark.
+     *
+     * @var mixed
+     */
     protected $currencyMark;
+    /**
+     * The th sep mark.
+     *
+     * @var mixed
+     */
     protected $thSepMark;
+    /**
+     * The dataconverter.
+     *
+     * @var mixed
+     */
     protected $dataconverter;
 
-    public function test_converterFromDBtoUser()
+    /**
+     * Test converter From DB to User.
+     *
+     * @return void
+     */
+    public function test_converterFromDBtoUser(): void
     {
         $expected = "{$this->currencyMark}1{$this->thSepMark}000";
         $string = '1000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }
 
-    public function test_converterFromUserToDB()
+    /**
+     * Test converter From User To DB.
+     *
+     * @return void
+     */
+    public function test_converterFromUserToDB(): void
     {
         $expected = '100';
         $string = '100';

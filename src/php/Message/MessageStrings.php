@@ -27,9 +27,10 @@ use INTERMediator\Params;
 class MessageStrings
 {
 
-    /** Retrieves the terms for the current language, optionally merging with provided options.
-     * @param array|null $options Optional array of additional terms to merge.
-     * @return array The merged terms for the current language.
+    /**
+     * Retrieves the terms for the current language, optionally merging with provided options.
+     * @param array<array-key, mixed>|null $options Optional array of additional terms to merge.
+     * @return array<array-key, mixed> The merged terms for the current language.
      */
     public function getTerms(?array $options): array
     {
@@ -70,9 +71,10 @@ class MessageStrings
         return $this->messages;
     }
 
-    /** Retrieves a specific message string with optional placeholder replacements.
+    /**
+     * Retrieves a specific message string with optional placeholder replacements.
      * @param int $num The message code to retrieve.
-     * @param array|null $appending Optional array of values to replace placeholders (e.g., @1@) in the message.
+     * @param array<array-key, mixed>|null $appending Optional array of values to replace placeholders (e.g., @1@) in the message.
      * @return string The message string with placeholders replaced.
      */
     public function getMessageAs(int $num, ?array $appending = null): string
@@ -171,6 +173,7 @@ class MessageStrings
         1065 => "Connection Error in authPasskey=@1@/@2@",
         1066 => "The public key for Passkey authentication is not stored",
         1067 => "Brute-force attack protection: too many failed authentication attempts.",
+        1068 => "Login with this account has been disabled due to too many failed authentication attempts. Please contact your system administrator to unlock it.",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

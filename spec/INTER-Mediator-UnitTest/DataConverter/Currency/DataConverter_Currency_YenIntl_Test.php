@@ -11,6 +11,11 @@ use INTERMediator\Locale\IMLocale;
 
 class DataConverter_Currency_YenIntl_Test extends DataConverter_Currency_Base_Test
 {
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         IMLocale::$localForTest = 'ja';

@@ -13,7 +13,17 @@ use PHPUnit\Framework\TestCase;
 
 class SendMail_Test extends TestCase
 {
+    /**
+     * The db proxy.
+     *
+     * @var mixed
+     */
     private $db_proxy = null;
+    /**
+     * The context.
+     *
+     * @var mixed
+     */
     private $context = [
         [
             'records' => 1000,
@@ -45,6 +55,11 @@ class SendMail_Test extends TestCase
             ],
         ],
     ];
+    /**
+     * The option.
+     *
+     * @var mixed
+     */
     private $option = [
         'smtp' => [
             'server' => 'msyk.sakura.ne.jp',
@@ -59,6 +74,11 @@ class SendMail_Test extends TestCase
       * just on his testing only. Usually this password might be wrong.
       */
 
+    /**
+     * Test send Mail On Read.
+     *
+     * @return void
+     */
     public function testSendMailOnRead()
     {
         $this->db_proxy = new Proxy(true);
@@ -73,6 +93,11 @@ class SendMail_Test extends TestCase
         $this->assertEquals($recordCount, 1, "The queried record has to be just one.");
     }
 
+    /**
+     * Test send Mail On Update.
+     *
+     * @return void
+     */
     public function testSendMailOnUpdate()
     {
         $this->db_proxy = new Proxy(true);
@@ -92,6 +117,11 @@ class SendMail_Test extends TestCase
         $this->assertEquals(count($result), 1, "The queried record has to be just one.");
     }
 
+    /**
+     * Test send Mail On Create.
+     *
+     * @return void
+     */
     public function testSendMailOnCreate()
     {
         $this->db_proxy = new Proxy(true);

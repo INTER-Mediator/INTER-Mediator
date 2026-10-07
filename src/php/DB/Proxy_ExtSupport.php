@@ -17,15 +17,15 @@ trait Proxy_ExtSupport
      */
     private ?Proxy $extProxy = null;
     /** Data source for extended operations.
-     * @var array|null
+     * @var array<array<string, number|string|bool|null>>|null
      */
     private ?array $extDataSource = null;
     /** Options for extended operations.
-     * @var array|null
+     * @var array<array<string, number|string|bool|null>>|null
      */
     private ?array $extOptions = null;
     /** DB spec for extended operations.
-     * @var array|null
+     * @var array<string, number|string|bool|null>|null
      */
     private ?array $extDBSpec = null;
     /** Debug level for extended operations.
@@ -72,9 +72,9 @@ trait Proxy_ExtSupport
     }
 
     /** Initialize the proxy and operation settings.
-     * @param array|null $dataSource
-     * @param array|null $options
-     * @param array|null $dbSpec
+     * @param array<array<string, number|string|bool|null>>|null $dataSource
+     * @param array<array<string, number|string|bool|null>>|null $options
+     * @param array<string, number|string|bool|null>|null $dbSpec
      * @param int|false $debug
      * @return void
      */
@@ -92,10 +92,10 @@ trait Proxy_ExtSupport
 
     /** Read records from the database.
      * @param string $target
-     * @param array|null $query
-     * @param array|null $sort
-     * @param array|null $spec
-     * @return array|null
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
+     * @param array<array<string, string>>|array<string, string>|null $sort
+     * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
+     * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
      */
     public function dbRead(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
@@ -112,10 +112,10 @@ trait Proxy_ExtSupport
 
     /** Update records in the database.
      * @param string $target
-     * @param array|null $query
-     * @param array|null $data
-     * @param array|null $spec
-     * @return array|null
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $data
+     * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
+     * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
      */
     public function dbUpdate(string $target, ?array $query = null, ?array $data = null, ?array $spec = null): ?array
@@ -132,9 +132,9 @@ trait Proxy_ExtSupport
 
     /** Create new records in the database.
      * @param string $target
-     * @param array|null $data
-     * @param array|null $spec
-     * @return array|null
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $data
+     * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
+     * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
      */
     public function dbCreate(string $target, ?array $data = null, ?array $spec = null): ?array
@@ -150,9 +150,9 @@ trait Proxy_ExtSupport
 
     /** Delete records from the database.
      * @param string $target
-     * @param array|null $query
-     * @param array|null $spec
-     * @return array|null
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
+     * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
+     * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
      */
     public function dbDelete(string $target, ?array $query = null, ?array $spec = null): ?array
@@ -168,10 +168,10 @@ trait Proxy_ExtSupport
 
     /** Copy records from the database.
      * @param string $target
-     * @param array|null $query
-     * @param array|null $sort
-     * @param array|null $spec
-     * @return array|null
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
+     * @param array<array<string, string>>|array<string, string>|null $sort
+     * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
+     * @return array<array<string, number|string|bool|null>>|null
      */
     public function dbCopy(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
@@ -181,7 +181,7 @@ trait Proxy_ExtSupport
 
     /** Check if the target exists in the data source.
      * @param string $target
-     * @param array|null $spec
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $spec
      * @return bool
      */
     private function hasTarget(string $target, ?array $spec = null): bool
@@ -201,7 +201,7 @@ trait Proxy_ExtSupport
 
     /** Initialize the proxy with the target and spec.
      * @param string $target
-     * @param array|null $spec
+     * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
      * @return void
      * @throws Exception
      */
@@ -220,7 +220,7 @@ trait Proxy_ExtSupport
     }
 
     /** Set up the query for the operation.
-     * @param array|null $query
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
      * @return void
      */
     private function setupQuery(?array $query): void
@@ -241,7 +241,7 @@ trait Proxy_ExtSupport
     }
 
     /** Set up the sort for the operation.
-     * @param array|null $sort
+     * @param array<array<string, string>>|array<string, string>|null $sort
      * @return void
      */
     private function setupSort(?array $sort): void
@@ -261,7 +261,7 @@ trait Proxy_ExtSupport
     }
 
     /** Set up the data for the operation.
-     * @param array|null $data
+     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $data
      * @return void
      */
     private function setupData(?array $data): void

@@ -643,8 +643,7 @@ CREATE TABLE authfail
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
     dt       TIMESTAMP DEFAULT (datetime('now', 'localtime')),
     ip       TEXT,
-    username TEXT,
-    tw       INTEGER
+    username TEXT
 );
 CREATE INDEX authfail_dt ON authfail (dt);
 CREATE INDEX authfail_ip ON authfail (ip);

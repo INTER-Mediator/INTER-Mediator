@@ -24,16 +24,17 @@ use INTERMediator\DB\Proxy;
  */
 abstract class UploadingSupport
 {
-    /** Processes an uploaded file and updates the database record accordingly.
+    /**
+     * Processes an uploaded file and updates the database record accordingly.
      * @param Proxy $db The database proxy instance for performing operations.
-     * @param array|null $options Additional options for processing.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
      * @param string $filePath The full path to the uploaded file.
      * @param string $filePartialPath The relative path to the uploaded file to be stored in the database.
      * @param string $targetFieldName The name of the database field to update with the file path.
      * @param string|null $keyField The key field name for identifying the record to update.
      * @param string|null $keyValue The key value for identifying the record to update.
-     * @param array|null $dataSource The data source definition for related context.
-     * @param array|null $dbSpec The database specification array.
+     * @param array<array-key, mixed>|null $dataSource The data source definition for related context.
+     * @param array<array-key, mixed>|null $dbSpec The database specification array.
      * @param int $debug Debug level.
      * @throws Exception If an error occurs during processing.
      * @return void
@@ -42,14 +43,19 @@ abstract class UploadingSupport
                                    string $targetFieldName, ?string $keyField, ?string $keyValue,
                                    ?array $dataSource, ?array $dbSpec, int $debug): void
     {
+        $db->logger->setDebugMessage("[UploadingSupport::processingFile] targetFieldName={$targetFieldName}", 2);
+        $db->logger->setDebugMessage("[UploadingSupport::processingFile] filePartialPath={$filePartialPath}", 2);
+
         $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
-        if (isset($dbProxyContext['file-upload'])) {
-            foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['field']) && !isset($item['context'])) {
-                    $targetFieldName = $item['field'];
-                }
-            }
-        }
+//        if (isset($dbProxyContext['file-upload'])) {
+//            foreach ($dbProxyContext['file-upload'] as $item) {
+//                if (isset($item['field']) && !isset($item['context'])) {
+//                    $targetFieldName = $item['field'];
+//                }
+//            }
+//        }
+
+//        $db->logger->setDebugMessage("[UploadingSupport::processingFile] targetFieldName={$targetFieldName}", 2);
 
         $db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
         $db->dbSettings->setFieldsRequired(array($targetFieldName));
@@ -57,14 +63,14 @@ abstract class UploadingSupport
         $db->processingRequest("update"/*,true*/);
         $dbProxyRecord = $db->getDatabaseResult();
 
-        $db->logger->setDebugMessage("[FileSystem::processing] dbProxyRecord=" . var_export($dbProxyRecord, true), 2);
-        $db->logger->setDebugMessage("[FileSystem::processing] dbProxyContext=" . var_export($dbProxyContext, true), 2);
+//        $db->logger->setDebugMessage("[UploadingSupport::processingFile] dbProxyRecord=" . var_export($dbProxyRecord, true), 2);
+//        $db->logger->setDebugMessage("[UploadingSupport::processingFile] dbProxyContext=" . var_export($dbProxyContext, true), 2);
 
         $db->addOutputData('dbresult', $filePath);
         $db->finishCommunication();
         if (isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['field']) && $item['field'] == $targetFieldName) {
+                if (isset($item['field']) && $item['field'] == $targetFieldName && isset($item['context'])) {
                     $relatedContext = new Proxy();
                     $relatedContext->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();

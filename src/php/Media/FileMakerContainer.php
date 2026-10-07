@@ -44,7 +44,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     $session = curl_init($target);
                     curl_setopt($session, CURLOPT_HEADER, true);
                     curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-                    $content = curl_exec($session);
+                    $content = strval(curl_exec($session));
                     $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
                     $headers = substr($content, 0, $headerSize);
                     $sessionKey = '';
@@ -85,7 +85,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                 throw new Exception("CURL doesn't installed here.");
             }
         }
-        return $content;
+        return strval($content);
     }
 
     /** Returns the base file name from a given file path, removing query parameters if present and decoding spaces.
@@ -102,18 +102,19 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
         return $fileName;
     }
 
-    /** Handles file upload processing for FileMaker container fields.
+    /**
+     * Handles file upload processing for FileMaker container fields.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
-     * @param array|null $options Additional options for processing.
-     * @param array $files Uploaded files array.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
+     * @param array<array-key, mixed> $files Uploaded files array.
      * @param bool $noOutput Whether to suppress output.
-     * @param array $field Array of target field names.
+     * @param array<array-key, mixed> $field Array of target field names.
      * @param string $contextName The context name for processing.
      * @param string|null $keyField The key field for database update.
      * @param string|null $keyValue The key value for database update.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array-key, mixed>|null $dataSource Data source definition.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
      * @throws Exception If an error occurs during processing.
      * @return void
@@ -137,22 +138,16 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
             return;
         }
 
-        $counter = -1;
-        foreach ($files as $fileInfo) {
-            $counter += 1;
-            if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
-                $fileInfoName = $fileInfo['name'][0];
-                $fileInfoTemp = $fileInfo['tmp_name'][0];
-            } else {
-                $fileInfoName = $fileInfo['name'];
-                $fileInfoTemp = $fileInfo['tmp_name'];
-            }
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-
-            $targetFieldName = $field[$counter];
+            $targetFieldName = $field[0];
             // for uploading to FileMaker's container field
             $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
-            $tmpDir = ini_get('upload_tmp_dir');
+            $tmpDir = strval(ini_get('upload_tmp_dir'));
             if ($tmpDir === '') {
                 $tmpDir = sys_get_temp_dir();
             }
@@ -183,7 +178,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
             $db->dbSettings->setFieldsRequired(array($targetFieldName));
 
             // If the file content is a base64 encoded url starting with 'data:,', decode it and store a file.
-            $fileContent = file_get_contents($filePath, false, null, 0, 30);
+            $fileContent = strval(file_get_contents($filePath, false, null, 0, 30));
             $headerTop = strpos($fileContent, "data:");
             $endOfHeader = strpos($fileContent, ",");
             if ($headerTop === 0 && $endOfHeader > 0) {
@@ -193,18 +188,20 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                 if (str_contains($fileContent, ";base64")) {
                     $fw = fopen($filePath, "w");
                     $fp = fopen($tempFilePath, "r");
-                    fread($fp, $endOfHeader + 1);
-                    while ($str = fread($fp, $step)) {
-                        fwrite($fw, base64_decode($str));
+                    if ($fw !== false && $fp !== false) {
+                        fread($fp, $endOfHeader + 1);
+                        while ($str = fread($fp, $step)) {
+                            fwrite($fw, base64_decode($str));
+                        }
+                        fclose($fp);
+                        fclose($fw);
                     }
-                    fclose($fp);
-                    fclose($fw);
                     unlink($tempFilePath);
                 }
             }
 
             $db->dbSettings->setValue(array($fileName . "\n" .
-                base64_encode(file_get_contents($filePath))));
+                base64_encode(strval(file_get_contents($filePath)))));
 
             $db->processingRequest("update", true);
             if ($dbSpec['db-class'] === 'FileMaker_FX') {

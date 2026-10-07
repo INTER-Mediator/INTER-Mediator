@@ -7,6 +7,7 @@ use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 /**
  * Abstract base class for visitor implementations in the Proxy authentication/authorization system.
@@ -101,11 +102,11 @@ abstract class ActionHandler
         $dbSettings->setCurrentUser($proxy->signedUser);
         $authDBHandler->authSupportRemoveOutdatedChallenges();
         if (is_null($uid) || $uid <= 0) {
-            Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] user id couldn't get from " . $dbSettings->getCurrentUser());
+            Logger::getInstance()->setDebugMessage("[ActionHandler][prepareCheckAuthentication] user id couldn't get from " . $dbSettings->getCurrentUser());
             return false;
         }
         if ($dbSettings->getIsSAML() && !$authHandler->authSupportIsWithinSAMLLimit($uid)) {
-            Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] In case of SAML is active, it's over the limit length. " . $dbSettings->getCurrentUser());
+            Logger::getInstance()->setDebugMessage("[ActionHandler][prepareCheckAuthentication] In case of SAML is active, it's over the limit length. " . $dbSettings->getCurrentUser());
             return false;
         }
 
@@ -113,7 +114,7 @@ abstract class ActionHandler
         $proxy->paramResponse ??= $falseHash;
         $proxy->paramResponse2m ??= $falseHash;
         $proxy->paramResponse2 ??= $falseHash;
-        Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] user={$proxy->signedUser},  uid={$uid},"
+        Logger::getInstance()->setDebugMessage("[ActionHandler][prepareCheckAuthentication] user={$proxy->signedUser},  uid={$uid},"
             . "paramResponse={$proxy->paramResponse}, paramResponse2m={$proxy->paramResponse2m}, "
             . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
 
@@ -125,7 +126,7 @@ abstract class ActionHandler
         $this->storedCredential = $authDBHandler->authSupportRetrieveChallenge(
             $uid, $proxy->clientId, true, "+");
         Logger::getInstance()->setDebugMessage(
-            "[prepareCheckAuthentication] storedCredential={$this->storedCredential}", 2);
+            "[ActionHandler][prepareCheckAuthentication] storedCredential={$this->storedCredential}", 2);
 
         if ($proxy->required2FA) {
             switch ($proxy->dbSettings->getMethod2FA()) {
@@ -142,7 +143,7 @@ abstract class ActionHandler
             $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
             $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "=");
             Logger::getInstance()->setDebugMessage(
-                "[prepareCheckAuthentication] 2FA_email stored2FAuth={$this->stored2FAuth}", 2);
+                "[ActionHandler][prepareCheckAuthentication] 2FA_email stored2FAuth={$this->stored2FAuth}", 2);
         }
         return true;
     }
@@ -154,11 +155,11 @@ abstract class ActionHandler
     protected function checkAuthenticationCommon(): bool
     {
         $proxy = $this->proxy;
-        Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] authStoring={$proxy->authStoring} required2FA={$proxy->required2FA}.", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] authStoring={$proxy->authStoring} required2FA={$proxy->required2FA}.", 2);
 
         if (strlen($proxy->signedUser) === 0) // Parameters required
         { // No username
-            Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed. No user info.", 2);
+            Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] Credential failed. No user info.", 2);
             $proxy->accessSetToNothing();  // Not Authenticated!
             return false;
         }
@@ -167,13 +168,13 @@ abstract class ActionHandler
             case 'credential':
                 if (strlen($proxy->credential) === 0) // Parameters required
                 { // No username or password
-                    Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed. No credential.", 2);
+                    Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] Credential failed. No credential.", 2);
                     $proxy->accessSetToNothing();  // Not Authenticated!
                     return false;
                 }
                 $referingCredential = $proxy->generateCredential(
                     $this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
-                Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] credential={$proxy->credential} "
+                Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] credential={$proxy->credential} "
                     . "storedChallenge={$this->storedChallenge} clientId={$proxy->clientId} hashedPassword={$proxy->hashedPassword}", 2);
                 if (hash_equals($proxy->credential, $referingCredential)) {
                     if ($proxy->required2FA) {
@@ -189,24 +190,24 @@ abstract class ActionHandler
                                 return true;
                             }
                         } else {
-                            Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential passed + 2FA_{$proxy->dbSettings->getMethod2FA()} through.", 2);
+                            Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] Credential passed + 2FA_{$proxy->dbSettings->getMethod2FA()} through.", 2);
                             return true;
                         }
                     } else {
-                        Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential passed.", 2);
+                        Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] Credential passed.", 2);
                         return true;
                     }
                 }
                 break;
             case 'session-storage':
                 if (strlen($proxy->paramResponse) === 0 && strlen($proxy->paramResponse2m) === 0 && strlen($proxy->paramResponse2) === 0) { // password hash on
-                    Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed. No parameters.", 2);
+                    Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] Credential failed. No parameters.", 2);
                     $proxy->accessSetToNothing();  // Not Authenticated!
                     return false;
                 }
                 return $this->sessionStorageCheckAuth();
         }
-        Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed.", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthenticationCommon] Credential failed.", 2);
         return false;
     }
 
@@ -222,13 +223,13 @@ abstract class ActionHandler
         $authorizedUsers = $authHandler->getAuthorizedUsers($proxy->access);
 
         if ((count($authorizedUsers) === 0 && count($authorizedGroups) === 0)) { // No user and group settings.
-            Logger::getInstance()->setDebugMessage("[checkAuthorization] return true", 2);
+            Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthorization] return true", 2);
             return true;
         } else {
             $belongGroups = $authHandler->authSupportGetGroupsOfUser($proxy->signedUser);
 
             Logger::getInstance()->setDebugMessage(str_replace("\n", "",
-                ("[checkAuthorization] contextName={$dbSettings->getDataSourceName()}/access={$proxy->access}/"
+                ("[ActionHandler][checkAuthorization] contextName={$dbSettings->getDataSourceName()}/access={$proxy->access}/"
                     . "signedUser={$proxy->signedUser}"
                     . " belongGroups=" . var_export($belongGroups, true))
                 . "/authorizedUsers=" . var_export($authorizedUsers, true)
@@ -236,16 +237,16 @@ abstract class ActionHandler
             ), 2);
 
             if (in_array($proxy->signedUser, $authorizedUsers)) {
-                Logger::getInstance()->setDebugMessage("[checkAuthorization] return true", 2);
+                Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthorization] return true", 2);
                 return true;
             } else {
                 if (count($authorizedGroups) > 0 && count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
-                    Logger::getInstance()->setDebugMessage("[checkAuthorization] return true", 2);
+                    Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthorization] return true", 2);
                     return true;
                 }
             }
         }
-        Logger::getInstance()->setDebugMessage("[checkAuthorization] return false", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][checkAuthorization] return false", 2);
         return false;
     }
 
@@ -260,10 +261,10 @@ abstract class ActionHandler
         $hmacValue2m = ($proxy->hashedPassword && $this->storedChallenge)
             ? hash_hmac('sha256', $proxy->hashedPassword, $this->storedChallenge) : 'no-value';
         Logger::getInstance()->setDebugMessage(
-            "[sessionStorageCheckAuth] hashedPassword={$proxy->hashedPassword}/hmac_value={$hmacValue}", 2);
+            "[ActionHandler][sessionStorageCheckAuth] hashedPassword={$proxy->hashedPassword}/hmac_value={$hmacValue}", 2);
         if (strlen($proxy->hashedPassword) > 0) {
             if (hash_equals($proxy->paramResponse, $hmacValue)) {
-                Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha1 hash used.", 2);
+                Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] sha1 hash used.", 2);
                 if ($proxy->migrateSHA1to2) {
                     $salt = hex2bin(substr($proxy->hashedPassword, -8));
                     $hashedPw = IMUtil::convertHashedPassword(
@@ -272,13 +273,13 @@ abstract class ActionHandler
                 }
                 return true;
             } else if ($proxy->paramResponse2m === $hmacValue2m) {
-                Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha2 hash from sha1 hash used.", 2);
+                Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] sha2 hash from sha1 hash used.", 2);
                 return true;
             } else if ($proxy->paramResponse2 === $hmacValue) {
-                Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha2 hash used.", 2);
+                Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] sha2 hash used.", 2);
                 return true;
             } else {
-                Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] Built-in authorization fail.", 2);
+                Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] Built-in authorization fail.", 2);
             }
         }
         return false;
@@ -293,7 +294,7 @@ abstract class ActionHandler
      */
     protected function CreateReplaceImpl(string $access): void
     {
-        Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][processingRequest] start create processing", 2);
         $proxy = $this->proxy;
         $dbSettings = $proxy->dbSettings;
 
@@ -373,7 +374,7 @@ abstract class ActionHandler
     protected function defaultHandleChallenge(): void
     {
         $proxy = $this->proxy;
-        Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
 
         if ($proxy->signedUser) {
             $userSalt = $proxy->authSupportGetSalt($proxy->signedUser);
@@ -415,7 +416,7 @@ abstract class ActionHandler
             $challenge = IMUtil::generateChallenge();
         }
         $proxy->saveChallenge($user, $challenge . $suffix, $clientID, $prefix);
-        Logger::getInstance()->setDebugMessage("[generateAndSaveChallenge] challenge = {$prefix}{$challenge}{$suffix}", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][generateAndSaveChallenge] challenge = {$prefix}{$challenge}{$suffix}", 2);
         return $challenge;
     }
 
@@ -428,12 +429,12 @@ abstract class ActionHandler
      */
     protected function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
     {
-        Logger::getInstance()->setDebugMessage("[setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
+        Logger::getInstance()->setDebugMessage("[ActionHandler][setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
         $proxy = $this->proxy;
         $dbSettings = $proxy->dbSettings;
         setcookie($key, $proxy->generateCredential($challenge, $generatedClientID, $hashedPassword),
             ['expires' => time() + $dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
-                'domain' => $proxy->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                'domain' => $proxy->credentialCookieDomain, 'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
     }
 
     /** Clears authentication cookies.

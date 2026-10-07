@@ -25,25 +25,97 @@ abstract class DB_PDO_Test_Common extends TestCase
     use DB_PDO_Test_AuthHandler;
     use Proxy_ExtSupport;
 
+    /**
+     * The db proxy.
+     *
+     * @var Proxy
+     */
     protected Proxy $db_proxy;
+    /**
+     * The schema name.
+     *
+     * @var string
+     */
     protected string $schemaName = "";
+    /**
+     * The dsn.
+     *
+     * @var string
+     */
     protected string $dsn = "";
 
+    /**
+     * The sql set clause 1.
+     *
+     * @var string
+     */
     protected string $sqlSETClause1;
+    /**
+     * The sql set clause 2.
+     *
+     * @var string
+     */
     protected string $sqlSETClause2;
+    /**
+     * The sql set clause 3.
+     *
+     * @var string
+     */
     protected string $sqlSETClause3;
+    /**
+     * The lc condition like.
+     *
+     * @var string
+     */
     protected string $lcConditionLike;
 
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param ?string $subContextName The sub context name.
+     * @return void
+     */
     abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void;
 
+    /**
+     * Set up the DB proxy for auth.
+     *
+     * @return void
+     */
     abstract function dbProxySetupForAuth(): void;
 
+    /**
+     * Set up the DB proxy for aggregation.
+     *
+     * @return void
+     */
     abstract function dbProxySetupForAggregation(): void;
 
+    /**
+     * Set up the DB proxy for access Set Key.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @param string $keyName The key name.
+     * @return void
+     */
     abstract function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName): void;
 
+    /**
+     * Set up the DB proxy for condition.
+     *
+     * @param array<array<string, number|string|bool|null>> $queryArray The query array.
+     * @return void
+     */
     abstract function dbProxySetupForCondition(?array $queryArray): void;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
@@ -51,11 +123,21 @@ abstract class DB_PDO_Test_Common extends TestCase
         date_default_timezone_set('UTC');
     }
 
+    /**
+     * Is My SQL.
+     *
+     * @return bool True on success, false otherwise.
+     */
     public function isMySQL(): bool
     {
         return false;
     }
 
+    /**
+     * Test aggregation.
+     *
+     * @return void
+     */
     public function testAggregation(): void
     {
         $this->dbProxySetupForAggregation();
@@ -80,7 +162,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         // the data in the name filed of the item_master table have trailing garbage. OMG
     }
 
-    public function testQuery1_singleRecord()
+    /**
+     * Test query 1 single Record.
+     *
+     * @return void
+     */
+    public function testQuery1_singleRecord(): void
     {
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->readFromDB();
@@ -90,7 +177,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
-    public function testQuery1_withConditionStr_singleRecord()
+    /**
+     * Test query 1 with Condition Str single Record.
+     *
+     * @return void
+     */
+    public function testQuery1_withConditionStr_singleRecord(): void
     {
         $this->dbProxySetupForAccess("person", 100);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", "1");
@@ -101,7 +193,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
-    public function testQuery1_withConditionInt_singleRecord()
+    /**
+     * Test query 1 with Condition Int single Record.
+     *
+     * @return void
+     */
+    public function testQuery1_withConditionInt_singleRecord(): void
     {
         $this->dbProxySetupForAccess("person", 100);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", 1);
@@ -112,7 +209,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
-    public function testQuery2_multipleRecord()
+    /**
+     * Test query 2 multiple Record.
+     *
+     * @return void
+     */
+    public function testQuery2_multipleRecord(): void
     {
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->readFromDB();
@@ -123,7 +225,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
     }
 
-    public function testInsertAndUpdateRecord()
+    /**
+     * Test insert And Update Record.
+     *
+     * @return void
+     */
+    public function testInsertAndUpdateRecord(): void
     {
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
@@ -170,7 +277,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
     }
 
-    public function testCreateRecord1()
+    /**
+     * Test create Record 1.
+     *
+     * @return void
+     */
+    public function testCreateRecord1(): void
     {
         $this->dbProxySetupForAccessSetKey("testtable", 1000000, "id");
 
@@ -193,7 +305,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($createdRecord[0]["num2"] == 100, "The num2 field must have value 100.");
     }
 
-    public function testCreateRecord2()
+    /**
+     * Test create Record 2.
+     *
+     * @return void
+     */
+    public function testCreateRecord2(): void
     {
         $this->dbProxySetupForAccessSetKey("testtable", 1000000, "id");
         // Set the primary key field with not AUTO_INCREMENT field
@@ -234,7 +351,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public function testCopySingleRecord()
+    /**
+     * Test copy Single Record.
+     *
+     * @return void
+     */
+    public function testCopySingleRecord(): void
     {
         $this->dbProxySetupForAccess("person", 1000000);
 //        $this->db_proxy->logger->clearLogs();
@@ -260,7 +382,12 @@ abstract class DB_PDO_Test_Common extends TestCase
             "After copy a record, the count of records should increase one.");
     }
 
-    public function testCopyAssociatedRecords()
+    /**
+     * Test copy Associated Records.
+     *
+     * @return void
+     */
+    public function testCopyAssociatedRecords(): void
     {
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->readFromDB();
@@ -300,7 +427,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public function testDefaultKey()
+    /**
+     * Test default Key.
+     *
+     * @return void
+     */
+    public function testDefaultKey(): void
     {
         $this->dbProxySetupForAccess("person", 1);
 
@@ -308,6 +440,11 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
     }
 
+    /**
+     * Test get Default Key.
+     *
+     * @return void
+     */
     public function testGetDefaultKey()
     {
         $this->dbProxySetupForAccess("person", 1);
@@ -316,7 +453,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals('id', $value);
     }
 
-    public function testMultiClientSyncTableExsistence()
+    /**
+     * Test multi Client Sync Table Exsistence.
+     *
+     * @return void
+     */
+    public function testMultiClientSyncTableExsistence(): void
     {
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
@@ -327,13 +469,23 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result, $testName);
     }
 
+    /**
+     * Get Sample Comdition.
+     *
+     * @return string The result.
+     */
     protected
-    function getSampleComdition()
+    function getSampleComdition(): string
     {
         return "WHERE id=1001 ORDER BY xdate LIMIT 10";
     }
 
-    public function testMultiClientSyncRegisterAndUnregister()
+    /**
+     * Test multi Client Sync Register And Unregister.
+     *
+     * @return void
+     */
+    public function testMultiClientSyncRegisterAndUnregister(): void
     {
         $testName = "Register and UnregisterVisitor.";
         $this->dbProxySetupForAuth();
@@ -408,7 +560,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public function testMultiClientSyncRegisterAndUnregisterPartial()
+    /**
+     * Test multi Client Sync Register And Unregister Partial.
+     *
+     * @return void
+     */
+    public function testMultiClientSyncRegisterAndUnregisterPartial(): void
     {
         $testName = "Register and UnregisterVisitor partically.";
         $this->dbProxySetupForAuth();
@@ -454,7 +611,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public function testMultiClientSyncMatching()
+    /**
+     * Test multi Client Sync Matching.
+     *
+     * @return void
+     */
+    public function testMultiClientSyncMatching(): void
     {
         $testName = "Match the sync info.";
         $this->dbProxySetupForAuth();
@@ -466,7 +628,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) ), $testName);
+        $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1)), $testName);
         $clientId2 = "ZZYYEEDDFF39887";
         $this->assertTrue(!is_null($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2)), $testName);
 
@@ -493,7 +655,12 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     /* Testing procedure has to reconsider with updating appendIntoRegistered method. 2023-3-5 by msyk */
-    public function testMultiClientSyncAppend()
+    /**
+     * Test multi Client Sync Append.
+     *
+     * @return void
+     */
+    public function testMultiClientSyncAppend(): void
     {
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
@@ -552,7 +719,12 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
 
-    public function testMultiClientSyncRemove()
+    /**
+     * Test multi Client Sync Remove.
+     *
+     * @return void
+     */
+    public function testMultiClientSyncRemove(): void
     {
         $testName = "Remove Sync Info.";
         $this->dbProxySetupForAuth();
@@ -584,7 +756,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEmpty($recSet, "Count pk values");
     }
 
-    public function testIgnoreValuesForSpecificOperators()
+    /**
+     * Test ignore Values For Specific Operators.
+     *
+     * @return void
+     */
+    public function testIgnoreValuesForSpecificOperators(): void
     {
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->readFromDB();
@@ -608,14 +785,19 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
     }
 
-//    public function testTransactionFeature()
+//    public function testTransactionFeature():void
 //    {
 //        $this->dbProxySetupForAccess("person", 1);
 //        $result = $this->db_proxy->hasTransaction();
 //        $this->assertIsBool($result, "Proxy class has to respond whether it can do transaction.");
 //    }
 
-    public function testTransactionWithCommit()
+    /**
+     * Test transaction With Commit.
+     *
+     * @return void
+     */
+    public function testTransactionWithCommit(): void
     {
         $this->dbProxySetupForAccess("person", 2);
         $result = $this->db_proxy->readFromDB();
@@ -665,7 +847,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public function testTransactionWithRollback()
+    /**
+     * Test transaction With Rollback.
+     *
+     * @return void
+     */
+    public function testTransactionWithRollback(): void
     {
         $this->dbProxySetupForAccess("person", 2);
         $result = $this->db_proxy->readFromDB();
@@ -715,7 +902,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public function testHandlersqlSETClause()
+    /**
+     * Test handlersql SET Clause.
+     *
+     * @return void
+     */
+    public function testHandlersqlSETClause(): void
     {
         $tableName = "testtable";
         $keyField = "id";

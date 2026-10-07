@@ -6,7 +6,12 @@ trait DB_PDO_Test_Conditions
        is defined on DB_PDO_Test_LocalContextConditions.php.
     */
 
-    public function testCondition1()
+    /**
+     * Test condition 1.
+     *
+     * @return void
+     */
+    public function testCondition1(): void
     {
         $this->checkConditions(
             [['field' => 'num1', 'operator' => '=', 'value' => 100]],
@@ -14,7 +19,12 @@ trait DB_PDO_Test_Conditions
             '("num1" = 100)');
     }
 
-    public function testCondition2()
+    /**
+     * Test condition 2.
+     *
+     * @return void
+     */
+    public function testCondition2(): void
     {
         $this->checkConditions(
             [
@@ -25,7 +35,12 @@ trait DB_PDO_Test_Conditions
             '("num1" = 100 AND "num1" < 300)');
     }
 
-    public function testCondition3()
+    /**
+     * Test condition 3.
+     *
+     * @return void
+     */
+    public function testCondition3(): void
     {
         $this->checkConditions(
             [
@@ -38,7 +53,12 @@ trait DB_PDO_Test_Conditions
             '("num1" = 100 AND "num1" < 300) OR ("num1" > 500)');
     }
 
-    public function testCondition4()
+    /**
+     * Test condition 4.
+     *
+     * @return void
+     */
+    public function testCondition4(): void
     {
         $this->checkConditions(
             [
@@ -51,7 +71,12 @@ trait DB_PDO_Test_Conditions
             '("num1" = 100) OR ("num1" < 300 AND "num1" > 500)');
     }
 
-    public function testCondition5()
+    /**
+     * Test condition 5.
+     *
+     * @return void
+     */
+    public function testCondition5(): void
     {
         $this->checkConditions(
             null,
@@ -64,7 +89,12 @@ trait DB_PDO_Test_Conditions
             '(("num1" = 100) OR ("num1" < 300 AND "num1" > 500))');
     }
 
-    public function testCondition6()
+    /**
+     * Test condition 6.
+     *
+     * @return void
+     */
+    public function testCondition6(): void
     {
         $this->checkConditions(
             null,
@@ -77,7 +107,12 @@ trait DB_PDO_Test_Conditions
             '(("num1" = 100) AND ("num1" < 300 OR "num1" > 500))');
     }
 
-    public function testCondition7()
+    /**
+     * Test condition 7.
+     *
+     * @return void
+     */
+    public function testCondition7(): void
     {
         $this->checkConditions(
             null,
@@ -93,7 +128,12 @@ trait DB_PDO_Test_Conditions
             ], '(("num1" = 100 AND "num1" < 300) OR ("num1" < 300 AND "num1" > 500) OR ("num1" < 300 AND "num1" > 500))');
     }
 
-    public function testCondition8()
+    /**
+     * Test condition 8.
+     *
+     * @return void
+     */
+    public function testCondition8(): void
     {
         $this->checkConditions(
             null,
@@ -110,7 +150,12 @@ trait DB_PDO_Test_Conditions
             '(("num1" = 100 OR "num1" < 300) AND ("num1" < 300 OR "num1" > 500) AND ("num1" < 300 OR "num1" > 500))');
     }
 
-    public function testCondition9()
+    /**
+     * Test condition 9.
+     *
+     * @return void
+     */
+    public function testCondition9(): void
     {
         $this->checkConditions(
             null,
@@ -127,7 +172,12 @@ trait DB_PDO_Test_Conditions
             '(("num1" = 100 OR "num1" < 300) AND ("num1" < 300 OR "num1" > 500) AND ("num1" < 300 OR "num1" > 500))');
     }
 
-    public function testCondition10()
+    /**
+     * Test condition 10.
+     *
+     * @return void
+     */
+    public function testCondition10(): void
     {
         $this->checkConditions(
             null,
@@ -144,7 +194,12 @@ trait DB_PDO_Test_Conditions
             '(("num1" = 100 OR "num1" < 300) AND ("num1" < 300 OR "num1" > 500) AND ("num1" < 300 OR "num1" > 500))');
     }
 
-    public function testCondition11()
+    /**
+     * Test condition 11.
+     *
+     * @return void
+     */
+    public function testCondition11(): void
     {
         $this->checkConditions(
             [['field' => 'num1', 'operator' => 'IS NULL'],],
@@ -156,7 +211,12 @@ trait DB_PDO_Test_Conditions
             '(("num1" IS NULL))');
     }
 
-    public function testCondition12()
+    /**
+     * Test condition 12.
+     *
+     * @return void
+     */
+    public function testCondition12(): void
     {
         $this->checkConditions(
             [['field' => 'num1', 'value' => 100]], // No operator key
@@ -164,7 +224,12 @@ trait DB_PDO_Test_Conditions
             '("num1" = 100)');
     }
 
-    public function testCondition13()
+    /**
+     * Test condition 13.
+     *
+     * @return void
+     */
+    public function testCondition13(): void
     {
         $this->checkConditions(
             [

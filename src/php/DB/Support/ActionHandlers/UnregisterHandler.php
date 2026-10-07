@@ -6,11 +6,11 @@ use INTERMediator\DB\Logger;
 
 /**
  * Visitor class for handling unregister operations in the Proxy pattern.
- * Implements methods for authentication, authorization, unregistering notifications, and challenge handling.
+Implements methods for authentication, authorization, unregistering notifications, and challenge handling.
  *
  * @property object|null $notifyServer The notification server object, if available (from dbSettings).
  * @property bool $clientSyncAvailable Indicates if client synchronization is available (from proxy).
- * @property array $PostData The POST data array (from proxy).
+ * @property array<array-key, mixed> $PostData The POST data array (from proxy).
  */
 class UnregisterHandler extends ActionHandler
 {

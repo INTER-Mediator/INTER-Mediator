@@ -199,7 +199,10 @@ const INTERMediator_DBAdapter = {
         // Logging
         INTERMediator_DBAdapter.logging_comResult(responseText)
         // Store the challenge.
-        const isChallenge = accessURL.match(/access=challenge/) || (IMLibAuthenticationUI.isRequired2FA && (accessURL.match(/access=credential/) || accessURL.match(/access=authenticated/)))
+        const isChallenge
+          = accessURL.match(/access=challenge/)
+          || (IMLibAuthenticationUI.isRequired2FA
+            && (accessURL.match(/access=credential/) || accessURL.match(/access=authenticated/)))
         INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, isChallenge)
         // Store the clientId.
         if (jsonObject.clientid) {
@@ -562,6 +565,7 @@ const INTERMediator_DBAdapter = {
     INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
     INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, false)
     IMLibAuthentication.clientId(jsonObject.clientid ?? '')
+    IMLibAuthentication.authUser(jsonObject.authUser ?? '')
     if (jsonObject.requireAuth) {
       INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
       IMLibAuthentication.clearCredentials()

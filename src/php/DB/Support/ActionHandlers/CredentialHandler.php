@@ -66,11 +66,12 @@ class CredentialHandler extends ActionHandler
     /** Visits the HandleChallenge operation to process challenge/response for credential access and 2FA.
      *
      * @return void
+     * @throws \Exception
      */
     public function handleChallenge(): void
     {
         $proxy = $this->proxy;
-        Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
+        Logger::getInstance()->setDebugMessage("[CredentialHandler][handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
 
         $proxy->generatedClientID = IMUtil::generateClientId('', $proxy->passwordHash);
         $userSalt = $proxy->authSupportGetSalt($proxy->signedUser);
@@ -122,8 +123,7 @@ class CredentialHandler extends ActionHandler
                     }
                     $proxy->outputOfProcessing['has2FASetting'] = $has2FASetting;
                     break;
-                case
-                'session-storage':
+                case 'session-storage':
                     $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "#");
                     $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
             }

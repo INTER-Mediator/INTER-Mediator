@@ -15,7 +15,16 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface AfterUpdate
+ * @package INTERMediator\DB\Extending
+ */
 interface AfterUpdate
 {
-    public function doAfterUpdateToDB($result);
+    /**
+     * Do after update to DB.
+     * @param array<array<string, number|string|bool|null>> $result The result of update operation.
+     * @return array<array<string, number|string|bool|null>>|null The result of after update operation.
+     */
+    public function doAfterUpdateToDB($result): ?array;
 }

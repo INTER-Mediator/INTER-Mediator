@@ -70,6 +70,8 @@ exports.config = {
     maxInstances: 3, // This is prefer for setting to 1 here
     //
     browserName: 'firefox',
+    'wdio:enforceWebDriverClassic': true,
+    unhandledPromptBehavior: 'accept',
     'moz:firefoxOptions': {
       args: ['-headless']
     }

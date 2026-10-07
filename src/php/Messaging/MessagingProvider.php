@@ -29,10 +29,11 @@ use INTERMediator\IMUtil;
  */
 abstract class MessagingProvider
 {
-    /** Processes a messaging request.
+    /**
+     * Processes a messaging request.
      * @param Proxy $dbProxy Proxy class's instance.
-     * @param array $contextDef The context definition array of the current context.
-     * @param array $result The result of query or other db operations.
+     * @param array<array-key, mixed> $contextDef The context definition array of the current context.
+     * @param array<array-key, mixed> $result The result of query or other db operations.
      * @return bool True if processing succeeds, false otherwise.
      */
     public abstract function processing(Proxy $dbProxy, array $contextDef, array $result): bool;
@@ -50,8 +51,9 @@ abstract class MessagingProvider
         $logger->setWarningMessage("{$headMsg} {$message}");
     }
 
-    /** Performs modern templating for message bodies, replacing placeholders with actual values from the record.
-     * @param array $record The record containing field values.
+    /**
+     * Performs modern templating for message bodies, replacing placeholders with actual values from the record.
+     * @param array<array-key, mixed> $record The record containing field values.
      * @param string|null $tempStr The template string with placeholders (e.g., @@field@@).
      * @param bool $ignoreField If true, does not replace it with field value directly.
      * @return string The processed string with placeholders replaced.

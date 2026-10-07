@@ -111,7 +111,7 @@ $xFrameOptions = "SAMEORIGIN";
 /* Append the Access-Control-Allow-Origin header
  * This header will be appended for another server url than the origin.
  */
-$accessControlAllowOrigin = "http://localhost:9000";
+//$accessControlAllowOrigin = "http://localhost:9000";
 
 /* Browser Compatibility Check:
  * ===================
@@ -170,7 +170,7 @@ $authRealm = 'INTER-Mediator_Samples';
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
 //$digitsOf2FACode = 6; // Default is 4 for email and 6 for authenticator.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input for email.
-$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+//$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 /* Authentication panels customizing */
 //$authPanelTitle= "そうだ";  // Auth Panel's title
@@ -251,8 +251,9 @@ $limitPwChangeSecond = 3600;
 /* Auth Fail Counter */
 $authFailRate = 0; // Specifies the number of authentication failures before blocking communication. If 0 or less, blocking is disabled.
 $checkUsername = false; // Whether to also consider the username when counting authentication failures.
-$checkNullUser = false; // Counting falsy username or not..
-$authFailSeconds = 60; // How many seconds back from now to count failures when determining whether to block authentication.
+$authFailSeconds = 24 * 3600; // How many seconds back from now to count failures when determining whether to block authentication.
+
+$inactivatingOnFails = false; // false means no inactivating on fails. An integer value means the number of authentication failures before inactivating.
 
 /* Service Server Behavior
  * ===================
@@ -295,6 +296,15 @@ $dontRecordDownloadNoGet = false; */
  * =================== */
 $mediaRootDir = "/tmp"; // Supposed to macOS
 //$cacheMediaAccess = false;
+$allowedMediaFileRootDirs = [$mediaRootDir, ]; // Just for file:/// (File URL) media file path.
+//$uploadAllowedExtensions = [];
+/* The variable $uploadAllowedExtensions restricts file uploads to the specified file extensions only.
+　　If this variable is set to NULL, file uploads are permitted. Note that files with certain extensions
+　　are always rejected, regardless of this setting.*/
+//$mediaClassAllowed= ['INTERMediator\\DB\\Export'];
+/* If this variable is not set, classes outside the INTERMediator namespace and the INTERMediator\DB\Export
+   class are permitted. If it is set, only the listed classes are permitted, so include 'INTERMediator\DB\Export'
+   explicitly if you need it. */
 
 /* S3 Support
  * =================== */

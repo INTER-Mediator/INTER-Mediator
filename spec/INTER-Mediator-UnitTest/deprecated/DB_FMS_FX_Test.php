@@ -9,13 +9,25 @@ use DB_FMS_Test_Common;
 require_once(dirname(__FILE__) . '/DB-FileMaker/DB_FMS_Test_Common.php');
 class DB_FMS_FX_Test extends DB_FMS_Test_Common
 {
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    function dbProxySetupForAccess(string $contextName, int $maxRecord)
+    /**
+     * Set up the DB proxy for access.
+     *
+     * @param string $contextName The context name.
+     * @param int $maxRecord The max record.
+     * @return void
+     */
+    function dbProxySetupForAccess(string $contextName, int $maxRecord): void
     {
         $this->schemaName = "";
         $contexts = array(
@@ -40,7 +52,12 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAuth()
+    /**
+     * Set up the DB proxy for auth.
+     *
+     * @return void
+     */
+    function dbProxySetupForAuth(): void
     {
         $this->db_proxy = new \INTERMediator\DB\Proxy(true);
         $resultInit = $this->db_proxy->initialize(array(

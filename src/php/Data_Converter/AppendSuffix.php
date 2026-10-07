@@ -40,9 +40,9 @@ class AppendSuffix
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
-    function converterFromUserToDB(string $str): string
+    function converterFromUserToDB(string $str): ?string
     {
         if (strrpos($str, $this->appendStr) === (strlen($str) - strlen($this->appendStr))) {
             return substr($str, 0, strlen($str) - strlen($this->appendStr));

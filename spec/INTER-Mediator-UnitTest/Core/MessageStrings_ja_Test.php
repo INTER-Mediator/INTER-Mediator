@@ -8,14 +8,29 @@ use INTERMediator\Message\MessageStrings_ja;
 
 class MessageStrings_ja_Test extends TestCase
 {
+    /**
+     * The messagestrings.
+     *
+     * @var MessageStrings_ja
+     */
     private MessageStrings_ja $messagestrings;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $this->messagestrings = new MessageStrings_ja();
     }
 
-    public function test_getMessages()
+    /**
+     * Test get Messages.
+     *
+     * @return void
+     */
+    public function test_getMessages(): void
     {
         $expected = 'レコードを本当に削除していいですか?';
         $messages = $this->messagestrings->getMessages();
@@ -28,7 +43,12 @@ class MessageStrings_ja_Test extends TestCase
         $this->assertEquals($expected, $messages[$number]);
     }
 
-    public function test_getCustomizedMessages()
+    /**
+     * Test get Customized Messages.
+     *
+     * @return void
+     */
+    public function test_getCustomizedMessages(): void
     {
         $expected = '変更した';
         $messages = $this->messagestrings->getMessages();
@@ -36,7 +56,12 @@ class MessageStrings_ja_Test extends TestCase
         $this->assertEquals($expected, $messages[$number]);
     }
 
-    public function test_getMessagesAs()
+    /**
+     * Test get Messages As.
+     *
+     * @return void
+     */
+    public function test_getMessagesAs(): void
     {
         $expected = 'レコード番号';
         $message = $this->messagestrings->getMessageAs(1, array());

@@ -14,13 +14,28 @@ use ReflectionMethod;
 
 class FileUploader_Test extends TestCase
 {
+    /**
+     * The uploader.
+     *
+     * @var FileUploader
+     */
     private FileUploader $uploader;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         $this->uploader = new FileUploader();
     }
 
+    /**
+     * Test get Redirect Url.
+     *
+     * @return void
+     */
     public function test_getRedirectUrl()
     {
         if (((float)phpversion()) >= 5.3) {
@@ -55,6 +70,11 @@ class FileUploader_Test extends TestCase
         }
     }
 
+    /**
+     * Test check Redirect Url.
+     *
+     * @return void
+     */
     public function test_checkRedirectUrl()
     {
         if (((float)phpversion()) >= 5.3) {

@@ -32,18 +32,19 @@ class FileURL extends UploadingSupport implements DownloadingSupport
 {
     private ?string $customFileName = null;
 
-    /** Handles file upload processing, including CSV import if specified.
+    /**
+     * Handles file upload processing, including CSV import if specified.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
-     * @param array|null $options Additional options for processing.
-     * @param array $files Uploaded files array.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
+     * @param array<array-key, mixed> $files Uploaded files array.
      * @param bool $noOutput Whether to suppress output.
-     * @param array $field Array of target field names.
+     * @param array<array-key, mixed> $field Array of target field names.
      * @param string $contextName The context name for processing.
      * @param string|null $keyField The key field for database update.
      * @param string|null $keyValue The key value for database update.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array-key, mixed>|null $dataSource Data source definition.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
      * @return void
      * @throws Exception If an error occurs during processing.
@@ -53,18 +54,19 @@ class FileURL extends UploadingSupport implements DownloadingSupport
                                ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
     {
         $this->customFileName = $customFileName;
-        $counter = -1;
-        foreach ($files as $fileInfo) {
-            $counter += 1;
-            list($fileInfoName, $fileInfoTemp) = $this->getFileNames($fileInfo);
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-            $targetFieldName = $field[$counter];
+            $targetFieldName = $field[0];
 
             if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
                 $this->csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp);
             } else {
                 list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
-                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo, $counter);
+                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo, $i);
                 if ($result === false) {
                     return;
                 }
@@ -92,17 +94,31 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
+        $mediaRootDir = Params::getParameterValue("mediaRootDir", null);
+        $allowedMediaFileRootDirs = Params::getParameterValue("allowedMediaFileRootDirs", [$mediaRootDir]);
+        $resolvedTarget = realpath($target);
+        if ($resolvedTarget === false) {
+            throw new Exception("[INTER-Mediator] The file doesn't exist: {$target}.");
+        }
+        $isInAllowed = array_reduce($allowedMediaFileRootDirs,
+            fn($carry, $item) => $carry || str_starts_with($resolvedTarget, realpath($item) ?: $item));
+//        $isInAllowed = array_reduce($allowedMediaFileRootDirs,
+//            fn($carry, $item) => $carry || str_starts_with($target, $item), false);
+        if (!$isInAllowed) {
+            throw new Exception("[INTER-Mediator] The file does't exist in the allowed directory: {$target}.");
+        }
         if (!empty($file) && !file_exists($target)) {
             throw new Exception("[INTER-Mediator] The file does't exist: {$target}.");
         }
-        return file_get_contents($target);
+        return strval(file_get_contents($target));
     }
 
     /** Returns the base file name from a given file path, removing query parameters if present.
      * @param string $file The file path.
      * @return string|null The base file name.
      */
-    public function getFileName(string $file): ?string
+    public
+    function getFileName(string $file): ?string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -112,21 +128,22 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         return $fileName;
     }
 
-    /** Extracts file name and temporary name from file info array.
-     * @param array $info The file info array.
-     * @return array Array containing the file name and temporary file name.
+    /**
+     * Extracts file name and temporary name from file info array.
+     * @param array<array-key, mixed> $info The file info array.
+     * @return array<array-key, mixed> Array containing the file name and temporary file name.
      */
-    private function getFileNames(array $info): array
-    {
-        if (is_array($info['name'])) {   // JQuery File Upload Style
-            $fileInfoName = $info['name'][0];
-            $fileInfoTemp = $info['tmp_name'][0];
-        } else {
-            $fileInfoName = $info['name'];
-            $fileInfoTemp = $info['tmp_name'];
-        }
-        return [$fileInfoName, $fileInfoTemp];
-    }
+//    private function getFileNames(array $info): array
+//    {
+//        if (is_array($info['name'])) {   // JQuery File Upload Style
+//            $fileInfoName = $info['name'][0];
+//            $fileInfoTemp = $info['tmp_name'][0];
+//        } else {
+//            $fileInfoName = $info['name'];
+//            $fileInfoTemp = $info['tmp_name'];
+//        }
+//        return [$fileInfoName, $fileInfoTemp];
+//    }
 
     /** Outputs an error message and stops further processing.
      * @param Proxy $db The database proxy instance.
@@ -135,7 +152,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @return void
      * @throws Exception
      */
-    private function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg)
+    private
+    function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg)
     {
         $db->logger->setErrorMessage($errorMsg);
         $db->processingRequest("nothing");
@@ -145,21 +163,23 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         }
     }
 
-    /** Determines the file path and partial path for storing an uploaded file.
+    /**
+     * Determines the file path and partial path for storing an uploaded file.
      * @param Proxy $db The database proxy instance.
      * @param bool $noOutput Whether to suppress output.
-     * @param array|null $options Additional options for processing.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
      * @param string $contextName The context name.
      * @param string $keyField The key field name.
      * @param string $keyValue The key value.
      * @param string $targetFieldName The target field name.
-     * @param array $filePathInfo Information about the file path.
-     * @return array Array containing result status, full file path, and partial file path.
+     * @param array<array-key, mixed> $filePathInfo Information about the file path.
+     * @return array<array-key, mixed> Array containing result status, full file path, and partial file path.
      * @throws Exception If the path is invalid or directory creation fails.
      */
-    private function decideFilePath(Proxy  $db, bool $noOutput, ?array $options,
-                                    string $contextName, string $keyField, string $keyValue,
-                                    string $targetFieldName, array $filePathInfo, int $counter): array
+    private
+    function decideFilePath(Proxy  $db, bool $noOutput, ?array $options,
+                            string $contextName, string $keyField, string $keyValue,
+                            string $targetFieldName, array $filePathInfo, int $counter): array
     {
         $result = true;
         $fileRoot = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
@@ -200,7 +220,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param string|null $mode The encoding mode (default, assjis, asucs4).
      * @return string The justified path component.
      */
-    private function justifyPathComponent(string $str, ?string $mode = "default"): string
+    private
+    function justifyPathComponent(string $str, ?string $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
@@ -221,19 +242,21 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         return $jStr;
     }
 
-    /** Handles CSV import operation from an uploaded file.
+    /**
+     * Handles CSV import operation from an uploaded file.
      * @param Proxy $db The database proxy instance.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $options Additional options for processing.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array-key, mixed>|null $dataSource Data source definition.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
      * @param string $contextName The context name.
      * @param string $fileInfoTemp The temporary file name of the uploaded CSV.
      * @return void
      * @throws Exception If an error occurs during CSV import.
      */
-    private function csvImportOperation(Proxy  $db, ?array $dataSource, ?array $options, ?array $dbSpec, int $debug,
-                                        string $contextName, string $fileInfoTemp): void
+    private
+    function csvImportOperation(Proxy  $db, ?array $dataSource, ?array $options, ?array $dbSpec, int $debug,
+                                string $contextName, string $fileInfoTemp): void
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime, $encoding]
@@ -316,9 +339,9 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         }
         $is1stLine = true;
         $createdKeys = [];
-        $fileContent = file_get_contents(IMUtil::removeNull($fileInfoTemp));
+        $fileContent = strval(file_get_contents(IMUtil::removeNull($fileInfoTemp)));
         if ($encoding) {
-            $fileContent = mb_convert_encoding($fileContent, "UTF-8", $encoding);
+            $fileContent = strval(mb_convert_encoding($fileContent, "UTF-8", $encoding));
         }
         $lineNumber = 0;
         $result = [];

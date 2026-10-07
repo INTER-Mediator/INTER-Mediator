@@ -6,10 +6,10 @@ use INTERMediator\DB\Logger;
 
 /**
  * Visitor class for handling update operations in the Proxy pattern.
- * Implements methods for authentication, authorization, data updating, and challenge handling.
+Implements methods for authentication, authorization, data updating, and challenge handling.
  *
  * @property bool $bypassAuth Indicates if authentication/authorization should be bypassed (from proxy).
- * @property array $outputOfProcessing The array holding output data after processing (from proxy).
+ * @property array<array-key, mixed> $outputOfProcessing The array holding output data after processing (from proxy).
  * @property object $dbSettings The database settings object (from proxy).
  * @property object $dbClass The database class object (from proxy).
  * @property object $logger The logger object (from proxy).

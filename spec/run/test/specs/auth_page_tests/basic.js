@@ -179,7 +179,9 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.authPanel).toExist()
       })
       it('6-succeed login without mistake and continue to logging in.', async () => {
-        await browser.refresh()
+        // await browser.refresh()
+        const $currentURL = await browser.getUrl()
+        await browser.url($currentURL); // instead of refresh for stability
         await browser.pause(waiting)
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authLoginButton.waitForClickable()
@@ -199,8 +201,8 @@ module.exports = (AuthPage, is2FA = false) => {
           await browser.pause(waiting)
           await expect(AuthPage.auth2FAPanel).not.toExist()
         }
-        // await browser.refresh()
-        await browser.url(await browser.getUrl()); // instead of refresh for stability
+        await browser.pause(waiting)
+        await browser.refresh()
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
         await expect(AuthPage.authPanel).not.toExist() // Still logging in

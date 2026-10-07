@@ -100,10 +100,12 @@ class OME
     /** @var string Temporary storage for template contents.
      */
     private string $tmpContents = '';
-    /** @var array List of file paths for attachments.
+    /**
+     * @var array<array-key, mixed> List of file paths for attachments.
      */
     private array $attachments = [];
-    /** @var array|null SMTP connection information.
+    /**
+     * @var array<array-key, mixed>|null SMTP connection information.
      */
     private ?array $smtpInfo = null;
     /** @var bool Whether to set the current date in the email header.
@@ -133,8 +135,9 @@ class OME
         return $this->errorMessage;
     }
 
-    /** Sets SMTP connection information.
-     * @param array $info SMTP configuration array.
+    /**
+     * Sets SMTP connection information.
+     * @param array<array-key, mixed> $info SMTP configuration array.
      */
     public function setSmtpInfo(array $info): void
     {
@@ -223,6 +226,10 @@ class OME
         $this->isUseSendmailParam = true;
     }
 
+    /**
+     * @param string $addr
+     * @return array<int, string>
+     */
     private function divideMailAddress(string $addr): array
     {
         if (strlen($addr) > 1) {
@@ -469,8 +476,9 @@ class OME
         $this->tmpContents = $str;
     }
 
-    /** Inserts data into the template and sets the email body.
-     * @param array $ar The data to insert into the template.
+    /**
+     * Inserts data into the template and sets the email body.
+     * @param array<array-key, mixed> $ar The data to insert into the template.
      * @return bool True if the insertion is successful, false otherwise.
      */
     public function insertToTemplate(array $ar): bool
@@ -505,7 +513,7 @@ class OME
      */
     private function checkControlCodeNothing(string $str): bool
     {
-        return mb_ereg_match("/[[:cntrl:]]/", $str);
+        return preg_match('/[\x00-\x1F\x7F]/', $str) === 1;
     }
 
     /** Adds an attachment to the email.
@@ -532,6 +540,14 @@ class OME
         }
         if ($this->checkControlCodeNothing($this->bccField)) {
             $this->errorMessage = '宛先の情報にコントロールコードが含まれています。';
+            return false;
+        }
+        if ($this->checkControlCodeNothing($this->fromField)) {
+            $this->errorMessage = '差出人の情報にコントロールコードが含まれています。';
+            return false;
+        }
+        if ($this->checkControlCodeNothing($this->subject)) {
+            $this->errorMessage = '件名にコントロールコードが含まれています。';
             return false;
         }
         $headerField = "X-Mailer: Open Mail Envrionment for PHP on INTER-Mediator(https://inter-mediator.org)\n";
@@ -664,8 +680,11 @@ class OME
         return $resultMail;
     }
 
-    /** @phpstan-ignore method.unused */
-    private function recepientsArray(array $ar): array
+    /**
+     * @param array<int, string> $ar
+     * @return array<array-key, string>
+     */
+    private function recepientsArray(array $ar): array // @phpstan-ignore method.unused
     {
         mb_regex_encoding('UTF-8');
         $result = [];
@@ -685,6 +704,10 @@ class OME
         return $result;
     }
 
+    /**
+     * @param array<int, string> $ar
+     * @return array<int, \Symfony\Component\Mime\Address>
+     */
     private function recepientsAddressArray(array $ar): array
     {
         mb_regex_encoding('UTF-8');

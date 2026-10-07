@@ -5,7 +5,12 @@ use INTERMediator\IMUtil;
 
 trait DB_PDO_Test_UserGroup
 {
-    public function testAuthUser1()
+    /**
+     * Test auth User 1.
+     *
+     * @return void
+     */
+    public function testAuthUser1(): void
     {
         $testName = "Check time calc feature of PHP";
         $expiredDT = new DateTime('2012-02-13 11:32:40');
@@ -177,7 +182,12 @@ trait DB_PDO_Test_UserGroup
 //        $this->assertTrue($checkResult, $testName);
 //    }
 
-    public function testAddUser2()
+    /**
+     * Test add User 2.
+     *
+     * @return void
+     */
+    public function testAddUser2(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -200,7 +210,12 @@ trait DB_PDO_Test_UserGroup
 
     }
 
-    public function testAddUser3()
+    /**
+     * Test add User 3.
+     *
+     * @return void
+     */
+    public function testAddUser3(): void
     {
         $this->dbProxySetupForAuth();
 
@@ -222,7 +237,7 @@ trait DB_PDO_Test_UserGroup
         $this->assertEquals($username, $readResult[0]['username'], 'The username has to be keep.');
     }
 
-//    public function testNativeUser()
+//    public function testNativeUser(): void
 //    {
 //        $this->dbProxySetupForAuth();
 //

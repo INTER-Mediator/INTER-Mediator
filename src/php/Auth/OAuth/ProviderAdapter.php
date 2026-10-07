@@ -199,7 +199,7 @@ abstract class ProviderAdapter
      * - "email": The E-mail address of the user. The value is a string.
      * - "birthdate": The birthday of the user. The value is a string.
      * - "gender": The gender of the user. The value is a string.
-     * @return array User information array
+     * @return array<string, string> User information array
      * @throws Exception Throws an exception if user information couldn't be retrieved
      */
     public abstract function getUserInfo(): array;
@@ -264,7 +264,7 @@ abstract class ProviderAdapter
     /** Performs a HTTP request to the specified URL.
      * @param string $url The URL to request
      * @param bool $isPost Whether to use a POST request or a GET request
-     * @param array|null $params The parameters to send with the request
+     * @param array<string, string>|null $params The parameters to send with the request
      * @param string|null $access_token The access token to include in the request
      * @return mixed The response from the server
      * @throws Exception If there is an error with the request
@@ -457,7 +457,7 @@ abstract class ProviderAdapter
      * @param string $key The key used to store the challenge.
      *                     If null, use the client ID.
      * @param string $prefix The prefix used to store the challenge.
-     * @return array The retrieved authorization code.
+     * @return array<string> The retrieved authorization code.
      */
     protected function retrieveCode($key, $prefix): array
     {
@@ -480,7 +480,7 @@ abstract class ProviderAdapter
      * @param string $key The key used to store the challenge.
      *                     If null, use the client ID.
      * @param string $prefix The prefix used to store the challenge.
-     * @return array The retrieved authorization code.
+     * @return array<string> The retrieved authorization code.
      */
     protected static function retrieveCodeStatic($key, $prefix): array
     {

@@ -8,6 +8,11 @@ use PHPUnit\Framework\TestCase;
 class VM_Test extends TestCase
 {
 
+    /**
+     * Test check Version String.
+     *
+     * @return void
+     */
     public function test_checkVersionString()
     {
         $expected = '';

@@ -684,14 +684,12 @@ CREATE TABLE authfail
     id       SERIAL PRIMARY KEY ,
     dt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ip       TEXT,
-    username TEXT,
-    tw       INT
+    username TEXT
 );
 
 CREATE INDEX authfail_dt ON authfail (dt);
 CREATE INDEX authfail_ip ON authfail (ip);
 CREATE INDEX authfail_username ON authfail (username);
-CREATE INDEX authfail_tw ON authfail (tw);
 GRANT ALL PRIVILEGES ON im_sample.authfail_id_seq TO web;
 
 CREATE TABLE testtable

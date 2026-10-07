@@ -61,8 +61,9 @@ class IMLocaleCurrencyTable
     /* refers
      * https://www.ups.com/worldshiphelp/WS15/JPN/AppHelp/Codes/Country_Territory_and_Currency_Codes.htm
      */
-    /** Static table mapping country codes to ISO currency codes.
-     * @var array|string[]
+    /**
+     * Static table mapping country codes to ISO currency codes.
+     * @var array<array-key, mixed>|string[]
      */
     private static array $localeCurrencyTable = array(
         'AF' => 'USD',

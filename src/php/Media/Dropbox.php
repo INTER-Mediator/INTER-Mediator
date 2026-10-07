@@ -95,18 +95,19 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
         return $this->fileName;
     }
 
-    /** Handles file upload processing to Dropbox.
+    /**
+     * Handles file upload processing to Dropbox.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
-     * @param array|null $options Additional options for processing.
-     * @param array $files Uploaded files array.
+     * @param array<array-key, mixed>|null $options Additional options for processing.
+     * @param array<array-key, mixed> $files Uploaded files array.
      * @param bool $noOutput Whether to suppress output.
-     * @param array $field Array of target field names.
+     * @param array<array-key, mixed> $field Array of target field names.
      * @param string $contextName The context name for processing.
      * @param string|null $keyField The key field for database update.
      * @param string|null $keyValue The key value for database update.
-     * @param array|null $dataSource Data source definition.
-     * @param array|null $dbSpec Database specification.
+     * @param array<array-key, mixed>|null $dataSource Data source definition.
+     * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
      * @return void
      * @throws Exception If an error occurs during processing.
@@ -116,28 +117,23 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
                                ?array $dataSource, ?array $dbSpec, int $debug, ?string $customFileName): void
     {
         $this->customFileName = $customFileName;
-        $counter = -1;
-        foreach ($files as $fileInfo) { // Single file only
-            $counter += 1;
-            if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
-                $fileInfoName = $fileInfo['name'][0];
-                $fileInfoTemp = $fileInfo['tmp_name'][0];
-            } else {
-                $fileInfoName = $fileInfo['name'];
-                $fileInfoTemp = $fileInfo['tmp_name'];
-            }
+        $fileNames = $files['files']['name'] ?? [$files[0]['name']];
+        $tempPaths = $files['files']['tmp_name'] ?? [$files[0]['tmp_name']];
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $fileInfoName = $fileNames[$i];
+            $fileInfoTemp = $tempPaths[$i];
+            $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
+            $targetFieldName = $field[0];
             if (!is_uploaded_file($fileInfoTemp)) { // Security check
                 return;
             }
-            $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-            $targetFieldName = $field[$counter];
             $dirPath = $contextName . DIRECTORY_SEPARATOR
                 . $keyField . "=" . $keyValue . DIRECTORY_SEPARATOR . $targetFieldName;
             $rand4Digits = random_int(1000, 9999);
 
             $objectPath = $this->rootInDropbox . '/' . $dirPath . '/'
                 . (!is_null($this->customFileName)
-                    ? ($this->customFileName . ($counter > 1 ? "_" . $counter : ""))
+                    ? ($this->customFileName . ($i > 0 ? "_" . $i : ""))
                     : ($filePathInfo['filename'] . '_' . $rand4Digits)) . '.' . $filePathInfo['extension'];
             $storedURL = "dropbox://$objectPath";
 
@@ -145,7 +141,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
                 $tokenProvider = new AutoRefreshingDropBoxTokenService(
                     $this->refreshToken, $this->appKey, $this->appSecret, $this->accessTokenPath);
                 $client = new Client($tokenProvider);
-                $client->upload($objectPath, file_get_contents($fileInfoTemp), 'add');
+                $client->upload($objectPath, strval(file_get_contents($fileInfoTemp)), 'add');
             } catch (Exception $ex) {
                 if (!is_null($url)) {
                     header('Location: ' . $url);

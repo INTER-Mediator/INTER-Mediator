@@ -48,8 +48,6 @@ class AuthPasskeyHandler extends ActionHandler
             $publicKeyCredential = $this->passKeyDeserializePublicKeyCredential($this->proxy->pubkeyInfo);
             Logger::getInstance()->setDebugMessage(
                 "[AuthPasskeyHandler] checkAuthentication() type={$publicKeyCredential->type}", 2);
-//            Logger::getInstance()->setDebugMessage(
-//                "[AuthPasskeyHandler] checkAuthentication() publicKeyCredential-->" . var_export($publicKeyCredential, true), 2);
             $rowId = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($publicKeyCredential->rawId));
 
             // Retrieve the challenge data stored on the server
@@ -76,20 +74,16 @@ class AuthPasskeyHandler extends ActionHandler
             $this->username = $userInfo['username'];
             $publicKeyCredentialSource = $this->passKeyDeserializePublicKeyCredentialSource($userInfo['publicKey']);
             $creationOption = $this->createPublicKeyCredentialRequestOptions(hex2bin($challenge), $clientId);
-//            Logger::getInstance()->setDebugMessage(
-//                "[AuthPasskeyHandler] creationOption=" . var_export($creationOption, true), 2);
-
             // Varidating the response.
             try {
-                if ( $publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {
-                    $publicKeyCredentialSource = $authenticatorValidator->check(
-                        $publicKeyCredentialSource, $publicKeyCredential->response, $creationOption, $hostName, null);
-//                Logger::getInstance()->setDebugMessage(
-//                    "[AuthPasskeyHandler] publicKeyCredentialSource=" . var_export($publicKeyCredentialSource, true), 2);
-                    Logger::getInstance()->setDebugMessage(
-                        "[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
+                if ($publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {
+                    $authenticatorValidator->check($publicKeyCredentialSource, $publicKeyCredential->response,
+                        $creationOption, $hostName, null);
+                    Logger::getInstance()->setDebugMessage("[AuthPasskeyHandler] *** Passkey authentication succeed.***", 2);
+                    return true;
+                } else {
+                    Logger::getInstance()->setDebugMessage("[AuthPasskeyHandler] *** Passkey authentication failed.***", 2);
                 }
-                return true;
             } catch (\Throwable $e) {
                 Logger::getInstance()->setErrorMessage("Passkey Authentication Error: {$e->getMessage()}");
             }
@@ -141,13 +135,13 @@ class AuthPasskeyHandler extends ActionHandler
             $this->proxy->saveChallenge($this->username, $challenge, $generatedClientID, "+");
             setcookie('_im_credential_token', $this->proxy->generateCredential($challenge, $generatedClientID, $this->credential),
                 ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                    'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                    'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
             setcookie("_im_username_{$authRealm}", $this->username,
                 ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                    'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
             setcookie("_im_clientid_{$authRealm}", $generatedClientID,
                 ['expires' => time() + $authExpired, 'path' => '/', 'domain' => '',
-                    'secure' => false, 'httponly' => false, 'samesite' => 'Strict']);
+                    'secure' => IMUtil::isSecureCookie(), 'httponly' => false, 'samesite' => 'Strict']);
         }
     }
 }

@@ -31,7 +31,8 @@ abstract class DB_PDO_Handler
      */
     protected ?PDO $dbClassObj = null;
 
-    /** @var array Table information for schema inspection.
+    /**
+     * @var array<array-key, mixed> Table information for schema inspection.
      */
     protected array $tableInfo = array();
     /** @var string Field name for column field.
@@ -43,16 +44,20 @@ abstract class DB_PDO_Handler
     /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = '';
-    /** @var array List of numeric field types.
+    /**
+     * @var array<array-key, mixed> List of numeric field types.
      */
     protected array $numericFieldTypes = [];
-    /** @var array List of time field types.
+    /**
+     * @var array<array-key, mixed> List of time field types.
      */
     protected array $timeFieldTypes = [];
-    /** @var array List of date field types.
+    /**
+     * @var array<array-key, mixed> List of date field types.
      */
     protected array $dateFieldTypes = [];
-    /** @var array List of boolean field types.
+    /**
+     * @var array<array-key, mixed> List of boolean field types.
      */
     protected array $booleanFieldTypes = [];
 
@@ -249,21 +254,23 @@ abstract class DB_PDO_Handler
         return $this->dbClassObj->link->quote($data);
     }
 
-    /** Returns the SQL SET clause for the database.
+    /**
+     * Returns the SQL SET clause for the database.
      * @param string $tableName Table name.
-     * @param array $setColumnNames Set column names.
+     * @param array<array-key, mixed> $setColumnNames Set column names.
      * @param string $keyField Key field.
-     * @param array $setValues Set values.
+     * @param array<array-key, mixed> $setValues Set values.
      * @return string SQL SET clause.
      */
     public abstract function sqlSETClause(
         string $tableName, array $setColumnNames, string $keyField, array $setValues): string;
 
-    /** Returns the SQL SET clause data for the database.
+    /**
+     * Returns the SQL SET clause data for the database.
      * @param string $tableName Table name.
-     * @param array $setColumnNames Set column names.
-     * @param array $setValues Set values.
-     * @return array[] SQL SET clause data.
+     * @param array<array-key, mixed> $setColumnNames Set column names.
+     * @param array<array-key, mixed> $setValues Set values.
+     * @return array<array-key, array<array-key, mixed>> SQL SET clause data.
      * @throws Exception If an error occurs.
      */
     protected function sqlSETClauseData(string $tableName, array $setColumnNames, array $setValues): array
@@ -291,12 +298,13 @@ abstract class DB_PDO_Handler
         return [$setNames, $setValuesConv];
     }
 
-    /** Copies records from one table to another.
-     * @param array|null $tableInfo Table information.
+    /**
+     * Copies records from one table to another.
+     * @param array<array-key, mixed>|null $tableInfo Table information.
      * @param string|null $queryClause Query clause.
      * @param string|null $assocField Association field.
      * @param string|null $assocValue Association value.
-     * @param array|null $defaultValues Default values.
+     * @param array<array-key, mixed>|null $defaultValues Default values.
      * @return string|null Last insert ID or null if an error occurs.
      */
     public function copyRecords(?array  $tableInfo, ?string $queryClause, ?string $assocField,
@@ -326,9 +334,10 @@ abstract class DB_PDO_Handler
         return $returnValue;
     }
 
-    /** Returns the numeric fields for a table.
+    /**
+     * Returns the numeric fields for a table.
      * @param string|null $tableName Table name.
-     * @return array Numeric fields.
+     * @return array<array-key, mixed> Numeric fields.
      * @throws Exception If an error occurs.
      */
     public function getNumericFields(?string $tableName): array
@@ -351,9 +360,10 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    /** Returns the nullable fields for a table.
+    /**
+     * Returns the nullable fields for a table.
      * @param string $tableName Table name.
-     * @return array Nullable fields.
+     * @return array<array-key, mixed> Nullable fields.
      * @throws Exception If an error occurs.
      */
     public function getNullableFields(string $tableName): array
@@ -372,9 +382,10 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    /** Returns the nullable numeric fields for a table.
+    /**
+     * Returns the nullable numeric fields for a table.
      * @param string $tableName Table name.
-     * @return array Nullable numeric fields.
+     * @return array<array-key, mixed> Nullable numeric fields.
      * @throws Exception If an error occurs.
      */
     public function getNullableNumericFields(string $tableName): array
@@ -389,9 +400,10 @@ abstract class DB_PDO_Handler
         return array_intersect($nullableFields, $numericFields);
     }
 
-    /** Returns the time fields for a table.
+    /**
+     * Returns the time fields for a table.
      * @param string $tableName Table name.
-     * @return array Time fields.
+     * @return array<array-key, mixed> Time fields.
      * @throws Exception If an error occurs.
      */
     public function getTimeFields(string $tableName): array
@@ -410,9 +422,10 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    /** Returns the date fields for a table.
+    /**
+     * Returns the date fields for a table.
      * @param string $tableName Table name.
-     * @return array Date fields.
+     * @return array<array-key, mixed> Date fields.
      * @throws Exception If an error occurs.
      */
     public function getDateFields(string $tableName): array
@@ -431,9 +444,10 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    /** Returns the boolean fields for a table.
+    /**
+     * Returns the boolean fields for a table.
      * @param string|null $tableName Table name.
-     * @return array Boolean fields.
+     * @return array<array-key, mixed> Boolean fields.
      */
     public function getBooleanFields(?string $tableName): array
     {
@@ -455,9 +469,10 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    /** Returns the typed fields for a table.
+    /**
+     * Returns the typed fields for a table.
      * @param string $tableName Table name.
-     * @return array[] Typed fields.
+     * @return array<array-key, array<array-key, mixed>> Typed fields.
      * @throws Exception If an error occurs.
      */
     public function getTypedFields(string $tableName): array
@@ -521,9 +536,10 @@ abstract class DB_PDO_Handler
      */
     protected abstract function checkNullableField(string $info): bool;
 
-    /** Returns the table information for a table.
+    /**
+     * Returns the table information for a table.
      * @param string|null $tableName Table name.
-     * @return array Table information.
+     * @return array<array-key, mixed> Table information.
      */
     public function getTableInfo(?string $tableName): array
     {
@@ -552,9 +568,10 @@ abstract class DB_PDO_Handler
         return $infoResult;
     }
 
-    /** Returns the field list for a table.
+    /**
+     * Returns the field list for a table.
      * @param string $tableName Table name.
-     * @return array Field list.
+     * @return array<array-key, mixed> Field list.
      */
     public function getFieldList(string $tableName): array
     {
@@ -578,21 +595,23 @@ abstract class DB_PDO_Handler
      */
     public abstract function getTableInfoSQL(string $tableName): string;
 
-    /** Returns the field lists for copying records.
+    /**
+     * Returns the field lists for copying records.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string $assocField Association field.
      * @param string $assocValue Association value.
-     * @param array $defaultValues Default values.
-     * @return array Field lists.
+     * @param array<array-key, mixed> $defaultValues Default values.
+     * @return array<array-key, mixed> Field lists.
      */
     protected abstract function getFieldListsForCopy(
         string $tableName, string $keyField, string $assocField, string $assocValue, array $defaultValues): array;
 
-    /** Returns whether the authentication support can migrate SHA256 hash.
+    /**
+     * Returns whether the authentication support can migrate SHA256 hash.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
-     * @return array|null Whether the authentication support can migrate SHA256 hash or null if not supported.
+     * @return array<array-key, mixed>|null Whether the authentication support can migrate SHA256 hash or null if not supported.
      */
     public abstract function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array;
 

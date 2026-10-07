@@ -8,8 +8,18 @@ use PHPUnit\Framework\TestCase;
 
 class DB_Formatters_Test extends TestCase
 {
+    /**
+     * The dataconverter htmlstring.
+     *
+     * @var Formatters
+     */
     private Formatters $dataconverter_htmlstring;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
@@ -26,6 +36,11 @@ class DB_Formatters_Test extends TestCase
         ));
     }
 
+    /**
+     * Test formatter From DB.
+     *
+     * @return void
+     */
     public function test_formatterFromDB()
     {
         $expected = '';
@@ -57,6 +72,11 @@ class DB_Formatters_Test extends TestCase
         $this->assertSame($expected, $this->dataconverter_htmlstring->formatterFromDB('f8', $string));
     }
 
+    /**
+     * Test formatter To DB.
+     *
+     * @return void
+     */
     public function test_formatterToDB()
     {
         $expected = '';

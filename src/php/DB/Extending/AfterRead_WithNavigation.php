@@ -15,11 +15,26 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface AfterRead_WithNavigation
+ * @package INTERMediator\DB\Extending
+ */
 interface AfterRead_WithNavigation
 {
-    public function doAfterReadFromDB($result);
+    /**
+     * Do after read from DB.
+     * @param array<array<string, number|string|bool|null>> $result The result of read operation.
+     * @return array<array<string, number|string|bool|null>>|null The result of after read operation.
+     */
+    public function doAfterReadFromDB($result): ?array;
 
+    /**
+     * @return int
+     */
     public function countQueryResult();
 
+    /**
+     * @return int
+     */
     public function getTotalCount();
 }

@@ -8,6 +8,9 @@ namespace INTERMediator\Media;
 
 use Iterator;
 
+/**
+ * @implements Iterator<int, string|null>
+ */
 class FieldDivider implements Iterator
 {
     /** The input data string to be divided into fields.
@@ -59,8 +62,9 @@ class FieldDivider implements Iterator
         $this->key = 0;
     }
 
-    /** Finds the position of the next field separator, considering quotes and escapes.
-     * @return array Tuple of (start position, end position, next position) for the next field.
+    /**
+     * Finds the position of the next field separator, considering quotes and escapes.
+     * @return array<array-key, mixed> Tuple of (start position, end position, next position) for the next field.
      */
     private function getNextLinePosition(): array
     {

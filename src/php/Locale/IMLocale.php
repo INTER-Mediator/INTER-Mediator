@@ -39,12 +39,14 @@ class IMLocale
      * @var string
      */
     public static string $localForTest = '';
-    /** Additional options, such as 'app-locale' and 'app-currency'.
-     * @var array|null
+    /**
+     * Additional options, such as 'app-locale' and 'app-currency'.
+     * @var array<array-key, mixed>|null
      */
     public static ?array $options = null;
-    /** Table for converting browser locale codes to standard locale codes.
-     * @var array
+    /**
+     * Table for converting browser locale codes to standard locale codes.
+     * @var array<array-key, mixed>
      */
     private static array $localeConvertTable = array("ja" => "ja_JP");
 
@@ -117,8 +119,8 @@ class IMLocale
         }
 
         // Extracting the first item and cutting the priority information.
-        if (str_contains($lstr, ',')) $lstr = substr($lstr, 0, strpos($lstr, ','));
-        if (str_contains($lstr, ';')) $lstr = substr($lstr, 0, strpos($lstr, ';'));
+        if (str_contains($lstr, ',')) $lstr = substr($lstr, 0, intval(strpos($lstr, ',')));
+        if (str_contains($lstr, ';')) $lstr = substr($lstr, 0, intval(strpos($lstr, ';')));
 
         // Convert to the right locale identifier.
         if (str_contains($lstr, '-')) {

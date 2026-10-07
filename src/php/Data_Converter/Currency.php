@@ -45,9 +45,9 @@ class Currency extends NumberBase
     }
 
     /** @param string $str
-     * @return string
+     * @return string|null
      */
-    function converterFromUserToDB(string $str):string
+    function converterFromUserToDB(string $str):?string
     {
         $normalized = str_replace($this->thSepMark, '', mb_convert_kana($str, 'n'));
         $numberString = '';

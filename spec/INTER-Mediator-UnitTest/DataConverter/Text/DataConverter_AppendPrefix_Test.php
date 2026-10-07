@@ -10,8 +10,18 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_AppendPrefix_Test extends TestCase
 {
+    /**
+     * The dataconverter.
+     *
+     * @var mixed
+     */
     private $dataconverter;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
@@ -19,14 +29,24 @@ class DataConverter_AppendPrefix_Test extends TestCase
         $this->dataconverter = new AppendPrefix('￥');
     }
 
-    public function test_converterFromDBtoUser()
+    /**
+     * Test converter From DB to User.
+     *
+     * @return void
+     */
+    public function test_converterFromDBtoUser(): void
     {
         $string = '1000';
         $convertedString = '￥1000';
         $this->assertEquals($this->dataconverter->converterFromDBtoUser($string), $convertedString);
     }
 
-    public function test_converterFromUserToDB()
+    /**
+     * Test converter From User To DB.
+     *
+     * @return void
+     */
+    public function test_converterFromUserToDB(): void
     {
         $string = '1000';
         $convertedString = '1000';

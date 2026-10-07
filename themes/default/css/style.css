@@ -554,6 +554,7 @@ span.IM_POSTMESSAGE {
 #_im_oauthbutton_facebook:hover {
     background: #135ab6;
 }
+
 /* Widget Pop-up Panel */
 ._im_widget_popup_panelback {
     position: absolute;
@@ -613,4 +614,17 @@ span.IM_POSTMESSAGE {
 
 ._im_widget_popup_selected {
     background-color: #7c7caa;
+}
+
+._im_debugging-mark {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 400px;
+    z-index: 555555;
+    pointer-events: none;
+    font-size: 140pt;
+    font-weight: bold;
+    color: rgba(255, 0, 0, 0.3);
 }

@@ -88,7 +88,7 @@ class FacebookAdapter extends ProviderAdapter
 
     /** Retrieves user information after successful OAuth authentication
      * OAuth認証成功後にユーザー情報を取得
-     * @return array Array containing username and realname of authenticated user
+     * @return array<string, string> Array containing username and realname of authenticated user
      *               認証されたユーザーのユーザー名と実名を含む配列
      * @throws Exception When state validation fails or token acquisition fails
      *                  ステート検証が失敗またはトークン取得が失敗した場合

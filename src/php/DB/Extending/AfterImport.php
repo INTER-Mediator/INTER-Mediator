@@ -15,7 +15,16 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface AfterImport
+ * @package INTERMediator\DB\Extending
+ */
 interface AfterImport
 {
-    public function doAfterImportToDB($result);
+    /**
+     * Do after import to DB.
+     * @param array<array<string, number|string|bool|null>> $result The result of import operation.
+     * @return array<array<string, number|string|bool|null>>|null The result of after import operation.
+     */
+    public function doAfterImportToDB($result): ?array;
 }

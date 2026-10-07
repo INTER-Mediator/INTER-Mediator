@@ -36,15 +36,16 @@ class MessagingProxy extends MessagingProvider
      */
     public function __construct(string $driver)
     {
-        $className = ucfirst(strtolower(mb_ereg_replace('([a-zA-Z]+)', '\\1', $driver)));
+        $className = ucfirst(strtolower(strval(mb_ereg_replace('([a-zA-Z]+)', '\\1', $driver))));
         $className = "INTERMediator\\Messaging\\Send{$className}";
         $this->msgProvider = new $className;
     }
 
-    /** Processes the messaging request by delegating to the actual provider.
+    /**
+     * Processes the messaging request by delegating to the actual provider.
      * @param Proxy $dbProxy Proxy class's an instance for logging and settings.
-     * @param array $contextDef Context definition array of the current context.
-     * @param array $result Result set from database operations.
+     * @param array<array-key, mixed> $contextDef Context definition array of the current context.
+     * @param array<array-key, mixed> $result Result set from database operations.
      * @return bool True if processing succeeds, false otherwise.
      */
     public function processing(Proxy $dbProxy, array $contextDef, array $result): bool

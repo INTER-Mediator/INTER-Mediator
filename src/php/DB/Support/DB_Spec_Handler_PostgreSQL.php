@@ -45,9 +45,10 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
         return true;
     }
 
-    /** Checks if the given field name is in the provided list of field names.
+    /**
+     * Checks if the given field name is in the provided list of field names.
      * @param string $fname Field name to check.
-     * @param array $fieldnames Array of available field names.
+     * @param array<array-key, mixed> $fieldnames Array of available field names.
      * @return bool True if $fname is in $fieldnames, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool

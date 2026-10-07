@@ -27,12 +27,14 @@ class ServiceServerProxy
      * @var bool
      */
     private bool $dontUse;
-    /** List of error messages.
-     * @var array
+    /**
+     * List of error messages.
+     * @var array<array-key, mixed>
      */
     private array $errors = [];
-    /** List of informational messages.
-     * @var array
+    /**
+     * List of informational messages.
+     * @var array<array-key, mixed>
      */
     private array $messages = [];
     /** Prefix for log and message headers.
@@ -116,7 +118,7 @@ class ServiceServerProxy
     }
 
     /** Gets the message array.
-     * @return array List of messages.
+     * @return array<string> List of messages.
      */
     public function getMessages(): array
     {
@@ -124,7 +126,7 @@ class ServiceServerProxy
     }
 
     /** Gets the error array.
-     * @return array List of errors.
+     * @return array<string> List of errors.
      */
     public function getErrors(): array
     {
@@ -212,7 +214,7 @@ class ServiceServerProxy
             $this->serverInfoCached = false;
         } else { // Service Server is booted.
             $this->serverInfoCached = true;
-            if (!str_contains($result, "Service Server is active.")) {
+            if (!str_contains(strval($result), "Service Server is active.")) {
                 $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
                 $this->serverInfoCached = false;
             }
@@ -220,12 +222,13 @@ class ServiceServerProxy
         return $this->serverInfoCached;
     }
 
-    /** Calls the service server with the specified path and post-data.
+    /**
+     * Calls the service server with the specified path and post-data.
      * @param string $path Path for the server request.
-     * @param array|null $postData Data to be sent with the request.
-     * @return string|null Response from the server, or null on failure.
+     * @param array<array-key, mixed>|null $postData Data to be sent with the request.
+     * @return string|bool Response from the server, or null on failure.
      */
-    private function callServer(string $path, ?array $postData = null): ?string
+    private function callServer(string $path, ?array $postData = null): string|bool
     {
         $url = "{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
@@ -237,7 +240,8 @@ class ServiceServerProxy
         if (is_array($postData)) {
             $postData['vcode'] = $this->getSSVersionCode();
             curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+            $postData = json_encode($postData);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData ? $postData : '');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
         }
@@ -247,7 +251,7 @@ class ServiceServerProxy
         if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
             $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
             $this->messages[] = $this->messageHead . curl_error($ch);
-            return null;
+            return false;
         }
         return $result;
     }
@@ -319,9 +323,10 @@ class ServiceServerProxy
         $this->executeCommand("$cmd >> {$logFile} &");
     }
 
-    /** Validates an expression on the service server.
+    /**
+     * Validates an expression on the service server.
      * @param string $expression Expression to be validated.
-     * @param array $values Values for the expression.
+     * @param array<array-key, mixed> $values Values for the expression.
      * @return bool True if the expression is valid, false otherwise.
      */
     public function validate(string $expression, array $values): bool
@@ -337,17 +342,18 @@ class ServiceServerProxy
         if (!$result) {
             return false;
         }
-        if (!str_contains($result, 'true') && !str_contains($result, 'false')) {
+        if (!str_contains(strval($result), 'true') && !str_contains(strval($result), 'false')) {
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }
         return true;
     }
 
-    /** Synchronizes data with the service server.
-     * @param array $channels Channels to be synchronized.
+    /**
+     * Synchronizes data with the service server.
+     * @param array<array-key, mixed> $channels Channels to be synchronized.
      * @param string $operation Operation to be performed.
-     * @param array $data Data to be synchronized.
+     * @param array<array-key, mixed> $data Data to be synchronized.
      * @return bool True if the synchronization is successful, false otherwise.
      */
     public function sync(array $channels, string $operation, array $data): bool
@@ -368,7 +374,8 @@ class ServiceServerProxy
      */
     private function getSSVersionCode(): string
     {
-        $composer = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json"));
+        $contents = file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json");
+        $composer = json_decode($contents ? $contents : '');
         return hash("sha256", $composer->time . $composer->version);
     }
 }

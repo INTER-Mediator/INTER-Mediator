@@ -72,7 +72,7 @@ class IMUtil
         $currentDT = new DateTime();
         try {
             $anotherDT = new DateTime($dtStr);
-            return $currentDT->format("U") - $anotherDT->format("U");
+            return intval($currentDT->format("U") - $anotherDT->format("U"));
         } catch (Exception $e) {
         }
         return 0;
@@ -166,7 +166,7 @@ class IMUtil
     }
 
     /** Combines an array of path components into a single path string.
-     * @param $ar array Array of path components.
+     * @param array<int, string> $ar Array of path components.
      * @return string Combined path.
      */
     public static function combinePathComponents(array $ar): string
@@ -210,7 +210,7 @@ class IMUtil
         } else {
             $homeDir = posix_getpwuid(posix_geteuid())["dir"];
         }
-        return $homeDir;
+        return strval($homeDir);
     }
 
     /** Returns the username of the server user.
@@ -237,11 +237,12 @@ class IMUtil
         return $osName == "Linux" || $osName == "FreeBSD";
     }
 
-    /** Removes null bytes from a string.
+    /**
+     * Removes null bytes from a string.
      * @param $str string Input string.
-     * @return array|string String with null bytes removed.
+     * @return string String with null bytes removed.
      */
-    public static function removeNull(string $str): array|string
+    public static function removeNull(string $str): string
     {
         return str_replace("\x00", '', $str);
     }
@@ -332,7 +333,7 @@ class IMUtil
                 $val = intval($val) * 1024;
                 break;
         }
-        return $val;
+        return intval($val);
     }
 
     /** Protects against CSRF attacks for XMLHttpRequest or fetch requests.
@@ -428,24 +429,34 @@ class IMUtil
         return FALSE;
     }
 
-    /** Outputs security-related HTTP headers.
-     * @param array|null $params Optional parameters for headers (for testing).
+    /** Returns whether cookies should have the Secure attribute.
+     * The $credentialCookieSecure in params.php (true/false) overrides the detection of HTTPS.
+     * @return bool True if the request is over HTTPS or the setting is true.
+     */
+    public static function isSecureCookie(): bool
+    {
+        $setting = Params::getParameterValue('credentialCookieSecure', null);
+        if (is_bool($setting)) {
+            return $setting;
+        }
+        return (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' && $_SERVER['HTTPS'] !== '')
+            || (($_SERVER['SERVER_PORT'] ?? '') == 443)
+            || strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    }
+
+    /**
+     * Outputs security-related HTTP headers.
+     * @param array<array-key, mixed>|null $params Optional parameters for headers (for testing).
      * @return void
      */
     public function outputSecurityHeaders(?array $params = NULL): void
     {
         $xFrameOptions = str_replace("\r", '', str_replace("\n", '',
-            is_null($params)
-                ? Params::getParameterValue('xFrameOptions', '')
-                : $params['xFrameOptions']));
+            is_null($params) ? Params::getParameterValue('xFrameOptions', '') : $params['xFrameOptions']));
         $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '',
-            is_null($params)
-                ? Params::getParameterValue('contentSecurityPolicy', '')
-                : $params['contentSecurityPolicy']));
+            is_null($params) ? Params::getParameterValue('contentSecurityPolicy', '') : $params['contentSecurityPolicy']));
         $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '',
-            is_null($params)
-                ? Params::getParameterValue('accessControlAllowOrigin', '')
-                : $params['accessControlAllowOrigin']));
+            is_null($params) ? Params::getParameterValue('accessControlAllowOrigin', '') : $params['accessControlAllowOrigin']));
         header("X-Frame-Options: " . (empty($xFrameOptions) ? "SAMEORIGIN" : $xFrameOptions));
         if (empty($contentSecurityPolicy)) {
             $contentSecurityPolicy = '';
@@ -456,7 +467,6 @@ class IMUtil
         if ($accessControlAllowOrigin !== '') {
             header("Access-Control-Allow-Origin: {$accessControlAllowOrigin}");
         }
-        header('X-XSS-Protection: 1; mode=block');
     }
 
 
@@ -481,8 +491,9 @@ class IMUtil
                                             str_replace("\\", "\\\\", $str))))))))));
     }
 
-    /** Converts an array to a JavaScript object string.
-     * @param array $ar Input array.
+    /**
+     * Converts an array to a JavaScript object string.
+     * @param array<array-key, mixed> $ar Input array.
      * @param string $prefix Prefix for keys.
      * @return string JavaScript object as a string.
      */
@@ -516,10 +527,11 @@ class IMUtil
         return $returnStr;
     }
 
-    /** Converts an array to a JavaScript object string, excluding specified keys.
-     * @param array $ar Input array.
+    /**
+     * Converts an array to a JavaScript object string, excluding specified keys.
+     * @param array<array-key, mixed> $ar Input array.
      * @param string $prefix Prefix for keys.
-     * @param array|null $exarray Keys to exclude.
+     * @param array<array-key, mixed>|null $exarray Keys to exclude.
      * @return string JavaScript object as a string.
      */
     public static function arrayToJSExcluding(array $ar, string $prefix, ?array $exarray): string
@@ -548,10 +560,11 @@ class IMUtil
         return $returnStr;
     }
 
-    /** Converts a string to a JavaScript key-value string, excluding specified keys.
+    /**
+     * Converts a string to a JavaScript key-value string, excluding specified keys.
      * @param string $ar Input string.
      * @param string $prefix Prefix for the key.
-     * @param array|null $exarray Keys to exclude.
+     * @param array<array-key, mixed>|null $exarray Keys to exclude.
      * @return string JavaScript key-value string.
      */
     public static function stringToJSExcluding(string $ar, string $prefix, ?array $exarray): string
@@ -780,15 +793,16 @@ class IMUtil
         return false;
     }
 
-    /** Loads and parses YAML definition file content.
-     * @return array Parsed YAML content and file path.
+    /**
+     * Loads and parses YAML definition file content.
+     * @return array<array-key, mixed> Parsed YAML content and file path.
      * @throws Exception If the YAML file does not exist or is outside permitted paths.
      */
     public static function getYAMLDefContent(): array
     {
         $defPoolPath = Params::getParameterValue('yamlDefFilePool', false);
         $docRoot = $_SERVER['DOCUMENT_ROOT'];
-        $ref = parse_url($_SERVER['HTTP_REFERER'] ?? '', PHP_URL_PATH);
+        $ref = strval(parse_url(strval($_SERVER['HTTP_REFERER'] ?? ''), PHP_URL_PATH));
         $possibleDirs = [$docRoot, $docRoot . dirname($ref), $defPoolPath,];
         if (isset($_GET['deffile'])) { // The YAML file path is set on the deffile parameter
             $filePath = $_GET['deffile'];
@@ -821,17 +835,18 @@ class IMUtil
                 . implode("\\n", $searchResult)
             );
         }
-        $realPath = realpath($yamlFilePath);
+        $realPath = strval(realpath($yamlFilePath));
         if (!(IMUtil::isInsideOf($realPath, $docRoot) || ($defPoolPath && IMUtil::isInsideOf($realPath, $defPoolPath)))) {
             throw new Exception("The yaml file exists outside of any permitted paths: {$realPath}");
         }
-        return [Yaml::parse(file_get_contents($realPath)), $yamlFilePath];
+        return [Yaml::parse(strval(file_get_contents($realPath))), $yamlFilePath];
         // OMG! Yaml parser can parse JSON data!! Really??
     }
 
-    /** Parses a YAML string and returns the definition array.
+    /**
+     * Parses a YAML string and returns the definition array.
      * @param string $yaml YAML string.
-     * @return array|null Parsed array or null on failure.
+     * @return array<array-key, mixed>|null Parsed array or null on failure.
      */
     public static function getDefinitionFromYAML(string $yaml): ?array
     {
@@ -931,12 +946,12 @@ class IMUtil
      * value from the current record.
      *
      * - If the placeholder field does not exist in `$currentRecord`, it is
-     *   replaced with an empty string.
+     * replaced with an empty string.
      * - If `$str` is null/too short or `$currentRecord` is empty, the input
-     *   string is returned as-is.
+     * string is returned as-is.
      *
      * @param ?string $str Template source string that may contain `@@...@@` placeholders.
-     * @param array $currentRecord Associative array representing the current record.
+     * @param array<array-key, mixed> $currentRecord Associative array representing the current record.
      * @return ?string The rendered string after placeholder substitution.
      */
     public static function templating(?string $str, array $currentRecord): ?string

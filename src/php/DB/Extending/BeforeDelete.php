@@ -15,8 +15,16 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface BeforeDelete
+ * @package INTERMediator\DB\Extending
+ */
 interface BeforeDelete
 {
-    public function doBeforeDeleteFromDB();
+    /**
+     * Do before delete from DB.
+     * @return bool|string|null
+     */
+    public function doBeforeDeleteFromDB(): mixed;
 }
 

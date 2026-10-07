@@ -24,7 +24,8 @@ use Exception;
  */
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
-    /** @var array Table information for schema inspection.
+    /**
+     * @var array<array-key, mixed> Table information for schema inspection.
      */
     protected array $tableInfo = array();
     /** @var string Field name for column field.
@@ -36,19 +37,23 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     /** @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'is_nullable';
-    /** @var array|string[] List of numeric field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = ['smallint', 'integer', 'bigint', 'decimal', 'numeric',
         'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',];
-    /** @var array|string[] List of time field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'datetime without time zone',
         'time', 'time without time zone', 'timestamp', 'timestamp without time zone'];
-    /** @var array|string[] List of date field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'datetime without time zone',
         'date', 'date without time zone', 'timestamp', 'timestamp without time zone',];
-    /** @var array|string[] List of boolean field types.
+    /**
+     * @var array<array-key, mixed>|string[] List of boolean field types.
      */
     protected array $booleanFieldTypes = ['boolean'];
 
@@ -104,11 +109,12 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    /** Returns the SQL SET clause for PostgreSQL.
+    /**
+     * Returns the SQL SET clause for PostgreSQL.
      * @param string $tableName Table name.
-     * @param array $setColumnNames Column names.
+     * @param array<array-key, mixed> $setColumnNames Column names.
      * @param string $keyField Key field.
-     * @param array $setValues Values.
+     * @param array<array-key, mixed> $setValues Values.
      * @return string SQL SET clause.
      * @throws Exception
      */
@@ -177,13 +183,14 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $sql;
     }
 
-    /** Returns the field lists for a copy operation.
+    /**
+     * Returns the field lists for a copy operation.
      * @param string $tableName Table name.
      * @param string $keyField Key field.
      * @param string|null $assocField Associated field.
      * @param string|null $assocValue Associated value.
-     * @param array|null $defaultValues Default values.
-     * @return array Field lists.
+     * @param array<array-key, mixed>|null $defaultValues Default values.
+     * @return array<array-key, mixed> Field lists.
      * @throws Exception
      */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
@@ -215,9 +222,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    /** Sets a value for a field.
+    /**
+     * Sets a value for a field.
      * @param string $value Value.
-     * @param array $row Field information.
+     * @param array<array-key, mixed> $row Field information.
      * @return string Set value.
      */
     protected function setValue(string $value, array $row): string
@@ -252,10 +260,11 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     {
     }
 
-    /** Checks if the auth support can migrate SHA256 hash.
+    /**
+     * Checks if the auth support can migrate SHA256 hash.
      * @param string $userTable User table.
      * @param string $hashTable Hash table.
-     * @return array|null Migration result, or null if not applicable.
+     * @return array<array-key, mixed>|null Migration result, or null if not applicable.
      */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array
     {

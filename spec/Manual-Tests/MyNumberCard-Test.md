@@ -2,10 +2,12 @@
 
 by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
-INTER-Mediator supports MyNumberCard for authentication, but it can't test within the github action's ci environment.
+INTER-Mediator supports MyNumberCard for authentication, but it can't test within the GitHub Action's ci environment.
 So the MyNumberCard feature has to be tested manually.
 We have a test environment within the demo server to test authentication.
 After someone tests the SAML features, the result has to be recorded here.
+
+Unfortunately, the Digital Agency did not allow us to continue running the test application because it is not a system in actual production use.
 
 ## Latest Test Record
 
@@ -26,11 +28,11 @@ The test application(https://github.com/INTER-Mediator/IMTesting_MyNumberCard) i
 ### Authentication with MyNumberCard.
 
 - Click the "chat.html" link.
-- Login panel is shown.
+- The login panel is shown.
 - Click "マイナンバーカードで認証" button.
 - The simulator of MyNumberCard authentication is shown.
 - Click any user which can succeed to authentication.
-- Show the chat.html page with generated username.
+- Show the chat.html page with a generated username.
 - Check to be able to post any message.
 
 ## Past Test Record

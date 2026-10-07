@@ -1,0 +1,112 @@
+{
+  "name": "inter-mediator/inter-mediator",
+  "version": "16",
+  "time": "2026-06-05",
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.1",
+    "composer-plugin-api": "~2.6",
+    "composer/composer": "~2.6",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "ext-curl": "*",
+    "ext-xml": "*",
+    "ext-json": "*",
+    "ext-libxml": "*",
+    "ext-exif": "*",
+    "ext-gd": "*",
+    "ext-intl": "*",
+    "ext-fileinfo": "*",
+    "ext-bcmath": "*",
+    "inter-mediator/fmdataapi": ">=37",
+    "tecnickcom/tcpdf": "~7",
+    "aws/aws-sdk-php": "~3",
+    "simplesamlphp/simplesamlphp": "~2.4",
+    "matthiasmullie/minify": ">=1.3",
+    "msyk/dropbox-api-shortlivedtoken": ">=5",
+    "league/csv": "~9",
+    "pragmarx/google2fa": "~9",
+    "symfony/mailer": "~6.4",
+    "symfony/amazon-mailer": "~6.4",
+    "symfony/google-mailer": "~6.4",
+    "symfony/mime": "~6.4",
+    "symfony/yaml": "~6.4",
+    "symfony/http-kernel": "~6.4",
+    "web-token/jwt-framework": "~3",
+    "web-auth/webauthn-lib": "~5"
+  },
+  "extra": {
+    "class": "INTERMediator\\Composer\\InstallerPlugin"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10 || ^11",
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "INTERMediator\\": "src/php"
+    }
+  },
+  "description": "The INTER-Mediator is framework for database-driven web application.",
+  "type": "composer-plugin",
+  "keywords": [
+    "framework",
+    "declarative",
+    "rapid-development",
+    "binding"
+  ],
+  "homepage": "https://inter-mediator.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "INTER-Mediator Directive Committee",
+      "homepage": "https://inter-mediator.org/"
+    }
+  ],
+  "support": {
+    "community-jp": "https://www.facebook.com/groups/233378356708157/",
+    "community-en": "https://www.facebook.com/groups/254446237922985/",
+    "source": "https://github.com/INTER-Mediator/INTER-Mediator",
+    "manual": "https://inter-mediator.info/"
+  },
+  "scripts": {
+    "phpstan": [
+      "./vendor/bin/phpstan analyse -c ./spec/phpstan.neon  --memory-limit=2048M"
+    ],
+    "test": [
+      "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml"
+    ],
+    "test-fms": [
+      "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit-fms.xml --process-isolation"
+    ],
+    "jest": [
+      "./node_modules/.bin/jest --config ./spec/jest-test-suite/jest.config.js"
+    ],
+    "wdio-test": [
+      "cd spec/run;npm run wdio"
+    ],
+    "clear": [
+      "INTERMediator\\Composer\\InstallerPlugin::onClear"
+    ],
+    "clean": [
+      "INTERMediator\\Composer\\InstallerPlugin::onClear"
+    ],
+    "post-install-cmd": [
+      "INTERMediator\\Composer\\InstallerPlugin::onPostInstallCmd"
+    ],
+    "post-update-cmd": [
+      "INTERMediator\\Composer\\InstallerPlugin::onPostUpdateCmd"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "simplesamlphp/composer-module-installer": true,
+      "simplesamlphp/composer-xmlprovider-installer": true,
+      "inter-mediator/inter-mediator": true
+    }
+  },
+  "github-oauth": {
+    "github.com": "token"
+  }
+}

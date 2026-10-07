@@ -159,14 +159,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** Retrieves a challenge for authentication.
+    /**
+     * Retrieves a challenge for authentication.
      * @param null|string|int $uid User ID.
      * @param string $clientId Client ID.
      * @param bool $isDelete Delete the challenge after retrieval.
      * @param string $prefix Prefix for the challenge.
      * @param bool $isMulti Retrieve multiple challenges.
-     * @return null|string|array Challenge string or null if not found.
-     * Using 'issuedhash'.
+     * @return null|string|array<array-key, mixed> Challenge string or null if not found.
+    Using 'issuedhash'.
      * @throws Exception
      */
     public function authSupportRetrieveChallenge(null|string|int $uid,
@@ -216,6 +217,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 if (!$isMulti) {
                     return null;
                 }
+                continue;
             }
             if ($isMulti && strlen($hashValue) > 0) {
                 $hashValue .= "\n";
@@ -269,7 +271,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /** Handles OAuth user authentication.
-     * @param array $keyValues Key-value pairs for user authentication.
+     * @param array<string, string> $keyValues Key-value pairs for user authentication.
      * @return ?bool True if user is created, false if user is reused, null on error.
      */
     public function authSupportOAuthUserHandling(array $keyValues): ?bool
@@ -352,14 +354,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** Creates a new user.
+    /**
+     * Creates a new user.
      * @param string $username Username.
      * @param string $hashedpassword Hashed password.
      * @param bool $isSAML SAML authentication flag.
      * @param ?string $ldapPassword LDAP password.
-     * @param ?array $attrs Additional attributes.
+     * @param array<array-key, mixed>|null $attrs Additional attributes.
      * @return bool True if successful, false otherwise.
-     * Using 'authuser'.
+    Using 'authuser'.
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
                                           ?string $ldapPassword = null, ?array $attrs = null): bool
@@ -502,6 +505,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return false;
         }
         $this->logger->setDebugMessage("[authSupportChangePassword] {$sql}");
+        if (Params::getParameterValue('inactivatingOnFails', false) > 0) {
+            $this->authSupportSetInactive($signedUser, false);
+        }
         return true;
     }
 
@@ -511,7 +517,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      */
     public function authTableGetUserIdFromUsername(string $username): string
     {
-        return $this->privateGetUserIdFromUsername($username, false);
+        return $this->privateGetUserIdFromUsername($username, false) ?? "";
     }
 
     /** Gets a user ID from a username.
@@ -580,29 +586,32 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** Gets groups for a user.
+    /**
+     * Gets groups for a user.
      * @param ?string $user User ID or username.
-     * @return array Groups for the user.
-     * Using 'authcor'.
+     * @return array<array-key, mixed> Groups for the user.
+    Using 'authcor'.
      */
     public function authSupportGetGroupsOfUser(?string $user): array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    /** Gets groups for a user.
+    /**
+     * Gets groups for a user.
      * @param string $user User ID or username.
-     * @return ?array Groups for the user or null if not found.
+     * @return array<array-key, mixed>|null Groups for the user or null if not found.
      */
     public function authTableGetGroupsOfUser(string $user): ?array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    /** Gets groups for a user.
+    /**
+     * Gets groups for a user.
      * @param string|null $user User ID or username.
      * @param bool $isCheckLimit Check limit flag.
-     * @return ?array Groups for the user or null if not found.
+     * @return array<array-key, mixed>|null Groups for the user or null if not found.
      */
     private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
     {
@@ -640,7 +649,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $candidateGroups;
     }
 
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $belongGroups;
     /** @var bool
@@ -685,15 +695,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
-    /** Checks media privileges.
+    /**
+     * Checks media privileges.
      * @param string $tableName Table name.
      * @param string $targeting Targeting type.
      * @param string $userField User field.
      * @param string $user User ID or username.
      * @param string $keyField Key field.
      * @param string $keyValue Key value.
-     * @return ?array Media privileges or null if not found.
-     * Using any table.
+     * @return array<array-key, mixed>|null Media privileges or null if not found.
+    Using any table.
      * @throws Exception
      */
     public function authSupportCheckMediaPrivilege(
@@ -741,7 +752,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return null;
     }
 
-    /** @var array
+    /**
+     * @var array<array-key, mixed>
      */
     private array $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
 
@@ -924,7 +936,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}hash,expired FROM {$hashTable} WHERE"
+        $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,hash,expired FROM {$hashTable} WHERE"
             . " user_id = " . $this->pdoDB->link->quote($userid)
             . " and clienthost = " . $this->pdoDB->link->quote($randdata);
         $result = $this->pdoDB->link->query($sql);
@@ -933,16 +945,26 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return false;
         }
         $this->logger->setDebugMessage("[authSupportCheckIssuedHashForResetPassword] {$sql}");
+        $isResult = false;
+        $deleteIds = [];
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             if (IMUtil::secondsFromNow($row['expired']) > Params::getParameterValue('limitPwChangeSecond', 3600)) {
-                return false;
-            }
-            if ($hash === $hashValue) {
-                return true;
+                $deleteIds[]=$row['id'];
+            } else if (hash_equals($hash, $hashValue)) {
+                $isResult = true;
+                $deleteIds[]=$row['id'];
             }
         }
-        return false;
+        // Delete valid credential to prevent other reset requests.
+        foreach($deleteIds as $id) {
+            $sql = "{$this->pdoDB->handler->sqlDELETECommand()}{$hashTable} WHERE id = " . intval($id);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                $this->pdoDB->errorMessageStore('ERROR in DELETE:' . $sql);
+            }
+        }
+        return $isResult;
     }
 
     /** Starts user enrollment.
@@ -1119,9 +1141,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-    /** Unifies a username and email and gets user information.
+    /**
+     * Unifies a username and email and gets user information.
      * @param null|string $userID User ID or username.
-     * @return array User information.
+     * @return array<array-key, mixed> User information.
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
     {
@@ -1170,9 +1193,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
+     * Retrieves login user information from the authuser table.
      * @param string $userID User ID or username.
-     * @return array [user ID, real name, email, public key, secret]
-     * @throws Exception
+     * @return array<array-key, mixed> [user ID, real name, email, public key, secret]
+     * @throws Exception If the user table is not configured, connection fails, or multiple/no users are found.
      */
     public function getLoginUserInfo(string $userID): array
     {
@@ -1210,6 +1234,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return ['', '', '', '', ''];
     }
 
+    /** Stores a public key and its credential ID for a user in the authuser table.
+     * @param string $uid The user ID.
+     * @param string $publicKey The public key to store.
+     * @param string $publicKeyCredentialId The credential ID associated with the public key.
+     * @return void
+     * @throws Exception If the user ID is invalid, the public key or credential ID is empty, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStorePublicKey(string $uid, string $publicKey, string $publicKeyCredentialId): void
     {
         try {
@@ -1255,6 +1286,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
+    /** Removes the public key and credential ID for a user from the authuser table.
+     * @param string $uid The user ID.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportRemovePublicKey(string $uid): void
     {
         try {
@@ -1293,6 +1329,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
     }
 
+    /**
+     * Retrieves user information from the authuser table by public key credential ID.
+     * @param string $pkid The public key credential ID.
+     * @return array<array-key, mixed> Array of user information, or empty array if not found.
+     * @throws Exception If the public key ID is invalid, the user table is not configured, or multiple users are found.
+     */
     public function authSupportUserInfoFromPublickeyId(string $pkid): array
     {
         try {
@@ -1328,6 +1370,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return [];
     }
 
+    /** Stores or clears the 2FA secret for a user in the authuser table.
+     * @param string $uid The user ID.
+     * @param string|null $secret The 2FA secret to store, or null to clear it.
+     * @return void
+     * @throws Exception If the user ID is invalid, the user table is not configured, or the user record is not found.
+     */
     public function authSupportStore2FASecret(string $uid, string|null $secret): void
     {
         try {
@@ -1367,6 +1415,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     }
 
+    /** Counts authentication failures within a specified time period from the authfail table.
+     * @param string $ip The client IP address.
+     * @param string|null $username The username, or null to count all failures for the IP.
+     * @param int $seconds The time period in seconds to look back.
+     * @return int The number of authentication failures within the period.
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportCheckAuthFailCount(string $ip, string|null $username, int $seconds): int
     {
         $counter = 0;
@@ -1397,6 +1452,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $counter;
     }
 
+    /** Records an authentication failure in the authfail table and removes outdated entries older than one day.
+     * @param string $ip The client IP address.
+     * @param string $username The username that failed authentication.
+     * @return void
+     * @throws Exception If the database connection fails or the query errors.
+     */
     public function authSupportAddAuthFail(string $ip, string $username): void
     {
         $failTable = "authfail";
@@ -1416,12 +1477,80 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $setClause = "VALUES ({$this->pdoDB->link->quote($ip)},{$this->pdoDB->link->quote($username)})";
             $sql = $this->pdoDB->handler->sqlINSERTCommand($tableRef, $setClause);
             $result = $this->pdoDB->link->query($sql);
-            $this->logger->setDebugMessage("[authSupportAddAuthFail] {$sql}");
+            $this->logger->setDebugMessage("[authSupportAddAuthFail] {$sql}", 2);
             if ($result === false) {
                 throw new Exception("ERROR in INSERT: {$sql}");
             }
         } catch (\Exception $e) {
             $this->pdoDB->errorMessageStore("[authSupportAddAuthFail] ERROR: {$e->getMessage()}");
         }
+    }
+
+    /** Checks if a user is marked as inactive in the authuser table.
+     * @param string $uid The user ID.
+     * @return bool True if the user is inactive, false otherwise.
+     * @throws Exception If the user table is not configured, the database connection fails, or the query errors.
+     */
+    public function authSupportIsInactive(string $uid): bool
+    {
+        $returnValue = false;
+        try {
+            $authUser = $this->authSupportUnifyUsernameAndEmail($uid) ?? "";
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("ERROR in no user table.");
+            }
+            if (!$this->pdoDB->setupConnection()) { //Establish the connection
+                throw new Exception("authuser table setting up failed.");
+            }
+            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}inactive FROM {$userTable} WHERE username = "
+                . $this->pdoDB->link->quote($authUser);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
+                throw new Exception('ERROR in SELECT:' . $sql);
+            }
+            $this->logger->setDebugMessage("[authSupportIsInactive] {$sql}", 2);
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $returnValue = boolval($row['inactive']);
+            }
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportIsInactive] ERROR: {$e->getMessage()}");
+        }
+        $this->logger->setDebugMessage("[authSupportIsInactive] returns {$returnValue}", 2);
+        return $returnValue;
+    }
+
+    /** Sets the inactive status for a user in the authuser table.
+     * @param string $uid The user ID.
+     * @param bool $value The inactive status to set.
+     * @return void
+     * @throws Exception If the user table is not configured, the database connection fails, or the query errors.
+     */
+    public function authSupportSetInactive(string $uid, bool $value): void
+    {
+        try {
+            $authUser = $this->authSupportUnifyUsernameAndEmail($uid) ?? "";
+            $userTable = $this->dbSettings->getUserTable();
+            if (is_null($userTable)) {
+                throw new Exception("ERROR in no user table.");
+            }
+            if (!$this->pdoDB->setupConnection()) { //Establish the connection
+                throw new Exception("authuser table setting up failed.");
+            }
+            $userId = $this->authTableGetUserIdFromUsername($authUser);
+            $sql = "{$this->pdoDB->handler->sqlUpdateCommand()}{$userTable}"
+                . " SET inactive = " . ($value ? "TRUE" : "FALSE")
+                . " WHERE id = " . intval($userId);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                $this->pdoDB->errorMessageStore('ERROR in UPDATE:' . $sql);
+                throw new Exception('ERROR in UPDATE:' . $sql);
+            }
+            $this->logger->setDebugMessage("[authSupportSetInactive] {$sql}", 2);
+        } catch (\Exception $e) {
+            $this->pdoDB->errorMessageStore("[authSupportSetInactive] ERROR: {$e->getMessage()}");
+        }
+
     }
 }

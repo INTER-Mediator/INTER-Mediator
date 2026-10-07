@@ -31,7 +31,7 @@ class Theme
      */
     private bool $accessLogLevel;
     /** Stores output messages for logging.
-     * @var array
+     * @var array<string, string>
      */
     private array $outputMessage = [];
 
@@ -46,7 +46,7 @@ class Theme
     }
 
     /** Gets the result message array for access logging.
-     * @return array Output message array for logging.
+     * @return array<string, string> Output message array for logging.
      */
     public function getResultForLog(): array
     {
@@ -76,8 +76,10 @@ class Theme
             $fpath = $this->pathToTheme($_GET['theme']) . "/{$tType}/";
             $cssFiles = glob("{$fpath}*.css");
             $fContent = '';
-            foreach ($cssFiles as $aFile) {
-                $fContent .= file_get_contents($aFile);
+            if ($cssFiles) {
+                foreach ($cssFiles as $aFile) {
+                    $fContent .= file_get_contents($aFile);
+                }
             }
             $replacingURL = "{$selfInRequest}?theme={$themeNameInRequest}&type=images&name=$1";
             if (!is_null($deffilePath)) {
@@ -91,7 +93,7 @@ class Theme
             $fContent = file_get_contents($fpath);
         }
         header("Content-Type: " . IMUtil::getMIMEType($fpath));
-        header("Content-Length: " . strlen($fContent));
+        header("Content-Length: " . strlen($fContent ? $fContent : ''));
         $util = new IMUtil();
         $util->outputSecurityHeaders();
         echo $fContent;

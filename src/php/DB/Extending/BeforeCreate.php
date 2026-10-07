@@ -15,7 +15,15 @@
 
 namespace INTERMediator\DB\Extending;
 
+/**
+ * Interface BeforeCreate
+ * @package INTERMediator\DB\Extending
+ */
 interface BeforeCreate
 {
-    public function doBeforeCreateToDB();
+    /**
+     * Do before create to DB.
+     * @return bool|string|null
+     */
+    public function doBeforeCreateToDB(): mixed;
 }

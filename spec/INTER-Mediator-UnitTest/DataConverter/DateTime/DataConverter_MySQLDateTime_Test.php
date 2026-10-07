@@ -10,8 +10,18 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {
+    /**
+     * The dataconverter.
+     *
+     * @var MySQLDateTime
+     */
     private MySQLDateTime $dataconverter;
 
+    /**
+     * Set up the test environment.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
@@ -19,7 +29,12 @@ class DataConverter_MySQLDateTime_Test extends TestCase
         $this->dataconverter = new MySQLDateTime();
     }
 
-    public function test_converterFromDBtoUser()
+    /**
+     * Test converter From DB to User.
+     *
+     * @return void
+     */
+    public function test_converterFromDBtoUser(): void
     {
         $expected = '';
         $string = '';
@@ -60,7 +75,12 @@ class DataConverter_MySQLDateTime_Test extends TestCase
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($timeString));
     }
 
-    public function test_converterFromUserToDB()
+    /**
+     * Test converter From User To DB.
+     *
+     * @return void
+     */
+    public function test_converterFromUserToDB(): void
     {
         $expected = null;
         $string = '';

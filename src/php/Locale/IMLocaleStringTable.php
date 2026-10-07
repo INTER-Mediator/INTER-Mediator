@@ -39,8 +39,9 @@ class IMLocaleStringTable
     /* This table is generated from Microsoft site:
      * https://msdn.microsoft.com/en-us/library/cc233982.aspx
      */
-    /** Static table mapping locale codes to human-readable locale strings.
-     * @var array|string[]
+    /**
+     * Static table mapping locale codes to human-readable locale strings.
+     * @var array<array-key, mixed>|string[]
      */
     private static array $localeStrTable = array(
         'aa' => 'Afar',
