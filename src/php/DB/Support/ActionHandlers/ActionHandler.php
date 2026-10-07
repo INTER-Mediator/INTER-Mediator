@@ -434,7 +434,7 @@ abstract class ActionHandler
         $dbSettings = $proxy->dbSettings;
         setcookie($key, $proxy->generateCredential($challenge, $generatedClientID, $hashedPassword),
             ['expires' => time() + $dbSettings->getAuthenticationItem('authexpired'), 'path' => '/',
-                'domain' => $proxy->credentialCookieDomain, 'secure' => false, 'httponly' => true, 'samesite' => 'Strict']);
+                'domain' => $proxy->credentialCookieDomain, 'secure' => IMUtil::isSecureCookie(), 'httponly' => true, 'samesite' => 'Strict']);
     }
 
     /** Clears authentication cookies.

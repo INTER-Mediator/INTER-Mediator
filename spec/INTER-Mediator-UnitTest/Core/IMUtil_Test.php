@@ -216,7 +216,7 @@ class IMUtil_Test extends TestCase
             ob_clean();
             $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
             $this->assertNotContains('Content-Security-Policy: ', $headers);
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+            $this->assertNotContains('X-XSS-Protection: 1; mode=block', $headers);
 
             $params['xFrameOptions'] = '';
             $params['contentSecurityPolicy'] = '';
