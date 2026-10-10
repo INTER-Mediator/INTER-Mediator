@@ -208,7 +208,8 @@ class IMUtil
         if (IMUtil::isPHPExecutingWindows()) {
             $homeDir = getenv("USERPROFILE");
         } else {
-            $homeDir = posix_getpwuid(posix_geteuid())["dir"];
+            $userInfo = posix_getpwuid(posix_geteuid());
+            $homeDir = $userInfo !== false ? $userInfo["dir"] : '';
         }
         return strval($homeDir);
     }
@@ -223,7 +224,8 @@ class IMUtil
         } else {
             // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
             // get_current_user doesn't work on ubuntu 18 of EC2. It returns the user logs in with ssh.
-            $homeDir = posix_getpwuid(posix_geteuid())["name"];
+            $userInfo = posix_getpwuid(posix_geteuid());
+            $homeDir = $userInfo !== false ? $userInfo["name"] : '';
         }
         return $homeDir;
     }
@@ -262,18 +264,17 @@ class IMUtil
                 if (strlen($langCountry[0]) > 0) {
                     $clientLang = explode('-', $langCountry[0]);
                     if ($clientLang[0] === 'en') {
-                        $messageClass = "INTERMediator\Message\MessageStrings";
+                        $className = "INTERMediator\Message\MessageStrings";
                     } else {
-                        $messageClass = "INTERMediator\Message\MessageStrings_{$clientLang[0]}";
+                        $className = "INTERMediator\Message\MessageStrings_{$clientLang[0]}";
                     }
                     try {
-                        $messageClass = new $messageClass();
+                        $messageClass = new $className();
                         break;
                     } catch (Exception $ex) {
 
                     }
                 }
-                $messageClass = null;
             }
         }
         if ($messageClass == null) {
@@ -352,23 +353,31 @@ class IMUtil
 
         $from = '';
         $fromPort = '';
+        $fromScheme = '';
+        $fromHost = '';
         $origin = '';
         $originPort = '';
+        $originScheme = '';
+        $originHost = '';
         if (isset($_SERVER['HTTP_X_FROM'])) {
             $from = parse_url($_SERVER['HTTP_X_FROM']);
             $fromPort = isset($from['port']) ? ':' . $from['port'] : '';
-            if ($fromPort === '' && $from['scheme'] === 'http') {
+            $fromScheme = isset($from['scheme']) ? ':' . $from['scheme'] : '';
+            $fromHost = isset($from['host']) ? ':' . $from['host'] : '';
+            if ($fromPort === '' && $fromScheme === 'http') {
                 $fromPort = ':80';
-            } else if ($fromPort === '' && $from['scheme'] === 'https') {
+            } else if ($fromPort === '' && $fromScheme === 'https') {
                 $fromPort = ':443';
             }
         }
         if (isset($_SERVER['HTTP_ORIGIN'])) {
             $origin = parse_url($_SERVER['HTTP_ORIGIN']);
             $originPort = isset($origin['port']) ? ':' . $origin['port'] : '';
-            if ($originPort === '' && $origin['scheme'] === 'http') {
+            $originScheme = isset($origin['scheme']) ? ':' . $origin['scheme'] : '';
+            $originHost = isset($origin['host']) ? ':' . $origin['host'] : '';
+            if ($originPort === '' && $originScheme === 'http') {
                 $originPort = ':80';
-            } else if ($originPort === '' && $origin['scheme'] === 'https') {
+            } else if ($originPort === '' && $originScheme === 'https') {
                 $originPort = ':443';
             }
         }
@@ -379,8 +388,7 @@ class IMUtil
                 $_SERVER['HTTP_X_REQUESTED_WITH'] === 'fetch') &&
             isset($_SERVER['HTTP_X_FROM']) &&
             (!isset($_SERVER['HTTP_ORIGIN']) ||
-                $from['scheme'] . '://' . $from['host'] . $fromPort ===
-                $origin['scheme'] . '://' . $origin['host'] . $originPort)
+                $fromScheme . '://' . $fromHost . $fromPort === $originScheme . '://' . $originHost . $originPort)
         ) {
             $host = $_SERVER['HTTP_HOST'];
             if (is_null($webServerName)) {
@@ -451,12 +459,15 @@ class IMUtil
      */
     public function outputSecurityHeaders(?array $params = NULL): void
     {
-        $xFrameOptions = str_replace("\r", '', str_replace("\n", '',
-            is_null($params) ? Params::getParameterValue('xFrameOptions', '') : $params['xFrameOptions']));
-        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '',
-            is_null($params) ? Params::getParameterValue('contentSecurityPolicy', '') : $params['contentSecurityPolicy']));
-        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '',
-            is_null($params) ? Params::getParameterValue('accessControlAllowOrigin', '') : $params['accessControlAllowOrigin']));
+        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', strval(
+            is_null($params) ? Params::getParameterValue('xFrameOptions', '')
+                : $params['xFrameOptions'])));
+        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', strval(
+            is_null($params) ? Params::getParameterValue('contentSecurityPolicy', '')
+                : $params['contentSecurityPolicy'])));
+        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', strval(
+            is_null($params) ? Params::getParameterValue('accessControlAllowOrigin', '')
+                : $params['accessControlAllowOrigin'])));
         header("X-Frame-Options: " . (empty($xFrameOptions) ? "SAMEORIGIN" : $xFrameOptions));
         if (empty($contentSecurityPolicy)) {
             $contentSecurityPolicy = '';
@@ -883,11 +894,15 @@ class IMUtil
         $section = $comp[2];
         $key = $comp[3];
 
-        $path = [
-            Params::getParameterValue("profileRoot", null),
-            posix_getpwuid(posix_geteuid())["dir"],
-            posix_getpwnam(get_current_user())["dir"],
-        ];
+        $path = [Params::getParameterValue("profileRoot", null),];
+        $userInfo = posix_getpwuid(posix_geteuid());
+        if (isset($userInfo["dir"])) {
+            $path[] = $userInfo["dir"];
+        }
+        $userInfoUname = posix_getpwnam(get_current_user());
+        if (isset($userInfoUname["dir"])) {
+            $path[] = $userInfoUname["dir"];
+        }
         $suffix = "credentials";
         if ($category === "aws") {
             $suffix = "/.aws/{$suffix}";
@@ -907,8 +922,9 @@ class IMUtil
         if ($targetFile === "") {
             return $str;
         }
+        $fileContents = file_get_contents($targetFile);
         $fileContents = explode("\n",
-            str_replace("\r", "\n", file_get_contents($targetFile)));
+            str_replace("\r", "\n", $fileContents !== false ? $fileContents : ""));
         $targetValue = "";
         $sectionCandidate = strtolower("[{$section}]");
         $inTargetSection = false;

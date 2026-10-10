@@ -69,8 +69,9 @@ class NumberBase implements DataConverter
         }
     }
 
-    /** @param string $str
-     * @return string|null
+    /**
+     * @param string|null $str
+     * @return string
      */
     function converterFromDBtoUser(?string $str): string
     {

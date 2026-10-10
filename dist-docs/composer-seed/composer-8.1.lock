@@ -187,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.399.1",
+            "version": "3.400.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "cd7cf43b7d42e49579bf3f09ab58d4724d64152c"
+                "reference": "c0cf2c322bc1a344aaf39250da8856563532f82b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cd7cf43b7d42e49579bf3f09ab58d4724d64152c",
-                "reference": "cd7cf43b7d42e49579bf3f09ab58d4724d64152c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c0cf2c322bc1a344aaf39250da8856563532f82b",
+                "reference": "c0cf2c322bc1a344aaf39250da8856563532f82b",
                 "shasum": ""
             },
             "require": {
@@ -278,9 +278,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.399.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.400.1"
             },
-            "time": "2026-10-02T18:16:16+00:00"
+            "time": "2026-10-09T18:11:15+00:00"
         },
         {
             "name": "brick/math",
@@ -8827,11 +8827,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.17",
+            "version": "2.3.1",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e676a49fa70cee9f5bf6ff4796186b928a08673f",
-                "reference": "e676a49fa70cee9f5bf6ff4796186b928a08673f",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/6155239b488e95d26d1ebd95c6b4bb294d7f09db",
+                "reference": "6155239b488e95d26d1ebd95c6b4bb294d7f09db",
                 "shasum": ""
             },
             "require": {
@@ -8887,7 +8887,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-04T19:40:09+00:00"
+            "time": "2026-10-08T21:09:11+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

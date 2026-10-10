@@ -92,7 +92,7 @@ trait Proxy_ExtSupport
 
     /** Read records from the database.
      * @param string $target
-     * @param array<array{field: string, operator?:string, value?: float|int|string|bool|null}>|null $query
+     * @param array<array{field: string, operator?:string, value?: float|int|string|bool|null}>|array<string,float|int|string|bool|null>|null $query
      * @param array<array{field: string, dirction?: string}>|array<string, string>|null $sort
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
      * @return array<array<string, number|string|bool|null>>|null
