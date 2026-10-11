@@ -39,7 +39,7 @@ class Number extends NumberBase
             $this->isZeroNoString = true;
             $this->d = 0;
         } else {
-            $this->d = $digits;
+            $this->d = intval($digits);
         }
     }
 

@@ -851,13 +851,18 @@ class FileMaker_DataAPI extends DBClass
                     "{$tableName}{$this->dbSettings->getSeparator()}$field", $oneRecord->$field);
                 foreach ($resultData->getPortalNames() as $portalName) {
                     foreach ($resultData->{$portalName} as $relatedRecord) {
-                        $oneRecordArray[$portalName][$relatedRecord->getRecordId()] = array();
-                        foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
-                            if (str_contains($relatedField, '::') &&
-                                !in_array($relatedField, array('recordId', 'modId'))) {
-                                $oneRecordArray[$portalName][$relatedRecord->getRecordId()][$this->specHandler->getDefaultKey()] = $relatedRecord->getRecordId();
-                                $oneRecordArray[$portalName][$relatedRecord->getRecordId()][$relatedField] = $this->formatter->formatterFromDB(
-                                    "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
+                        if(isset($oneRecordArray[$portalName])) {
+                            $recId=$relatedRecord->getRecordId();
+                            $oneRecordArray[$portalName][$recId] = array();
+                            foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
+                                if (str_contains($relatedField, '::') &&
+                                    !in_array($relatedField, array('recordId', 'modId'))) {
+                                    $oneRecordArray[$portalName][$recId][$this->specHandler->getDefaultKey()]
+                                        = $relatedRecord->getRecordId();
+                                    $oneRecordArray[$portalName][$recId][$relatedField]
+                                        = $this->formatter->formatterFromDB(
+                                            "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
+                                }
                             }
                         }
                     }
@@ -1686,7 +1691,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the sort keys.
-     * @return array<string, string> The sort keys.
+     * @return array<string> The sort keys.
      */
     public function getSortKeys(): array
     {

@@ -73,12 +73,16 @@ class RegisterPasskeyHandler extends ActionHandler
             $clientId = $this->proxy->clientId;
             $hostName = $_SERVER["SERVER_NAME"];
             $challenge = $this->proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, $clientId, true, "$", false);
+            $challenge = is_array($challenge) ? $challenge[0] : $challenge;
 
             // Checking the received response.
             $csmFactory = new CeremonyStepManagerFactory();
             $creationCSM = $csmFactory->creationCeremony();
             $responseValidator = AuthenticatorAttestationResponseValidator::create($creationCSM);
-            $creationOption = $this->publicKeyCredentialCreationOptions($userName, hex2bin($challenge));
+            $creationOption = null;
+            if (hex2bin($challenge) !== false) {
+                $creationOption = $this->publicKeyCredentialCreationOptions($userName, hex2bin($challenge));
+            }
             try {
                 if ($publicKeyCredential->response instanceof AuthenticatorAttestationResponse) {
                     $publicKeyCredentialSource = $responseValidator->check(($publicKeyCredential->response), $creationOption, $hostName);

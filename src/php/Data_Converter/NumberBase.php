@@ -49,9 +49,9 @@ class NumberBase implements DataConverter
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
         $this->formatter = new \NumberFormatter($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
-        $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
-        $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
-        $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
+        $this->decimalMark = strval($this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/));
+        $this->thSepMark = strval($this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/));
+        $this->currencyMark = strval($this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/));
     }
 
     /** @param string $str
@@ -60,7 +60,7 @@ class NumberBase implements DataConverter
     public function converterFromUserToDB(string $str): ?string
     {
         $str = mb_convert_kana($str, "a");
-        $comp = explode($this->decimalMark, $str);
+        $comp = explode(strlen($this->decimalMark) > 0 ? $this->decimalMark : '.', $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
             return (string)(floatval("{$intPart}.{$comp[1]}"));

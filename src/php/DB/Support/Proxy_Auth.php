@@ -169,7 +169,9 @@ trait Proxy_Auth
                     $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                     $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                     $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
-                    [$additional, $this->signedUser] = $SAMLAuth->samlLoginCheck();
+                    $samlLoginStatus = $SAMLAuth->samlLoginCheck();
+                    $additional = $samlLoginStatus[0];
+                    $this->signedUser = strval($samlLoginStatus[1]);
                     $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] SAML Auth result: user={$this->signedUser}, "
                         . "additional={$additional}, attributes=" . var_export($SAMLAuth->getAttributes(), true));
                     $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
@@ -272,7 +274,7 @@ trait Proxy_Auth
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             $cookieNameUser = '_im_username';
             $cookieNameToken = '_im_mediatoken';
-            $realm = $this->dbSettings->getAuthenticationItem('realm');
+            $realm = strval($this->dbSettings->getAuthenticationItem('realm'));
             if ($realm) {
                 $realm = str_replace(" ", "_", str_replace(".", "_", $realm));
                 $cookieNameUser .= ('_' . $realm);

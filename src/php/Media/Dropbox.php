@@ -134,7 +134,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
             $objectPath = $this->rootInDropbox . '/' . $dirPath . '/'
                 . (!is_null($this->customFileName)
                     ? ($this->customFileName . ($i > 0 ? "_" . $i : ""))
-                    : ($filePathInfo['filename'] . '_' . $rand4Digits)) . '.' . $filePathInfo['extension'];
+                    : ($filePathInfo['filename'] . '_' . $rand4Digits)) . '.' . ($filePathInfo['extension'] ?? '');
             $storedURL = "dropbox://$objectPath";
 
             try {

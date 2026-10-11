@@ -193,7 +193,7 @@ class GenerateJSCode
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
         if ($editorPath) { // In the case of core only build.
-            $defFilePath = realpath($documentRoot . $_SERVER['SCRIPT_NAME']);
+            $defFilePath = strval(realpath($documentRoot . $_SERVER['SCRIPT_NAME']));
             while (!str_starts_with($defFilePath, $editorPath) && strlen($editorPath) > 1) {
                 $editorPath = dirname($editorPath);
                 $relativeToDefFile .= '..' . $ds;
@@ -241,8 +241,8 @@ class GenerateJSCode
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = ($scriptPathPrefix ?? '') . ($_SERVER['SCRIPT_NAME'] ?? null) . ($scriptPathSuffix ?? '');
         } else {
-            $pathToMySelf = IMUtil::relativePath(
-                parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH), $_SERVER['SCRIPT_NAME'] ?? null);
+            $theURL = strval(parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH));
+            $pathToMySelf = IMUtil::relativePath($theURL, $_SERVER['SCRIPT_NAME'] ?? null);
         }
         $qStr = isset($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '';
 
@@ -313,7 +313,8 @@ class GenerateJSCode
                 "INTERMediatorOnPage.nonSupportMessageId",
                 "{$q}{$nonSupportMessageId}{$q}");
         }
-        $metadata = json_decode(file_get_contents($pathToIM . $ds . "composer.json"));
+        $fileContents = file_get_contents($pathToIM . $ds . "composer.json");
+        $metadata = $fileContents ? json_decode($fileContents) : null;
         $this->generateAssignJS("INTERMediatorOnPage.metadata",
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->time}{$q}}");
 

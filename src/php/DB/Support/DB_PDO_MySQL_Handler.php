@@ -350,6 +350,9 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');
+            if ($warnings === false) {
+                return null;
+            }
             foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 return (string )intval($row['ID']);
             }

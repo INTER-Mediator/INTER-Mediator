@@ -285,7 +285,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->fmdb->setupFMDataAPIforAuth($hashTable);
         $conditions = array(
             array('expired' => '...' . date('m/d/Y H:i:s',
-                    $timeValue - $this->dbSettings->getExpiringSeconds()),),
+                    intval($timeValue - $this->dbSettings->getExpiringSeconds())),),
             array('clienthost' => '==', 'omit' => 'true'),
         );
         $result = null; // For PHPStan level 1

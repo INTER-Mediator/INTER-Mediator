@@ -292,10 +292,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             } else {
                 $this->outputOfProcessing[$key][] = $value;
             }
-        } else if (is_string($this->outputOfProcessing[$key])) {
-            $this->outputOfProcessing[$key] .= $value;
         } else {
-            $this->outputOfProcessing[$key] = $this->outputOfProcessing[$key] . $value;
+            $this->outputOfProcessing[$key] .= is_array($value) ? implode(' ',$value) : $value;
         }
     }
 
@@ -954,8 +952,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (!isset($this->PostData["value_{$i}"])) {
                 break;
             }
-            $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
-            $this->dbSettings->addValue($value);
+            $filteredValue = filter_var($this->PostData["value_{$i}"]);
+            if ($filteredValue !== false) {
+                $this->dbSettings->addValue(IMUtil::removeNull($filteredValue));
+            }
         }
         for ($i = 0; $i < 1000; $i++) {
             if (!isset($this->PostData["assoc{$i}"])) {
@@ -1426,7 +1426,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Get the sort keys.
-     * @return array<string, string> The sort keys.
+     * @return array<string> The sort keys.
      */
     public function getSortKeys(): array
     {

@@ -110,7 +110,7 @@ class PDO extends DBClass
     private string $defaultTimezone;
 
     /** Sort keys for the current context.
-     * @var array<string, string>
+     * @var array<string>
      */
     private array $sortKeys = [];
 
