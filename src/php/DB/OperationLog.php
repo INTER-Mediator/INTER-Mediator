@@ -16,6 +16,7 @@
 namespace INTERMediator\DB;
 
 use Exception;
+use INTERMediator\DB\Support\OperationLogExtension;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -172,7 +173,9 @@ class OperationLog
             $dbInstance->dbSettings->addValueWithField("error",
                 $this->arrayToString($dbInstance->logger->getErrorMessages()));
 
-            if ($this->accessLogExtensionClass && class_exists($this->accessLogExtensionClass)) {
+            if ($this->accessLogExtensionClass
+                && class_exists($this->accessLogExtensionClass)
+                && is_subclass_of($this->accessLogExtensionClass, OperationLogExtension::class)) {
                 $extInstance = new $this->accessLogExtensionClass($dbInstance, $result);
                 $fields = $extInstance->extendingFields();
                 foreach ($fields as $field) {

@@ -21,6 +21,7 @@ use INTERMediator\Auth\SAMLAuth;
 use INTERMediator\DB\AuthFailCount;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
+use INTERMediator\DB\Support\ActionHandlers\ActionHandler;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
 use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
@@ -208,7 +209,7 @@ trait Proxy_Auth
                 if (!$isAuthAccessing) {
                     $this->accessSetToNothing();
                 }
-                if ($authFail->isActiveBluteForce()||$authFail->isActiveInactivating()) {
+                if ($authFail->isActiveBluteForce() || $authFail->isActiveInactivating()) {
                     $authFail->addFailRecord($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser);
                 }
             }
@@ -240,8 +241,11 @@ trait Proxy_Auth
     {
         $this->dbSettings->setRequireAuthentication(true);
         $this->access = "nothing";
-        $visitorClasName = IMUtil::getActionHandlerClassName($this->access);
-        $this->visitor = new $visitorClasName($this);
+        $actionHandlerClassName = IMUtil::getActionHandlerClassName($this->access);
+        if (class_exists($actionHandlerClassName)
+            && is_subclass_of($actionHandlerClassName, ActionHandler::class)) {
+            $this->visitor = new $actionHandlerClassName($this);
+        }
     }
 
     /**

@@ -17,6 +17,8 @@ namespace INTERMediator;
 
 use Exception;
 use INTERMediator\DB\Proxy;
+use INTERMediator\DB\Support\ProtocolProcessing;
+use INTERMediator\Media\DownloadingSupport;
 
 /**
  * MediaAccess handles secure access and delivery of media files (images, PDFs, etc.)
@@ -213,20 +215,35 @@ class MediaAccess
                     $this->errorHandling($erMessage);
                     $this->exitAsError(403);
                 }
-                $processingObject = new $className();
-                $processingObject->processing($contextRecord, $options);
+                if (class_exists($className)
+                    && is_subclass_of($className, ProtocolProcessing::class)) {
+                    $processingObject = new $className();
+                    $processingObject->processing($contextRecord, $options);
+                } else {
+                    $erMessage = "[INTER-Mediator] The class specified with the 'class://' scheme doesn't implement the ProtocolProcessing interface.";
+                    echo $erMessage;
+                    $this->errorHandling($erMessage);
+                    $this->exitAsError(403);
+                }
             } else {
                 $className = $this->getClassNameForMedia($isURL, $target); // Decide class from URL
                 $dbProxyInstance->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
-                $processing = new $className();
-                $content = $processing->getMedia($file, $target, $dbProxyInstance);
-                $fileName = $processing->getFileName($file);
-                header("Content-Type: " . IMUtil::getMimeType($fileName));
-                header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}{$fileName}{$dq}");
-                $util = new IMUtil();
-                $util->outputSecurityHeaders();
-                $this->outputImage($content);
+                if (class_exists($className) && is_subclass_of($className, DownloadingSupport::class)) {
+                    $processing = new $className();
+                    $content = $processing->getMedia($file, $target, $dbProxyInstance);
+                    $fileName = $processing->getFileName($file);
+                    header("Content-Type: " . IMUtil::getMimeType($fileName));
+                    header("Content-Length: " . strlen($content));
+                    header("Content-Disposition: {$this->disposition}; filename={$dq}{$fileName}{$dq}");
+                    $util = new IMUtil();
+                    $util->outputSecurityHeaders();
+                    $this->outputImage($content);
+                } else {
+                    $erMessage = "[INTER-Mediator] The media handling class doesn't implement the DownloadingSupport interface.";
+                    echo $erMessage;
+                    $this->errorHandling($erMessage);
+                    $this->exitAsError(403);
+                }
             }
         } catch (Exception $ex) {
             $this->errorHandling($ex->getMessage());

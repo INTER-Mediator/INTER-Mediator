@@ -104,8 +104,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $className = is_object($result) ? get_class($result) : "NULL";
-        if ($className === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+//        $className = is_object($result) ? get_class($result) : "NULL";
+        if (get_class($result) === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             foreach ($result as $record) {
                 $recordId = $record->getRecordId();
                 $this->fmdb->setupFMDataAPIforAuth($hashTable);
@@ -303,16 +303,18 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-            foreach ($result as $record) {
-                $recordId = $record->getRecordId();
-                $this->fmdb->setupFMDataAPIforAuth($hashTable);
-                try {
-                    $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
-                } catch (Exception $e) {
-                    $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential('Delete pperation: ' .
-                            $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-                    return false;
+            if (get_class($result) === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                foreach ($result as $record) {
+                    $recordId = $record->getRecordId();
+                    $this->fmdb->setupFMDataAPIforAuth($hashTable);
+                    try {
+                        $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
+                    } catch (Exception $e) {
+                        $this->logger->setDebugMessage(
+                            $this->fmdb->stringWithoutCredential('Delete pperation: ' .
+                                $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                        return false;
+                    }
                 }
             }
         } catch (Exception $e) {

@@ -17,6 +17,7 @@
 namespace INTERMediator;
 
 use INTERMediator\Auth\OAuthAuth;
+use INTERMediator\DB\DBClass;
 
 /**
  * Class GenerateJSCode
@@ -219,10 +220,12 @@ class GenerateJSCode
         $defaultKey = null;
         $classBaseName = $dbSpecification['db-class'] ?? $dbClass ?? '';
         $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
-        $dbInstance = new $dbClassName();
-        $dbInstance->setupHandlers($dbDSN);
-        if ($dbInstance->specHandler != null) {
-            $defaultKey = $dbInstance->specHandler->getDefaultKey();
+        if(is_subclass_of($dbClassName, DBClass::class)) {
+            $dbInstance = new $dbClassName();
+            $dbInstance->setupHandlers($dbDSN);
+            if ($dbInstance->specHandler != null) {
+                $defaultKey = $dbInstance->specHandler->getDefaultKey();
+            }
         }
         if ($defaultKey !== null) {
             $items = array();

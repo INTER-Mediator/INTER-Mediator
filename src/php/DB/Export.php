@@ -3,6 +3,7 @@
 namespace INTERMediator\DB;
 
 use DateTime;
+use INTERMediator\DB\Support\ProtocolProcessing;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Exception;
 use League\Csv\InvalidArgument;
@@ -12,7 +13,7 @@ use League\Csv\CharsetConverter;
 /**
  * Handles exporting context data to CSV files with configurable options in INTER-Mediator.
  */
-class Export
+class Export implements ProtocolProcessing
 {
     /** Array mapping field names to column names for export.
      * @var array<string, string>

@@ -27,7 +27,7 @@ use INTERMediator\Params;
  * Dropbox class handles file uploads and downloads to/from Dropbox via Dropbox API.
  * Implements UploadingSupport and DownloadingSupport interfaces for integration with INTER-Mediator.
  */
-class Dropbox extends UploadingSupport implements DownloadingSupport
+class Dropbox extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     /** Dropbox API App Key
      * @var string|null

@@ -12,6 +12,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
 use Exception;
@@ -26,6 +27,10 @@ class Currency extends NumberBase
      */
     private int $d;
 
+    /** @var bool
+     */
+    private bool $isZeroNoString = false;
+
     /** @param int $digits
      * @throws Exception
      */
@@ -38,16 +43,18 @@ class Currency extends NumberBase
     /** @param string|null $str
      * @return string
      */
-    function converterFromDBtoUser(?string $str):string
+    function converterFromDBtoUser(?string $str): string
     {
-        $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
-        return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
+        if ($this->isZeroNoString && (float)$str == 0) {
+            return "";
+        }
+        return $this->currencyMark . number_format((float)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 
     /** @param string $str
      * @return string|null
      */
-    function converterFromUserToDB(string $str):?string
+    function converterFromUserToDB(string $str): ?string
     {
         $normalized = str_replace($this->thSepMark, '', mb_convert_kana($str, 'n'));
         $numberString = '';

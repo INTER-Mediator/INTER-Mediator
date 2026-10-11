@@ -269,7 +269,9 @@ class IMUtil
                         $className = "INTERMediator\Message\MessageStrings_{$clientLang[0]}";
                     }
                     try {
-                        $messageClass = new $className();
+                        if(is_subclass_of($className, Message\MessageStrings::class)) {
+                            $messageClass = new $className();
+                        }
                         break;
                     } catch (Exception $ex) {
 

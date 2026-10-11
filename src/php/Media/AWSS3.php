@@ -27,7 +27,7 @@ use INTERMediator\Params;
  * AWSS3 class handles file upload and download operations with Amazon S3.
  * Implements UploadingSupport and DownloadingSupport interfaces for integration with INTER-Mediator.
  */
-class AWSS3 extends UploadingSupport implements DownloadingSupport
+class AWSS3 extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     /** AWS region for S3 operations.
      * @var string|null
