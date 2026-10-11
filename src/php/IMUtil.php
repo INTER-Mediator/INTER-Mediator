@@ -350,45 +350,14 @@ class IMUtil
         if (!is_array($webServerName) || $webServerName === array() || $webServerName === array('')) {
             $webServerName = NULL;
         }
-
-        $from = '';
-        $fromPort = '';
-        $fromScheme = '';
-        $fromHost = '';
-        $origin = '';
-        $originPort = '';
-        $originScheme = '';
-        $originHost = '';
-        if (isset($_SERVER['HTTP_X_FROM'])) {
-            $from = parse_url($_SERVER['HTTP_X_FROM']);
-            $fromPort = isset($from['port']) ? ':' . $from['port'] : '';
-            $fromScheme = isset($from['scheme']) ? ':' . $from['scheme'] : '';
-            $fromHost = isset($from['host']) ? ':' . $from['host'] : '';
-            if ($fromPort === '' && $fromScheme === 'http') {
-                $fromPort = ':80';
-            } else if ($fromPort === '' && $fromScheme === 'https') {
-                $fromPort = ':443';
-            }
-        }
-        if (isset($_SERVER['HTTP_ORIGIN'])) {
-            $origin = parse_url($_SERVER['HTTP_ORIGIN']);
-            $originPort = isset($origin['port']) ? ':' . $origin['port'] : '';
-            $originScheme = isset($origin['scheme']) ? ':' . $origin['scheme'] : '';
-            $originHost = isset($origin['host']) ? ':' . $origin['host'] : '';
-            if ($originPort === '' && $originScheme === 'http') {
-                $originPort = ':80';
-            } else if ($originPort === '' && $originScheme === 'https') {
-                $originPort = ':443';
-            }
-        }
-
+        $fromURL = isset($_SERVER['HTTP_X_FROM']) ? $this->fullURL($_SERVER['HTTP_X_FROM']) : "";
+        $originURL = isset($_SERVER['HTTP_ORIGIN']) ? $this->fullURL($_SERVER['HTTP_ORIGIN']) : "";
         if (isset($_SERVER['HTTP_HOST']) &&
             isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' ||
                 $_SERVER['HTTP_X_REQUESTED_WITH'] === 'fetch') &&
             isset($_SERVER['HTTP_X_FROM']) &&
-            (!isset($_SERVER['HTTP_ORIGIN']) ||
-                $fromScheme . '://' . $fromHost . $fromPort === $originScheme . '://' . $originHost . $originPort)
+            (!isset($_SERVER['HTTP_ORIGIN']) || $fromURL === $originURL)
         ) {
             $host = $_SERVER['HTTP_HOST'];
             if (is_null($webServerName)) {
@@ -401,6 +370,20 @@ class IMUtil
             }
         }
         return FALSE;
+    }
+
+    private function fullURL(string $url): string
+    {
+        $target = parse_url($url);
+        $targetPort = $target['port'] ?? '';
+        $targetScheme = $target['scheme'] ?? '';
+        $targetHost = $target['host'] ?? '';
+        if ($targetPort === '' && $targetScheme === 'http') {
+            $targetPort = '80';
+        } else if ($targetPort === '' && $targetScheme === 'https') {
+            $targetPort = '443';
+        }
+        return "{$targetScheme}://{$targetHost}:{$targetPort}";
     }
 
     /** Checks if the given host matches the web server name.
