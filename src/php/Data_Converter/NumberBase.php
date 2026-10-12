@@ -16,6 +16,7 @@
 namespace INTERMediator\Data_Converter;
 
 use INTERMediator\Locale\IMLocale;
+use NumberFormatter;
 
 /**
  *
@@ -48,10 +49,10 @@ class NumberBase implements DataConverter
         IMLocale::setLocale(LC_ALL);
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
-        $this->formatter = new \NumberFormatter($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
+        $this->formatter = new NumberFormatter($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
         $this->decimalMark = strval($this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/));
         $this->thSepMark = strval($this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/));
-        $this->currencyMark = strval($this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/));
+        $this->currencyMark = strval($this->formatter->getSymbol(8 /*NumberFormatter::CURRENCY_SYMBOL*/));
     }
 
     /** @param string $str
