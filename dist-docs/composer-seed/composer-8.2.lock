@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04f48c73380b4778b1f9b93e1970e3b2",
+    "content-hash": "42cd180cd1758c2101a8ac30d7f05af5",
     "packages": [
         {
             "name": "async-aws/core",
@@ -8354,16 +8354,16 @@
         },
         {
             "name": "tecnickcom/tc-lib-pdf",
-            "version": "8.79.1",
+            "version": "8.80.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/tc-lib-pdf.git",
-                "reference": "d8b0d5ea6c1310e18a9c4adb8e3efcf4b7075a5e"
+                "reference": "b848f9233d851800341a74e51fd256846d81f46b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf/zipball/d8b0d5ea6c1310e18a9c4adb8e3efcf4b7075a5e",
-                "reference": "d8b0d5ea6c1310e18a9c4adb8e3efcf4b7075a5e",
+                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf/zipball/b848f9233d851800341a74e51fd256846d81f46b",
+                "reference": "b848f9233d851800341a74e51fd256846d81f46b",
                 "shasum": ""
             },
             "require": {
@@ -8436,7 +8436,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-10T18:34:28+00:00"
+            "time": "2026-10-11T19:27:54+00:00"
         },
         {
             "name": "tecnickcom/tc-lib-pdf-encrypt",
@@ -9087,77 +9087,6 @@
                 }
             ],
             "time": "2026-10-10T08:31:57+00:00"
-        },
-        {
-            "name": "tecnickcom/tcpdf",
-            "version": "7.0.16",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "5b4fb777617079e9030cc72874bface61633bf9e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/5b4fb777617079e9030cc72874bface61633bf9e",
-                "reference": "5b4fb777617079e9030cc72874bface61633bf9e",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=8.2",
-                "tecnickcom/tc-lib-pdf": "^8.78"
-            },
-            "require-dev": {
-                "carthage-software/mago": "1.55.0",
-                "pdepend/pdepend": "^2.16",
-                "phpunit/phpunit": "^11.5 || ^12.5 || ^13.3"
-            },
-            "suggest": {
-                "ext-gd": "Enables additional image handling in some workflows.",
-                "ext-imagick": "Enables additional image format support when available.",
-                "ext-zlib": "Recommended for compressed streams and related features.",
-                "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF for new projects."
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "config",
-                    "tcpdf.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Nicola Asuni",
-                    "email": "info@tecnick.com",
-                    "role": "lead"
-                }
-            ],
-            "description": "Deprecated legacy PDF engine for PHP. Use instead tecnickcom/tc-lib-pdf.",
-            "homepage": "https://tcpdf.org",
-            "keywords": [
-                "PDFD32000-2008",
-                "TCPDF",
-                "barcodes",
-                "datamatrix",
-                "pdf",
-                "pdf417",
-                "qrcode"
-            ],
-            "support": {
-                "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sponsors/tecnickcom",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-10-10T09:40:02+00:00"
         },
         {
             "name": "twig/intl-extra",

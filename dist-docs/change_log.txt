@@ -14,9 +14,9 @@ Ver.16 (in Development)
 - Installation process was modified with using pnpm and Takumi Guard.
 - The composer.json/lock files support the minor versions of PHP with git branches/tags.
 - After any login failure, the account is going to be disabled. The $inactivatingOnFails variable in the params.php
-  file has been to set the failing count. Also the authuser table has to have the "inactivated" column.
+  file has been to set the failing count. Also, the authuser table has to have the "inactivated" column.
 - The $allowedMediaFileRootDirs variable can be set to limit the file path of the media file in FileURL media type.
-- The TestDB.fp7 is removed from the repository because it's so old version.
+- The TestDB.fp7 is removed from the repository because it's very old version.
 - Some missing tables in TestDB.fmp12 are defined.
 - The big "Debugging" text on the page when the debug mode is active. Don't forget to disable the debug mode when
   you release your application.
@@ -28,11 +28,13 @@ Ver.16 (in Development)
   - $allowedMediaFileRootDirs: directories allowed for file:/// media paths.
   - $uploadAllowedExtensions: file extensions allowed for upload.
   - $mediaClassAllowed: classes allowed for media access.
+- TCPDF was changed to tc-lib-pdf for PHP 8.2 or later. The sample to generate a PDF is in the sample/Sample_pdf directory.
+- The webauthn-lib is updated, and the PublicKeyCredentialSource class is replaced with PublicKeyCredential.
 
 Ver.15 (May 24, 2026)
 - Passkey authentication is supported. The $authStoring variable or the "storing" key value have to set the "passkey".
   The "autofill" UI of passkey authentication is supported by $isAddClassAuthn in params.php file, or 'add-class-authn'
-  key value in definition file.
+  key value in a definition file.
 - The "samples" folder is separated to the new repository "INTER-Mediator_Samples" (https://github.com/INTER-Mediator/INTER-Mediator_Samples).
 - IMLibAuthenticationUI.passkeyRegistration() method for the passkey registering.
   IMLibAuthenticationUI.passkeyUnregistration() method for the passkey unregistering.
