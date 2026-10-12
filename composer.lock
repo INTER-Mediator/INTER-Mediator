@@ -9356,16 +9356,16 @@
         },
         {
             "name": "tecnickcom/tc-lib-pdf",
-            "version": "8.79.1",
+            "version": "8.80.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/tc-lib-pdf.git",
-                "reference": "d8b0d5ea6c1310e18a9c4adb8e3efcf4b7075a5e"
+                "reference": "b848f9233d851800341a74e51fd256846d81f46b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf/zipball/d8b0d5ea6c1310e18a9c4adb8e3efcf4b7075a5e",
-                "reference": "d8b0d5ea6c1310e18a9c4adb8e3efcf4b7075a5e",
+                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf/zipball/b848f9233d851800341a74e51fd256846d81f46b",
+                "reference": "b848f9233d851800341a74e51fd256846d81f46b",
                 "shasum": ""
             },
             "require": {
@@ -9438,7 +9438,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-10T18:34:28+00:00"
+            "time": "2026-10-11T19:27:54+00:00"
         },
         {
             "name": "tecnickcom/tc-lib-pdf-encrypt",
@@ -10092,22 +10092,22 @@
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "7.0.16",
+            "version": "7.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "5b4fb777617079e9030cc72874bface61633bf9e"
+                "reference": "08da065616e64ac69bb494ba8365f1eb0e57e5d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/5b4fb777617079e9030cc72874bface61633bf9e",
-                "reference": "5b4fb777617079e9030cc72874bface61633bf9e",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/08da065616e64ac69bb494ba8365f1eb0e57e5d8",
+                "reference": "08da065616e64ac69bb494ba8365f1eb0e57e5d8",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "php": ">=8.2",
-                "tecnickcom/tc-lib-pdf": "^8.78"
+                "tecnickcom/tc-lib-pdf": "^8.80"
             },
             "require-dev": {
                 "carthage-software/mago": "1.55.0",
@@ -10159,7 +10159,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-10T09:40:02+00:00"
+            "time": "2026-10-11T06:45:57+00:00"
         },
         {
             "name": "twig/intl-extra",

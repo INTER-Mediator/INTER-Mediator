@@ -207,6 +207,7 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
                     self::executeCommand($io, $baseDir, "{$pnpmPath} ci");
                 }
             }
+            self::buildPdfFonts($io, $vendorDir);
         } catch (\RuntimeException $e) {
             $io->writeError(sprintf('<error>INTER-Mediator: Post-%s tasks failed: %s</error>', $taskMessage, $e->getMessage()));
             throw $e;
@@ -218,6 +219,36 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
         @unlink($baseDir . '/__Did_you_run_composer_update.txt');
 
         $io->write('<info>INTER-Mediator: Post-install tasks completed.</info>');
+    }
+
+    /**
+     * Generate the font assets of tecnickcom/tc-lib-pdf-font, which TCPDF 7
+     * requires but does not ship ("unable to read file: helvetica.json").
+     *
+     * Composer does not run scripts declared by dependencies, so the build is
+     * triggered here. util/build_fonts.php needs neither make nor a POSIX shell,
+     * so it works on every platform. The build is skipped when the assets
+     * already exist, and a failure is reported as a warning because only PDF
+     * generation depends on these assets.
+     */
+    protected static function buildPdfFonts(IOInterface $io, string $vendorDir): void
+    {
+        $fontPkgDir = $vendorDir . '/tecnickcom/tc-lib-pdf-font';
+        if (!is_file($fontPkgDir . '/util/build_fonts.php')) {
+            return;
+        }
+        if (is_file($fontPkgDir . '/target/fonts/core/helvetica.json')) {
+            return;
+        }
+        try {
+            self::executeCommand($io, $fontPkgDir,
+                escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg('util/build_fonts.php'));
+        } catch (\RuntimeException $e) {
+            $io->writeError(sprintf(
+                '<warning>INTER-Mediator: Failed to build the PDF font assets: %s'
+                . ' Run "php util/build_fonts.php" in "%s" manually.</warning>',
+                $e->getMessage(), $fontPkgDir));
+        }
     }
 
     /**
