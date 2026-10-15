@@ -865,9 +865,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 return false;
             }
             $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated . ", 2);
-        } else if (is_null($this->dbClass)) {
-            $this->logger->setDebugMessage("The class '{$dbClassName}' has to be a subclass of DBClass. ", 2);
-            return false;
         }
         $this->dbClass->setUpSharedObjects($this);
         if ($isDBClassNull) {
