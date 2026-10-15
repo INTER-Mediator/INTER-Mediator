@@ -19,6 +19,7 @@ use DateInterval;
 use Datetime;
 use Exception;
 use INTERMediator\DB\FileMaker_DataAPI;
+use INTERMediator\FileMakerServer\RESTAPI\Supporting\FileMakerRelation;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -105,7 +106,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
 //        $className = is_object($result) ? get_class($result) : "NULL";
-        if (get_class($result) === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result instanceof FileMakerRelation) {
             foreach ($result as $record) {
                 $recordId = $record->getRecordId();
                 $this->fmdb->setupFMDataAPIforAuth($hashTable);
@@ -116,7 +117,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     'user_id' => $uid,
                 ));
                 $result = $this->fmdb->fmDataAuth->{$hashTable}->getRecord($recordId);
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                if ($result instanceof FileMakerRelation) {
                     $this->logger->setDebugMessage(
                         $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
                             $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
@@ -295,7 +296,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAuth->getSessionToken();
             }
             $className = is_object($result) ? get_class($result) : "NULL";
-            if ($className !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result instanceof FileMakerRelation) {
                 $this->logger->setDebugMessage(
                     $this->fmdb->stringWithoutCredential(
                         $className . ': ' . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
@@ -303,7 +304,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-            if (get_class($result) === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if ($result instanceof FileMakerRelation) {
                 foreach ($result as $record) {
                     $recordId = $record->getRecordId();
                     $this->fmdb->setupFMDataAPIforAuth($hashTable);

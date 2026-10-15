@@ -850,19 +850,18 @@ class FileMaker_DataAPI extends DBClass
                 $oneRecordArray[$field] = $this->formatter->formatterFromDB(
                     "{$tableName}{$this->dbSettings->getSeparator()}$field", $oneRecord->$field);
                 foreach ($resultData->getPortalNames() as $portalName) {
+                    $oneRecordArray[$portalName] ??= [];
                     foreach ($resultData->{$portalName} as $relatedRecord) {
-                        if(isset($oneRecordArray[$portalName])) {
-                            $recId=$relatedRecord->getRecordId();
-                            $oneRecordArray[$portalName][$recId] = array();
-                            foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
-                                if (str_contains($relatedField, '::') &&
-                                    !in_array($relatedField, array('recordId', 'modId'))) {
-                                    $oneRecordArray[$portalName][$recId][$this->specHandler->getDefaultKey()]
-                                        = $relatedRecord->getRecordId();
-                                    $oneRecordArray[$portalName][$recId][$relatedField]
-                                        = $this->formatter->formatterFromDB(
-                                            "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
-                                }
+                        $recId = $relatedRecord->getRecordId();
+                        $oneRecordArray[$portalName][$recId] = array();
+                        foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
+                            if (str_contains($relatedField, '::') &&
+                                !in_array($relatedField, array('recordId', 'modId'))) {
+                                $oneRecordArray[$portalName][$recId][$this->specHandler->getDefaultKey()]
+                                    = $relatedRecord->getRecordId();
+                                $oneRecordArray[$portalName][$recId][$relatedField]
+                                    = $this->formatter->formatterFromDB(
+                                        "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
                             }
                         }
                     }
