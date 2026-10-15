@@ -304,8 +304,7 @@ class MediaAccess
      * @param string $file Target URL or file path.
      * @return bool Whether the target URL has a known schema.
      */
-    private
-    function isPossibleSchema(string $file): bool
+    private function isPossibleSchema(string $file): bool
     {
         $schema = ["https:", "http:", "class:", "s3:", "dropbox:", "file:"];
         foreach ($schema as $scheme) {
@@ -320,8 +319,7 @@ class MediaAccess
      * @param int $code Error code (204, 401, or 500).
      * @throws Exception Always thrown.
      */
-    private
-    function exitAsError(int $code): void
+    private function exitAsError(int $code): void
     {
         if ($this->thrownException) {
             return;
@@ -352,8 +350,7 @@ class MediaAccess
      * @param bool $isURL Whether the target is a URL.
      * @return array<array-key, mixed> Adjusted target URL and whether it is a URL.
      */
-    private
-    function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
+    private function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
     {
         if (str_starts_with($file, '/fmi/xml/cnt/') ||
             str_starts_with($file, '/Streaming_SSL/MainDB')) {
@@ -393,8 +390,7 @@ class MediaAccess
      * @return string Authentication result ('context_auth', 'no_auth', 'field_user', 'field_group').
      * @throws Exception If authentication fails.
      */
-    private
-    function checkAuthentication(Proxy $dbProxyInstance, ?array $options): string
+    private function checkAuthentication(Proxy $dbProxyInstance, ?array $options): string
     {
         $contextDef = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         $isContextAuth = (isset($contextDef['authentication']) && (isset($contextDef['authentication']['all'])
@@ -449,8 +445,7 @@ class MediaAccess
      * @param string $target Target URL or file path.
      * @return bool Whether the target URL contains context name and key fields.
      */
-    private
-    function analyzeTarget(string $target): bool
+    private function analyzeTarget(string $target): bool
     {
         // The following properties are the results of this method.
         $this->targetKeyField = null;
@@ -487,8 +482,7 @@ class MediaAccess
      * @param string $content Image content.
      * @return void
      */
-    private
-    function outputImage(string $content): void
+    private function outputImage(string $content): void
     {
         $rotate = false;
         if (function_exists('exif_imagetype') && function_exists('imagejpeg') &&

@@ -851,8 +851,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         /* Setup Database Class's Object */
-        $isDBClassNull = is_null($this->dbClass);
-        if ($isDBClassNull && is_subclass_of($dbClassName, DBClass::class)) {
+        if (is_subclass_of($dbClassName, DBClass::class)) {
             $this->dbClass = new $dbClassName();
             if ($this->dbClass == null) {
                 $this->logger->setErrorMessage("The database class [{
@@ -861,35 +860,37 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 return false;
             }
             $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated . ", 2);
+        } else if (is_null($this->dbClass)) {
+            $this->logger->setDebugMessage("The class '{$dbClassName}' has to be a subclass of DBClass. ", 2);
+            return false;
         }
 
         $this->dbClass->setUpSharedObjects($this);
-        if ($isDBClassNull) {
-            if ($this->activateGenerator) { // In case of Generator activated
-                try {
-                    $originalDSN = $this->dbSettings->getDbSpecDSN();
-                    $this->logger->setDebugMessage("[Schema Generator]originalDSN " . var_export($originalDSN, true), 2);
-                    $generator = new Generator($this);
-                    $this->dbSettings->setDbSpecDSN($generator->generateDSN(true));
-                    if (!$this->dbClass->setupConnection()) { // Connection without dbname
-                        return false;
-                    }
-                    $this->dbClass->setupHandlers();
-                    $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
-                    $this->dbSettings->setDbSpecDSN($originalDSN);
-                    if (!$this->dbClass->setupConnection()) { // Recreating database connection
-                        return false;
-                    }
-                } catch (Exception $ex) { // Catching the exception within Generator class.
+        if ($this->activateGenerator) { // In case of Generator activated
+            try {
+                $originalDSN = $this->dbSettings->getDbSpecDSN();
+                $this->logger->setDebugMessage("[Schema Generator]originalDSN " . var_export($originalDSN, true), 2);
+                $generator = new Generator($this);
+                $this->dbSettings->setDbSpecDSN($generator->generateDSN(true));
+                if (!$this->dbClass->setupConnection()) { // Connection without dbname
                     return false;
                 }
-            } else { // Here is normal operations for Database Class.
-                if (!$this->dbClass->setupConnection()) {
+                $this->dbClass->setupHandlers();
+                $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
+                $this->dbSettings->setDbSpecDSN($originalDSN);
+                if (!$this->dbClass->setupConnection()) { // Recreating database connection
                     return false;
                 }
+            } catch (Exception $ex) { // Catching the exception within Generator class.
+                return false;
             }
-            $this->dbClass->setupHandlers();
+        } else { // Here is normal operations for Database Class.
+            if (!$this->dbClass->setupConnection()) {
+                return false;
+            }
         }
+        $this->dbClass->setupHandlers();
+
         if (!Params::getParameterValue('prohibitDebugMode', false) && $debug) {
             $this->logger->setDebugMode($debug);
         }
@@ -934,13 +935,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->userExpanded = new $className();
                     $this->logger->setDebugMessage("The class '{$className}' was instantiated . ", 2);
                 } catch (Exception $e) {
-                    $this->logger->setErrorMessage("The extending class '{$className}' wasn't instantiated. It requires a sobclass of the INTERMediator\\DB\\Extending\\* interface.");
+                    $this->logger->setErrorMessage("Error in instantiating the extending class '{$className}'.");
                 }
                 if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\UseSharedObjects')) {
                     $this->userExpanded->setUpSharedObjects($this);
                 }
             } else {
-                $this->logger->setDebugMessage("The extending class '{$className}' wasn't instantiated. It requires a sobclass of the INTERMediator\\DB\\Extending\\* interface.");
+                $this->logger->setErrorMessage("The extending class '{$className}' wasn't instantiated. It requires a subclass of the INTERMediator\\DB\\Extending\\* interface.");
             }
         }
         $this->dbSettings->setPrimaryKeyOnly(isset($this->PostData['pkeyonly']));
@@ -1031,7 +1032,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->access = $this->aggregationJudgement($this->access);
 
         $visitorClasName = IMUtil::getActionHandlerClassName($this->access);
-        if(is_subclass_of($visitorClasName, ActionHandler::class)) {
+        if (is_subclass_of($visitorClasName, ActionHandler::class)) {
             $this->visitor = new $visitorClasName($this);
             $this->authenticationAndAuthorization(); // Calling the method in the Support\Proxy_Auth trait.
             $this->visitor->dataOperation();

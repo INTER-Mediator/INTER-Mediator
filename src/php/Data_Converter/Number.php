@@ -26,6 +26,8 @@ class Number extends NumberBase
      */
     private int $d;
 
+    private bool $isZeroNoString = false;
+
     /**
      * @param int|bool $digits
      * @throws Exception
@@ -34,6 +36,7 @@ class Number extends NumberBase
     {
         parent::__construct();
         if ($digits === true) {
+            $this->isZeroNoString = true;
             $this->d = 0;
         } else {
             $this->d = intval($digits);
@@ -45,6 +48,9 @@ class Number extends NumberBase
      */
     function converterFromDBtoUser(?string $str): string
     {
+        if ($this->isZeroNoString && floatval($str) === 0.0) {
+            return '';
+        }
         return number_format((float)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 }

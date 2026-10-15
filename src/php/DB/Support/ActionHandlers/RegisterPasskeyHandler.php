@@ -79,10 +79,12 @@ class RegisterPasskeyHandler extends ActionHandler
             $csmFactory = new CeremonyStepManagerFactory();
             $creationCSM = $csmFactory->creationCeremony();
             $responseValidator = AuthenticatorAttestationResponseValidator::create($creationCSM);
-            $creationOption = null;
-            if (hex2bin($challenge) !== false) {
-                $creationOption = $this->publicKeyCredentialCreationOptions($userName, hex2bin($challenge));
+            $challengeValue = hex2bin($challenge);
+            if ($challengeValue === false) {
+                return;
             }
+            $creationOption = $this->publicKeyCredentialCreationOptions($userName, $challengeValue);
+
             try {
                 if ($publicKeyCredential->response instanceof AuthenticatorAttestationResponse) {
                     $publicKeyCredentialSource = $responseValidator->check(($publicKeyCredential->response), $creationOption, $hostName);

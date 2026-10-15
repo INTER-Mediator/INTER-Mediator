@@ -65,13 +65,14 @@ class IMLibContext {
       return false
     }
     while (context.parentContext) {
-      if(context.name === this.contextName) {
+      if (context.name === this.contextName) {
         return true
       }
       context = context.parentContext
     }
     return false
   }
+
   async updateFieldValue(idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     'use strict'
     let criteria, newValue
@@ -577,7 +578,7 @@ class IMLibContext {
       }
       const className = node.getAttribute('class')
       if (className && (className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1 ||
-        className.indexOf('IM_Button_BackNavi') > -1 || className.indexOf('IM_Button_Insert') > -1)) {
+        className.contains('IM_Button_BackNavi') || className.contains('IM_Button_Insert'))) {
         return true
       }
       return Array.from(node.children).some((c) => c.classList.contains('IM_Button_Insert') ||
@@ -770,7 +771,7 @@ class IMLibContext {
       }
     }
     if (records.sortKeys) {
-      this.sortKeys =records.sortKeys
+      this.sortKeys = records.sortKeys
     }
   }
 

@@ -141,6 +141,16 @@ class MyNumberCardAdapter extends ProviderAdapter
         }
         $verifier = $storedVerifiers[0]; // Maybe 0 or 1 elements. The first element has to be latest one.
 
+        $cAssertion = $this->createJWT(json_encode([
+            'iss' => (string)$this->clientId,
+            'sub' => (string)$this->clientId,
+            'aud' => $this->getTokenURL,
+            'jti' => uniqid(),
+            'exp' => (new DateTime())->add(DateInterval::createFromDateString('1 day'))->format("U"),
+        ]));
+        if ($cAssertion === '') {
+            throw new Exception("Failed to create JWT.");
+        }
         $tokenparams = array(
             'code' => (string)$code,
             'client_id' => $this->clientId,
@@ -148,13 +158,7 @@ class MyNumberCardAdapter extends ProviderAdapter
             'redirect_uri' => $this->redirectURL,
             'code_verifier' => $verifier,
             'client_assertion_type' => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-            'client_assertion' => $this->createJWT(json_encode([
-                'iss' => (string)$this->clientId,
-                'sub' => (string)$this->clientId,
-                'aud' => $this->getTokenURL,
-                'jti' => uniqid(),
-                'exp' => (new DateTime())->add(DateInterval::createFromDateString('1 day'))->format("U"),
-            ])),
+            'client_assertion' => $cAssertion
         );
         $response = $this->communication($this->getTokenURL, true, $tokenparams);
         $access_token = $response->access_token ?? "";

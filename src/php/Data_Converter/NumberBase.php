@@ -76,6 +76,9 @@ class NumberBase implements DataConverter
      */
     function converterFromDBtoUser(?string $str): string
     {
+        if (is_null($str)) {
+            return '';
+        }
         return $str;
     }
 }

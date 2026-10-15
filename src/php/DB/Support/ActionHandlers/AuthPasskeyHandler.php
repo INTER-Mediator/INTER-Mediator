@@ -78,10 +78,12 @@ class AuthPasskeyHandler extends ActionHandler
             $this->credential = $userInfo['hashedpasswd'];
             $this->username = $userInfo['username'];
             $publicKeyCredentialSource = $this->passKeyDeserializePublicKeyCredentialSource($userInfo['publicKey']);
-            $creationOption = null;
-            if (hex2bin($challenge) !== false) {
-                $creationOption = $this->createPublicKeyCredentialRequestOptions(hex2bin($challenge), $clientId);
+            $challengeValue = hex2bin($challenge);
+            if ($challengeValue === false) {
+                return false;
             }
+            $creationOption = $this->createPublicKeyCredentialRequestOptions($challengeValue, $clientId);
+
             // Varidating the response.
             try {
                 if ($publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {
