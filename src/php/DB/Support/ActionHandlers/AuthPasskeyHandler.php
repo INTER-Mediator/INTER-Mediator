@@ -80,6 +80,8 @@ class AuthPasskeyHandler extends ActionHandler
             $publicKeyCredentialSource = $this->passKeyDeserializePublicKeyCredentialSource($userInfo['publicKey']);
             $challengeValue = hex2bin($challenge);
             if ($challengeValue === false) {
+                Logger::getInstance()->setDebugMessage(
+                    "[RegisterPasskeyHandler] invalid challenge value.", 2);
                 return false;
             }
             $creationOption = $this->createPublicKeyCredentialRequestOptions($challengeValue, $clientId);

@@ -868,7 +868,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $this->dbClass->setUpSharedObjects($this);
         if ($isDBClassNull) {
-            $this->dbClass->setUpSharedObjects($this);
             if ($this->activateGenerator) { // In case of Generator activated
                 try {
                     $originalDSN = $this->dbSettings->getDbSpecDSN();
