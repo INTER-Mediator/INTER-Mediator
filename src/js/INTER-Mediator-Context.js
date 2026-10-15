@@ -577,8 +577,9 @@ class IMLibContext {
         return true
       }
       const className = node.getAttribute('class')
+      const classList = node.classList
       if (className && (className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1 ||
-        className.contains('IM_Button_BackNavi') || className.contains('IM_Button_Insert'))) {
+        classList.contains('IM_Button_BackNavi') || classList.contains('IM_Button_Insert'))) {
         return true
       }
       return Array.from(node.children).some((c) => c.classList.contains('IM_Button_Insert') ||

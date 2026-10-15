@@ -42,7 +42,7 @@ class Formatters
                         $this->formatter[strval($oneItem['field'])]
                             = new $cvClassName($oneItem['parameter'] ?? '');
                     } else {
-                        Logger::getInstance()->setErrorMessage("The converter class '{$cvClassName}' wasn't instantiated. It requires a sobclass of the DataConverter interface.");
+                        Logger::getInstance()->setErrorMessage("The converter class '{$cvClassName}' wasn't instantiated. It requires a subclass of the DataConverter interface.");
                     }
                 }
             }

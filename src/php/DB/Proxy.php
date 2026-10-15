@@ -851,7 +851,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         /* Setup Database Class's Object */
-        if (is_subclass_of($dbClassName, DBClass::class)) {
+        $isDBClassNull = is_null($this->dbClass);
+        if ($isDBClassNull) {
+            if (!is_subclass_of($dbClassName, DBClass::class)) {
+                $this->logger->setErrorMessage("The class '{$dbClassName}' has to be a subclass of DBClass.");
+                return false;
+            }
             $this->dbClass = new $dbClassName();
             if ($this->dbClass == null) {
                 $this->logger->setErrorMessage("The database class [{
@@ -864,32 +869,34 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("The class '{$dbClassName}' has to be a subclass of DBClass. ", 2);
             return false;
         }
-
         $this->dbClass->setUpSharedObjects($this);
-        if ($this->activateGenerator) { // In case of Generator activated
-            try {
-                $originalDSN = $this->dbSettings->getDbSpecDSN();
-                $this->logger->setDebugMessage("[Schema Generator]originalDSN " . var_export($originalDSN, true), 2);
-                $generator = new Generator($this);
-                $this->dbSettings->setDbSpecDSN($generator->generateDSN(true));
-                if (!$this->dbClass->setupConnection()) { // Connection without dbname
+        if ($isDBClassNull) {
+            $this->dbClass->setUpSharedObjects($this);
+            if ($this->activateGenerator) { // In case of Generator activated
+                try {
+                    $originalDSN = $this->dbSettings->getDbSpecDSN();
+                    $this->logger->setDebugMessage("[Schema Generator]originalDSN " . var_export($originalDSN, true), 2);
+                    $generator = new Generator($this);
+                    $this->dbSettings->setDbSpecDSN($generator->generateDSN(true));
+                    if (!$this->dbClass->setupConnection()) { // Connection without dbname
+                        return false;
+                    }
+                    $this->dbClass->setupHandlers();
+                    $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
+                    $this->dbSettings->setDbSpecDSN($originalDSN);
+                    if (!$this->dbClass->setupConnection()) { // Recreating database connection
+                        return false;
+                    }
+                } catch (Exception $ex) { // Catching the exception within Generator class.
                     return false;
                 }
-                $this->dbClass->setupHandlers();
-                $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
-                $this->dbSettings->setDbSpecDSN($originalDSN);
-                if (!$this->dbClass->setupConnection()) { // Recreating database connection
+            } else { // Here is normal operations for Database Class.
+                if (!$this->dbClass->setupConnection()) {
                     return false;
                 }
-            } catch (Exception $ex) { // Catching the exception within Generator class.
-                return false;
             }
-        } else { // Here is normal operations for Database Class.
-            if (!$this->dbClass->setupConnection()) {
-                return false;
-            }
+            $this->dbClass->setupHandlers();
         }
-        $this->dbClass->setupHandlers();
 
         if (!Params::getParameterValue('prohibitDebugMode', false) && $debug) {
             $this->logger->setDebugMode($debug);
