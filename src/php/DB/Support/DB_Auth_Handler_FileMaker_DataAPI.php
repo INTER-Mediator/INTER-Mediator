@@ -117,7 +117,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     'user_id' => $uid,
                 ));
                 $result = $this->fmdb->fmDataAuth->{$hashTable}->getRecord($recordId);
-                if ($result instanceof FileMakerRelation) {
+                if (!($result instanceof FileMakerRelation)) {
                     $this->logger->setDebugMessage(
                         $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
                             $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
@@ -296,7 +296,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAuth->getSessionToken();
             }
             $className = is_object($result) ? get_class($result) : "NULL";
-            if ($result instanceof FileMakerRelation) {
+            if (!($result instanceof FileMakerRelation)) {
                 $this->logger->setDebugMessage(
                     $this->fmdb->stringWithoutCredential(
                         $className . ': ' . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
