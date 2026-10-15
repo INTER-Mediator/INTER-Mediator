@@ -41,6 +41,8 @@ class Formatters
                     if (class_exists($cvClassName) && is_subclass_of($cvClassName, \INTERMediator\Data_Converter\DataConverter::class)) {
                         $this->formatter[strval($oneItem['field'])]
                             = new $cvClassName($oneItem['parameter'] ?? '');
+                    } else {
+                        Logger::getInstance()->setErrorMessage("The converter class '{$cvClassName}' wasn't instantiated. It requires a sobclass of the DataConverter interface.");
                     }
                 }
             }

@@ -611,14 +611,14 @@ class PDO extends DBClass
             $bindType = is_null($param) ? \PDO::PARAM_NULL : $bindType;
             $bindResult = $prepSQL->bindValue($count, $param, $bindType);
             if (!$bindResult) {
-                $this->errorMessageStore("[ERROR] bindValue({$count}, {$param}, {$bindType})");
+                $this->errorMessageStore("[ERROR] bindValue({$count}, ---, {$bindType})");
                 return false;
             }
             $count += 1;
         }
         $result = $prepSQL->execute();
         $this->errorHandlingPDO($sql);
-        if (!$result) {
+        if ($result === false) {
             $this->errorMessageStore('[ERROR] SQL:' . $sql);
             return false;
         }
@@ -763,7 +763,7 @@ class PDO extends DBClass
             $this->logger->setDebugMessage($sql);
             $result = $this->link->exec($sql);
             $this->errorHandlingPDO($sql);
-            if (!$result) {
+            if ($result === false) {
                 $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }
@@ -772,7 +772,7 @@ class PDO extends DBClass
             $this->logger->setDebugMessage($sql);
             $result = $this->link->exec($sql);
             $this->errorHandlingPDO($sql);
-            if (!$result) {
+            if ($result === false) {
                 $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }

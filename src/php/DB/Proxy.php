@@ -920,7 +920,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     || is_subclass_of($className, AfterCreate::class)
                     || is_subclass_of($className, AfterDelete::class)
                     || is_subclass_of($className, AfterImport::class)
-                    || is_subclass_of($className, AfterDelete::class)
                     || is_subclass_of($className, AfterRead::class)
                     || is_subclass_of($className, AfterRead_WithNavigation::class)
                     || is_subclass_of($className, AfterUpdate::class)
@@ -928,7 +927,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     || is_subclass_of($className, BeforeCreate::class)
                     || is_subclass_of($className, BeforeDelete::class)
                     || is_subclass_of($className, BeforeImport::class)
-                    || is_subclass_of($className, BeforeDelete::class)
                     || is_subclass_of($className, BeforeRead::class)
                     || is_subclass_of($className, BeforeUpdate::class)
                 )) {
@@ -936,11 +934,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->userExpanded = new $className();
                     $this->logger->setDebugMessage("The class '{$className}' was instantiated . ", 2);
                 } catch (Exception $e) {
-                    $this->logger->setErrorMessage("The class '{$className}' wasn't instantiated.");
+                    $this->logger->setErrorMessage("The extending class '{$className}' wasn't instantiated. It requires a sobclass of the INTERMediator\\DB\\Extending\\* interface.");
                 }
                 if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\UseSharedObjects')) {
                     $this->userExpanded->setUpSharedObjects($this);
                 }
+            } else {
+                $this->logger->setDebugMessage("The extending class '{$className}' wasn't instantiated. It requires a sobclass of the INTERMediator\\DB\\Extending\\* interface.");
             }
         }
         $this->dbSettings->setPrimaryKeyOnly(isset($this->PostData['pkeyonly']));

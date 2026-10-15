@@ -119,7 +119,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $result = $this->fmdb->fmDataAuth->{$hashTable}->getRecord($recordId);
                 if (!($result instanceof FileMakerRelation)) {
                     $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->stringWithoutCredential((is_object($result) ? get_class($result) : "NULL") . ': ' .
                             $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                     return;
                 }
@@ -295,33 +295,30 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAuth->getSessionToken();
             }
-            $className = is_object($result) ? get_class($result) : "NULL";
             if (!($result instanceof FileMakerRelation)) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(
-                        $className . ': ' . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                    $this->fmdb->stringWithoutCredential((is_object($result) ? get_class($result) : "NULL") . ': '
+                        . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                 return false;
             }
             $this->logger->setDebugMessage(
                 $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-            if ($result instanceof FileMakerRelation) {
-                foreach ($result as $record) {
-                    $recordId = $record->getRecordId();
-                    $this->fmdb->setupFMDataAPIforAuth($hashTable);
-                    try {
-                        $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
-                    } catch (Exception $e) {
-                        $this->logger->setDebugMessage(
-                            $this->fmdb->stringWithoutCredential('Delete pperation: ' .
-                                $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
-                        return false;
-                    }
+            foreach ($result as $record) {
+                $recordId = $record->getRecordId();
+                $this->fmdb->setupFMDataAPIforAuth($hashTable);
+                try {
+                    $this->fmdb->fmDataAuth->{$hashTable}->delete($recordId);
+                } catch (Exception $e) {
+                    $this->logger->setDebugMessage(
+                        $this->fmdb->stringWithoutCredential('Delete pperation: ' .
+                            $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                    return false;
                 }
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
-                    $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                $this->fmdb->stringWithoutCredential((is_object($result) ? get_class($result) : "NULL") . ': '
+                    . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return false;
         }
 

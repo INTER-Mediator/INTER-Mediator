@@ -27,10 +27,6 @@ class Currency extends NumberBase
      */
     private int $d;
 
-    /** @var bool
-     */
-    private bool $isZeroNoString = false;
-
     /** @param int $digits
      * @throws Exception
      */
@@ -45,9 +41,6 @@ class Currency extends NumberBase
      */
     function converterFromDBtoUser(?string $str): string
     {
-        if ($this->isZeroNoString && (float)$str == 0) {
-            return "";
-        }
         return $this->currencyMark . number_format((float)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 

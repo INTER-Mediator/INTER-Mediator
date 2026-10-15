@@ -19,6 +19,7 @@ namespace INTERMediator;
 use DateInterval;
 use DateTime;
 use Exception;
+use INTERMediator\Message\MessageStrings;
 use phpDocumentor\Reflection\Types\String_;
 use Symfony\Component\Yaml\Yaml;
 
@@ -269,7 +270,8 @@ class IMUtil
                         $className = "INTERMediator\Message\MessageStrings_{$clientLang[0]}";
                     }
                     try {
-                        if(is_subclass_of($className, Message\MessageStrings::class)) {
+                        if (is_subclass_of($className, MessageStrings::class)
+                            || $className === MessageStrings::class) {
                             $messageClass = new $className();
                         }
                         break;

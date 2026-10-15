@@ -56,7 +56,7 @@ class FileMaker_DataAPI extends DBClass
      */
     private mixed $fieldInfo;
     /** The most recently updated record.
-     * @var array<array<string, number|string|bool|null>>|null
+     * @var array<array<array<array<int|float|string|bool|null>>|int|float|string|bool|null>>|null
      */
     private ?array $updatedRecord = null;
     /** Field name used for soft deletion.
@@ -107,7 +107,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the updated record.
-     * @return array<array<string, number|string|bool|null>>|null The updated record or null.
+     * @return array<array<array<array<int|float|string|bool|null>>|int|float|string|bool|null>>|null The updated record or null.
      */
     public function getUpdatedRecord(): ?array
     {
@@ -115,7 +115,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Get the updated record (alias for getUpdatedRecord).
-     * @return array<array<string, number|string|bool|null>>|null The updated record or null.
+     * @return array<array<array<array<int|float|string|bool|null>>|int|float|string|bool|null>>|null The updated record or null.
      */
     public function updatedRecord(): ?array
     {
@@ -123,7 +123,7 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /** Set the updated record.
-     * @param array<array<string, number|string|bool|null>> $record The updated record.
+     * @param array<array<array<array<int|float|string|bool|null>>|int|float|string|bool|null>> $record The updated record.
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -833,15 +833,15 @@ class FileMaker_DataAPI extends DBClass
 
     /** Create a record set.
      * @param FileMakerRelation|null $resultData The result data.
-     * @return array<array<string, number|string|bool|null>> The record set.
+     * @return array<array<array<array<int|float|string|bool|null>>|int|float|string|bool|null>> The record set.
      */
     private function createRecordset(?FileMakerRelation $resultData): array
     {
-        $returnArray = array();
+        $returnArray = [];
         $tableName = $this->dbSettings->getEntityForRetrieve();
 
         foreach ($resultData as $oneRecord) {
-            $oneRecordArray = array();
+            $oneRecordArray = [];
 
             $recId = $resultData->getRecordId();
             $oneRecordArray[$this->specHandler->getDefaultKey()] = $recId;
@@ -853,15 +853,17 @@ class FileMaker_DataAPI extends DBClass
                     $oneRecordArray[$portalName] ??= [];
                     foreach ($resultData->{$portalName} as $relatedRecord) {
                         $recId = $relatedRecord->getRecordId();
-                        $oneRecordArray[$portalName][$recId] = array();
-                        foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
-                            if (str_contains($relatedField, '::') &&
-                                !in_array($relatedField, array('recordId', 'modId'))) {
-                                $oneRecordArray[$portalName][$recId][$this->specHandler->getDefaultKey()]
-                                    = $relatedRecord->getRecordId();
-                                $oneRecordArray[$portalName][$recId][$relatedField]
-                                    = $this->formatter->formatterFromDB(
-                                        "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
+                        if (is_array($oneRecordArray[$portalName])) {
+                            $oneRecordArray[$portalName][$recId] = [];
+                            foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
+                                if (str_contains($relatedField, '::') &&
+                                    !in_array($relatedField, ['recordId', 'modId'])) {
+                                    $oneRecordArray[$portalName][$recId][$this->specHandler->getDefaultKey()]
+                                        = $relatedRecord->getRecordId();
+                                    $oneRecordArray[$portalName][$recId][$relatedField]
+                                        = $this->formatter->formatterFromDB(
+                                            "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
+                                }
                             }
                         }
                     }
@@ -875,7 +877,8 @@ class FileMaker_DataAPI extends DBClass
     /** Count query result.
      * @return int The query result count.
      */
-    public function countQueryResult(): int
+    public
+    function countQueryResult(): int
     {
         return $this->mainTableCount;
     }
@@ -883,7 +886,8 @@ class FileMaker_DataAPI extends DBClass
     /** Get total count.
      * @return int The total count.
      */
-    public function getTotalCount(): int
+    public
+    function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
     }
@@ -893,7 +897,8 @@ class FileMaker_DataAPI extends DBClass
      * @return bool True if update is successful, false otherwise.
      * @throws Exception
      */
-    public function updateDB(bool $bypassAuth): bool
+    public
+    function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
         $tableSourceName = $this->dbSettings->getEntityForUpdate();
@@ -1178,7 +1183,8 @@ class FileMaker_DataAPI extends DBClass
      * @return string|null The created record ID or null.
      * @throws Exception
      */
-    public function createInDB(bool $isReplace = false): ?string
+    public
+    function createInDB(bool $isReplace = false): ?string
     {
         $this->fieldInfo = null;
 
@@ -1309,7 +1315,8 @@ class FileMaker_DataAPI extends DBClass
      * @return bool True if delete is successful, false otherwise.
      * @throws Exception
      */
-    public function deleteFromDB(): bool
+    public
+    function deleteFromDB(): bool
     {
         $this->fieldInfo = null;
 
@@ -1451,7 +1458,8 @@ class FileMaker_DataAPI extends DBClass
     /** Copy in database.
      * @return string|null The copied record ID or null.
      */
-    public function copyInDB(): ?string
+    public
+    function copyInDB(): ?string
     {
         $this->errorMessageStore("Copy operation is not implemented so far.");
         return null;
@@ -1462,7 +1470,8 @@ class FileMaker_DataAPI extends DBClass
      * @param string $field The field name.
      * @return string The field name for formatter.
      */
-    private function getFieldForFormatter(string $entity, string $field): string
+    private
+    function getFieldForFormatter(string $entity, string $field): string
     {
         if (!str_contains($field, "::")) {
             return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
@@ -1489,7 +1498,8 @@ class FileMaker_DataAPI extends DBClass
      * @param array<string, number|string|bool|null> $condition The condition array.
      * @return null|array<string, number|string|bool|null> The normalized condition array.
      */
-    public function normalizedCondition(array $condition): null|array
+    public
+    function normalizedCondition(array $condition): null|array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -1564,7 +1574,8 @@ class FileMaker_DataAPI extends DBClass
      * @param array<string, number|string|bool|null>|null $conditions The conditions array.
      * @return array<array<string, number|string|bool|null>>|null The query result or null.
      */
-    public function queryForTest(string $table, ?array $conditions = null): ?array
+    public
+    function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -1592,7 +1603,8 @@ class FileMaker_DataAPI extends DBClass
      * @param array<array<string, number|string|bool|null>>|null $conditions The conditions array.
      * @return bool True if delete is successful, false otherwise.
      */
-    public function deleteForTest(string $table, ?array $conditions = null): bool
+    public
+    function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
     }
@@ -1601,7 +1613,8 @@ class FileMaker_DataAPI extends DBClass
      * @param string $direction The sort direction.
      * @return string The adjusted sort direction.
      */
-    protected function _adjustSortDirection(string $direction): string
+    protected
+    function _adjustSortDirection(string $direction): string
     {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ascend';
@@ -1617,7 +1630,8 @@ class FileMaker_DataAPI extends DBClass
      * @param FileMakerRelation $result The result object.
      * @return array<int, array<array<int|string, array<string, array<string, bool|float|int|string|null>|string>|bool|float|int|string|null>>|null> The portal data array.
      */
-    protected function _getPortalDataForUpdating(array $data, FileMakerRelation $result): array
+    protected
+    function _getPortalDataForUpdating(array $data, FileMakerRelation $result): array
     {
         // for FileMaker Server 17
         $portal = NULL;
@@ -1655,7 +1669,8 @@ class FileMaker_DataAPI extends DBClass
     /** Has transaction.
      * @return bool True if transaction is supported, false otherwise.
      */
-    public function hasTransaction(): bool
+    public
+    function hasTransaction(): bool
     {
         return false;
     }
@@ -1663,7 +1678,8 @@ class FileMaker_DataAPI extends DBClass
     /** In transaction.
      * @return bool True if in transaction, false otherwise.
      */
-    public function inTransaction(): bool
+    public
+    function inTransaction(): bool
     {
         return false;
     }
@@ -1671,28 +1687,32 @@ class FileMaker_DataAPI extends DBClass
     /** Begin transaction.
      * @return void
      */
-    public function beginTransaction(): void
+    public
+    function beginTransaction(): void
     {
     }
 
     /** Commit transaction.
      * @return void
      */
-    public function commitTransaction(): void
+    public
+    function commitTransaction(): void
     {
     }
 
     /** Rollback transaction.
      * @return void
      */
-    public function rollbackTransaction(): void
+    public
+    function rollbackTransaction(): void
     {
     }
 
     /** Get the sort keys.
      * @return array<string> The sort keys.
      */
-    public function getSortKeys(): array
+    public
+    function getSortKeys(): array
     {
         return [];
     }
