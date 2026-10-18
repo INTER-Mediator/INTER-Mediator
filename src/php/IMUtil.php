@@ -19,8 +19,8 @@ namespace INTERMediator;
 use DateInterval;
 use DateTime;
 use Exception;
+use INTERMediator\DB\Logger;
 use INTERMediator\Message\MessageStrings;
-use phpDocumentor\Reflection\Types\String_;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -34,23 +34,10 @@ class IMUtil
      */
     public static function currentDTString(int $subSeconds = 0): string
     {
-        $currentDT = new DateTime();
-        try {
-            if ($subSeconds >= 0) {
-                $currentDT->sub(new DateInterval("PT" . $subSeconds . "S"));
-            } else {
-                $currentDT->add(new DateInterval("PT" . -$subSeconds . "S"));
-            }
-        } catch (Exception $e) {
-        }
-        return $currentDT->format('Y-m-d H:i:s');
+        return self::shiftedCurrentDT($subSeconds)->format('Y-m-d H:i:s');
     }
 
-    /** Returns the current date and time string in FileMaker format ('m/d/Y H:i:s').
-     * @param int $subSeconds Number of seconds to subtract (or add if negative).
-     * @return string Current date and time as string in FileMaker format.
-     */
-    public static function currentDTStringFMS(int $subSeconds = 0): string
+    private static function shiftedCurrentDT(int $subSeconds): DateTime
     {
         $currentDT = new DateTime();
         try {
@@ -60,8 +47,18 @@ class IMUtil
                 $currentDT->add(new DateInterval("PT" . -$subSeconds . "S"));
             }
         } catch (Exception $e) {
+            Logger::getInstance()->setErrorMessage("Invalid seconds for date shifting: {$subSeconds}");
         }
-        return $currentDT->format('m/d/Y H:i:s');
+        return $currentDT;
+    }
+
+    /** Returns the current date and time string in FileMaker format ('m/d/Y H:i:s').
+     * @param int $subSeconds Number of seconds to subtract (or add if negative).
+     * @return string Current date and time as string in FileMaker format.
+     */
+    public static function currentDTStringFMS(int $subSeconds = 0): string
+    {
+        return self::shiftedCurrentDT($subSeconds)->format('m/d/Y H:i:s');
     }
 
     /** Calculates the difference in seconds from the given date/time string now.
@@ -80,6 +77,8 @@ class IMUtil
     }
 
     /** Returns the PHP version as a float or int.
+     * As far as Claude Opus 5.5 said, the function version_compare() is a better way because it can compare the version string.
+     * This function doesn't work in case of the minor version is larger than 9. This method is going to be deprecated.
      * @param string $verStr Optional version string to parse. If empty, use the current PHP version.
      * @return int|float PHP version as a number.
      */
@@ -111,7 +110,11 @@ class IMUtil
     public static function getMIMEType(string $path): string
     {
         $type = "application/octet-stream";
-        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
+        $dotPos = strrpos($path, '.');
+        if ($dotPos === false) {
+            return $type;
+        }
+        switch (strtolower(substr($path, $dotPos + 1))) {
             case 'doc':
                 $type = 'application/msword';
                 break;
@@ -119,7 +122,7 @@ class IMUtil
                 $type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
                 break;
             case 'xls':
-                $type = 'applicsation/vnd.ms-excel';
+                $type = 'application/vnd.ms-excel';
                 break;
             case 'xlsx':
                 $type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -197,8 +200,7 @@ class IMUtil
      */
     public static function isPHPExecutingWindows(): bool
     {
-        $osName = php_uname("s");
-        return $osName == "Windows NT";
+        return PHP_OS_FAMILY === 'Windows';
     }
 
     /** Returns the home directory of the server user.
@@ -209,8 +211,8 @@ class IMUtil
         if (IMUtil::isPHPExecutingWindows()) {
             $homeDir = getenv("USERPROFILE");
         } else {
-            $userInfo = posix_getpwuid(posix_geteuid());
-            $homeDir = $userInfo !== false ? $userInfo["dir"] : '';
+            $userInfo = function_exists('posix_getpwuid') ? posix_getpwuid(posix_geteuid()) : false;
+            $homeDir = $userInfo !== false ? $userInfo["dir"] : strval(getenv("HOME"));
         }
         return strval($homeDir);
     }
@@ -225,8 +227,8 @@ class IMUtil
         } else {
             // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
             // get_current_user doesn't work on ubuntu 18 of EC2. It returns the user logs in with ssh.
-            $userInfo = posix_getpwuid(posix_geteuid());
-            $homeDir = $userInfo !== false ? $userInfo["name"] : '';
+            $userInfo = function_exists('posix_getpwuid') ? posix_getpwuid(posix_geteuid()) : false;
+            $homeDir = $userInfo !== false ? $userInfo["name"] : get_current_user();
         }
         return $homeDir;
     }
@@ -236,8 +238,7 @@ class IMUtil
      */
     public static function isPHPExecutingUNIX(): bool
     {
-        $osName = php_uname("s");
-        return $osName == "Linux" || $osName == "FreeBSD";
+        return PHP_OS === 'Linux' || PHP_OS === 'FreeBSD';
     }
 
     /**
@@ -263,7 +264,10 @@ class IMUtil
             foreach ($clientLangArray as $oneLanguage) {
                 $langCountry = explode(';', $oneLanguage);
                 if (strlen($langCountry[0]) > 0) {
-                    $clientLang = explode('-', $langCountry[0]);
+                    $clientLang = explode('-', strtolower(trim($langCountry[0])));
+                    if (!preg_match('/^[a-z]{2,3}$/', $clientLang[0])) {
+                        continue;
+                    }
                     if ($clientLang[0] === 'en') {
                         $className = "INTERMediator\Message\MessageStrings";
                     } else {
@@ -292,8 +296,8 @@ class IMUtil
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
-            && $_SERVER['CONTENT_LENGTH'] > $postMaxSize
-            && str_starts_with($_SERVER['CONTENT_TYPE'], 'multipart/form-data')
+            && ($_SERVER['CONTENT_LENGTH'] ?? 0) > $postMaxSize
+            && str_starts_with($_SERVER['CONTENT_TYPE'] ?? '', 'multipart/form-data')
         ) {
             return true;
         }
@@ -323,7 +327,13 @@ class IMUtil
     public static function return_bytes(mixed $val): int
     {
         $val = trim($val);
+        if (strlen($val) === 0) {
+            return 0;
+        }
         switch (strtolower($val[strlen($val) - 1])) {
+            case 't':
+                $val = intval($val) * (1024 * 1024 * 1024 * 1024);
+                break;
             case 'g':
                 $val = intval($val) * (1024 * 1024 * 1024);
                 break;
@@ -394,6 +404,9 @@ class IMUtil
     public function checkHost(string $host, string $webServerName): bool
     {
         $host = strtolower($host);
+        if (preg_match('/^(\[[^\]]+\]|[^:]+):\d+$/', $host, $matches)) {
+            $host = $matches[1];
+        }
         $webServerName = strtolower($webServerName);
         $length = strlen($webServerName);
 
@@ -473,16 +486,18 @@ class IMUtil
         if (is_null($str)) {
             return "";
         }
-        return str_replace("'", "\\'",
-            str_replace('"', '\\"',
-                str_replace("/", "\\/",
-                    str_replace(">", "\\x3e",
-                        str_replace("<", "\\x3c",
-                            str_replace("\n", "\\n",
-                                str_replace("\r", "\\r",
-                                    str_replace("\xe2\x80\xa8", "\\n",      // U+2028
-                                        str_replace("\xe2\x80\xa9", "\\n",  // U+2029
-                                            str_replace("\\", "\\\\", $str))))))))));
+        return strtr($str, [
+            "\\" => "\\\\",
+            "\xe2\x80\xa9" => "\\n",  // U+2029
+            "\xe2\x80\xa8" => "\\n",  // U+2028
+            "\r" => "\\r",
+            "\n" => "\\n",
+            "<" => "\\x3c",
+            ">" => "\\x3e",
+            "/" => "\\/",
+            '"' => '\\"',
+            "'" => "\\'",
+        ]);
     }
 
     /**
@@ -501,7 +516,7 @@ class IMUtil
         if ($currentKey == '')
             $returnStr = "{" . implode(',', $items) . '}';
         else
-            $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+            $returnStr = "'" . IMUtil::valueForJSInsert(strval($currentKey)) . "':{" . implode(',', $items) . '}';
         return $returnStr;
     }
 
@@ -516,7 +531,7 @@ class IMUtil
         if ($currentKey == '') {
             $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
         } else {
-            $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
+            $returnStr = "'" . IMUtil::valueForJSInsert($prefix) . "':'" . IMUtil::valueForJSInsert($ar) . "'";
         }
         return $returnStr;
     }
@@ -549,7 +564,7 @@ class IMUtil
         if ($currentKey == '') {
             $returnStr = '{' . $returnStr . '}';
         } else {
-            $returnStr = "'{$currentKey}':{" . $returnStr . '}';
+            $returnStr = "'" . IMUtil::valueForJSInsert(strval($currentKey)) . "':{" . $returnStr . '}';
         }
         return $returnStr;
     }
@@ -568,7 +583,7 @@ class IMUtil
         if ($currentKey == '') {
             $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
         } else if (!in_array($currentKey, $exarray)) {
-            $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
+            $returnStr = "'" . IMUtil::valueForJSInsert($prefix) . "':'" . IMUtil::valueForJSInsert($ar) . "'";
         }
         return $returnStr;
     }
@@ -624,10 +639,11 @@ class IMUtil
      */
     public static function generateClientId(string $prefix = "", string $passwordHash = "0"): string
     {
+        $seed = $prefix . random_bytes(32);
         if ($passwordHash == "1") {
-            return sha1(uniqid($prefix, true));
+            return sha1($seed);
         }
-        return hash("sha256", uniqid($prefix, true));
+        return hash("sha256", $seed);
     }
 
     /** Generates a random challenge string (hexadecimal).
@@ -635,12 +651,7 @@ class IMUtil
      */
     public static function generateChallenge(): string
     {
-        $str = '';
-        for ($i = 0; $i < 24; $i++) {
-            $n = random_int(1, 255);
-            $str .= ($n < 16 ? '0' : '') . dechex($n);
-        }
-        return $str;
+        return bin2hex(random_bytes(24));
     }
 
     /** Generates a random salt for password hashing.
@@ -707,7 +718,7 @@ class IMUtil
     {
         $password = '';
         for ($i = 0; $i < $digit; $i++) {
-            $password .= chr(random_int(32, 127));
+            $password .= chr(random_int(32, 126));
         }
         return IMUtil::convertHashedPassword($password, $passwordHash, $alwaysGenSHA2);
     }
@@ -750,11 +761,9 @@ class IMUtil
         $from = explode("/", $fromPath);
         $to = explode("/", $toPath);
         $commonRoot = 0;
-        for ($i = 0; $i < min(count($from), count($to)); $i += 1) {
-            if (!isset($from[$i]) || !isset($to[$i]) || ($from[$i] != $to[$i])) {
-                $commonRoot = $i;
-                break;
-            }
+        $minCount = min(count($from), count($to));
+        while ($commonRoot < $minCount && $from[$commonRoot] === $to[$commonRoot]) {
+            $commonRoot += 1;
         }
 
         $path = '';
@@ -778,29 +787,34 @@ class IMUtil
         if (!$checkPath || !$dir) { // Both parameters have not to falsy.
             return false;
         }
-        if (strlen($dir) > strlen($checkPath)) { // Apparently outside $dir.
+        $realCheckPath = realpath($checkPath);
+        $realDir = realpath($dir);
+        if ($realCheckPath === false || $realDir === false) {
             return false;
         }
-        if (str_starts_with($checkPath, $dir)) {
+        if ($realCheckPath === $realDir) {
             return true;
         }
-        return false;
+        $realDir = rtrim($realDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        return str_starts_with($realCheckPath, $realDir);
     }
 
     /**
      * Loads and parses YAML definition file content.
-     * @return array<array-key, mixed> Parsed YAML content and file path.
+     * @return array{0: array<array-key, mixed>, 1: string} Parsed YAML content and file path.
      * @throws Exception If the YAML file does not exist or is outside permitted paths.
      */
     public static function getYAMLDefContent(): array
     {
         $defPoolPath = Params::getParameterValue('yamlDefFilePool', false);
-        $docRoot = $_SERVER['DOCUMENT_ROOT'];
+        $docRoot = strval($_SERVER['DOCUMENT_ROOT'] ?? '');
         $ref = strval(parse_url(strval($_SERVER['HTTP_REFERER'] ?? ''), PHP_URL_PATH));
         $possibleDirs = [$docRoot, $docRoot . dirname($ref), $defPoolPath,];
         if (isset($_GET['deffile'])) { // The YAML file path is set on the deffile parameter
+            if (!is_string($_GET['deffile'])) {
+                throw new Exception("The deffile parameter is invalid.");
+            }
             $filePath = $_GET['deffile'];
-            $possibleDirs[] = $docRoot;
             $possibleExts = [''];
         } else { // The YAML file has the same name as the page file
             $filePath = basename($ref);
@@ -824,16 +838,18 @@ class IMUtil
             }
         }
         if (!file_exists($yamlFilePath)) {
-            throw new Exception(
-                "The yaml format definition file does not exist on following paths:\\n"
-                . implode("\\n", $searchResult)
-            );
+            Logger::getInstance()->setErrorMessage(
+                "The yaml format definition file does not exist on following paths: " . implode(", ", $searchResult));
+            throw new Exception("The yaml format definition file does not exist: {$filePath}");
         }
         $realPath = strval(realpath($yamlFilePath));
         if (!(IMUtil::isInsideOf($realPath, $docRoot) || ($defPoolPath && IMUtil::isInsideOf($realPath, $defPoolPath)))) {
-            throw new Exception("The yaml file exists outside of any permitted paths: {$realPath}");
+            Logger::getInstance()->setErrorMessage("The yaml file exists outside of any permitted paths: {$realPath}");
+            throw new Exception("The yaml file exists outside of any permitted paths: {$filePath}");
         }
-        return [Yaml::parse(strval(file_get_contents($realPath))), $yamlFilePath];
+        $contents = Yaml::parse(strval(file_get_contents($realPath)));
+        $contents = is_array($contents) ? $contents : [];
+        return [$contents, $yamlFilePath];
         // OMG! Yaml parser can parse JSON data!! Really??
     }
 
@@ -878,13 +894,17 @@ class IMUtil
         $key = $comp[3];
 
         $path = [Params::getParameterValue("profileRoot", null),];
-        $userInfo = posix_getpwuid(posix_geteuid());
-        if (isset($userInfo["dir"])) {
-            $path[] = $userInfo["dir"];
-        }
-        $userInfoUname = posix_getpwnam(get_current_user());
-        if (isset($userInfoUname["dir"])) {
-            $path[] = $userInfoUname["dir"];
+        if (function_exists('posix_getpwuid')) {
+            $userInfo = posix_getpwuid(posix_geteuid());
+            if (isset($userInfo["dir"])) {
+                $path[] = $userInfo["dir"];
+            }
+            $userInfoUname = posix_getpwnam(get_current_user());
+            if (isset($userInfoUname["dir"])) {
+                $path[] = $userInfoUname["dir"];
+            }
+        } else {
+            $path[] = self::getServerUserHome();
         }
         $suffix = "credentials";
         if ($category === "aws") {
@@ -959,19 +979,8 @@ class IMUtil
             return $str;
         }
 
-        $startPos = strpos($str, '@@');
-        $endPos = strpos($str, '@@', $startPos + 2);
-        while ($startPos !== false && $endPos !== false) {
-            $fieldName = trim(substr($str, $startPos + 2, $endPos - $startPos - 2));
-            $str = substr($str, 0, $startPos)
-                . ($currentRecord[$fieldName] ?? '') . substr($str, $endPos + 2);
-            $startPos = strpos($str, '@@');
-            if (strlen($str) <= ($startPos + 2)) {
-                $endPos = false;
-            } else {
-                $endPos = strpos($str, '@@', $startPos + 2);
-            }
-        }
-        return $str;
+        return preg_replace_callback('/@@(.*?)@@/s', function ($matches) use ($currentRecord) {
+            return strval($currentRecord[trim($matches[1])] ?? '');
+        }, $str);
     }
 }
