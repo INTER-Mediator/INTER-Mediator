@@ -154,10 +154,10 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertCount(10, $result, "After the query, 10 records should be retrieved.");
         $this->assertEquals(10, $recordCount, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
-        $this->assertEquals(substr($result[0]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(1).");
+        $this->assertEquals(substr(strval($result[0]["item_name"]), 0, strlen($cStr)), $cStr, "Field value is not same as the definition(1).");
         $this->assertEquals(219510, $result[0]["total"], "Field value is not same as the definition(2).");
         $cStr = "Broccoli";
-        $this->assertEquals(substr($result[9]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(3).");
+        $this->assertEquals(substr(strval($result[9]["item_name"]), 0, strlen($cStr)), $cStr, "Field value is not same as the definition(3).");
         $this->assertEquals(91225, $result[9]["total"], "Field value is not same as the definition(4).");
         // the data in the name filed of the item_master table have trailing garbage. OMG
     }
@@ -406,7 +406,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person", 1000000, "contact");
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
-        $this->db_proxy->dbSettings->addAssociated("contact", "person_id", $parentId);
+        $this->db_proxy->dbSettings->addAssociated("contact", "person_id", strval($parentId));
         $this->db_proxy->copyInDB();
 
 //        var_export($this->db_proxy->logger->getErrorMessages());
@@ -437,6 +437,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person", 1);
 
         $className = get_class($this->db_proxy->dbClass->specHandler);
+        $this->assertNotFalse($className, 'The dbClass should have a class name.');
         $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
     }
 

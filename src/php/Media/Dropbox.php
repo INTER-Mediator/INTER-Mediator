@@ -27,7 +27,7 @@ use INTERMediator\Params;
  * Dropbox class handles file uploads and downloads to/from Dropbox via Dropbox API.
  * Implements UploadingSupport and DownloadingSupport interfaces for integration with INTER-Mediator.
  */
-class Dropbox extends UploadingSupport implements DownloadingSupport
+class Dropbox extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     /** Dropbox API App Key
      * @var string|null
@@ -134,7 +134,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
             $objectPath = $this->rootInDropbox . '/' . $dirPath . '/'
                 . (!is_null($this->customFileName)
                     ? ($this->customFileName . ($i > 0 ? "_" . $i : ""))
-                    : ($filePathInfo['filename'] . '_' . $rand4Digits)) . '.' . $filePathInfo['extension'];
+                    : ($filePathInfo['filename'] . '_' . $rand4Digits)) . '.' . ($filePathInfo['extension'] ?? '');
             $storedURL = "dropbox://$objectPath";
 
             try {

@@ -65,13 +65,14 @@ class IMLibContext {
       return false
     }
     while (context.parentContext) {
-      if(context.name === this.contextName) {
+      if (context.name === this.contextName) {
         return true
       }
       context = context.parentContext
     }
     return false
   }
+
   async updateFieldValue(idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     'use strict'
     let criteria, newValue
@@ -551,10 +552,39 @@ class IMLibContext {
     let childContexts = []
     seekRemovingContext(this)
     regIds = IMLibContextPool.removeContextsFromPool(childContexts)
-    while (this.enclosureNode.firstChild) {
-      this.enclosureNode.removeChild(this.enclosureNode.lastChild)
+    const repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(this.enclosureNode.tagName)
+    const children = Array.from(this.enclosureNode.childNodes)
+    for (const child of children) {
+      if (isGeneratedNode(child, repNodeTag)) {
+        this.enclosureNode.removeChild(child)
+      }
     }
     await INTERMediator_DBAdapter.unregister(regIds)
+
+    function isGeneratedNode(node, repNodeTag) {
+      if (node.nodeType !== 1) {
+        return false
+      }
+      if (repNodeTag && node.tagName === repNodeTag) {
+        return true
+      }
+      const imControl = node.getAttribute('data-im-control')
+      if (imControl && (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1 ||
+        imControl.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) > -1 ||
+        imControl.indexOf(INTERMediatorLib.roleAsFooterDataControlName) > -1 ||
+        imControl.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) > -1 ||
+        imControl.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
+        return true
+      }
+      const className = node.getAttribute('class')
+      const classList = node.classList
+      if (className && (className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1 ||
+        classList.contains('IM_Button_BackNavi') || classList.contains('IM_Button_Insert'))) {
+        return true
+      }
+      return Array.from(node.children).some((c) => c.classList.contains('IM_Button_Insert') ||
+        c.classList.contains('IM_Button_BackNavi'))
+    }
 
     function seekRemovingContext(context) {
       let myChildren
@@ -742,7 +772,7 @@ class IMLibContext {
       }
     }
     if (records.sortKeys) {
-      this.sortKeys =records.sortKeys
+      this.sortKeys = records.sortKeys
     }
   }
 

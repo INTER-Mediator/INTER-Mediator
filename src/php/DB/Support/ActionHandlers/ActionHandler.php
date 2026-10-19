@@ -118,13 +118,13 @@ abstract class ActionHandler
             . "paramResponse={$proxy->paramResponse}, paramResponse2m={$proxy->paramResponse2m}, "
             . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
 
-        $this->storedChallenge = $authDBHandler->authSupportRetrieveChallenge(
-            $uid, $proxy->clientId, true, "#");
+        $credential = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "#");
+        $this->storedChallenge = is_array($credential) ? $credential[0] : $credential;
         Logger::getInstance()->setDebugMessage(
             "[prepareCheckAuthentication] storedChallenge={$this->storedChallenge}", 2);
 
-        $this->storedCredential = $authDBHandler->authSupportRetrieveChallenge(
-            $uid, $proxy->clientId, true, "+");
+        $credential = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "+");
+        $this->storedCredential = is_array($credential) ? $credential[0] : $credential;
         Logger::getInstance()->setDebugMessage(
             "[ActionHandler][prepareCheckAuthentication] storedCredential={$this->storedCredential}", 2);
 
@@ -141,7 +141,8 @@ abstract class ActionHandler
                     break;
             }
             $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
-            $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "=");
+            $credential = $authDBHandler->authSupportRetrieveChallenge($uid, $proxy->clientId, true, "=");
+            $this->stored2FAuth = is_array($credential) ? $credential[0] : $credential;
             Logger::getInstance()->setDebugMessage(
                 "[ActionHandler][prepareCheckAuthentication] 2FA_email stored2FAuth={$this->stored2FAuth}", 2);
         }
@@ -266,7 +267,7 @@ abstract class ActionHandler
             if (hash_equals($proxy->paramResponse, $hmacValue)) {
                 Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] sha1 hash used.", 2);
                 if ($proxy->migrateSHA1to2) {
-                    $salt = hex2bin(substr($proxy->hashedPassword, -8));
+                    $salt = strval(hex2bin(substr($proxy->hashedPassword, -8)));
                     $hashedPw = IMUtil::convertHashedPassword(
                         $proxy->hashedPassword, $proxy->passwordHash, true, $salt);
                     $proxy->dbClass->authHandler->authSupportChangePassword($proxy->signedUser, $hashedPw);
@@ -316,7 +317,7 @@ abstract class ActionHandler
                         $dbSettings->getDataSource(),
                         $dbSettings->getOptions(),
                         $dbSettings->getDbSpec(),
-                        Logger::getInstance()->getDebugLevel(),
+                        intval(Logger::getInstance()->getDebugLevel()),
                         $tableInfo['name'], $tableInfo['key'], null,
                         $dbSettings->getAttachedFields(), $uploadFiles, true
                     );
@@ -350,7 +351,7 @@ abstract class ActionHandler
                                     $dbSettings->getDataSource(),
                                     $dbSettings->getOptions(),
                                     $dbSettings->getDbSpec(),
-                                    Logger::getInstance()->getDebugLevel(),
+                                    intval(Logger::getInstance()->getDebugLevel()),
                                     $tableInfo['name'], $tableInfo['key'], $result,
                                     [$attachedFields[$counter]], [$oneFile], true
                                 );

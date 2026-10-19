@@ -28,7 +28,7 @@ use INTERMediator\Params;
  * FileURL class handles file uploads and downloads via URLs and supports CSV import operations.
  * Implements UploadingSupport and DownloadingSupport interfaces for media handling.
  */
-class FileURL extends UploadingSupport implements DownloadingSupport
+class FileURL extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     private ?string $customFileName = null;
 

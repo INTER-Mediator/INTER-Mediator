@@ -19,6 +19,7 @@ namespace INTERMediator;
 use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
+use INTERMediator\Media\MediaProcessing;
 
 /**
  * Class FileUploader
@@ -281,7 +282,8 @@ class FileUploader
             $this->db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
             $this->db->processingRequest("read");
             $currentRecord = ($this->db->getDatabaseResult())[0];
-            $this->db->logger->setDebugMessage("[FileUploader::processingWithParameters] Current record: " . var_export($currentRecord, true), 2);
+            $this->db->logger->setDebugMessage(
+                "[FileUploader::processingWithParameters] Current record: " . var_export($currentRecord, true), 2);
             $customFileName = IMUtil::templating($customFileName, $currentRecord);
         }
         $this->db->logger->setDebugMessage("[FileUploader::processingWithParameters] customFileName=" . $customFileName, 2);
@@ -289,12 +291,20 @@ class FileUploader
         // Instantiating the media class object and call the processing method.
         $className = "INTERMediator\\Media\\{$className}"; // Instantiated media class object.
         $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
-        $mediaClassObj = new $className();
-        $mediaClassObj->processing($this->db, null, $options, $files, $noOutput, $field,
-            $contextName, $keyField, $keyValue, $dataSource, $dbSpec, $debug, $customFileName);
-        if ($field[0] == "_im_csv_upload") {    // CSV File uploading
-            if (isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
-                $this->dbresult = $this->db->outputOfProcessing['dbresult'];
+        if (class_exists($className) && is_subclass_of($className, MediaProcessing::class)) {
+            $mediaClassObj = new $className();
+            $mediaClassObj->processing($this->db, null, $options, $files, $noOutput, $field,
+                $contextName, $keyField, $keyValue, $dataSource, $dbSpec, $debug, $customFileName);
+            if ($field[0] == "_im_csv_upload") {    // CSV File uploading
+                if (isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
+                    $this->dbresult = $this->db->outputOfProcessing['dbresult'];
+                }
+            }
+        } else {
+            $this->db->logger->setErrorMessage("[INTER-Mediator] The media handling class doesn't implement the MediaProcessing interface.");
+            if (!$noOutput) {
+                $this->db->finishCommunication();
+                $this->db->exportOutputDataAsJSON();
             }
         }
     }
@@ -371,7 +381,7 @@ class FileUploader
             $parsedUrl = parse_url($url);
 
             $util = new IMUtil();
-            if ($util->checkHost($parsedUrl['host'], $webServerName)) {
+            if ($util->checkHost($parsedUrl['host'] ?? '', $webServerName)) {
                 return TRUE;
             }
         }

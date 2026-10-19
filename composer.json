@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "16",
-  "time": "2026-06-05",
+  "time": "2026-10-12",
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
@@ -20,7 +20,7 @@
     "ext-fileinfo": "*",
     "ext-bcmath": "*",
     "inter-mediator/fmdataapi": ">=37",
-    "tecnickcom/tcpdf": "~7",
+    "tecnickcom/tc-lib-pdf": "^8",
     "aws/aws-sdk-php": "~3",
     "simplesamlphp/simplesamlphp": "2.3.11",
     "simplesamlphp/saml2": "4.19.2",

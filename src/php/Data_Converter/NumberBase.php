@@ -16,11 +16,12 @@
 namespace INTERMediator\Data_Converter;
 
 use INTERMediator\Locale\IMLocale;
+use NumberFormatter;
 
 /**
  *
  */
-class NumberBase
+class NumberBase implements DataConverter
 {
     /** @var string
      */
@@ -48,10 +49,10 @@ class NumberBase
         IMLocale::setLocale(LC_ALL);
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
-        $this->formatter = new \NumberFormatter($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
-        $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
-        $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
-        $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
+        $this->formatter = new NumberFormatter($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
+        $this->decimalMark = strval($this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/));
+        $this->thSepMark = strval($this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/));
+        $this->currencyMark = strval($this->formatter->getSymbol(8 /*NumberFormatter::CURRENCY_SYMBOL*/));
     }
 
     /** @param string $str
@@ -60,12 +61,24 @@ class NumberBase
     public function converterFromUserToDB(string $str): ?string
     {
         $str = mb_convert_kana($str, "a");
-        $comp = explode($this->decimalMark, $str);
+        $comp = explode(strlen($this->decimalMark) > 0 ? $this->decimalMark : '.', $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
             return (string)(floatval("{$intPart}.{$comp[1]}"));
         } else {
             return (string)$intPart;
         }
+    }
+
+    /**
+     * @param string|null $str
+     * @return string
+     */
+    function converterFromDBtoUser(?string $str): string
+    {
+        if (is_null($str)) {
+            return '';
+        }
+        return $str;
     }
 }

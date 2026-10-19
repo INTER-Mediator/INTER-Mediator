@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use INTERMediator\DB\Logger;
+
 /**
  * Params is a utility class for handling global configuration parameters for INTER-Mediator.
  * Provides static methods to read, retrieve, and set parameters from params.php.
@@ -34,29 +36,64 @@ class Params
      */
     private static function readParamsPHPFile(): void
     {
-        if (!self::$vars) {
-            $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-            if (basename($imRootDir) == 'inter-mediator'
-//                && basename(dirname($imRootDir)) == 'inter-mediator'
-                && basename(dirname($imRootDir, 2)) == 'vendor') { // This means IM is installed by Composer.
-                $appRootDir = dirname($imRootDir, 3);
-                if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'params.php')) {
-                    include($appRootDir . DIRECTORY_SEPARATOR . 'params.php');
-                } else if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php')) {
-                    include($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php');
-                }
-            } else if (file_exists(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php')) {
-                include(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php');
-            } else if (file_exists($imRootDir . 'params.php')) {
-                include($imRootDir . 'params.php');
-            }
-            // The recovering of misspelling a global variable
-            global $follwingTimezones;
-            if (isset($follwingTimezones)) {
-                $followingTimezones = $follwingTimezones;
-            }
-            self::$vars = get_defined_vars();
+        if (!is_null(self::$vars)) {
+            return;
         }
+        $paramsFile = self::findParamsPHPFile();
+        $vars = is_null($paramsFile) ? [] : self::includeParamsPHPFile($paramsFile);
+        // The recovering of misspelling a variable
+        if (isset($vars['follwingTimezones']) && !isset($vars['followingTimezones'])) {
+            $vars['followingTimezones'] = $vars['follwingTimezones'];
+        }
+        self::$vars = $vars;
+        if (is_null($paramsFile)) {
+            Logger::getInstance()->setWarningMessage("The params.php file was not found. Default values are used for all parameters.");
+        }
+    }
+
+    /** Returns the path of the params.php file, or null if it isn't found.
+     * @return string|null
+     */
+    private static function findParamsPHPFile(): ?string
+    {
+        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+        $candidates = [];
+        if (basename($imRootDir) == 'inter-mediator'
+            && basename(dirname($imRootDir, 2)) == 'vendor') { // This means IM is installed by Composer.
+            $appRootDir = dirname($imRootDir, 3);
+            $candidates[] = $appRootDir . DIRECTORY_SEPARATOR . 'params.php';
+            $candidates[] = $appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php';
+        } else {
+            $candidates[] = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
+            $candidates[] = $imRootDir . 'params.php';
+        }
+        foreach ($candidates as $candidate) {
+            if (file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+        return null;
+    }
+
+    /** Includes the params.php file in an isolated scope and returns only the variables it defines.
+     * @param string $paramsFile
+     * @return array<array-key, mixed>
+     */
+    private static function includeParamsPHPFile(string $paramsFile): array
+    {
+        return (static function (string $__imParamsFile): array {
+            include $__imParamsFile;
+            unset($__imParamsFile);
+            return get_defined_vars();
+        })($paramsFile);
+    }
+
+    /** Clears the loaded parameters so that params.php is read again on the next access.
+     * @return void
+     */
+    public static function reset(): void
+    {
+        self::$vars = null;
     }
 
     /**
@@ -69,28 +106,19 @@ class Params
     public static function getParameterValue(string|array $vName, mixed $defValue): mixed
     {
         /*
-         * The IDE try to let us modify the code "isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue" to
-         * "self::$vars[$vName] ?? $defValue", but you don't modify like that. The variable in the params.php file
-         * should be the boolean value false. In that case (i.e., the self::$vars[$vName] is false), the former code
-         * returns self::$vars[$vName], but the later one does $defValue. We expect that the false value returns false.
-         * So please don't modify with the ?? Operator.
+         * The ?? operator returns the default value only if the parameter is not defined or null.
+         * The parameter with the false value returns false.
          */
         self::readParamsPHPFile();
         if (!is_array($vName) && !is_array($defValue)) {
             return self::$vars[$vName] ?? $defValue;
-        } else if (is_array($vName) && is_array($defValue) && count($vName) == count($defValue)) {
-            $arValue = [];
-            $count = 0;
-            foreach ($vName as $var) {
-                $arValue[] = self::$vars[$var] ?? $defValue[$count];
-                $count += 1;
-            }
-            return $arValue;
         } else if (is_array($vName)) {
+            $defValues = is_array($defValue) ? array_values($defValue) : [$defValue];
+            $lastIndex = count($defValues) - 1;
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = self::$vars[$var] ?? (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
+                $arValue[] = self::$vars[$var] ?? ($lastIndex < 0 ? null : $defValues[min($count, $lastIndex)]);
                 $count += 1;
             }
             return $arValue;
@@ -100,7 +128,8 @@ class Params
     }
 
     /** Returns all loaded parameter variables as an array.
-     * @return array<string, number|string|bool|null>|null Array of all variables, or null if not loaded.
+     * Note: The returned array contains secret values like database passwords. Don't send it to clients.
+     * @return array<array-key, mixed>|null Array of all variables, or null if not loaded.
      */
     public static function getVars(): ?array
     {

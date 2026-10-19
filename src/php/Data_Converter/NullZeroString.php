@@ -18,7 +18,7 @@ namespace INTERMediator\Data_Converter;
 /**
  *
  */
-class NullZeroString
+class NullZeroString implements DataConverter
 {
     /**
      */
