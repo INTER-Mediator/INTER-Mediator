@@ -315,7 +315,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function exportOutputDataAsJSON(): void
     {
-        $jsonOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
+        $jsonOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_INVALID_UTF8_IGNORE;
         $jsonString = json_encode($this->outputOfProcessing, $jsonOptions);
         if ($jsonString === false) {
             echo json_encode(['errorMessages' => ['json_encode function failed by: ' . json_last_error_msg()]]);
