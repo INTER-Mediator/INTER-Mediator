@@ -1,7 +1,7 @@
 const EditingPage = require("../../pageobjects/EditingPage/editing_page_mysql.page");
 module.exports = (EditingPage) => {
   describe("Integer Field", function () {
-    const waiting = 500
+    const waiting = 1500
     /*
     Summary: Text field with non-null integer field
     Condition: The editing test page with new created record opens.

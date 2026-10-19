@@ -19,6 +19,7 @@ use DateInterval;
 use Datetime;
 use Exception;
 use INTERMediator\DB\FileMaker_DataAPI;
+use INTERMediator\FileMakerServer\RESTAPI\Supporting\FileMakerRelation;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -104,8 +105,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $className = is_object($result) ? get_class($result) : "NULL";
-        if ($className === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+//        $className = is_object($result) ? get_class($result) : "NULL";
+        if ($result instanceof FileMakerRelation) {
             foreach ($result as $record) {
                 $recordId = $record->getRecordId();
                 $this->fmdb->setupFMDataAPIforAuth($hashTable);
@@ -116,9 +117,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                     'user_id' => $uid,
                 ));
                 $result = $this->fmdb->fmDataAuth->{$hashTable}->getRecord($recordId);
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                if (!($result instanceof FileMakerRelation)) {
                     $this->logger->setDebugMessage(
-                        $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                        $this->fmdb->stringWithoutCredential((is_object($result) ? get_class($result) : "NULL") . ': ' .
                             $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                     return;
                 }
@@ -285,7 +286,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->fmdb->setupFMDataAPIforAuth($hashTable);
         $conditions = array(
             array('expired' => '...' . date('m/d/Y H:i:s',
-                    $timeValue - $this->dbSettings->getExpiringSeconds()),),
+                    intval($timeValue - $this->dbSettings->getExpiringSeconds())),),
             array('clienthost' => '==', 'omit' => 'true'),
         );
         $result = null; // For PHPStan level 1
@@ -294,11 +295,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAuth->getSessionToken();
             }
-            $className = is_object($result) ? get_class($result) : "NULL";
-            if ($className !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            if (!($result instanceof FileMakerRelation)) {
                 $this->logger->setDebugMessage(
-                    $this->fmdb->stringWithoutCredential(
-                        $className . ': ' . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                    $this->fmdb->stringWithoutCredential((is_object($result) ? get_class($result) : "NULL") . ': '
+                        . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
                 return false;
             }
             $this->logger->setDebugMessage(
@@ -317,8 +317,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             }
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
-                    $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
+                $this->fmdb->stringWithoutCredential((is_object($result) ? get_class($result) : "NULL") . ': '
+                    . $this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
             return false;
         }
 
@@ -804,9 +804,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             $hashValue = $record->hash;
             $expiredDT = $record->expired;
 
-            $expired = strptime($expiredDT, "%m/%d/%Y %H:%M:%S");
-            $expiredValue = mktime($expired['tm_hour'], $expired['tm_min'], $expired['tm_sec'],
-                $expired['tm_mon'] + 1, $expired['tm_mday'], $expired['tm_year'] + 1900);
+//            $expired = strptime($expiredDT, "%m/%d/%Y %H:%M:%S");
+            $expired = date_parse_from_format("m/d/Y H:i:s", $expiredDT);
+            $expiredValue = mktime(intval($expired['hour']), intval($expired['minute']), intval($expired['second']),
+                intval($expired['month']), intval($expired['day']), intval($expired['year']));
             $currentDT = new DateTime();
             $timeValue = $currentDT->format("U");
             if ($timeValue > $expiredValue + Params::getParameterValue('limitPwChangeSecond', 3600)) {

@@ -18,7 +18,7 @@ namespace INTERMediator\Data_Converter;
 /**
  *
  */
-class AppendSuffix
+class AppendSuffix implements DataConverter
 {
     /** @var string
      */

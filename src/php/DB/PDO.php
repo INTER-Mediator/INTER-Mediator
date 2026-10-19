@@ -20,8 +20,9 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use INTERMediator\IMUtil;
-use PDOException;
 use INTERMediator\Params;
+use PDOException;
+use PDOStatement;
 
 /**
  * PDO database driver for INTER-Mediator.
@@ -74,9 +75,9 @@ class PDO extends DBClass
     private ?string $softDeleteField = null;
 
     /** Value used for soft deletion.
-     * @var string|null
+     * @var string|int|null
      */
-    private ?string $softDeleteValue = null;
+    private string|int|null $softDeleteValue = null;
 
     /** Whether setDataToUpdatedRecord was used.
      * @var bool
@@ -109,7 +110,7 @@ class PDO extends DBClass
     private string $defaultTimezone;
 
     /** Sort keys for the current context.
-     * @var array<string, string>
+     * @var array<string>
      */
     private array $sortKeys = [];
 
@@ -188,10 +189,10 @@ class PDO extends DBClass
 
     /** Activates soft deletion.
      * @param string $field
-     * @param string $value
+     * @param string|int|null $value
      * @return void
      */
-    public function softDeleteActivate(string $field, string|int $value): void
+    public function softDeleteActivate(string $field, string|int|null $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
@@ -217,28 +218,27 @@ class PDO extends DBClass
 
     /** Handles PDO error.
      * @param string $sql
-     * @param \PDOStatement|bool|null $result
-     * @return bool
+     * @return void
      */
-    private function errorHandlingPDO(string $sql, $result): bool
+    private function errorHandlingPDO(string $sql): void
     {
         $errorCode = $this->link->errorCode();
         $errorClass = strlen($errorCode) < 2 ? "00" : substr($errorCode, 0, 2);
         if ($errorClass !== "00") {
             if ($errorClass === "01") {
                 $this->logger->setWarningMessage(var_export($this->link->errorInfo(), true));
-            } else {
-                $this->errorMessageStore('[ERROR] SQL:' . $sql);
-                return false;
+//            } else {
+//                $this->errorMessageStore('[ERROR] SQL:' . $sql);
+//                return false;
             }
         } else {
             $this->handler->specialErrorHandling($sql);
         }
-        if ($result === false || is_null($result)) {
-            $this->errorMessageStore('[ERROR] SQL:' . $sql);
-            return false;
-        }
-        return true;
+//        if ($result === false || is_null($result)) {
+//            $this->errorMessageStore('[ERROR] SQL:' . $sql);
+//            return false;
+//        }
+//        return true;
     }
 
     /** Sets up the database connection.
@@ -327,7 +327,9 @@ class PDO extends DBClass
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
-                        if (!$this->errorHandlingPDO($sql, $result)) {
+                        $this->errorHandlingPDO($sql);
+                        if (!$result) {
+                            $this->errorMessageStore('[ERROR] SQL:' . $sql);
                             return null;
                         }
                     }
@@ -369,10 +371,12 @@ class PDO extends DBClass
             $sql = "{$this->handler->sqlSelectCommand()}count(*) FROM {$countingName} {$queryClause} {$groupBy}";
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
-            if (!$this->errorHandlingPDO($sql, $result)) {
+            $this->errorHandlingPDO($sql);
+            if (!$result) {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }
-            $this->mainTableCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+            $this->mainTableCount = $isAggregate ? $result->rowCount() : intval($result->fetchColumn(0));
 
             if ($queryClause === '') {
                 $this->mainTableTotalCount = $this->mainTableCount;
@@ -381,10 +385,12 @@ class PDO extends DBClass
                 $sql = "{$this->handler->sqlSELECTCommand()}count(*) FROM {$countingName} {$groupBy}";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
-                if (!$this->errorHandlingPDO($sql, $result)) {
+                $this->errorHandlingPDO($sql);
+                if (!$result) {
+                    $this->errorMessageStore('[ERROR] SQL:' . $sql);
                     return null;
                 }
-                $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+                $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : intval($result->fetchColumn(0));
             }
         }
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
@@ -395,7 +401,9 @@ class PDO extends DBClass
             "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, intval($offset))}");
 
         $result = $this->link->query($sql);
-        if (!$this->errorHandlingPDO($sql, $result)) {
+        $this->errorHandlingPDO($sql);
+        if (!$result) {
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
             return null;
         }
 
@@ -441,7 +449,9 @@ class PDO extends DBClass
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
-                        if (!$this->errorHandlingPDO($sql, $result)) {
+                        $this->errorHandlingPDO($sql);
+                        if (!$result) {
+                            $this->errorMessageStore('[ERROR] SQL:' . $sql);
                             return null;
                         }
                     }
@@ -527,7 +537,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return false;
                     }
                 }
@@ -598,13 +610,16 @@ class PDO extends DBClass
             $bindType = is_bool($param) ? \PDO::PARAM_BOOL : $bindType;
             $bindType = is_null($param) ? \PDO::PARAM_NULL : $bindType;
             $bindResult = $prepSQL->bindValue($count, $param, $bindType);
-            if (!$this->errorHandlingPDO($sql, $bindResult)) {
+            if (!$bindResult) {
+                $this->errorMessageStore("[ERROR] bindValue({$count}, ---, {$bindType})");
                 return false;
             }
             $count += 1;
         }
         $result = $prepSQL->execute();
-        if (!$this->errorHandlingPDO($sql, $result)) {
+        $this->errorHandlingPDO($sql);
+        if ($result === false) {
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
             return false;
         }
 
@@ -613,7 +628,9 @@ class PDO extends DBClass
             $sql = $this->handler->sqlSELECTCommand() . " * FROM {$targetTable} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
-            if (!$this->errorHandlingPDO($sql, $result)) {
+            $this->errorHandlingPDO($sql);
+            if (!$result) {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return false;
             }
             $this->notifyHandler->setQueriedPrimaryKeys(array());
@@ -635,7 +652,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return false;
                     }
                 }
@@ -683,7 +702,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return null;
                     }
                 }
@@ -741,19 +762,23 @@ class PDO extends DBClass
             $lastKeyValue = $keyValue;
             $this->logger->setDebugMessage($sql);
             $result = $this->link->exec($sql);
-            if (!$this->errorHandlingPDO($sql, $result)) {
+            $this->errorHandlingPDO($sql);
+            if ($result === false) {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }
         } else {
             $sql = $this->handler->sqlINSERTCommand($tableName, $setClause);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->exec($sql);
-            if (!$this->errorHandlingPDO($sql, $result)) {
+            $this->errorHandlingPDO($sql);
+            if ($result === false) {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }
             $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
             $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
-         }
+        }
         if (/* $isReplace && */ !$lastKeyValue) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid it to set non-zero value.
@@ -767,7 +792,9 @@ class PDO extends DBClass
                 . " WHERE " . $keyField . " = " . $this->link->quote($lastKeyValue);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
-            if (!$this->errorHandlingPDO($sql, $result)) {
+            $this->errorHandlingPDO($sql);
+            if (!$result) {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }
             $sqlResult = $this->getResultRelation($result, $timeFields);
@@ -782,7 +809,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return null;
                     }
                 }
@@ -812,7 +841,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return false;
                     }
                 }
@@ -826,7 +857,9 @@ class PDO extends DBClass
         $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
-        if (!$this->errorHandlingPDO($sql, $result)) {
+        $this->errorHandlingPDO($sql);
+        if (!$result) {
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
             return false;
         }
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
@@ -837,7 +870,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return false;
                     }
                 }
@@ -872,7 +907,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return null;
                     }
                 }
@@ -920,7 +957,9 @@ class PDO extends DBClass
                 . " WHERE " . $tableInfo['key'] . "=" . $this->link->quote($lastKeyValue);
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
-            if (!$this->errorHandlingPDO($sql, $result)) {
+            $this->errorHandlingPDO($sql);
+            if (!$result) {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
                 return null;
             }
             $sqlResult = $this->getResultRelation($result, $timeFields);
@@ -932,7 +971,9 @@ class PDO extends DBClass
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$this->errorHandlingPDO($sql, $result)) {
+                    $this->errorHandlingPDO($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('[ERROR] SQL:' . $sql);
                         return null;
                     }
                 }
@@ -1115,9 +1156,11 @@ class PDO extends DBClass
     {
         $sqlResult = array();
         $isFirstRow = true;
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            $sqlResult[] = $this->getResultRecord($row, $isFirstRow, $timeFields);
-            $isFirstRow = false;
+        if ($result !== false && !is_null($result)) {
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $sqlResult[] = $this->getResultRecord($row, $isFirstRow, $timeFields);
+                $isFirstRow = false;
+            }
         }
         return $sqlResult;
     }

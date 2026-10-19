@@ -95,161 +95,161 @@ abstract class DB_FMS_Test_Common extends TestCase
     #[RunInSeparateProcess]
     public function testExecuteScriptsforLoading(): void
     {
-        if ((float)phpversion() >= 5.3) {
-            $layoutName = 'person_layout';
-            $this->dbProxySetupForAccess($layoutName, 1);
-            $this->db_proxy->readFromDB();
-            $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
-            $method = null; // For PHPStan level 2
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
-                $method = $reflectionClass->getMethod('executeScriptsforLoading');
-            } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $method = $reflectionClass->getMethod('executeScripts');
-            }
-            $method->setAccessible(true);
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'post',
-                )
-            );
-            $expected = '';
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'definition' => 'testscript',
-                )
-            );
-            $expected = '';
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'post',
-                    'definition' => 'testscript',
-                )
-            );
-            $expected = '&-script=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script' => 'testscript');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'read',
-                    'situation' => 'post',
-                    'definition' => 'test&script',
-                    'parameter' => '',
-                )
-            );
-            $expected = '&-script=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script' => 'testscript');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'post',
-                    'definition' => 'test&script',
-                    'parameter' => '1',
-                )
-            );
-            $expected = '&-script=testscript&-script.param=1';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script' => 'testscript', 'script.param' => '1');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'pre',
-                    'definition' => 'testscript',
-                )
-            );
-            $expected = '&-script.prefind=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script.prerequest' => 'testscript');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'read',
-                    'situation' => 'pre',
-                    'definition' => 'testscript',
-                    'parameter' => '',
-                )
-            );
-            $expected = '&-script.prefind=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script.prerequest' => 'testscript');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'pre',
-                    'definition' => 'testscript',
-                    'parameter' => '1&',
-                )
-            );
-            $expected = '&-script.prefind=testscript&-script.prefind.param=1';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script.prerequest' => 'testscript', 'script.prerequest.param' => '1');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'presort',
-                    'definition' => 'testscript',
-                )
-            );
-            $expected = '&-script.presort=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script.presort' => 'testscript');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'read',
-                    'situation' => 'presort',
-                    'definition' => 'testscript',
-                    'parameter' => '',
-                )
-            );
-            $expected = '&-script.presort=testscript';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script.presort' => 'testscript');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-
-            $scriptContext = array('script' =>
-                array(
-                    'db-operation' => 'load',
-                    'situation' => 'presort',
-                    'definition' => 'testscript',
-                    'parameter' => '1',
-                )
-            );
-            $expected = '&-script.presort=testscript&-script.presort.param=1';
-            if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $expected = array('script.presort' => 'testscript', 'script.presort.param' => '1');
-            }
-            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
-            $this->db_proxy->closeDBOperation();
+        $layoutName = 'person_layout';
+        $this->dbProxySetupForAccess($layoutName, 1);
+        $this->db_proxy->readFromDB();
+        $className = get_class($this->db_proxy->dbClass);
+        $this->assertNotFalse($className, 'The dbClass should have a class name.');
+        $reflectionClass = new ReflectionClass($className);
+        $method = null; // For PHPStan level 2
+        if ($className === 'INTERMediator\DB\FileMaker_FX') {
+            $method = $reflectionClass->getMethod('executeScriptsforLoading');
+        } else if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $method = $reflectionClass->getMethod('executeScripts');
         }
+        $method->setAccessible(true);
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'post',
+            )
+        );
+        $expected = '';
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'definition' => 'testscript',
+            )
+        );
+        $expected = '';
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'post',
+                'definition' => 'testscript',
+            )
+        );
+        $expected = '&-script=testscript';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script' => 'testscript');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'read',
+                'situation' => 'post',
+                'definition' => 'test&script',
+                'parameter' => '',
+            )
+        );
+        $expected = '&-script=testscript';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script' => 'testscript');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'post',
+                'definition' => 'test&script',
+                'parameter' => '1',
+            )
+        );
+        $expected = '&-script=testscript&-script.param=1';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script' => 'testscript', 'script.param' => '1');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'pre',
+                'definition' => 'testscript',
+            )
+        );
+        $expected = '&-script.prefind=testscript';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script.prerequest' => 'testscript');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'read',
+                'situation' => 'pre',
+                'definition' => 'testscript',
+                'parameter' => '',
+            )
+        );
+        $expected = '&-script.prefind=testscript';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script.prerequest' => 'testscript');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'pre',
+                'definition' => 'testscript',
+                'parameter' => '1&',
+            )
+        );
+        $expected = '&-script.prefind=testscript&-script.prefind.param=1';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script.prerequest' => 'testscript', 'script.prerequest.param' => '1');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'presort',
+                'definition' => 'testscript',
+            )
+        );
+        $expected = '&-script.presort=testscript';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script.presort' => 'testscript');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'read',
+                'situation' => 'presort',
+                'definition' => 'testscript',
+                'parameter' => '',
+            )
+        );
+        $expected = '&-script.presort=testscript';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script.presort' => 'testscript');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+        $scriptContext = array('script' =>
+            array(
+                'db-operation' => 'load',
+                'situation' => 'presort',
+                'definition' => 'testscript',
+                'parameter' => '1',
+            )
+        );
+        $expected = '&-script.presort=testscript&-script.presort.param=1';
+        if ($className === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $expected = array('script.presort' => 'testscript', 'script.presort.param' => '1');
+        }
+        $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -395,23 +395,24 @@ abstract class DB_FMS_Test_Common extends TestCase
     #[RunInSeparateProcess]
     public function testAdjustSortDirection(): void
     {
-        if ((float)phpversion() >= 5.3) {
-            $layoutName = 'person_layout';
+        $layoutName = 'person_layout';
 
-            $this->dbProxySetupForAccess($layoutName, 1);
-            $this->db_proxy->readFromDB();
+        $this->dbProxySetupForAccess($layoutName, 1);
+        $this->db_proxy->readFromDB();
 
-            $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
-            $method = $reflectionClass->getMethod('_adjustSortDirection');
-            $method->setAccessible(true);
+        $className = get_class($this->db_proxy->dbClass);
+        $this->assertNotFalse($className, 'The dbClass should have a class name.');
 
-            $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('ASC')));
-            $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('asc')));
-            $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('DESC')));
-            $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('desc')));
-            $this->assertEquals('default', $method->invokeArgs($this->db_proxy->dbClass, array('default')));
-            $this->db_proxy->closeDBOperation();
-        }
+        $reflectionClass = new ReflectionClass($className);
+        $method = $reflectionClass->getMethod('_adjustSortDirection');
+        $method->setAccessible(true);
+
+        $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('ASC')));
+        $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('asc')));
+        $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('DESC')));
+        $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('desc')));
+        $this->assertEquals('default', $method->invokeArgs($this->db_proxy->dbClass, array('default')));
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -1056,6 +1057,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $className = get_class($this->db_proxy->dbClass->specHandler);
+        $this->assertNotFalse($className, 'The dbClass should have a class name.');
         if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
             $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
         } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {

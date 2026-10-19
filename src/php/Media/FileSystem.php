@@ -28,7 +28,7 @@ use INTERMediator\Params;
  * FileSystem class handles file uploads, downloads, and CSV import operations for files stored on the server filesystem.
  * Implements UploadingSupport and DownloadingSupport interfaces for media handling.
  */
-class FileSystem extends UploadingSupport implements DownloadingSupport
+class FileSystem extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     private ?string $customFileName = null;
 

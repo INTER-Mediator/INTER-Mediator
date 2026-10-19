@@ -15,18 +15,20 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\Data_Converter\DataConverter;
+
 /**
  * Handles field data formatting using data converters for database operations in INTER-Mediator.
  */
 class Formatters
 {
     /** Array of formatter objects for each field.
-     * @var array<string, object>
+     * @var array<string, DataConverter>
      */
     private array $formatter = [];
 
     /** Set formatter objects for fields.
-     * @param array<array<string, number|string|bool|null>>|null $fmt Array of formatter definitions.
+     * @param array<int, array<string, string|bool>>|null $fmt Array of formatter definitions.
      * @return void
      */
     public function setFormatter($fmt): void
@@ -34,10 +36,14 @@ class Formatters
         if (is_array($fmt)) {
             $this->formatter = array();
             foreach ($fmt as $oneItem) {
-                if (!isset($this->formatter[$oneItem['field']])) {
+                if (!isset($this->formatter[strval($oneItem['field'])])) {
                     $cvClassName = "INTERMediator\\Data_Converter\\" . $oneItem['converter-class'];
-                    $this->formatter[$oneItem['field']]
-                        = new $cvClassName($oneItem['parameter'] ?? '');
+                    if (class_exists($cvClassName) && is_subclass_of($cvClassName, \INTERMediator\Data_Converter\DataConverter::class)) {
+                        $this->formatter[strval($oneItem['field'])]
+                            = new $cvClassName($oneItem['parameter'] ?? '');
+                    } else {
+                        Logger::getInstance()->setErrorMessage("The converter class '{$cvClassName}' wasn't instantiated. It requires a subclass of the DataConverter interface.");
+                    }
                 }
             }
         }

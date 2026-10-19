@@ -27,7 +27,7 @@ use INTERMediator\Params;
  * AWSS3 class handles file upload and download operations with Amazon S3.
  * Implements UploadingSupport and DownloadingSupport interfaces for integration with INTER-Mediator.
  */
-class AWSS3 extends UploadingSupport implements DownloadingSupport
+class AWSS3 extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     /** AWS region for S3 operations.
      * @var string|null
@@ -153,7 +153,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
                 . (!is_null($this->customFileName)
                     ? ($this->customFileName . ($i > 0 ? "_" . $i : ""))
                     : ($filePathInfo['filename'] . '_' . $rand4Digits))
-                . '.' . $filePathInfo['extension'];
+                . '.' . ($filePathInfo['extension'] ?? '');
             $clientArgs = ['version' => 'latest', 'region' => $this->accessRegion];
             if ($this->s3AccessProfile) {
                 $clientArgs['profile'] = $this->s3AccessProfile;
@@ -161,12 +161,17 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
                 $clientArgs['credentials'] = new Credentials($this->s3AccessKey, $this->s3AccessSecret);
             }
 
+            $aclDescribed = strval($this->applyingACL);
+            $acceptableACLs = ['authenticated-read', 'aws-exec-read', 'bucket-owner-full-control', 'bucket-owner-read', 'private', 'public-read', 'public-read-write'];
+            if (!in_array($aclDescribed, $acceptableACLs)) {
+                $aclDescribed = 'private';
+            }
             $s3 = new S3Client($clientArgs); // Initialize S3 client
             $objectSpec = [
-                'Bucket' => $this->rootBucket,
+                'Bucket' => strval($this->rootBucket),
                 'Key' => $objectKey,
-                'Body' => file_get_contents($fileInfoTemp),
-                'ACL' => $this->applyingACL
+                'Body' => strval(file_get_contents($fileInfoTemp)),
+                'ACL' => $aclDescribed,
             ];
             try {
                 $result = $s3->putObject($objectSpec); // Store to S3

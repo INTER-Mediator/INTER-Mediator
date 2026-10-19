@@ -144,26 +144,26 @@ trait DB_PDO_SQLSupport
                     }
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
                     $condition = $this->normalizedCondition($condition);
-                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                    if (!$this->specHandler->isPossibleOperator(strval($condition['operator']))) {
                         throw new Exception("Invalid Operator.: {$condition['operator']}");
                     }
                     if (isset($condition['value'])) {
                         $isNumeric = in_array($condition['field'], $numericFields);
-                        $isINOperator = strtolower(trim($condition['operator'])) === "in";
-                        if (preg_match('/^@(.*)@$/', $condition['value'], $output)) {
+                        $isINOperator = strtolower(trim(strval($condition['operator']))) === "in";
+                        if (preg_match('/^@(.*)@$/', strval($condition['value']), $output)) {
                             $escapedValue = $this->handler->quotedEntityName($output[1]);
                             $isNumeric = false;
                         } else {
-                            $escapedValue = $this->link->quote($condition['value']);
+                            $escapedValue = $this->link->quote(strval($condition['value']));
                         }
                         if ($isINOperator) {
-                            $escapedValue = $this->arrayToItemizedString($condition['value'], $isNumeric);
+                            $escapedValue = $this->arrayToItemizedString(strval($condition['value']), $isNumeric);
                         }
                         if ($isNumeric) {
                             if ($isINOperator) {
                                 $queryClauseArray[$chunkCount][]
                                     = "{$escapedField} {$condition['operator']} {$escapedValue}";
-                            } else if (strtolower(trim($condition['operator'])) === "like") {
+                            } else if (strtolower(trim(strval($condition['operator']))) === "like") {
                                 $queryClauseArray[$chunkCount][]
                                     = $this->handler->getSQLNumericToLikeOpe($escapedField, $escapedValue);
                             } else {
@@ -292,7 +292,7 @@ trait DB_PDO_SQLSupport
         }
         if (!is_null($this->softDeleteField) && !is_null($this->softDeleteValue)) {
             $dfEsc = $this->handler->quotedEntityName($this->softDeleteField);
-            $dvEsc = $this->link->quote($this->softDeleteValue);
+            $dvEsc = $this->link->quote(strval($this->softDeleteValue));
             if (strlen($queryClause) > 0) {
                 $queryClause = "($queryClause) AND ($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
             } else {
@@ -314,7 +314,7 @@ trait DB_PDO_SQLSupport
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
-                $this->sortKeys[] = $condition['field'];
+                $this->sortKeys[] = strval($condition['field']);
                 if (isset($condition['direction'])) {
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
@@ -331,7 +331,7 @@ trait DB_PDO_SQLSupport
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
-                $this->sortKeys[] = $condition['field'];
+                $this->sortKeys[] = strval($condition['field']);
                 $direction = $condition['direction'] ?? "";
                 $sortClause[] = "{$escapedField} {$direction}";
             }
@@ -340,12 +340,12 @@ trait DB_PDO_SQLSupport
     }
 
     /** Sort keys for the current context.
-     * @var array<string, string>
+     * @var array<string>
      */
     private array $sortKeys = [];
 
     /** Get the sort keys.
-     * @return array<string, string> The sort keys.
+     * @return array<string> The sort keys.
      */
     public function getSortKeys(): array
     {
@@ -386,7 +386,7 @@ trait DB_PDO_SQLSupport
                 'operator' => 'LIKE',
                 'value' => "%{$condition['value']}%",
             );
-        } else if ($this->specHandler->isOperatorWithoutValue($condition['operator'])) {
+        } else if ($this->specHandler->isOperatorWithoutValue(strval($condition['operator']))) {
             return array(
                 'field' => $condition['field'],
                 'operator' => $condition['operator'],

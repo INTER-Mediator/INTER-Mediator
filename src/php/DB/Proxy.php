@@ -18,6 +18,19 @@ namespace INTERMediator\DB;
 use Exception;
 use DateTime;
 use DateInterval;
+use INTERMediator\DB\Extending\AfterCopy;
+use INTERMediator\DB\Extending\AfterCreate;
+use INTERMediator\DB\Extending\AfterDelete;
+use INTERMediator\DB\Extending\AfterImport;
+use INTERMediator\DB\Extending\AfterRead;
+use INTERMediator\DB\Extending\AfterRead_WithNavigation;
+use INTERMediator\DB\Extending\AfterUpdate;
+use INTERMediator\DB\Extending\BeforeCopy;
+use INTERMediator\DB\Extending\BeforeCreate;
+use INTERMediator\DB\Extending\BeforeDelete;
+use INTERMediator\DB\Extending\BeforeImport;
+use INTERMediator\DB\Extending\BeforeRead;
+use INTERMediator\DB\Extending\BeforeUpdate;
 use INTERMediator\DB\Support\Proxy_Auth;
 use INTERMediator\DB\Support\ActionHandlers\ActionHandler;
 use INTERMediator\DB\Support\StopOperationException;
@@ -292,10 +305,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             } else {
                 $this->outputOfProcessing[$key][] = $value;
             }
-        } else if (is_string($this->outputOfProcessing[$key])) {
-            $this->outputOfProcessing[$key] .= $value;
         } else {
-            $this->outputOfProcessing[$key] = $this->outputOfProcessing[$key] . $value;
+            $this->outputOfProcessing[$key] .= is_array($value) ? implode(' ', $value) : $value;
         }
     }
 
@@ -304,10 +315,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function exportOutputDataAsJSON(): void
     {
-        $jsonOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
-        if (IMUtil::phpVersion() >= 7.2) {
-            $jsonOptions |= JSON_INVALID_UTF8_IGNORE;
-        }
+        $jsonOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_INVALID_UTF8_IGNORE;
         $jsonString = json_encode($this->outputOfProcessing, $jsonOptions);
         if ($jsonString === false) {
             echo json_encode(['errorMessages' => ['json_encode function failed by: ' . json_last_error_msg()]]);
@@ -505,7 +513,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $this->clearUseSetDataToUpdatedRecord();
-                $result = $this->userExpanded->doAfterUpdateToDB($result);
+                if (is_subclass_of($this->userExpanded, AfterUpdate::class)) {
+                    $result = $this->userExpanded->doAfterUpdateToDB($result);
+                }
                 if (!$this->getUseSetDataToUpdatedRecord()) {
                     $this->setUpdatedRecord($result);
                 }
@@ -589,7 +599,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $this->clearUseSetDataToUpdatedRecord();
-                $result = $this->userExpanded->doAfterCreateToDB($result);
+                if (is_subclass_of($this->userExpanded, AfterCreate::class)) {
+                    $result = $this->userExpanded->doAfterCreateToDB($result);
+                }
                 if (!$this->getUseSetDataToUpdatedRecord()) {
                     $this->setUpdatedRecord($result);
                 }
@@ -838,6 +850,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         /* Setup Database Class's Object */
         $isDBClassNull = is_null($this->dbClass);
         if ($isDBClassNull) {
+            if (!is_subclass_of($dbClassName, DBClass::class)) {
+                $this->logger->setErrorMessage("The class '{$dbClassName}' has to be a subclass of DBClass.");
+                return false;
+            }
             $this->dbClass = new $dbClassName();
             if ($this->dbClass == null) {
                 $this->logger->setErrorMessage("The database class [{
@@ -847,7 +863,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated . ", 2);
         }
-
         $this->dbClass->setUpSharedObjects($this);
         if ($isDBClassNull) {
             if ($this->activateGenerator) { // In case of Generator activated
@@ -875,6 +890,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             $this->dbClass->setupHandlers();
         }
+
         if (!Params::getParameterValue('prohibitDebugMode', false) && $debug) {
             $this->logger->setDebugMode($debug);
         }
@@ -900,14 +916,32 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         if (isset($context['extending-class'])) {
             $className = $context['extending-class'];
-            try {
-                $this->userExpanded = new $className();
-                $this->logger->setDebugMessage("The class '{$className}' was instantiated . ", 2);
-            } catch (Exception $e) {
-                $this->logger->setErrorMessage("The class '{$className}' wasn't instantiated.");
-            }
-            if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\UseSharedObjects')) {
-                $this->userExpanded->setUpSharedObjects($this);
+            if (class_exists($className)
+                && (is_subclass_of($className, AfterCopy::class)
+                    || is_subclass_of($className, AfterCreate::class)
+                    || is_subclass_of($className, AfterDelete::class)
+                    || is_subclass_of($className, AfterImport::class)
+                    || is_subclass_of($className, AfterRead::class)
+                    || is_subclass_of($className, AfterRead_WithNavigation::class)
+                    || is_subclass_of($className, AfterUpdate::class)
+                    || is_subclass_of($className, BeforeCopy::class)
+                    || is_subclass_of($className, BeforeCreate::class)
+                    || is_subclass_of($className, BeforeDelete::class)
+                    || is_subclass_of($className, BeforeImport::class)
+                    || is_subclass_of($className, BeforeRead::class)
+                    || is_subclass_of($className, BeforeUpdate::class)
+                )) {
+                try {
+                    $this->userExpanded = new $className();
+                    $this->logger->setDebugMessage("The class '{$className}' was instantiated . ", 2);
+                } catch (Exception $e) {
+                    $this->logger->setErrorMessage("Error in instantiating the extending class '{$className}'.");
+                }
+                if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\UseSharedObjects')) {
+                    $this->userExpanded->setUpSharedObjects($this);
+                }
+            } else {
+                $this->logger->setErrorMessage("The extending class '{$className}' wasn't instantiated. It requires a subclass of the INTERMediator\\DB\\Extending\\* interface.");
             }
         }
         $this->dbSettings->setPrimaryKeyOnly(isset($this->PostData['pkeyonly']));
@@ -954,8 +988,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (!isset($this->PostData["value_{$i}"])) {
                 break;
             }
-            $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
-            $this->dbSettings->addValue($value);
+            $filteredValue = filter_var($this->PostData["value_{$i}"]);
+            if ($filteredValue !== false) {
+                $this->dbSettings->addValue(IMUtil::removeNull($filteredValue));
+            }
         }
         for ($i = 0; $i < 1000; $i++) {
             if (!isset($this->PostData["assoc{$i}"])) {
@@ -996,10 +1032,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->access = $this->aggregationJudgement($this->access);
 
         $visitorClasName = IMUtil::getActionHandlerClassName($this->access);
-        $this->visitor = new $visitorClasName($this);
-        $this->authenticationAndAuthorization(); // Calling the method in the Support\Proxy_Auth trait.
-        $this->visitor->dataOperation();
-        $this->checkIrrelevantFields($this->access); // Working only for debug mode.
+        if (is_subclass_of($visitorClasName, ActionHandler::class)) {
+            $this->visitor = new $visitorClasName($this);
+            $this->authenticationAndAuthorization(); // Calling the method in the Support\Proxy_Auth trait.
+            $this->visitor->dataOperation();
+            $this->checkIrrelevantFields($this->access); // Working only for debug mode.
+        }
     }
 
     /** Finish communication.
@@ -1426,7 +1464,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Get the sort keys.
-     * @return array<string, string> The sort keys.
+     * @return array<string> The sort keys.
      */
     public function getSortKeys(): array
     {

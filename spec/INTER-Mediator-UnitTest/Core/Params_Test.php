@@ -90,4 +90,30 @@ class Params_Test extends TestCase
         $expected = 'omg1!';
         $this->assertEquals($expected, Params::getParameterValue($vars, $defs), "Params class has to handle with Array parameter.");
     }
+
+    public function testNoInternalVariables(): void
+    {
+        Params::reset();
+        $vars = Params::getVars();
+        $this->assertArrayNotHasKey('imRootDir', $vars);
+        $this->assertArrayNotHasKey('appRootDir', $vars);
+        $this->assertArrayNotHasKey('paramsFile', $vars);
+        $this->assertEquals('password', Params::getParameterValue('dbPassword', 'omg!'));
+    }
+
+    public function testArrayDefaultEdgeCases(): void
+    {
+        $this->assertEquals([null, null], Params::getParameterValue(['notExist1', 'notExist2'], []));
+        $this->assertEquals(['x', 'y', 'y'],
+            Params::getParameterValue(['notExist1', 'notExist2', 'notExist3'], ['a' => 'x', 'b' => 'y']));
+        $this->assertEquals([], Params::getParameterValue('notExist', []));
+    }
+
+    public function testReset(): void
+    {
+        Params::setVar('dbPassword', 'changed');
+        $this->assertEquals('changed', Params::getParameterValue('dbPassword', 'omg!'));
+        Params::reset();
+        $this->assertEquals('password', Params::getParameterValue('dbPassword', 'omg!'));
+    }
 }
