@@ -223,7 +223,7 @@ class TextFile extends DBClass
         $sortClause = array();
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
-                if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                if (!$this->isPossibleOrderSpecifier($condition['direction'] ?? "ASC")) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $sortClause[] = array(
@@ -467,7 +467,7 @@ class TextFile extends DBClass
     }
 
     /** Get the sort keys.
-     * @return array<string, string> The sort keys.
+     * @return array<string> The sort keys.
      */
     public function getSortKeys(): array
     {

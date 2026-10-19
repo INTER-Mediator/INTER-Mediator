@@ -53,7 +53,12 @@ class AuthPasskeyHandler extends ActionHandler
             // Retrieve the challenge data stored on the server
             $clientId = $this->proxy->clientId;
             $hostName = $_SERVER["SERVER_NAME"];
-            [$challenge, $uid] = $this->proxy->dbClass->authHandler->authSupportRetrieveChallenge(null, $clientId, true, "$", false);
+            $challengeInfo = $this->proxy->dbClass->authHandler->authSupportRetrieveChallenge(
+                null, $clientId, true, "$", false);
+            if (!is_array($challengeInfo) || count($challengeInfo) !== 2) {
+                return false;
+            }
+            [$challenge, $uid] = $challengeInfo;
             Logger::getInstance()->setDebugMessage(
                 "[AuthPasskeyHandler] challenge={$challenge}, uid={$uid}, rowId={$rowId}", 2);
 
@@ -73,7 +78,14 @@ class AuthPasskeyHandler extends ActionHandler
             $this->credential = $userInfo['hashedpasswd'];
             $this->username = $userInfo['username'];
             $publicKeyCredentialSource = $this->passKeyDeserializePublicKeyCredentialSource($userInfo['publicKey']);
-            $creationOption = $this->createPublicKeyCredentialRequestOptions(hex2bin($challenge), $clientId);
+            $challengeValue = hex2bin($challenge);
+            if ($challengeValue === false) {
+                Logger::getInstance()->setDebugMessage(
+                    "[AuthPasskeyHandler] invalid challenge value.", 2);
+                return false;
+            }
+            $creationOption = $this->createPublicKeyCredentialRequestOptions($challengeValue, $clientId);
+
             // Varidating the response.
             try {
                 if ($publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {

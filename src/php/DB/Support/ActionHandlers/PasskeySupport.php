@@ -9,10 +9,10 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -68,12 +68,12 @@ trait PasskeySupport
         return $serializer->deserialize($json, PublicKeyCredential::class, 'json');
     }
 
-    protected function passKeyDeserializePublicKeyCredentialSource(string $json): PublicKeyCredentialSource
+    protected function passKeyDeserializePublicKeyCredentialSource(string $json): CredentialRecord
     {
         $attestationStatementSupportManager = AttestationStatementSupportManager::create();
         $attestationStatementSupportManager->add(NoneAttestationStatementSupport::create());
         $factory = new WebauthnSerializerFactory($attestationStatementSupportManager);
         $serializer = $factory->create();
-        return $serializer->deserialize($json, PublicKeyCredentialSource::class, 'json');
+        return $serializer->deserialize($json, CredentialRecord::class, 'json');
     }
 }

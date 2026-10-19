@@ -217,27 +217,27 @@ abstract class ProviderAdapter
     public static function createAdapter(string $provider): ProviderAdapter|null
     {
         $providerName = $provider;
-        if(str_contains($providerName, "_")) {
-            $providerName = substr($providerName, 0, strpos($providerName, "_"));
+        if (str_contains($providerName, "_")) {
+            $providerName = substr($providerName, 0, intval(strpos($providerName, "_")));
         }
         $adapter = null;
         // Switch based on the provider name
         switch (strtolower($providerName)) {
             case "google":
                 // Create an instance of GoogleAdapter
-                $adapter= new GoogleAdapter();
+                $adapter = new GoogleAdapter();
                 break;
             case "facebook":
                 // Create an instance of FacebookAdapter
-                $adapter= new FacebookAdapter();
+                $adapter = new FacebookAdapter();
                 break;
             case "mynumbercard-sandbox":
                 // Create an instance of MyNumberCardAdapter and set it to test mode
-                $adapter= (new MyNumberCardAdapter())->setTestMode();
+                $adapter = (new MyNumberCardAdapter())->setTestMode();
                 break;
             case "mynumbercard":
                 // Create an instance of MyNumberCardAdapter
-                $adapter= new MyNumberCardAdapter();
+                $adapter = new MyNumberCardAdapter();
                 break;
         }
         if (!is_null($adapter)) {
@@ -309,7 +309,7 @@ abstract class ProviderAdapter
         if ($httpCode != 200) {
             throw new Exception("HTTP Error[{$httpCode}]: {$url}\nDescription: {$content}");
         }
-        $response = json_decode($content);
+        $response = json_decode(strval($content));
         if (!$response) {
             throw new Exception("Communication Error: " . var_export($content, true));
         }
@@ -320,11 +320,14 @@ abstract class ProviderAdapter
     }
 
     /** Creates a JSON Web Token (JWT) from a payload.
-     * @param string $payload The JSON payload to sign
+     * @param string|false $payload The JSON payload to sign
      * @return string The signed JWT
      */
-    protected function createJWT(string $payload): string
+    protected function createJWT(string|false $payload): string
     {
+        if ($payload === false) {
+            return "";
+        }
         // Create a new Algorithm Manager
         $algorithmManager = new AlgorithmManager([new RS256()]);
 
@@ -363,7 +366,12 @@ abstract class ProviderAdapter
         $payloadIDToken = json_decode($this->base64url_decode($jWebToken[1]));
 
         // Get the JWK from the JWK set
-        $jwkSet = JWKSet::createFromJson(json_encode($certficate));
+        $certValue = json_encode($certficate);
+        if ($certValue === false) {
+            throw new Exception("Invalid JWK Certificate: Failed to retrieve JWK set from {$this->jwksURL}");
+        } else {
+            $jwkSet = JWKSet::createFromJson($certValue);
+        }
         $key = $jwkSet->get($headerIDToken->kid);
 
         // Verify the signature of the ID token
@@ -469,7 +477,7 @@ abstract class ProviderAdapter
         $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
             "0", substr($key, 0, 64), true, $prefix, true);
         // Split the retrieved challenge into an array
-        if(is_array($challenges)) {
+        if (is_array($challenges)) {
             $challenges = $challenges[0];
         }
         return [$challenges];

@@ -62,10 +62,10 @@ interface DB_Interface_Registering
     public function setQueriedPrimaryKeys(?array $name): void;
 
     /** Adds a primary key to the last queried primary keys.
-     * @param string $name Primary key to add.
+     * @param bool|float|int|string|null $name Primary key to add.
      * @return void
      */
-    public function addQueriedPrimaryKeys(string $name): void;
+    public function addQueriedPrimaryKeys( bool|float|int|string|null $name): void;
 
     /**
      * Registers a new record for a client.

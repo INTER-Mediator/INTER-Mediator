@@ -175,7 +175,7 @@ interface DBClass_Interface
     public function closeDBOperation(): void;
 
     /** Get the sort keys.
-     * @return array<string, string> The sort keys.
+     * @return array<string> The sort keys.
      */
     public function getSortKeys(): array;
 }

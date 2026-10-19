@@ -234,7 +234,7 @@ class OME
     {
         if (strlen($addr) > 1) {
             $lpos = mb_strpos($addr, '<');
-            $rpos = mb_strpos($addr, '>', $lpos);
+            $rpos = mb_strpos($addr, '>', intval($lpos));
             if ($lpos !== false && $rpos !== false) {
                 $name = trim(mb_substr($addr, 0, $lpos)) . trim(mb_substr($addr, $rpos + 1));
                 $addr = trim(mb_substr($addr, $lpos + 1, $rpos - $lpos - 1));
@@ -645,7 +645,7 @@ class OME
                     $cid = "embedded-image-{$counter}";
                     $counter += 1;
                     $email->embedFromPath($path, $cid/*, IMUtil::getMIMEType(pathinfo($path, PATHINFO_EXTENSION))*/);
-                    $bodyString = substr($this->body, 0, $imagePos) . "cid:{$cid}"
+                    $bodyString = substr($this->body, 0, intval($imagePos)) . "cid:{$cid}"
                         . substr($this->body, $imagePos + strlen($targetTerm));
                 }
             } else {

@@ -52,7 +52,7 @@ class GenerateJSCode_Test extends TestCase
     #[PreserveGlobalState(false)]
     function test_generateErrorMessageJS(): void
     {
-        $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
+        $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");' . "\n");
         $this->generater->generateErrorMessageJS('PHP extension "mbstring" is required for running INTER-Mediator.' . "\n");
     }
 
@@ -60,6 +60,7 @@ class GenerateJSCode_Test extends TestCase
      * Test generate Initial JS Code.
      *
      * @return void
+     * @throws Exception
      */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
@@ -76,6 +77,7 @@ class GenerateJSCode_Test extends TestCase
      * Test generate Initial JS Code 2.
      *
      * @return void
+     * @throws Exception
      */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
@@ -92,6 +94,7 @@ class GenerateJSCode_Test extends TestCase
      * Test generate Initial JS Code 3.
      *
      * @return void
+     * @throws Exception
      */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
@@ -128,23 +131,46 @@ class GenerateJSCode_Test extends TestCase
      * Test combine Scripts.
      *
      * @return void
+     * @throws ReflectionException
      */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function test_combineScripts(): void
     {
-        if (((float)phpversion()) >= 5.3) {
-            $reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
+        $reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
 //            $reflectionMethod->setAccessible(true);
-            $currentDir = dirname(__FILE__, 4) . DIRECTORY_SEPARATOR .
-                'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
-            $content = $reflectionMethod->invokeArgs($this->generater, array($currentDir));
-            $jsLibDir = dirname($currentDir, 2) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
-            $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
+        $currentDir = dirname(__FILE__, 4) . DIRECTORY_SEPARATOR .
+            'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
+        $content = $reflectionMethod->invokeArgs($this->generater, array($currentDir));
+        $jsLibDir = dirname($currentDir, 2) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
+        $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
 //            $method->setAccessible(true);
-            $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/dist/sha.js'));
-            $this->assertStringContainsString($partOfCode, $content);
-        }
+        $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/dist/sha.js'));
+        $this->assertStringContainsString($partOfCode, $content);
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_entryPathIsEscaped(): void
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['HTTP_REFERER'] = '';
+        $_SERVER['QUERY_STRING'] = 'a=";alert(1);//</script>';
+        ob_start();
+        $this->generater->generateInitialJSCode(null, null, ['db-class' => 'PDO'], false);
+        $output = strval(ob_get_clean());
+        $this->assertStringNotContainsString('</script>', $output);
+        $this->assertStringContainsString('?a=\\";alert(1);//\\u003C/script\\u003E"', $output);
+        $this->assertStringNotContainsString('?a=";alert(1)', $output);
+    }
+
+    public function test_readJSSourceIgnoringNextLine(): void
+    {
+        $file = tempnam(sys_get_temp_dir(), 'imjs');
+        file_put_contents($file, "a\n// @@IM@@IgnoringNextLine\nb\nc\n// @@IM@@IgnoringNextLine");
+        $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
+        $this->assertEquals("a\nc", $method->invokeArgs($this->generater, [$file]));
+        unlink($file);
     }
 
 }
