@@ -153,6 +153,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
                 }
             }
         }
+        if($newContextId === false) {
+            $newContextId = null;
+        }
         return $newContextId;
     }
 

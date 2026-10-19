@@ -47,7 +47,7 @@ trait Proxy_ExtSupport
      */
     public function getExtProxy(): ?Proxy
     {
-        if(!$this->extProxy){
+        if (!$this->extProxy) {
             $this->dbInit();
             $this->initializeSpec("", null);
         }
@@ -92,8 +92,8 @@ trait Proxy_ExtSupport
 
     /** Read records from the database.
      * @param string $target
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
-     * @param array<array<string, string>>|array<string, string>|null $sort
+     * @param array<array{field: string, operator?:string, value?: float|int|string|bool|null}>|array<string,float|int|string|bool|null>|null $query
+     * @param array<array{field: string, direction?: string}>|array<string, string>|null $sort
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
      * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
@@ -112,8 +112,8 @@ trait Proxy_ExtSupport
 
     /** Update records in the database.
      * @param string $target
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $data
+     * @param array<array{field: string, operator?:string, value?: float|int|string|bool|null}>|array<string, number|string|bool|null>|null $query
+     * @param array<array{field: string, value: float|int|string|bool|null}>|array<string, number|string|bool|null>|null $data
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
      * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
@@ -132,7 +132,7 @@ trait Proxy_ExtSupport
 
     /** Create new records in the database.
      * @param string $target
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $data
+     * @param array<array{field: string, value: float|int|string|bool|null}>|array<string, number|string|bool|null>|null $data
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
      * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
@@ -150,7 +150,7 @@ trait Proxy_ExtSupport
 
     /** Delete records from the database.
      * @param string $target
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
+     * @param array<array{field: string, operator?:string, value?: float|int|string|bool|null}>|array<string, number|string|bool|null>|null $query
      * @param array<array<string, number|string|bool|null|array<array<string, number|string|bool|null>>>>|array<string, number|string|bool|null>|null $spec
      * @return array<array<string, number|string|bool|null>>|null
      * @throws Exception
@@ -181,7 +181,7 @@ trait Proxy_ExtSupport
 
     /** Check if the target exists in the data source.
      * @param string $target
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $spec
+     * @param array<array<string, array<array<string, bool|float|int|string|null>>|number|string|bool|null>>|array<string, number|string|bool|null>|null $spec
      * @return bool
      */
     private function hasTarget(string $target, ?array $spec = null): bool
@@ -220,8 +220,9 @@ trait Proxy_ExtSupport
     }
 
     /** Set up the query for the operation.
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $query
+     * @param array<array{field: string, operator?:string, value?: float|int|string|bool|null}>|array<string, number|string|bool|null>|null $query
      * @return void
+     * @throws Exception
      */
     private function setupQuery(?array $query): void
     {
@@ -231,18 +232,32 @@ trait Proxy_ExtSupport
         if (isset($query[0]) && is_array($query[0])) {
 //            Logger::getInstance()->setDebugMessage("###1#");
             foreach ($query as $item) {
-                $this->extProxy->dbSettings->addExtraCriteria($item['field'], $item['operator'], $item['value'] ?? null);
+                if (!isset($item['field'])) {
+                    throw new Exception("Invalid query parameter: " . json_encode($item));
+                }
+                if (!isset($item['operator'])) {
+                    $item['operator'] = '=';
+                }
+                if (!isset($item['value'])) {
+                    $item['value'] = null;
+                }
+                $this->extProxy->dbSettings->addExtraCriteria(
+                    strval($item['field']), strval($item['operator']), $item['value'] ?? null);
             }
         } else {
             foreach ($query as $field => $value) {
+                if (is_array($value)) {
+                    throw new Exception("Invalid query parameter: " . json_encode($value));
+                }
                 $this->extProxy->dbSettings->addExtraCriteria($field, '=', $value);
             }
         }
     }
 
     /** Set up the sort for the operation.
-     * @param array<array<string, string>>|array<string, string>|null $sort
+     * @param array<array{field: string, direction?:string}>|array<string, string>|null $sort
      * @return void
+     * @throws Exception
      */
     private function setupSort(?array $sort): void
     {
@@ -251,18 +266,28 @@ trait Proxy_ExtSupport
         }
         if (isset($sort[0]) && is_array($sort[0])) {
             foreach ($sort as $item) {
+                if (!isset($item['field'])) {
+                    throw new Exception("Invalid sort parameter: " . json_encode($item));
+                }
+                if (!isset($item['direction'])) {
+                    $item['direction'] = 'ASC';
+                }
                 $this->extProxy->dbSettings->addExtraSortKey($item['field'], $item['direction']);
             }
         } else {
             foreach ($sort as $field => $value) {
+                if (is_array($value)) {
+                    throw new Exception("Invalid sort parameter: " . json_encode($value));
+                }
                 $this->extProxy->dbSettings->addExtraSortKey($field, $value);
             }
         }
     }
 
     /** Set up the data for the operation.
-     * @param array<array<string, number|string|bool|null>>|array<string, number|string|bool|null>|null $data
+     * @param array<array{field: string, value:float|int|string|bool|null}>|array<string, float|int|string|bool|null>|null $data
      * @return void
+     * @throws Exception
      */
     private function setupData(?array $data): void
     {
@@ -271,10 +296,19 @@ trait Proxy_ExtSupport
         }
         if (isset($data[0]) && is_array($data[0])) {
             foreach ($data as $item) {
+                if (!isset($item['field'])) {
+                    throw new Exception("Invalid data parameter: " . json_encode($item));
+                }
+                if (!isset($item['value'])) {
+                    $item['value'] = null;
+                }
                 $this->extProxy->dbSettings->addValueWithField($item['field'], $item['value']);
             }
         } else {
             foreach ($data as $field => $value) {
+                if (is_array($value)) {
+                    throw new Exception("Invalid data parameter: " . json_encode($value));
+                }
                 $this->extProxy->dbSettings->addValueWithField($field, $value);
             }
         }

@@ -38,6 +38,7 @@ class pageedit_Test extends TestCase
         $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
         require_once($imPath . '/editors/pageedit.php');
         $output = ob_get_contents();
+        $this->assertNotFalse($output, 'The output should have a value.');
         $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', $output);
         ob_end_clean();
     }

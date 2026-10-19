@@ -34,14 +34,12 @@ class MediaAccess_Test extends TestCase
     {
         $reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
         $disposition = $reflectionClass->getProperty('disposition');
-        $disposition->setAccessible(true);
 
         $expected = 'inline';
         $this->assertSame($expected, $disposition->getValue($this->mediaaccess));
 
         $expected = 'attachment';
         $attachment = $reflectionClass->getMethod('asAttachment');
-        $attachment->setAccessible(true);
         try {
             $attachment->invoke($this->mediaaccess);
         } catch (Exception $e) {
@@ -58,7 +56,6 @@ class MediaAccess_Test extends TestCase
     public function test_exitAsError(): void
     {
         $reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
-        $reflectionMethod->setAccessible(true);
 
         $code = -1;
         $expected = 'Respond HTTP Error.';

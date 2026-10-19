@@ -23,7 +23,7 @@ use INTERMediator\Locale\IMLocale;
 /**
  *
  */
-class MySQLDateTime
+class MySQLDateTime implements DataConverter
 {
     /** @var string
      */

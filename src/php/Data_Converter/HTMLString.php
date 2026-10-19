@@ -18,7 +18,7 @@ namespace INTERMediator\Data_Converter;
 /**
  *
  */
-class HTMLString
+class HTMLString implements DataConverter
 {
     /** @var bool
      */
@@ -32,10 +32,10 @@ class HTMLString
     public function __construct(string|bool|int $option = false)
     {
         if ($option) {
-            if (in_array(strtolower($option), array('true', 'autolink')) || $option === true) {
+            if (in_array(strtolower(strval($option)), array('true', 'autolink')) || $option === true) {
                 $this->autolink = true;
             }
-            if (strtolower($option) === 'noescape') {
+            if (strtolower(strval($option)) === 'noescape') {
                 $this->noescape = true;
             }
         }
@@ -104,7 +104,7 @@ class HTMLString
         if (is_null($str)) {
             return null;
         }
-        return mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
-            "<a href=\"\\0\" target=\"_blank\">\\0</a>", $str, "i");
+        return strval(mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
+            "<a href=\"\\0\" target=\"_blank\">\\0</a>", $str, "i"));
     }
 }

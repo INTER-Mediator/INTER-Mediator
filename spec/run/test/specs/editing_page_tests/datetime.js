@@ -1,7 +1,7 @@
 const EditingPage = require("../../pageobjects/EditingPage/editing_page_mysql.page");
 module.exports = (EditingPage) => {
   describe("Date/Time Field", function () {
-    const waiting = 500
+    const waiting = 1500
 
     let initDateTime, initTime, zeroDateTime
     // if (process.platform === 'darwin') {

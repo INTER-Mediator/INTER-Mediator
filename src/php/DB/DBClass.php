@@ -10,6 +10,12 @@ use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
  */
 abstract class DBClass extends UseSharedObjects implements DBClass_Interface
 {
+    /** Sets up the database handlers.
+     * @param string|null $dsn
+     * @return void
+     */
+    public abstract function setupHandlers(?string $dsn = null): void;
+
     /** Throws an exception; should only be used by FileMaker subclasses.
      * @param array<string, number|string|bool|null> $condition The condition array.
      * @return null|array<string, number|string|bool|null>

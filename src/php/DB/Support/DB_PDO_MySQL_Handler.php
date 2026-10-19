@@ -209,7 +209,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             } else if (isset($defaultValues[$row['Field']])) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
-            } else if (!is_null($row['Default'])){
+            } else if (!is_null($row['Default'])) {
                 // skip if field has a default value
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
@@ -253,9 +253,9 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
      * @param string $hashTable Hash table.
      * @return array<array-key, mixed>|null Migration result, or null if not applicable.
      */
-    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array // authuser, issuedhash
     {
-        $checkFieldDefinition = function (string $type, int $min):bool {
+        $checkFieldDefinition = function (string $type, int $min): bool {
             $fDef = strtolower($type);
             if ($fDef != 'text' && strpos($fDef, 'varchar') !== false) {
                 $openParen = strpos($fDef, '(');
@@ -315,12 +315,18 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SHOW COUNT(*) WARNINGS');
+            if ($warnings === false) {
+                return;
+            }
             $warningsCount = 0;
             foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 $warningsCount = intval($row['@@session.warning_count']);
             }
             if ($warningsCount > 0) {
                 $warnings = $this->dbClassObj->link->query('SHOW WARNINGS');
+                if ($warnings === false) {
+                    return;
+                }
                 $debugMsg = "";
                 foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
                     $message = "[{$row['Level']}]({$row['Code']}){$row['Message']}";
@@ -344,6 +350,9 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');
+            if ($warnings === false) {
+                return null;
+            }
             foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 return (string )intval($row['ID']);
             }
