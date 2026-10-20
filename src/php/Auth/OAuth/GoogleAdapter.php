@@ -169,10 +169,11 @@ class GoogleAdapter extends ProviderAdapter
         $id_token = $response->id_token;
         $access_token = $response->access_token;
         $payloadIDToken = $this->checkIDToken($id_token, $access_token);
+        $tokenSub = $payloadIDToken->sub ?? "";
         $userInfo = [
-            "realname" => $payloadIDToken->name,
-            "username" => "{$payloadIDToken->sub}@{$this->providerName}",
-            "email" => $payloadIDToken->email,
+            "realname" => $payloadIDToken->name ?? "",
+            "username" => "{$tokenSub}@{$this->providerName}",
+            "email" => $payloadIDToken->email ?? "",
         ];
         return $userInfo;
     }

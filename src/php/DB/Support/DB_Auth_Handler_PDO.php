@@ -185,7 +185,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
         if ($uid) {
             $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,user_id,hash,expired FROM {$hashTable}"
-                . " WHERE user_id={$this->pdoDB->link->quote($uid)} AND clienthost={$this->pdoDB->link->quote($clientId)}"
+                . " WHERE user_id={$this->pdoDB->link->quote(strval($uid))} AND clienthost={$this->pdoDB->link->quote($clientId)}"
                 . ($prefix === "" ? "" : " AND hash like '{$prefix}%'")
                 . " ORDER BY expired DESC";
         } else {
@@ -573,7 +573,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return null;
         }
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}groupname FROM {$groupTable} WHERE id = "
-            . $this->pdoDB->link->quote($groupid);
+            . $this->pdoDB->link->quote(strval($groupid));
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
@@ -798,7 +798,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return null;
         }
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}username FROM {$userTable} WHERE id = "
-            . $this->pdoDB->link->quote($userid);
+            . $this->pdoDB->link->quote(strval($userid));
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);

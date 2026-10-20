@@ -461,7 +461,7 @@ abstract class DB_PDO_Handler
         foreach ($result as $row) {
             if (!is_null($row[$this->fieldNameForType])) {
                 preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-                if (in_array($matches[0], $this->booleanFieldTypes)) {
+                if (isset($matches[0]) && in_array($matches[0], $this->booleanFieldTypes)) {
                     $fieldArray[] = $row[$this->fieldNameForField];
                 }
             }
@@ -650,7 +650,11 @@ abstract class DB_PDO_Handler
         if (!$this->dbClassObj->link) {
             return null;
         }
-        return $this->dbClassObj->link->lastInsertId($seqObject);
+        $returnValue = $this->dbClassObj->link->lastInsertId($seqObject);
+        if ($returnValue === false) {
+            return null;
+        }
+        return $returnValue;
     }
 
     /** Returns the last insert ID for a sequence object and table name.

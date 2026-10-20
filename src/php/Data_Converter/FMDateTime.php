@@ -22,7 +22,7 @@ use INTERMediator\Locale\IMLocale;
 /**
  *
  */
-class FMDateTime
+class FMDateTime implements DataConverter
 {
 
     /** @var string
@@ -100,7 +100,7 @@ class FMDateTime
 
     /**
      * @param string $d
-     * @return array<array-key, mixed>
+     * @return array<array-key, mixed>|null
      * @throws Exception
      */
     public function dateArrayFromFMDate(string $d): ?array
@@ -113,15 +113,11 @@ class FMDateTime
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
         // @codeCoverageIgnoreStart
-        if (((float)phpversion()) >= 5.3) {
-            $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
-        } else {
-            $dateComp = date_parse($d);
-        }
+        $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
         // @codeCoverageIgnoreEnd
         $dt = new DateTime();
-        $dt->setDate($dateComp['year'], $dateComp['month'], $dateComp['day']);
-        $dt->setTime($dateComp['hour'], $dateComp['minute'], $dateComp['second']);
+        $dt->setDate(intval($dateComp['year']), intval($dateComp['month']), intval($dateComp['day']));
+        $dt->setTime(intval($dateComp['hour']), intval($dateComp['minute']), intval($dateComp['second']));
 
         $gengoName = '';
         $gengoYear = 0;

@@ -166,7 +166,6 @@ class IMUtil_Test extends TestCase
     public function test_checkHost(): void
     {
         $reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
-        $reflectionMethod->setAccessible(true);
 
         $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'www.inter-mediator.com'));
         $this->assertTrue($result);
@@ -320,51 +319,49 @@ class IMUtil_Test extends TestCase
      */
     public function test_getMimeType(): void
     {
-        if (((float)phpversion()) >= 5.3) {
-            $path = '';
-            $expected = 'application/octet-stream';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = '';
+        $expected = 'application/octet-stream';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.jpg';
-            $expected = 'image/jpeg';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.jpg';
+        $expected = 'image/jpeg';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.jpeg';
-            $expected = 'image/jpeg';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.jpeg';
+        $expected = 'image/jpeg';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.png';
-            $expected = 'image/png';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.png';
+        $expected = 'image/png';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.html';
-            $expected = 'text/html';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.html';
+        $expected = 'text/html';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.txt';
-            $expected = 'text/plain';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.txt';
+        $expected = 'text/plain';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.gif';
-            $expected = 'image/gif';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.gif';
+        $expected = 'image/gif';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.bmp';
-            $expected = 'image/bmp';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.bmp';
+        $expected = 'image/bmp';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.tif';
-            $expected = 'image/tiff';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.tif';
+        $expected = 'image/tiff';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.tiff';
-            $expected = 'image/tiff';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
+        $path = 'test.tiff';
+        $expected = 'image/tiff';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
 
-            $path = 'test.pdf';
-            $expected = 'application/pdf';
-            $this->assertEquals($expected, IMUtil::getMimeType($path));
-        }
+        $path = 'test.pdf';
+        $expected = 'application/pdf';
+        $this->assertEquals($expected, IMUtil::getMimeType($path));
     }
 
     /**
@@ -494,5 +491,75 @@ class IMUtil_Test extends TestCase
             $this->assertTrue(str_contains($seed, $genPW[$i]));
         }
         $this->assertTrue(str_contains($seedPunctuation, $genPW[strlen($genPW) - 1]));
+    }
+
+    public function test_isInsideOf(): void
+    {
+        $base = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'im_inside_' . uniqid();
+        mkdir("{$base}/www/sub", 0777, true);
+        mkdir("{$base}/www-evil", 0777, true);
+        touch("{$base}/www/sub/a.yml");
+        touch("{$base}/www-evil/b.yml");
+        $this->assertTrue(IMUtil::isInsideOf("{$base}/www/sub/a.yml", "{$base}/www"));
+        $this->assertTrue(IMUtil::isInsideOf("{$base}/www/sub/a.yml", "{$base}/www/"));
+        $this->assertFalse(IMUtil::isInsideOf("{$base}/www-evil/b.yml", "{$base}/www"));
+        $this->assertFalse(IMUtil::isInsideOf("{$base}/www/../www-evil/b.yml", "{$base}/www"));
+        $this->assertFalse(IMUtil::isInsideOf("{$base}/www/none.yml", "{$base}/www"));
+    }
+
+    public function test_templating(): void
+    {
+        $this->assertEquals("Hello Taro!", IMUtil::templating("Hello @@ name @@!", ['name' => 'Taro']));
+        $this->assertEquals("x  y", IMUtil::templating("x @@none@@ y", ['name' => 'Taro']));
+        $this->assertEquals("v=@@a@@", IMUtil::templating("v=@@a@@", ['a' => '@@a@@']));
+        $this->assertEquals("@@b@@-2", IMUtil::templating("@@a@@-@@b@@", ['a' => '@@b@@', 'b' => '2']));
+    }
+
+    public function test_generateClientId(): void
+    {
+        $this->assertEquals(64, strlen(IMUtil::generateClientId()));
+        $this->assertEquals(40, strlen(IMUtil::generateClientId('', '1')));
+        $this->assertNotEquals(IMUtil::generateClientId(), IMUtil::generateClientId());
+    }
+
+    public function test_getMessageClassInstanceRejectsInvalidLanguage(): void
+    {
+        $_SERVER["HTTP_ACCEPT_LANGUAGE"] = "ja/../../x,ja";
+        $this->assertInstanceOf(\INTERMediator\Message\MessageStrings_ja::class, IMUtil::getMessageClassInstance());
+        unset($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+    }
+
+    public function test_getMimeTypeExcel(): void
+    {
+        $this->assertEquals('application/vnd.ms-excel', IMUtil::getMIMEType('a.xls'));
+        $this->assertEquals('application/octet-stream', IMUtil::getMIMEType('pdf'));
+    }
+
+    public function test_relativePathPrefix(): void
+    {
+        $this->assertEquals('sub/b.php', IMUtil::relativePath('/a/x.html', '/a/sub/b.php'));
+        $this->assertEquals('b.php', IMUtil::relativePath('/a/x.html', '/a/b.php'));
+    }
+
+    public function test_returnBytes(): void
+    {
+        $this->assertEquals(0, IMUtil::return_bytes(''));
+        $this->assertEquals(2 * 1024 * 1024, IMUtil::return_bytes('2M'));
+    }
+
+    public function test_checkHostWithPort(): void
+    {
+        $this->assertTrue($this->util->checkHost('example.com:8080', 'example.com'));
+        $this->assertFalse($this->util->checkHost('evil.com:8080', 'example.com'));
+    }
+
+    public function test_arrayToJSEscapesKey(): void
+    {
+        $this->assertEquals("{'a\\'b':'c'}", IMUtil::arrayToJS(["a'b" => 'c']));
+    }
+
+    public function test_generateChallenge(): void
+    {
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{48}$/', IMUtil::generateChallenge());
     }
 }
