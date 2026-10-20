@@ -17,6 +17,8 @@ namespace INTERMediator;
 
 use Exception;
 use INTERMediator\DB\Proxy;
+use INTERMediator\DB\Support\ProtocolProcessing;
+use INTERMediator\Media\DownloadingSupport;
 
 /**
  * MediaAccess handles secure access and delivery of media files (images, PDFs, etc.)
@@ -105,7 +107,7 @@ class MediaAccess
 
     /**
      * Main processing method for serving media files.
-    Handles authentication, authorization, and file delivery.
+     * Handles authentication, authorization, and file delivery.
      * @param Proxy $dbProxyInstance Database proxy instance.
      * @param array<array-key, mixed>|null $options Options for media access.
      * @param string $file Requested file path or URL.
@@ -203,7 +205,6 @@ class MediaAccess
 
             // Responding to the contents
             $dq = '"';
-
             if (stripos($target, 'class://') === 0) { // class url is special handling.
                 $noscheme = substr($target, 8);
                 $className = substr($noscheme, 0, intval(strpos($noscheme, "/")));
@@ -213,20 +214,35 @@ class MediaAccess
                     $this->errorHandling($erMessage);
                     $this->exitAsError(403);
                 }
-                $processingObject = new $className();
-                $processingObject->processing($contextRecord, $options);
+                if (class_exists($className)
+                    && is_subclass_of($className, ProtocolProcessing::class)) {
+                    $processingObject = new $className();
+                    $processingObject->processing($contextRecord, $options);
+                } else {
+                    $erMessage = "[INTER-Mediator] The class specified with the 'class://' scheme doesn't implement the ProtocolProcessing interface.";
+                    echo $erMessage;
+                    $this->errorHandling($erMessage);
+                    $this->exitAsError(403);
+                }
             } else {
                 $className = $this->getClassNameForMedia($isURL, $target); // Decide class from URL
                 $dbProxyInstance->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
-                $processing = new $className();
-                $content = $processing->getMedia($file, $target, $dbProxyInstance);
-                $fileName = $processing->getFileName($file);
-                header("Content-Type: " . IMUtil::getMimeType($fileName));
-                header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}{$fileName}{$dq}");
-                $util = new IMUtil();
-                $util->outputSecurityHeaders();
-                $this->outputImage($content);
+                if (class_exists($className) && is_subclass_of($className, DownloadingSupport::class)) {
+                    $processing = new $className();
+                    $content = $processing->getMedia($file, $target, $dbProxyInstance);
+                    $fileName = $processing->getFileName($file);
+                    header("Content-Type: " . IMUtil::getMimeType($fileName));
+                    header("Content-Length: " . strlen($content));
+                    header("Content-Disposition: {$this->disposition}; filename={$dq}{$fileName}{$dq}");
+                    $util = new IMUtil();
+                    $util->outputSecurityHeaders();
+                    $this->outputImage($content);
+                } else {
+                    $erMessage = "[INTER-Mediator] The media handling class doesn't implement the DownloadingSupport interface.";
+                    echo $erMessage;
+                    $this->errorHandling($erMessage);
+                    $this->exitAsError(403);
+                }
             }
         } catch (Exception $ex) {
             $this->errorHandling($ex->getMessage());
@@ -272,16 +288,16 @@ class MediaAccess
             return false;
         }
         $allowed = $options['media-class-allowed'] ?? Params::getParameterValue('mediaClassAllowed', null);
-        if (is_array($allowed)) {
-            $allowed = array_map(fn($c) => strtolower(ltrim($c, '\\')), $allowed);
-            if (!in_array(strtolower($className), $allowed, true)) {
-                return false;
-            }
-        } else if (stripos($className, 'INTERMediator\\') === 0
-            && strcasecmp($className, 'INTERMediator\\DB\\Export') !== 0) {
-            return false;
+        $allowed =  is_null($allowed) ? [] : (is_array($allowed) ? $allowed : [$allowed]);
+        $allowed[] = 'INTERMediator\\DB\\Export';
+        $resultValue = false;
+        $allowed = array_map(fn($c) => strtolower(ltrim($c, '\\')), $allowed);
+        if (in_array(strtolower($className), $allowed, true)
+            && class_exists($className)
+            && is_subclass_of($className, ProtocolProcessing::class)) {
+            $resultValue = true;
         }
-        return class_exists($className) && method_exists($className, 'processing');
+        return $resultValue;
     }
 
     /** Checks if the target URL has a known schema.

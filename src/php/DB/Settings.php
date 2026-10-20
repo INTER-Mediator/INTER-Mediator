@@ -1296,7 +1296,7 @@ class Settings
 
     /**
      * Get the extra sort key.
-     * @return array<array-key, mixed>|null Extra sort key array.
+     * @return array<array{field: string, direction?: string}>|null Extra sort key array.
      */
     public function getExtraSortKey(): ?array
     {

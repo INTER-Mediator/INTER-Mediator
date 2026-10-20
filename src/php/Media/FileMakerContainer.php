@@ -25,7 +25,7 @@ use INTERMediator\Params;
  * FileMakerContainer handles file upload and download for FileMaker container fields.
  * Implements UploadingSupport and DownloadingSupport interfaces for FileMaker integration.
  */
-class FileMakerContainer extends UploadingSupport implements DownloadingSupport
+class FileMakerContainer extends UploadingSupport implements DownloadingSupport, MediaProcessing
 {
     /** Retrieves the contents of a file from a FileMaker container field or direct file path.
      * @param string $file The file name (unused).
@@ -39,7 +39,8 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
         $parsedUrl = parse_url($target);
         if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
             if (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
-                $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                $target = 'http://' . ($parsedUrl['user'] ?? '') . ':' . ($parsedUrl['pass'] ?? '') . '@127.0.0.1:1895'
+                    . ($parsedUrl['path'] ?? '') . '?' . ($parsedUrl['query'] ?? '');
                 if (function_exists('curl_init')) {
                     $session = curl_init($target);
                     curl_setopt($session, CURLOPT_HEADER, true);
@@ -59,7 +60,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                             }
                         }
                     }
-                    $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                    $target = 'http://127.0.0.1:1895' . ($parsedUrl['path'] ?? '') . '?' . ($parsedUrl['query'] ?? '');
                     $headers = array('X-FMS-Session-Key: ' . $sessionKey);
                     $session = curl_init($target);
                     curl_setopt($session, CURLOPT_HEADER, false);
@@ -116,8 +117,8 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
      * @param array<array-key, mixed>|null $dataSource Data source definition.
      * @param array<array-key, mixed>|null $dbSpec Database specification.
      * @param int $debug Debug level.
-     * @throws Exception If an error occurs during processing.
      * @return void
+     * @throws Exception If an error occurs during processing.
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, ?string $keyField, ?string $keyValue,
@@ -146,7 +147,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
             $targetFieldName = $field[0];
             // for uploading to FileMaker's container field
-            $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
+            $fileName = $filePathInfo['filename'] . '.' . ($filePathInfo['extension'] ?? '');
             $tmpDir = strval(ini_get('upload_tmp_dir'));
             if ($tmpDir === '') {
                 $tmpDir = sys_get_temp_dir();

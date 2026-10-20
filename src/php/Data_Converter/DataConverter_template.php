@@ -30,7 +30,7 @@
 
 namespace INTERMediator\Data_Converter;
 
-class DataConverter_template
+class DataConverter_template implements DataConverter
 {
     // "Data Converter Class" name must have the prefix "DataConverter_".
 

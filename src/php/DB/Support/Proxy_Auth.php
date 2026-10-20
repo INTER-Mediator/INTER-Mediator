@@ -21,6 +21,7 @@ use INTERMediator\Auth\SAMLAuth;
 use INTERMediator\DB\AuthFailCount;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
+use INTERMediator\DB\Support\ActionHandlers\ActionHandler;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
 use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
@@ -169,7 +170,9 @@ trait Proxy_Auth
                     $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                     $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                     $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
-                    [$additional, $this->signedUser] = $SAMLAuth->samlLoginCheck();
+                    $samlLoginStatus = $SAMLAuth->samlLoginCheck();
+                    $additional = $samlLoginStatus[0];
+                    $this->signedUser = strval($samlLoginStatus[1]);
                     $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] SAML Auth result: user={$this->signedUser}, "
                         . "additional={$additional}, attributes=" . var_export($SAMLAuth->getAttributes(), true));
                     $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
@@ -206,7 +209,7 @@ trait Proxy_Auth
                 if (!$isAuthAccessing) {
                     $this->accessSetToNothing();
                 }
-                if ($authFail->isActiveBluteForce()||$authFail->isActiveInactivating()) {
+                if ($authFail->isActiveBluteForce() || $authFail->isActiveInactivating()) {
                     $authFail->addFailRecord($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser);
                 }
             }
@@ -238,8 +241,11 @@ trait Proxy_Auth
     {
         $this->dbSettings->setRequireAuthentication(true);
         $this->access = "nothing";
-        $visitorClasName = IMUtil::getActionHandlerClassName($this->access);
-        $this->visitor = new $visitorClasName($this);
+        $actionHandlerClassName = IMUtil::getActionHandlerClassName($this->access);
+        if (class_exists($actionHandlerClassName)
+            && is_subclass_of($actionHandlerClassName, ActionHandler::class)) {
+            $this->visitor = new $actionHandlerClassName($this);
+        }
     }
 
     /**
@@ -272,7 +278,7 @@ trait Proxy_Auth
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             $cookieNameUser = '_im_username';
             $cookieNameToken = '_im_mediatoken';
-            $realm = $this->dbSettings->getAuthenticationItem('realm');
+            $realm = strval($this->dbSettings->getAuthenticationItem('realm'));
             if ($realm) {
                 $realm = str_replace(" ", "_", str_replace(".", "_", $realm));
                 $cookieNameUser .= ('_' . $realm);

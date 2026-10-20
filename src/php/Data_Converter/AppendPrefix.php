@@ -20,7 +20,7 @@
  * This class provides methods to append a prefix to a string when converting from the database to the user,
  *  and to remove the prefix when converting from the user to the database.
  *  Useful for formatting or masking data transparently.*/
-class AppendPrefix
+class AppendPrefix implements DataConverter
 {
     /** The prefix string to append or remove during conversion.
      * @var string
@@ -37,9 +37,9 @@ class AppendPrefix
 
     /** Converts a value from database format to user format by appending the prefix.
      * @param string|null $str The original value from the database.
-     * @return string|null The value with the prefix appended.
+     * @return string The value with the prefix appended.
      */
-    function converterFromDBtoUser(?string $str): ?string
+    function converterFromDBtoUser(?string $str): string
     {
         return $this->appendStr . $str;
     }
