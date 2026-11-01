@@ -121,20 +121,14 @@ class DefinitionChecker
         }
     }
 
-    /** It looks up a child of the keyword structure, comparing string keys case-insensitively.
+    /** It looks up a child of the keyword structure, comparing string keys case-sensitively.
      * @param mixed $endPoint Current keyword structure.
      * @param int|string $key Key to look up.
      * @return mixed The child structure or type specification, or null if not found.
      */
     private function findChild(mixed $endPoint, int|string $key): mixed
     {
-        if (!is_array($endPoint)) {
-            return null;
-        }
-//        if (isset($endPoint[$key])) {
-//            return $endPoint[$key];
-//        }
-        return array_key_exists($key, $endPoint) ? $endPoint[$key] : null;
+        return (is_array($endPoint) && array_key_exists($key, $endPoint)) ? $endPoint[$key] : null;
     }
 
     /** Splits a type specification by '|' outside of parentheses.
@@ -312,6 +306,7 @@ class DefinitionChecker
             'saml-builtin-auth' => 'boolean',
             'is-required-2FA' => 'boolean',
             'digits-of-2FA-code' => 'integer',
+            'digits-of-2FA-Code' => 'integer', // backward compatibility
             'mail-context-2FA' => 'string',
             'expiring-seconds-2FA' => 'integer',
             'passkey-only-on-auth' => 'boolean',
