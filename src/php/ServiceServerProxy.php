@@ -73,6 +73,10 @@ class ServiceServerProxy
      * @var string|null
      */
     private ?string $ssVersionCode = null;
+    /** Whether the boot sequence of the service server has already been tried.
+     * @var bool
+     */
+    private bool $bootAttempted = false;
     /** Singleton instance of ServiceServerProxy.
      * @var ServiceServerProxy|null
      */
@@ -145,9 +149,12 @@ class ServiceServerProxy
     {
         if ($this->dontUse) {
             return false;
-        } else if ($this->dontAutoBoot) {
-            return $this->isActive(true);
+        } else if ($this->isActive()) {
+            return true;
+        } else if ($this->dontAutoBoot || $this->bootAttempted) {
+            return false;
         } else {
+            $this->bootAttempted = true;
             if (!$this->isServerStartable()) { // Check the home directory can be writable.
                 $userName = IMUtil::getServerUserName();
                 $userHome = IMUtil::getServerUserHome();
@@ -167,7 +174,9 @@ class ServiceServerProxy
             $startTime = time();
             $counterInit = $counter = $isStartCLI ? 1 : 5;
             $isStartServer = false;
-            while (!$this->isActive(true)) {
+            $isFirstCheck = true;
+            while (!$this->isActive(!$isFirstCheck)) {
+                $isFirstCheck = false;
                 if (!$isStartServer && !$isStartCLI) {
                     $this->startServer();
                     $isStartServer = true;

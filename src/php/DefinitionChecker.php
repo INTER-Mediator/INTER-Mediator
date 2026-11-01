@@ -136,7 +136,7 @@ class DefinitionChecker
         }
         if (is_string($key)) {
             foreach ($endPoint as $candidate => $child) {
-                if (is_string($candidate) && strcasecmp($candidate, $key) === 0) {
+                if (is_string($candidate) && strcmp($candidate, $key) === 0) {
                     return $child;
                 }
             }

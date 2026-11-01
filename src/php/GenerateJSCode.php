@@ -127,8 +127,8 @@ class GenerateJSCode
         $appCurrency = Params::getParameterValue("appCurrency", 'JP');
         $resetPage = Params::getParameterValue("resetPage", null);
         $enrollPage = Params::getParameterValue("enrollPage", null);
+        $serviceServerHost = $this->decideServiceServerHost(Params::getParameterValue("serviceServerHost", null));
         $serviceServerPort = Params::getParameterValue("serviceServerPort", "11478");
-        $serviceServerHost = Params::getParameterValue("serviceServerHost", null);
         $serviceServerProtocol = Params::getParameterValue("serviceServerProtocol", 'ws');
         $notUseServiceServer = Params::getParameterValue("notUseServiceServer", null);
         $activateClientService = Params::getParameterValue("activateClientService", null);
@@ -140,7 +140,6 @@ class GenerateJSCode
         $prohibitDebugMode = Params::getParameterValue('prohibitDebugMode', false);
         $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
         $enrollPage = $options['authentication']['enroll-page'] ?? $enrollPage ?? null;
-        $serviceServerHost = $this->decideServiceServerHost($serviceServerHost);
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
         $activateGenerator = Params::getParameterValue("activateGenerator", false);
