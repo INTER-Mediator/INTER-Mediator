@@ -165,14 +165,21 @@ class DefinitionChecker_Test extends TestCase
      */
     public function testCaseInsensitive(): void
     {
-        $this->assertSame('', $this->dataSourceMessage(['Name' => 'a', 'REPEAT-CONTROL' => 'Insert Confirm-Delete']));
+        $this->assertNotSame('', $this->dataSourceMessage(['Name' => 'a', 'REPEAT-CONTROL' => 'Insert Confirm-Delete']));
+        $this->assertSame('', $this->dataSourceMessage(['name' => 'a', 'repeat-control' => 'insert confirm-delete']));
         $this->assertSame('', $this->dataSourceMessage(['repeat-control' => 'COPY-Detail']));
-        $this->assertSame('', $this->dataSourceMessage(['file-upload' => [['Container' => 'filesystem']]]));
-        $this->assertSame('', $this->checker->checkDefinitions([], [
+        $this->assertNotSame('', $this->dataSourceMessage(['file-upload' => [['Container' => 'filesystem']]]));
+        $this->assertSame('', $this->dataSourceMessage(['file-upload' => [['container' => 'filesystem']]]));
+        $this->assertNotSame('', $this->checker->checkDefinitions([], [
             'Transaction' => 'NONE',
             'authentication' => ['is-required-2fa' => true, 'DIGITS-OF-2FA-CODE' => 6, 'method-2FA' => 'Email'],
             'import' => ['format' => 'csv'],
         ], ['DB-Class' => 'PDO']));
+        $this->assertSame('', $this->checker->checkDefinitions([], [
+            'transaction' => 'NONE',
+            'authentication' => ['is-required-2FA' => true, 'digits-of-2FA-code' => 6, 'method-2FA' => 'Email'],
+            'import' => ['format' => 'csv'],
+        ], ['db-class' => 'PDO']));
         $this->assertNotSame('', $this->dataSourceMessage(['NAMES' => 'a']));
         $this->assertNotSame('', $this->dataSourceMessage(['repeat-control' => 'REMOVE']));
     }

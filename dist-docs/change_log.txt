@@ -33,6 +33,7 @@ Ver.16 (in Development)
 - The host name of the Service Server that clients connect to can be set with $serviceServerHost in params.php.
   If it isn’t set, $_SERVER['HTTP_HOST'] is used, then $_SERVER['SERVER_ADDR'], and finally “localhost”.
 - An UPDATE statement with an empty WHERE clause is no longer issued, so that all records aren’t updated by mistake.
+- The "digits-of-2FA-Code" was changed to "digits-of-2FA-code" in the params.php file for unifying case of wording.
 - [BUG FIX] Fixed an issue where contexts requiring synchronization were not updated correctly when a context was
   updated after data modification, or when a context was rebuilt
 

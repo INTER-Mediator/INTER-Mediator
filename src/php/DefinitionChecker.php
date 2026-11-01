@@ -318,7 +318,7 @@ class DefinitionChecker
             'is-saml' => 'boolean',
             'saml-builtin-auth' => 'boolean',
             'is-required-2FA' => 'boolean',
-            'digits-of-2FA-Code' => 'integer',
+            'digits-of-2FA-code' => 'integer',
             'mail-context-2FA' => 'string',
             'expiring-seconds-2FA' => 'integer',
             'passkey-only-on-auth' => 'boolean',
