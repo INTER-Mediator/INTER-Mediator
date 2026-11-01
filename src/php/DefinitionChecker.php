@@ -131,17 +131,10 @@ class DefinitionChecker
         if (!is_array($endPoint)) {
             return null;
         }
-        if (isset($endPoint[$key])) {
-            return $endPoint[$key];
-        }
-        if (is_string($key)) {
-            foreach ($endPoint as $candidate => $child) {
-                if (is_string($candidate) && strcmp($candidate, $key) === 0) {
-                    return $child;
-                }
-            }
-        }
-        return null;
+//        if (isset($endPoint[$key])) {
+//            return $endPoint[$key];
+//        }
+        return array_key_exists($key, $endPoint) ? $endPoint[$key] : null;
     }
 
     /** Splits a type specification by '|' outside of parentheses.
@@ -427,7 +420,7 @@ class DefinitionChecker
                 ]
             ],
             'repeat-control' => 'string(insert|delete|insert-confirm|confirm-insert|delete-confirm|'
-                .'confirm-delete|copy|copy-*|confirm-copy|confirm-copy-*|insert-top|confirm-top-insert)',
+                . 'confirm-delete|copy|copy-*|confirm-copy|confirm-copy-*|insert-top|confirm-top-insert)',
             'navi-control' => 'string(step|step-hide|step-nonavi|step-hide-nonavi|step-fullnavi|step-hide-fullnavi'
                 . '|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
                 . '|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',

@@ -72,6 +72,7 @@ trait Proxy_Auth
         $this->dbSettings->setIsPassThrough2FA($options['authentication']['is-pass-through-2FA']
             ?? Params::getParameterValue("isPassThrough2FA", true));
         $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-code']
+            ?? $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", ($this->dbSettings->getMethod2FA() === 'email') ? 4 : 6);
 
         /* Authentication and Authorization Judgment */

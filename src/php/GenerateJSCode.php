@@ -409,6 +409,7 @@ class GenerateJSCode
             ($options['authentication']['is-pass-through-2FA']
                 ?? Params::getParameterValue("isPassThrough2FA", true)) ? "true" : "false");
         $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-code']
+            ?? $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", ($method2FA === 'email') ? 4 : 6);
         $isFix2FACodeLen = strlen(Params::getParameterValue("fixed2FACode", ''));
         $this->generateAssignJS("IMLibAuthenticationUI.digitsOf2FACode", intval(
