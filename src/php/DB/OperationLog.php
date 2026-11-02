@@ -159,8 +159,8 @@ class OperationLog
             $dbInstance->dbSettings->addValueWithField("user", $userValue);
             $dbInstance->dbSettings->addValueWithField("client_id_in", $_POST['clientid'] ?? '');
             $dbInstance->dbSettings->addValueWithField("client_id_out", $result['clientid'] ?? '');
-            $dbInstance->dbSettings->addValueWithField("client_ip", $_SERVER['REMOTE_ADDR']);
-            $dbInstance->dbSettings->addValueWithField("path", $_SERVER['PHP_SELF']);
+            $dbInstance->dbSettings->addValueWithField("client_ip", $_SERVER['REMOTE_ADDR'] ?? '');
+            $dbInstance->dbSettings->addValueWithField("path", $_SERVER['PHP_SELF'] ?? '');
             $dbInstance->dbSettings->addValueWithField("access", $access);
             $requireAuth = isset($result['requireAuth']) && ($result['requireAuth'] === true || $result['requireAuth'] === 'true');
             $dbInstance->dbSettings->addValueWithField("require_auth", $requireAuth);

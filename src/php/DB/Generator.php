@@ -449,43 +449,28 @@ class Generator
      */
     private function decidedFieldType(string $field): string
     {
-        if (preg_match("/{$this->options['datetime-suffix']}$/", $field)) {
-            return "DATETIME";
+        $options = $this->options ?? [];
+        $typeBySuffix = [
+            'datetime-suffix' => 'DATETIME', 'date-suffix' => 'DATE', 'time-suffix' => 'TIME',
+            'int-suffix' => 'INT', 'double-suffix' => 'DOUBLE', 'text-suffix' => 'TEXT',
+        ];
+        $typeByPrefix = [
+            'datetime-prefix' => 'DATETIME', 'date-prefix' => 'DATE', 'time-prefix' => 'TIME',
+            'int-prefix' => 'INT', 'double-prefix' => 'DOUBLE', 'text-prefix' => 'TEXT',
+        ];
+        foreach ($typeBySuffix as $key => $type) {
+            if (!empty($options[$key])
+                && preg_match('/' . preg_quote(strval($options[$key]), '/') . '$/', $field)) {
+                return $type;
+            }
         }
-        if (preg_match("/{$this->options['date-suffix']}$/", $field)) {
-            return "DATE";
+        foreach ($typeByPrefix as $key => $type) {
+            if (!empty($options[$key])
+                && preg_match('/^' . preg_quote(strval($options[$key]), '/') . '/', $field)) {
+                return $type;
+            }
         }
-        if (preg_match("/{$this->options['time-suffix']}$/", $field)) {
-            return "TIME";
-        }
-        if (preg_match("/{$this->options['int-suffix']}$/", $field)) {
-            return "INT";
-        }
-        if (preg_match("/{$this->options['double-suffix']}$/", $field)) {
-            return "DOUBLE";
-        }
-        if (preg_match("/{$this->options['text-suffix']}$/", $field)) {
-            return "TEXT";
-        }
-        if (preg_match("/^{$this->options['datetime-prefix']}/", $field)) {
-            return "DATETIME";
-        }
-        if (preg_match("/^{$this->options['date-prefix']}/", $field)) {
-            return "DATE";
-        }
-        if (preg_match("/^{$this->options['time-prefix']}/", $field)) {
-            return "TIME";
-        }
-        if (preg_match("/^{$this->options['int-prefix']}/", $field)) {
-            return "INT";
-        }
-        if (preg_match("/^{$this->options['double-prefix']}/", $field)) {
-            return "DOUBLE";
-        }
-        if (preg_match("/^{$this->options['text-prefix']}/", $field)) {
-            return "TEXT";
-        }
-        return $this->options['default-type'];
+        return $options['default-type'] ?? 'TEXT';
     }
 
     /** Get the system prepared schema.

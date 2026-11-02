@@ -18,6 +18,7 @@ namespace INTERMediator;
 
 use INTERMediator\DB\DBClass;
 use INTERMediator\DB\Logger;
+use INTERMediator\DB\Support\DB_Interface_Registering;
 
 /**
  * NotifyServer handles client registration and notification triggers for data changes.
@@ -26,14 +27,14 @@ use INTERMediator\DB\Logger;
  */
 class NotifyServer
 {
-    /** The database class instance used for notifications.
-     * @var DBClass
+    /** The notification handler of the database class. It is null until the initialization succeeds.
+     * @var DB_Interface_Registering|null
      */
-    private DBClass $dbClass;
+    private ?DB_Interface_Registering $handler = null;
     /** The client ID associated with the notification session.
      * @var string|null
      */
-    private ?string $clientId;
+    private ?string $clientId = null;
 
     /** Initializes the NotifyServer with a DBClass and client ID.
      * Checks if the notification handler and required table exist.
@@ -43,28 +44,32 @@ class NotifyServer
      */
     public function initialize(DBClass $dbClass, ?string $clientId): bool
     {
-        $this->dbClass = $dbClass;
+        $this->handler = null;
         $this->clientId = $clientId;
-        if (!is_subclass_of($dbClass->notifyHandler, 'INTERMediator\DB\Support\DB_Interface_Registering')
-            || !$dbClass->notifyHandler->isExistRequiredTable()
-        ) {
+        $handler = $dbClass->notifyHandler;
+        if (!($handler instanceof DB_Interface_Registering) || !$handler->isExistRequiredTable()) {
             return false;
         }
+        $this->handler = $handler;
         return true;
     }
 
     /**
      * Triggers a notification event to the service server for the specified channels and data.
-     * @param array<array-key, mixed> $channels Array of client IDs to notify.
+     * @param array<array-key, mixed>|null $channels Array of client IDs to notify. Null means the failure of matching.
      * @param string $operation Operation type (e.g., 'update', 'create', 'delete').
      * @param array<array-key, mixed> $data Data describing the change.
      * @return void
      */
-    private function trigger(array $channels, string $operation, array $data): void
+    private function trigger(?array $channels, string $operation, array $data): void
     {
         $logger = Logger::getInstance();
+        if (empty($channels)) {
+            $logger->setDebugMessage("[NotifyServer] trigger / No channels to notify, operation={$operation}", 2);
+            return;
+        }
         $logger->setDebugMessage(str_replace("\n", "", "[NotifyServer] trigger / channels="
-            . var_export($channels, true) . "operation={$operation}, data=" . var_export($data, true)), 2);
+            . var_export($channels, true) . ", operation={$operation}, data=" . var_export($data, true)), 2);
 
         $ssInstance = ServiceServerProxy::instance();
         $ssInstance->clearMessages();
@@ -83,8 +88,8 @@ class NotifyServer
      */
     public function register(string $entity, string $condition, array $pkArray): ?string
     {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
-        return $this->dbClass->notifyHandler?->register($this->clientId, $entity, $condition, $pkArray);
+        Logger::getInstance()->setDebugMessage("[NotifyServer] register", 2);
+        return $this->handler?->register($this->clientId, $entity, $condition, $pkArray);
     }
 
     /**
@@ -95,11 +100,14 @@ class NotifyServer
      */
     public function unregister(?string $client, ?array $tableKeys): bool
     {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
-        if ($this->dbClass->notifyHandler) {
-            return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
+        Logger::getInstance()->setDebugMessage("[NotifyServer] unregister", 2);
+        if (!is_null($tableKeys)) {
+            $tableKeys = array_values(array_filter($tableKeys, fn($regId) => !empty($regId)));
+            if (count($tableKeys) === 0) {
+                return !is_null($this->handler);
+            }
         }
-        return false;
+        return $this->handler?->unregister($client, $tableKeys) ?? false;
     }
 
     /**
@@ -114,9 +122,9 @@ class NotifyServer
      */
     public function updated(?string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
     {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
-        if ($this->dbClass->notifyHandler) {
-            $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
+        Logger::getInstance()->setDebugMessage("[NotifyServer] updated", 2);
+        if ($this->handler) {
+            $channels = $this->handler->matchInRegistered($clientId, $entity, $pkArray);
             $this->trigger($channels, 'update',
                 ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
         }
@@ -134,9 +142,9 @@ class NotifyServer
      */
     public function created(?string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
-        if ($this->dbClass->notifyHandler) {
-            $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkField, $pkArray);
+        Logger::getInstance()->setDebugMessage("[NotifyServer] created", 2);
+        if ($this->handler) {
+            $channels = $this->handler->appendIntoRegistered($clientId, $entity, $pkField, $pkArray);
             $this->trigger($channels, 'create',
                 ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'value' => array_values($record)]);
         }
@@ -151,9 +159,9 @@ class NotifyServer
      */
     public function deleted(?string $clientId, string $entity, array $pkArray): void
     {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
-        if ($this->dbClass->notifyHandler) {
-            $channels = $this->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
+        Logger::getInstance()->setDebugMessage("[NotifyServer] deleted", 2);
+        if ($this->handler) {
+            $channels = $this->handler->removeFromRegistered($clientId, $entity, $pkArray);
 
             $data = array('entity' => $entity, 'pkvalue' => $pkArray);
             $this->trigger($channels, 'delete', $data);

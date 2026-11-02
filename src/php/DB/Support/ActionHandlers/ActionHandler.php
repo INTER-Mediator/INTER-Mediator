@@ -273,10 +273,10 @@ abstract class ActionHandler
                     $proxy->dbClass->authHandler->authSupportChangePassword($proxy->signedUser, $hashedPw);
                 }
                 return true;
-            } else if ($proxy->paramResponse2m === $hmacValue2m) {
+            } else if (hash_equals($proxy->paramResponse2m ?? '', $hmacValue2m)) {
                 Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] sha2 hash from sha1 hash used.", 2);
                 return true;
-            } else if ($proxy->paramResponse2 === $hmacValue) {
+            } else if (hash_equals($proxy->paramResponse2 ?? '', $hmacValue)) {
                 Logger::getInstance()->setDebugMessage("[ActionHandler][sessionStorageCheckAuth] sha2 hash used.", 2);
                 return true;
             } else {

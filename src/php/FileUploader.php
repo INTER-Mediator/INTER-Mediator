@@ -52,7 +52,7 @@ class FileUploader
      */
     public function __construct()
     {
-        $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
+        $this->accessLogLevel = (int)Params::getParameterValue("accessLogLevel", 0);
     }
 
     /**
@@ -65,7 +65,7 @@ class FileUploader
             return [];
         }
 
-        $this->outputMessage['name'] = $_POST["_im_contextname"];
+        $this->outputMessage['name'] = $_POST["_im_contextname"] ?? null;
         return $this->outputMessage;
     }
 
@@ -97,33 +97,37 @@ class FileUploader
         if (count($_FILES) === 0) {
             $this->db->logger->setErrorMessage($messages->getMessageAs(3201));
         } else {
+            $errorCodes = [];
             foreach ($_FILES as $fileInfo) {
                 if (isset($fileInfo["error"])) {
-                    switch (is_array($fileInfo["error"]) ? $fileInfo["error"][0] : $fileInfo["error"]) {
-                        case UPLOAD_ERR_OK:
-                            break;
-                        case UPLOAD_ERR_NO_FILE:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
-                            break;
-                        case UPLOAD_ERR_INI_SIZE:
-                        case UPLOAD_ERR_FORM_SIZE:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3203));
-                            break;
-                        case UPLOAD_ERR_PARTIAL:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3204));
-                            break;
-                        case UPLOAD_ERR_NO_TMP_DIR:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3205));
-                            break;
-                        case UPLOAD_ERR_CANT_WRITE:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3206));
-                            break;
-                        case UPLOAD_ERR_EXTENSION:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3207));
-                            break;
-                        default:
-                            $this->db->logger->setErrorMessage($messages->getMessageAs(3208));
-                    }
+                    $errorCodes = array_merge($errorCodes, (array)$fileInfo["error"]);
+                }
+            }
+            foreach ($errorCodes as $errorCode) {
+                switch ($errorCode) {
+                    case UPLOAD_ERR_OK:
+                        break;
+                    case UPLOAD_ERR_NO_FILE:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
+                        break;
+                    case UPLOAD_ERR_INI_SIZE:
+                    case UPLOAD_ERR_FORM_SIZE:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3203));
+                        break;
+                    case UPLOAD_ERR_PARTIAL:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3204));
+                        break;
+                    case UPLOAD_ERR_NO_TMP_DIR:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3205));
+                        break;
+                    case UPLOAD_ERR_CANT_WRITE:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3206));
+                        break;
+                    case UPLOAD_ERR_EXTENSION:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3207));
+                        break;
+                    default:
+                        $this->db->logger->setErrorMessage($messages->getMessageAs(3208));
                 }
             }
         }
@@ -145,14 +149,11 @@ class FileUploader
      */
     public function processing(?array $dataSource, ?array $options, ?array $dbSpec, int $debug): void
     {
-        $contextName = $_POST["_im_contextname"];
-        $keyField = $_POST["_im_keyfield"];
-        $keyValue = $_POST["_im_keyvalue"];
-        $field = [$_POST["_im_field"]];
+        $contextName = $_POST["_im_contextname"] ?? null;
+        $keyField = $_POST["_im_keyfield"] ?? null;
+        $keyValue = $_POST["_im_keyvalue"] ?? null;
+        $field = [$_POST["_im_field"] ?? null];
         $files = $_FILES;
-
-//        file_put_contents("/tmp/1.txt", json_encode($files));
-//        file_put_contents("/tmp/2.txt", json_encode($_POST));
 
         /*
 1 File uploaded <$_FILES>
@@ -220,7 +221,7 @@ class FileUploader
          */
 
         $this->processingWithParameters($dataSource, $options, $dbSpec, $debug,
-            $contextName, $keyField, $keyValue, $field, $files, false);
+            $contextName, $keyField, $keyValue, $field, $files, true);
         $this->db->finishCommunication();
         $this->db->exportOutputDataAsJSON();
     }
@@ -253,9 +254,10 @@ class FileUploader
 
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
         $dbClass = ($contextDef['db-class'] ?? ($dbSpec['db-class'] ?? Params::getParameterValue('dbClass', '')));
-        $className = $this->getClassNameForMedia($dbClass); // Decided media class name
+        $targetField = $field[0] ?? null;
+        $className = $this->getClassNameForMedia($dbClass, $targetField); // Decided media class name
 
-        if (count($files) < 1) { // If no file is uploaded.
+        if (empty($files)) { // If no file is uploaded.
             $messages = IMUtil::getMessageClassInstance();
             $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
             $this->db->processingRequest("nothing");
@@ -267,7 +269,6 @@ class FileUploader
         }
 
         // Getting the custom file name settings from context definition
-        $targetField = $field[0];
         $customFileName = null;
         if (isset($contextDef['file-upload'])) {
             foreach ($contextDef['file-upload'] as $uploadDef) {
@@ -281,7 +282,7 @@ class FileUploader
         if (!is_null($customFileName)) {
             $this->db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
             $this->db->processingRequest("read");
-            $currentRecord = ($this->db->getDatabaseResult())[0];
+            $currentRecord = ($this->db->getDatabaseResult())[0] ?? [];
             $this->db->logger->setDebugMessage(
                 "[FileUploader::processingWithParameters] Current record: " . var_export($currentRecord, true), 2);
             $customFileName = IMUtil::templating($customFileName, $currentRecord);
@@ -295,13 +296,14 @@ class FileUploader
             $mediaClassObj = new $className();
             $mediaClassObj->processing($this->db, null, $options, $files, $noOutput, $field,
                 $contextName, $keyField, $keyValue, $dataSource, $dbSpec, $debug, $customFileName);
-            if ($field[0] == "_im_csv_upload") {    // CSV File uploading
+            if ($targetField == "_im_csv_upload") {    // CSV File uploading
                 if (isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
                     $this->dbresult = $this->db->outputOfProcessing['dbresult'];
                 }
             }
         } else {
-            $this->db->logger->setErrorMessage("[INTER-Mediator] The media handling class doesn't implement the MediaProcessing interface.");
+            $this->db->logger->setErrorMessage("[INTER-Mediator] The media handling class doesn't extend the MediaProcessing class.");
+            $this->db->processingRequest("nothing");
             if (!$noOutput) {
                 $this->db->finishCommunication();
                 $this->db->exportOutputDataAsJSON();
@@ -309,119 +311,58 @@ class FileUploader
         }
     }
 
-    /** Outputs the upload progress for APC-enabled servers as an HTML page.
-     * @return void
-     */
-    public function processInfo(): void
-    {
-        if (function_exists('apc_fetch')) {
-            $onloadScript = "window.onload=function(){setInterval(\"location.reload()\",500);};";
-            echo "<html lang='en'><head><script>{$onloadScript}</script></head><body style='margin:0;padding:0'>";
-            echo "<div style='width:160px;border:1px solid #555555;padding:1px;background-color:white;'>";
-            $status = apc_fetch('upload_' . $_GET['uploadprocess']);
-            if ($status === false) {
-                $progress = 0;
-            } else {
-                $progress = round($status['current'] / $status['total'], 2) * 100;
-            }
-            echo "<div style='width:{$progress}%;height:20px;background-color: #ffb52d;'>";
-            echo "<div style='position:absolute;left:0;top:0;padding-left:8px;'>";
-            echo $progress . " %";
-            echo "</div></div></div></body></html>";
-        }
-    }
-
-    /** Validates and returns a redirect URL if it is safe, otherwise returns NULL.
-     * @param string|null $url The URL to validate.
-     * @return string|null The validated URL or NULL if invalid.
-     */
-    protected function getRedirectUrl(?string $url): ?string
-    {
-        if (str_contains(strtolower($url), '%0a') || str_contains(strtolower($url), '%0d')) {
-            return NULL;
-        }
-
-        if (str_starts_with($url, 'http://' . php_uname('n') . '/') ||
-            str_starts_with($url, 'https://' . php_uname('n') . '/')
-        ) {
-            return $url;
-        }
-
-        if (isset($_SERVER['SERVER_ADDR']) &&
-            str_starts_with($url, 'http://' . $_SERVER['SERVER_ADDR'] . '/')
-        ) {
-            return $url;
-        }
-
-        $webServerName = Params::getParameterValue('webServerName', null);
-        if (!is_null($webServerName)) {
-            if (is_array($webServerName)) {
-                foreach ($webServerName as $name) {
-                    if ($this->checkRedirectUrl($url, $name) === TRUE) {
-                        return $url;
-                    }
-                }
-            } else {
-                if ($this->checkRedirectUrl($url, $webServerName) === TRUE) {
-                    return $url;
-                }
-            }
-        }
-        return NULL;
-    }
-
-    /** Checks if the given URL matches the allowed web server name.
-     * @param string|null $url The URL to check.
-     * @param string|null $webServerName The allowed web server name.
-     * @return bool True if the URL is allowed, false otherwise.
-     */
-    protected function checkRedirectUrl(?string $url, ?string $webServerName): bool
-    {
-        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
-            $parsedUrl = parse_url($url);
-
-            $util = new IMUtil();
-            if ($util->checkHost($parsedUrl['host'] ?? '', $webServerName)) {
-                return TRUE;
-            }
-        }
-
-        return FALSE;
-    }
-
     /** Determines the media handler class name based on the database class and context definition.
      * @param string $dbclass The database class name.
+     * @param string|null $targetField The target field name. The file-upload items for other fields are ignored.
      * @return string The media handler class name.
      */
-    private function getClassNameForMedia(string $dbclass): string
+    private function getClassNameForMedia(string $dbclass, ?string $targetField = null): string
     {
-        $className = "FileSystem";
-        $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
+        return self::decideMediaClassName($dbclass,
+            $this->db->dbSettings->getDataSourceTargetArray()['file-upload'] ?? null, $targetField);
+    }
 
-        if (($dbclass === 'FileMaker_FX' || $dbclass === 'FileMaker_DataAPI') &&
-            isset($contextDef['file-upload'])) {
-            foreach ($contextDef['file-upload'] as $item) {
-                if (isset($item['container'])
-                    && (($item['container'] === TRUE) || ($item['container'] === 'FileMaker'))) {
-                    $className = "FileMakerContainer";
-                    break;
+    /** Determines the media handler class name from the file-upload definitions.
+     * @param string $dbclass The database class name.
+     * @param array<array-key, mixed>|null $uploadDefs The 'file-upload' definitions of the context.
+     * @param string|null $targetField The target field name. The items for other fields are ignored.
+     * @return string The media handler class name.
+     */
+    public static function decideMediaClassName(string $dbclass, ?array $uploadDefs, ?string $targetField): string
+    {
+        $isFileMaker = ($dbclass === 'FileMaker_FX' || $dbclass === 'FileMaker_DataAPI');
+        foreach ($uploadDefs ?? [] as $item) {
+            if (!isset($item['container'])
+                || (isset($item['field']) && !is_null($targetField) && $item['field'] !== $targetField)) {
+                continue;
+            }
+            $container = $item['container'];
+            if ($container === TRUE) {
+                if ($isFileMaker) {
+                    return "FileMakerContainer";
                 }
+                continue;
+            }
+            if (!is_string($container)) {
+                continue;
+            }
+            switch (strtolower($container)) {
+                case 'filemaker':
+                case 'filemakercontainer':
+                    if ($isFileMaker) {
+                        return "FileMakerContainer";
+                    }
+                    break;
+                case 's3':
+                    return "AWSS3";
+                case 'dropbox':
+                    return "Dropbox";
+                case 'fileurl':
+                    return "FileURL";
+                case 'filesystem':
+                    return "FileSystem";
             }
         }
-        if (isset($contextDef['file-upload'])) {
-            foreach ($contextDef['file-upload'] as $item) {
-                if (isset($item['container']) && (strtolower($item['container']) === 's3')) {
-                    $className = "AWSS3";
-                    break;
-                } else if (isset($item['container']) && (strtolower($item['container']) === 'dropbox')) {
-                    $className = "Dropbox";
-                    break;
-                } else if (isset($item['container']) && (strtolower($item['container']) === 'fileurl')) {
-                    $className = "FileURL";
-                    break;
-                }
-            }
-        }
-        return $className;
+        return "FileSystem";
     }
 }
