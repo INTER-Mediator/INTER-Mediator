@@ -127,8 +127,8 @@ class GenerateJSCode
         $appCurrency = Params::getParameterValue("appCurrency", 'JP');
         $resetPage = Params::getParameterValue("resetPage", null);
         $enrollPage = Params::getParameterValue("enrollPage", null);
+        $serviceServerHost = $this->decideServiceServerHost(Params::getParameterValue("serviceServerHost", null));
         $serviceServerPort = Params::getParameterValue("serviceServerPort", "11478");
-        $serviceServerHost = Params::getParameterValue("serviceServerHost", null);
         $serviceServerProtocol = Params::getParameterValue("serviceServerProtocol", 'ws');
         $notUseServiceServer = Params::getParameterValue("notUseServiceServer", null);
         $activateClientService = Params::getParameterValue("activateClientService", null);
@@ -140,15 +140,6 @@ class GenerateJSCode
         $prohibitDebugMode = Params::getParameterValue('prohibitDebugMode', false);
         $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
         $enrollPage = $options['authentication']['enroll-page'] ?? $enrollPage ?? null;
-        $serviceServerHost = $serviceServerHost ?? $_SERVER['SERVER_ADDR'] ?? null;
-        if (!empty($_SERVER['HTTP_HOST'])) {
-            if (!str_contains($_SERVER['HTTP_HOST'], ':')) {
-                $serviceServerHost = $serviceServerHost ?? $_SERVER['HTTP_HOST'];
-            } else {
-                $serviceServerHost = $serviceServerHost ?? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) ?? null;
-            }
-        }
-        $serviceServerHost = $serviceServerHost ?? 'localhost';
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
         $activateGenerator = Params::getParameterValue("activateGenerator", false);
@@ -180,8 +171,8 @@ class GenerateJSCode
         $isOAuthAvailable = false;
         if (is_array($oAuth)) {
             foreach ($oAuth as $provider => $info) {
-                if ($provider) {
-                    $isOAuthAvailable = true;
+                if (!is_array($info)) {
+                    continue;
                 }
                 $clientOAuthParams[$provider] = ['AuthButton' => $info['AuthButton'] ?? ''];
                 if (isset($info['Behavior'])) {
@@ -193,16 +184,18 @@ class GenerateJSCode
                 if (!empty($errorMessage)) {
                     unset($clientOAuthParams[$provider]);
                     $this->generateErrorMessageJS($errorMessage);
+                } else if ($provider) {
+                    $isOAuthAvailable = true;
                 }
             }
         }
         if (is_array($oAuth)) {
             $this->generateAssignJS(
                 "IMLibAuthenticationUI.isOAuthAvailable", $isOAuthAvailable ? "true" : "false");
-            $this->generateAssignJS("IMLibAuthentication.oAuthParams", "[]");
+            $this->generateAssignJS("IMLibAuthentication.oAuthParams", "{}");
             foreach ($clientOAuthParams as $provider => $info) {
                 $providerStr = $this->jsStr($provider);
-                $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$providerStr}]", "[]");
+                $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$providerStr}]", "{}");
                 $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$providerStr}][\"AuthButton\"]",
                     $this->jsStr($info['AuthButton']));
                 $this->generateAssignJS("IMLibAuthentication.oAuthParams[{$providerStr}][\"AuthURL\"]",
@@ -216,28 +209,28 @@ class GenerateJSCode
 
         // Generate the link to the definition file editor
         $relativeToDefFile = '';
+        $relativeToEditor = null;
         $editorPath = realpath($pathToIM . $ds . 'editors');
-        if ($editorPath) { // In the case of core-only build.
-            $defFilePath = strval(realpath($documentRoot . $scriptName));
+        $defFilePath = realpath($documentRoot . $scriptName);
+        if ($editorPath && $defFilePath) { // In the case of core-only build, editors don't exist.
             while (!str_starts_with($defFilePath, rtrim($editorPath, $ds) . $ds)
                 && dirname($editorPath) !== $editorPath) {
                 $editorPath = dirname($editorPath);
                 $relativeToDefFile .= '..' . $ds;
             }
             $relativeToDefFile .= substr($defFilePath, strlen(rtrim($editorPath, $ds)) + 1);
-            $editorPath = $pathToIM . $ds . 'editors' . $ds . 'defedit.html';
-        } else {
-            $editorPath = "Editors don't exist.";
+            $relativeToDefFile = str_replace($ds, '/', $relativeToDefFile);
+            $relativeToEditor = $this->pathFromDocumentRoot(
+                $pathToIM . $ds . 'editors' . $ds . 'defedit.html', $documentRoot);
         }
-        if (file_exists($editorPath)) {
-            $relativeToEditor = substr($editorPath, strlen($documentRoot));
+        if (!is_null($relativeToEditor)) {
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
                 "function(){return " . $this->jsStr("{$relativeToEditor}?target={$relativeToDefFile}") . ";}");
         } else {
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
                 "function(){return '';}");
         }
-        $relativeToIM = substr($pathToIM, strlen($documentRoot));
+        $relativeToIM = $this->pathFromDocumentRoot($pathToIM, $documentRoot) ?? '';
         $this->generateAssignJS("INTERMediatorOnPage.getPathToIMRoot",
             "function(){return " . $this->jsStr($relativeToIM) . ";}");
 
@@ -247,7 +240,7 @@ class GenerateJSCode
         $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
         if (is_subclass_of($dbClassName, DBClass::class)) {
             $dbInstance = new $dbClassName();
-            $dbInstance->setupHandlers($dbDSN);
+            $dbInstance->setupHandlers($dbSpecification['dsn'] ?? $dbDSN);
             if ($dbInstance->specHandler != null) {
                 $defaultKey = $dbInstance->specHandler->getDefaultKey();
             }
@@ -255,7 +248,7 @@ class GenerateJSCode
         if ($defaultKey !== null) {
             $items = array();
             foreach ($dataSource as $context) {
-                if (!array_key_exists('key', $context)) {
+                if (is_array($context) && !array_key_exists('key', $context)) {
                     $context['key'] = $defaultKey;
                 }
                 $items[] = $context;
@@ -270,7 +263,7 @@ class GenerateJSCode
             $pathToMySelf = ($scriptPathPrefix ?? '') . $scriptName . ($scriptPathSuffix ?? '');
         } else {
             $theURL = strval(parse_url(strval($_SERVER['HTTP_REFERER'] ?? ''), PHP_URL_PATH));
-            $pathToMySelf = IMUtil::relativePath($theURL, $scriptName);
+            $pathToMySelf = ($theURL === '') ? $scriptName : IMUtil::relativePath($theURL, $scriptName);
         }
         $qStr = isset($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '';
 
@@ -342,7 +335,7 @@ class GenerateJSCode
             "{version:" . $this->jsStr($metadata['version'] ?? '')
             . ",releasedate:" . $this->jsStr($metadata['time'] ?? '') . "}");
 
-        $isDebugMode = !(isset($prohibitDebugMode) && $prohibitDebugMode) && $debug;
+        $isDebugMode = !$prohibitDebugMode && $debug;
         $this->generateAssignJS("INTERMediatorLog.debugMode", $isDebugMode ? intval($debug) : "false");
 
         if (!is_null($appLocale)) {
@@ -357,22 +350,19 @@ class GenerateJSCode
 
         // Check Authentication
         $boolValue = "false";
-        $requireAuthenticationContext = array();
         if (isset($options['authentication'])) {
             $boolValue = "true";
         }
         foreach ($dataSource as $aContext) {
             if (isset($aContext['authentication'])) {
                 $boolValue = "true";
-                $requireAuthenticationContext[] = $aContext['name'];
+                break;
             }
         }
         $this->generateAssignJS(
             "IMLibAuthentication.requireAuthentication", $boolValue);
         $this->generateAssignJS(
             "IMLibAuthentication.credentialCookieDomain", $this->jsStr($credentialCookieDomain ?? ''));
-//        $this->generateAssignJS(
-//            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext));
         if (!is_null($enrollPage)) {
             $this->generateAssignJS("IMLibAuthenticationUI.enrollPageURL", $this->jsStr($enrollPage));
         }
@@ -418,7 +408,8 @@ class GenerateJSCode
         $this->generateAssignJS("IMLibAuthenticationUI.isPassThrough2FA",
             ($options['authentication']['is-pass-through-2FA']
                 ?? Params::getParameterValue("isPassThrough2FA", true)) ? "true" : "false");
-        $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
+        $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-code']
+            ?? $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", ($method2FA === 'email') ? 4 : 6);
         $isFix2FACodeLen = strlen(Params::getParameterValue("fixed2FACode", ''));
         $this->generateAssignJS("IMLibAuthenticationUI.digitsOf2FACode", intval(
@@ -443,15 +434,17 @@ class GenerateJSCode
             "IMLibAuthenticationUI.samlWithBuiltInAuth", $samlWithBuiltInAuth ? 'true' : 'false');
 
         // Initial values for local context
-        if (!isset($valuesForLocalContext)) {
+        if (!is_array($valuesForLocalContext)) {
             $valuesForLocalContext = array();
         }
         if (isset($options['local-context'])) {
             foreach ($options['local-context'] as $item) {
-                $valuesForLocalContext[$item['key']] = $item['value'];
+                if (isset($item['key'])) {
+                    $valuesForLocalContext[$item['key']] = $item['value'] ?? '';
+                }
             }
         }
-        if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
+        if (count($valuesForLocalContext) > 0) {
             $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", IMUtil::arrayToJS($valuesForLocalContext));
         }
         $sss = ServiceServerProxy::instance()->isActive();
@@ -483,6 +476,58 @@ class GenerateJSCode
             $this->jsStr(Params::getParameterValue('authPanelExp', "")));
         $this->generateAssignJS("IMLibAuthenticationUI.authPanelExp2FA",
             $this->jsStr(Params::getParameterValue('authPanelExp2FA', "")));
+    }
+
+    /** Decides the host name of the service server which the browser connects to.
+     * The configured value has priority, then the HTTP_HOST without the port, the SERVER_ADDR, and 'localhost'.
+     * @param mixed $configured The value of the serviceServerHost parameter. The empty value means auto-detection.
+     * @return string The host name. The IPv6 address is enclosed in brackets.
+     */
+    private function decideServiceServerHost(mixed $configured): string
+    {
+        if (is_string($configured) && trim($configured) !== '') {
+            return trim($configured);
+        }
+        $httpHost = trim(strval($_SERVER['HTTP_HOST'] ?? ''));
+        if ($httpHost !== '') {
+            if (str_starts_with($httpHost, '[')) {
+                $closePos = strpos($httpHost, ']');
+                if ($closePos !== false) {
+                    return substr($httpHost, 0, $closePos + 1);
+                }
+            } else if (substr_count($httpHost, ':') > 1) {
+                return "[{$httpHost}]";
+            } else {
+                $host = explode(':', $httpHost)[0];
+                if ($host !== '') {
+                    return $host;
+                }
+            }
+        }
+        $serverAddr = trim(strval($_SERVER['SERVER_ADDR'] ?? ''));
+        if ($serverAddr !== '') {
+            return str_contains($serverAddr, ':') ? "[{$serverAddr}]" : $serverAddr;
+        }
+        return 'localhost';
+    }
+
+    /** Returns the URL path of the file system path relative to the document root.
+     * @param string $path The file system path.
+     * @param string $documentRoot The document root.
+     * @return string|null The URL path beginning with '/', or null if the path isn't under the document root.
+     */
+    private function pathFromDocumentRoot(string $path, string $documentRoot): ?string
+    {
+        $realPath = realpath($path);
+        $realRoot = realpath($documentRoot);
+        if ($realPath === false || $realRoot === false) {
+            return null;
+        }
+        $realRoot = rtrim($realRoot, DIRECTORY_SEPARATOR);
+        if ($realPath !== $realRoot && !str_starts_with($realPath, $realRoot . DIRECTORY_SEPARATOR)) {
+            return null;
+        }
+        return str_replace(DIRECTORY_SEPARATOR, '/', substr($realPath, strlen($realRoot)));
     }
 
     /** Combines and returns the contents of required JavaScript files as a string.

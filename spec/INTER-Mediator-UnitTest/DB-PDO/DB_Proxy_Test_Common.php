@@ -78,6 +78,21 @@ abstract class DB_Proxy_Test_Common extends TestCase
         date_default_timezone_set('UTC');
     }
 
+    /**
+     * Tear down the test environment.
+     * Proxy and DBClass hold a circular reference to each other, so PHP's refcounting GC can't
+     * free the PDO connection immediately. Explicitly drop the reference and force a GC cycle
+     * collection here to close the DB connection promptly and avoid exhausting the server's
+     * max_connections during a long test run.
+     *
+     * @return void
+     */
+    function tearDown(): void
+    {
+        $this->db_proxy = new Proxy(true);
+        gc_collect_cycles();
+    }
+
 //    #[RunInSeparateProcess]
 //    #[PreserveGlobalState(false)]
 //    function test___construct()

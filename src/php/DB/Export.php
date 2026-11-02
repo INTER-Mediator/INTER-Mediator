@@ -78,7 +78,7 @@ class Export implements ProtocolProcessing
             foreach ($contextData as $record) {
                 $newRecord = [];
                 foreach ($keysArray as $key) {
-                    $newRecord[] = $record[$key];
+                    $newRecord[] = $record[$key] ?? '';
                 }
                 $result[] = $newRecord;
             }

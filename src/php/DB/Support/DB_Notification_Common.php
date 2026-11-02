@@ -116,7 +116,7 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
      */
     public function addQueriedPrimaryKeys( bool|float|int|string|null $name): void
     {
-        if (!$name) {
+        if ($name === null || $name === false || $name === '') {
             return;
         }
         if (is_null($this->queriedPrimaryKeys)) {
