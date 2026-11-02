@@ -413,12 +413,11 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (is_null($result)) {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                $this->logger->setErrorMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -449,7 +448,7 @@ class FileMaker_DataAPI extends DBClass
         $usePortal = FALSE;
         $portalParentKeyField = NULL;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
-            foreach ($context['relation'] as $relDef) {
+            foreach ($context['relation'] ?? [] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = TRUE;
                     $context['records'] = 1;
@@ -535,7 +534,7 @@ class FileMaker_DataAPI extends DBClass
         }
 
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
-            foreach ($context['relation'] as $relDef) {
+            foreach ($context['relation'] ?? [] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
                         $foreignField = $relDef['foreign-key'];
@@ -668,8 +667,8 @@ class FileMaker_DataAPI extends DBClass
             $conditions = NULL;
         }
 
-        if (isset($tableInfo['global'])) {
-            foreach ($tableInfo['global'] as $condition) {
+        if (isset($context['global'])) {
+            foreach ($context['global'] as $condition) {
                 if (isset($condition['db-operation']) && in_array($condition['db-operation'], array('load', 'read'))) {
                     $this->fmData->{$layout}->setGlobalField(
                         array($condition['field'] => $condition['value'])
@@ -974,8 +973,9 @@ class FileMaker_DataAPI extends DBClass
                     $authorizedUsers = $this->authHandler->getAuthorizedUsers("update");
                     $authorizedGroups = $this->authHandler->getAuthorizedGroups("update");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-                        && array_intersect($belongGroups, $authorizedGroups)
+                    if ((count($authorizedUsers) > 0 || count($authorizedGroups) > 0)
+                        && !in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
+                        && count(array_intersect($belongGroups, $authorizedGroups)) === 0
                     ) {
                         $authFailure = true;
                     }
@@ -1155,9 +1155,9 @@ class FileMaker_DataAPI extends DBClass
                     $this->fmData->{$layout}->update($recId, $data, -1, NULL, $script);
                 }
                 $result = $this->fmData->{$layout}->getRecord($recId);
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                if (!($result instanceof FileMakerRelation)) {
                     $this->logger->setErrorMessage($this->stringWithoutCredential(
-                        get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                        get_debug_type($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
                     return false;
                 }
                 if ($this->fmData->errorCode() > 0) {
@@ -1235,6 +1235,7 @@ class FileMaker_DataAPI extends DBClass
                 || isset($context['authentication']['new'])
                 || isset($context['authentication']['create']))
         ) {
+            $authFailure = false;
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
@@ -1247,19 +1248,24 @@ class FileMaker_DataAPI extends DBClass
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                 $recordData += array(
                     $authInfoField =>
-                        strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]
+                        (count($belongGroups) === 0 || strlen($belongGroups[0]) == 0)
+                            ? IMUtil::randomString(10) : $belongGroups[0]
                 );
             } else {
                 if (!$this->dbSettings->isDBNative()) {
                     $authorizedUsers = $this->authHandler->getAuthorizedUsers("create");
                     $authorizedGroups = $this->authHandler->getAuthorizedGroups("create");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-                        && array_intersect($belongGroups, $authorizedGroups)
+                    if ((count($authorizedUsers) > 0 || count($authorizedGroups) > 0)
+                        && !in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
+                        && count(array_intersect($belongGroups, $authorizedGroups)) === 0
                     ) {
                         $authFailure = true;
                     }
                 }
+            }
+            if ($authFailure) {
+                return null;
             }
         }
         $layout = $this->dbSettings->getEntityForUpdate();
@@ -1283,11 +1289,11 @@ class FileMaker_DataAPI extends DBClass
 
         $recId = $this->fmData->{$layout}->create($recordData, NULL, $script);
         $result = $this->fmData->{$layout}->getRecord($recId);
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (!($result instanceof FileMakerRelation)) {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessageStore(get_class($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
+                $this->errorMessageStore(get_debug_type($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
             }
             return null;
         }
@@ -1358,7 +1364,7 @@ class FileMaker_DataAPI extends DBClass
                 }
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                if (strlen($this->dbSettings->getCurrentUser()) == 0) {
+                if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($belongGroups) == 0) {
                     $authFailure = true;
                 } else {
                     $condition += array($authInfoField => '=' . $belongGroups[0]);
@@ -1368,8 +1374,9 @@ class FileMaker_DataAPI extends DBClass
                     $authorizedUsers = $this->authHandler->getAuthorizedUsers("delete");
                     $authorizedGroups = $this->authHandler->getAuthorizedGroups("delete");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-                        && array_intersect($belongGroups, $authorizedGroups)
+                    if ((count($authorizedUsers) > 0 || count($authorizedGroups) > 0)
+                        && !in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
+                        && count(array_intersect($belongGroups, $authorizedGroups)) === 0
                     ) {
                         $authFailure = true;
                     }
@@ -1385,11 +1392,11 @@ class FileMaker_DataAPI extends DBClass
         } else {
             $result = $this->fmData->{$layout}->query(array($condition), NULL, 1, 1);
         }
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (!($result instanceof FileMakerRelation)) {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessageStore(get_class($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
+                $this->errorMessageStore(get_debug_type($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
             }
             return false;
         }
@@ -1498,6 +1505,9 @@ class FileMaker_DataAPI extends DBClass
         }
         if (!isset($condition['value'])) {
             $condition['value'] = '';
+        }
+        if (!isset($condition['operator'])) {
+            $condition['operator'] = '=';
         }
 
         if (($condition['field'] === 'recordId' && $condition['operator'] === 'undefined') ||

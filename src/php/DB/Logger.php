@@ -216,19 +216,20 @@ class Logger
      */
     public function getMessagesForJS(): array
     {
-        $q = '"';
+        $encodeJSString = function (string $msg): string {
+            return json_encode(str_replace("\n", " ", $msg),
+                    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE)
+                ?: '""';
+        };
         $returnData = array();
         foreach ($this->errorMessage as $oneError) {
-            $returnData[] = "INTERMediatorLog.setErrorMessage({$q}"
-                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
+            $returnData[] = "INTERMediatorLog.setErrorMessage({$encodeJSString($oneError)});";
         }
         foreach ($this->warningMessage as $oneError) {
-            $returnData[] = "INTERMediatorLog.setWarningMessage({$q}"
-                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
+            $returnData[] = "INTERMediatorLog.setWarningMessage({$encodeJSString($oneError)});";
         }
         foreach ($this->debugMessage as $oneError) {
-            $returnData[] = "INTERMediatorLog.setDebugMessage({$q}"
-                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
+            $returnData[] = "INTERMediatorLog.setDebugMessage({$encodeJSString($oneError)});";
         }
         return $returnData;
     }

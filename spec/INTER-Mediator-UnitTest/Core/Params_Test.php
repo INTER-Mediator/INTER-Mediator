@@ -109,6 +109,22 @@ class Params_Test extends TestCase
         $this->assertEquals([], Params::getParameterValue('notExist', []));
     }
 
+    public function testArrayDefaultViaNullFallbackStaysArray(): void
+    {
+        // Regression test for the misuse pattern that broke FileURL::getMedia():
+        // passing an array literal directly as the default for a scalar key returns
+        // only its first element (documented/tested behavior above), not the array itself.
+        $mediaRootDir = 'omg!';
+        $wrongDefault = Params::getParameterValue('notExist', [$mediaRootDir]);
+        $this->assertSame($mediaRootDir, $wrongDefault,
+            "Documents the pitfall: an array literal default for a scalar key degrades to its first element.");
+
+        // The safe pattern used by FileURL::getMedia() keeps the array intact.
+        $safeDefault = Params::getParameterValue('notExist', null) ?? [$mediaRootDir];
+        $this->assertSame([$mediaRootDir], $safeDefault,
+            "getParameterValue(name, null) ?? [default] must keep the array default intact.");
+    }
+
     public function testReset(): void
     {
         Params::setVar('dbPassword', 'changed');

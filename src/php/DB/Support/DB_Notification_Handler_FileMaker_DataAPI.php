@@ -127,13 +127,19 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         $regTable = $this->dbSettings->registerTableName;
 
         $this->fmdb->setupFMDataAPIforDB($regTable);
-        $conditions = array('clientid' => $clientId);
-        if ($tableKeys) {
+        if (is_null($tableKeys)) {
+            $conditions = [['clientid' => $clientId]];
+        } else {
+            $conditions = [];
             foreach ($tableKeys as $regId) {
-                $conditions += array('id' => $regId);
+                if ($regId) {
+                    $conditions[] = ['clientid' => $clientId, 'id' => $regId];
+                }
+            }
+            if (count($conditions) === 0) {
+                return true;
             }
         }
-        $conditions = array($conditions);
         try {
             $result = $this->fmdb->fmData->{$regTable}->query($conditions);
             if (!is_null($result) && $result->count() > 0) {

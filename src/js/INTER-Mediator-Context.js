@@ -559,7 +559,10 @@ class IMLibContext {
         this.enclosureNode.removeChild(child)
       }
     }
-    await INTERMediator_DBAdapter.unregister(regIds)
+    regIds = regIds.filter((regId) => regId)
+    if (regIds.length > 0) {
+      await INTERMediator_DBAdapter.unregister(regIds)
+    }
 
     function isGeneratedNode(node, repNodeTag) {
       if (node.nodeType !== 1) {

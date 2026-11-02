@@ -150,10 +150,10 @@ class Settings
     public string $registerPKTableName = "registeredpks";
     /** @var int
      */
-    private int $params_samlExpiringSeconds;
+    private int $params_samlExpiringSeconds = 3600;
     /** @var string|null
      */
-    private ?string $params_mediaRoot;
+    private ?string $params_mediaRoot = null;
     /** @var bool
      */
     private bool $isSAML = false;
@@ -608,13 +608,10 @@ class Settings
     public function getValuesWithFields(): ?array
     {
         $result = array();
-        $requiredFields = $this->getFieldsRequired();
-        $countFields = count($requiredFields);
-        $fieldValues = $this->getValue();
-        for ($i = 0; $i < $countFields; $i++) {
-            $field = $requiredFields[$i];
-            $value = $fieldValues[$i];
-            $result[$field] = $value;
+        $requiredFields = $this->getFieldsRequired() ?? [];
+        $fieldValues = $this->getValue() ?? [];
+        for ($i = 0, $countFields = count($requiredFields); $i < $countFields; $i++) {
+            $result[$requiredFields[$i]] = $fieldValues[$i] ?? null;
         }
         return $result;
     }

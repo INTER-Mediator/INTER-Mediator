@@ -173,16 +173,17 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         }
 
         $criteria = ["clientid = " . $this->pdoDB->link->quote($clientId ?? '')];
-        if ($tableKeys) {
+        if (!is_null($tableKeys)) {
             $subCriteria = [];
             foreach ($tableKeys as $regId) {
                 if ($regId) {
                     $subCriteria[] = "id = " . $this->pdoDB->link->quote($regId);
                 }
             }
-            if (count($subCriteria) > 0) {
-                $criteria[] = "(" . implode(" or ", $subCriteria) . ")";
+            if (count($subCriteria) === 0) {
+                return true;
             }
+            $criteria[] = "(" . implode(" or ", $subCriteria) . ")";
         }
         $criteriaString = implode(" and ", $criteria);
 
