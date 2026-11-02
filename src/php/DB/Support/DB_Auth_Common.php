@@ -57,7 +57,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
      * @param string $operation The operation type.
      * @return array<array-key, mixed> Operation aliases.
      */
-    private function getOperationSeries(string $operation): array
+    private function getOperationSeries(?string $operation): array
     {
         $operations = array();
         if (($operation === 'select') || ($operation === 'load') || ($operation === 'read')) {
@@ -145,8 +145,9 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $usersArray = array();
-        if ($this->dbSettings->getAuthenticationItem('user')) {
-            $usersArray = array_merge($usersArray, $this->dbSettings->getAuthenticationItem('user'));
+        $authItemUsers = $this->dbSettings->getAuthenticationItem('user');
+        if ($authItemUsers) {
+            $usersArray = array_merge($usersArray, is_array($authItemUsers) ? $authItemUsers : [$authItemUsers]);
         }
         if (isset($tableInfo['authentication']['all']['user'])) {
             $usersArray = array_merge($usersArray, $tableInfo['authentication']['all']['user']);
@@ -170,8 +171,9 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $groupsArray = array();
-        if ($this->dbSettings->getAuthenticationItem('group')) {
-            $groupsArray = array_merge($groupsArray, $this->dbSettings->getAuthenticationItem('group'));
+        $authItemGroups = $this->dbSettings->getAuthenticationItem('group');
+        if ($authItemGroups) {
+            $groupsArray = array_merge($groupsArray, is_array($authItemGroups) ? $authItemGroups : [$authItemGroups]);
         }
         if (isset($tableInfo['authentication']['all']['group'])) {
             $groupsArray = array_merge($groupsArray, $tableInfo['authentication']['all']['group']);

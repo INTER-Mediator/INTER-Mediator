@@ -124,6 +124,21 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     /**
+     * Tear down the test environment.
+     * Proxy and DBClass hold a circular reference to each other, so PHP's refcounting GC can't
+     * free the PDO connection immediately. Explicitly drop the reference and force a GC cycle
+     * collection here to close the DB connection promptly and avoid exhausting the server's
+     * max_connections during a long test run.
+     *
+     * @return void
+     */
+    function tearDown(): void
+    {
+        $this->db_proxy = new Proxy(true);
+        gc_collect_cycles();
+    }
+
+    /**
      * Is My SQL.
      *
      * @return bool True on success, false otherwise.

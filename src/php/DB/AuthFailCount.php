@@ -71,10 +71,10 @@ class AuthFailCount
         return $this->inactivatingOnFails > 0;
     }
 
-    /** Determines whether an authentication attempt should be allowed based on a recent failure count.
+    /** Determines whether recent authentication failures have exceeded the brute-force threshold.
      * @param string $ip The client IP address.
      * @param string|null $username The username attempting authentication.
-     * @return bool True if the attempt is acceptable (not blocked), false if it should be blocked.
+     * @return bool True if the threshold is exceeded and the attempt should be blocked, false otherwise.
      * @throws Exception
      */
     public function isAcceptableAuthFailBruteForce(string $ip, string|null $username = ""): bool
@@ -116,7 +116,8 @@ class AuthFailCount
         Logger::getInstance()->setDebugMessage("[AuthFailCount::addFailRecord] ip={$ip}, username={$username}", 2);
 
         $this->authHandler->authSupportAddAuthFail($ip, $username);
-        if ($this->isAcceptableAuthInActivating($ip, $username)) {
+        if ($this->isAcceptableAuthInActivating($ip, $username ?? '')
+            && !is_null($username)) {
             $this->authHandler->authSupportSetInactive($username, true);
         }
     }

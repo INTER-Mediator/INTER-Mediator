@@ -1,5 +1,6 @@
 <?php
 
+use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 
 require_once(dirname(__FILE__) . '/../DB_Proxy_Test_Common.php');
@@ -32,6 +33,7 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
      * @param int $maxRecord The max record.
      * @param int $hasExtend The has extend.
      * @return void
+     * @throws Exception
      */
     function dbProxySetupForAccess(string $contextName, int $maxRecord, int $hasExtend = 0): void
     {
@@ -55,8 +57,19 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
         }
         $this->options = null;
         $this->db_proxy = new Proxy(true);
+//        var_dump($this->dataSource);
+//        var_dump($this->options);
+//        var_dump($this->dbSpec);
+//        var_dump($contextName);
         $resultInit = $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+
+//        echo "########Result of initialize: " . var_export($resultInit, true) . "\n";
+
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
+
+//        Logger::getInstance()->clearLogs();
+//        var_dump(Logger::getInstance()->getErrorMessages());
+//        var_dump(Logger::getInstance()->getDebugMessages());
     }
 
     /**
@@ -66,6 +79,7 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
      * @param int $maxRecord The max record.
      * @param mixed $subContextName The sub context name.
      * @return void
+     * @throws Exception
      */
     function dbProxySetupForAuthAccess(string $contextName, int $maxRecord, $subContextName = null): void
     {

@@ -57,7 +57,7 @@ class TextFile extends DBClass
                 return null;
             }
             $jsonContent = json_decode($metaContent, true);
-            if ($jsonContent === false) {
+            if (!is_array($jsonContent) || !isset($jsonContent["fields"]) || !is_array($jsonContent["fields"])) {
                 $this->logger->setErrorMessage("The meta file is invalid format: {$metaFilePath}.");
                 $this->recordCount = 0;
                 return null;
@@ -99,7 +99,9 @@ class TextFile extends DBClass
                 $parsedLine = str_getcsv($oneLine);
                 $fieldCounter = 0;
                 foreach ($parsedLine as $value) {
-                    $oneLineArray[$fieldNames[$fieldCounter]] = $value;
+                    if (isset($fieldNames[$fieldCounter])) {
+                        $oneLineArray[$fieldNames[$fieldCounter]] = $value;
+                    }
                     $fieldCounter++;
                 }
                 $isTrueCondition = true;
@@ -111,9 +113,7 @@ class TextFile extends DBClass
                 }
                 if ($isTrueCondition) {
                     $resultArray[] = $oneLineArray;
-                    if (isset($oneLineArray[$sortKey])) {
-                        $sortKeyArray[] = $oneLineArray[$sortKey];
-                    }
+                    $sortKeyArray[] = $oneLineArray[$sortKey] ?? null;
                 }
             }
 
@@ -169,13 +169,14 @@ class TextFile extends DBClass
         if ($includeContext && isset($tableInfo['query'][0])) {
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.: {$condition['operator']}");
+                    $operator = $condition['operator'] ?? '=';
+                    if ($this->specHandler && !$this->specHandler->isPossibleOperator($operator)) {
+                        throw new Exception("Invalid Operator.: {$operator}");
                     }
                     $queryClauseArray[] = array(
                         "field" => $condition['field'],
                         "value" => $condition['value'],
-                        "operator" => $condition['operator'] ?? "=",
+                        "operator" => $operator,
                     );
                 }
             }
@@ -184,20 +185,21 @@ class TextFile extends DBClass
         if ($includeExtra && isset($exCriteria[0])) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.: {$condition['operator']}");
+                    $operator = $condition['operator'] ?? '=';
+                    if ($this->specHandler && !$this->specHandler->isPossibleOperator($operator)) {
+                        throw new Exception("Invalid Operator.: {$operator}");
                     }
                     $queryClauseArray[] = array(
                         "field" => $condition['field'],
                         "value" => $condition['value'],
-                        "operator" => $condition['operator'] ?? "=",
+                        "operator" => $operator,
                     );
                 }
             }
         }
 
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
-            foreach ($tableInfo['relation'] as $relDef) {
+            foreach ($tableInfo['relation'] ?? [] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if ($relDef['join-field'] == $foreignDef['field']) {
                         $queryClauseArray[] = array(

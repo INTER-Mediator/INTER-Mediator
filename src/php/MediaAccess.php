@@ -316,7 +316,8 @@ class MediaAccess
     }
 
     /** Exits the script with an error code and sets the corresponding HTTP header.
-     * @param int $code Error code (204, 401, or 500).
+     * @param int $code Error code (204, 401, 403, or 500). Any other code sends no HTTP error header
+     * (used for cases that should fall back to the default 200 response, e.g. a missing 'media' parameter).
      * @throws Exception Always thrown.
      */
     private function exitAsError(int $code): void
@@ -435,7 +436,7 @@ class MediaAccess
             if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                 && count(array_intersect($belongGroups, $authorizedGroups)) == 0
             ) {
-                $this->exitAsError(400);
+                $this->exitAsError(403);
             }
         }
         return 'context_auth';
@@ -461,7 +462,7 @@ class MediaAccess
             $decodedComponent = urldecode($dname);
             if (str_contains($decodedComponent, '=')) {
                 $indexKeying = $index;
-                $fieldComponents = explode('=', $decodedComponent);
+                $fieldComponents = explode('=', $decodedComponent, 2);
                 $this->targetKeyField = $fieldComponents[0];
                 $this->targetKeyValue = $fieldComponents[1];
             }
