@@ -53,7 +53,7 @@ class ServiceServerProxy
      * @var string
      */
     private string $serviceServerKey;  // Path of a Key file for wss protocol
-    /** Path of Cert file for wss protocol, from params.php.
+    /** Path of a Cert file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerCert; // Path of Cert file for wss protocol
@@ -69,15 +69,23 @@ class ServiceServerProxy
      * @var bool
      */
     private bool $serverInfoCached = false;
+    /** Cached version code of the service server.
+     * @var string|null
+     */
+    private ?string $ssVersionCode = null;
+    /** Whether the boot sequence of the service server has already been tried.
+     * @var bool
+     */
+    private bool $bootAttempted = false;
     /** Singleton instance of ServiceServerProxy.
      * @var ServiceServerProxy|null
      */
     static private ?ServiceServerProxy $gSSPInstance = null;
 
     /** Returns the singleton instance of ServiceServerProxy.
-     * @return ServiceServerProxy|null Singleton instance.
+     * @return ServiceServerProxy Singleton instance.
      */
-    static public function instance(): ?ServiceServerProxy
+    static public function instance(): ServiceServerProxy
     {
         if (is_null(ServiceServerProxy::$gSSPInstance)) {
             ServiceServerProxy::$gSSPInstance = new ServiceServerProxy();
@@ -139,9 +147,14 @@ class ServiceServerProxy
      */
     public function checkServiceServer(): bool
     {
-        if ($this->dontAutoBoot || $this->dontUse) {
+        if ($this->dontUse) {
+            return false;
+        } else if ($this->isActive()) {
+            return true;
+        } else if ($this->dontAutoBoot || $this->bootAttempted) {
             return false;
         } else {
+            $this->bootAttempted = true;
             if (!$this->isServerStartable()) { // Check the home directory can be writable.
                 $userName = IMUtil::getServerUserName();
                 $userHome = IMUtil::getServerUserHome();
@@ -152,16 +165,18 @@ class ServiceServerProxy
             }
             $isStartCLI = false;
             if (php_sapi_name() == 'cli') { // It's executing with a command line interface.
-                $message = $this->messageHead . "[ServiceServerProxy] php_sapi_name() returns=" . php_sapi_name();
+                $message = $this->messageHead . "php_sapi_name() returns=" . php_sapi_name();
                 $this->messages[] = $message;
                 $isStartCLI = true; // Do nothing; that is no try to boot the service server.
             }
 
             $waitSec = 3;
-            $startDT = new DateTime();
+            $startTime = time();
             $counterInit = $counter = $isStartCLI ? 1 : 5;
             $isStartServer = false;
-            while (!$this->isActive()) {
+            $isFirstCheck = true;
+            while (!$this->isActive(!$isFirstCheck)) {
+                $isFirstCheck = false;
                 if (!$isStartServer && !$isStartCLI) {
                     $this->startServer();
                     $isStartServer = true;
@@ -170,15 +185,13 @@ class ServiceServerProxy
 
                 if ($counter < 1) {
                     $message = $this->messageHead . "Service Server couldn't boot in spite of {$counterInit} times trial.";
-                    $this->messages[] = $message;
+                    $this->errors[] = $message;
                     return false;
                 }
 
-                $intObj = (new DateTime())->diff($startDT, true);
-                $intSecs = ((((($intObj->y * 30) + $intObj->m) * 12 + $intObj->d) * 24 + $intObj->h) * 60 + $intObj->i) * 60 + $intObj->s;
-                if ($intSecs > $waitSec) {
+                if (time() - $startTime > $waitSec) {
                     $message = $this->messageHead . 'Service Server could not be available for timeout.';
-                    $this->messages[] = $message;
+                    $this->errors[] = $message;
                     return false;
                 }
                 sleep(1);
@@ -188,16 +201,17 @@ class ServiceServerProxy
     }
 
     /** Checks if the Service Server is active and responding.
+     * @param bool $forceCheck Whether to bypass the cached result and check again.
      * @return bool True if the server is active, false otherwise.
      */
-    public function isActive(): bool
+    public function isActive(bool $forceCheck = false): bool
     {
         if ($this->dontUse) {
             $this->messages[] = $this->messageHead . 'Service Server is NOT used.';
             return false;
         }
 
-        if (!is_null($this->serverInfoCachedDT)) {
+        if (!$forceCheck && !is_null($this->serverInfoCachedDT)) {
             return $this->serverInfoCached;
         }
         $this->serverInfoCachedDT = new DateTime();
@@ -206,8 +220,8 @@ class ServiceServerProxy
 
         $result = $this->callServer("info", []);
         /* Example of returned string:
-         * Request Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
-         * Server Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
+         * Request Version: f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
+         * Server Version: f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
          */
         if (!$result) { // Apparently Service Server doesn't boot.
             //$this->startServer();
@@ -226,7 +240,7 @@ class ServiceServerProxy
      * Calls the service server with the specified path and post-data.
      * @param string $path Path for the server request.
      * @param array<array-key, mixed>|null $postData Data to be sent with the request.
-     * @return string|bool Response from the server, or null on failure.
+     * @return string|bool Response from the server, or false on failure.
      */
     private function callServer(string $path, ?array $postData = null): string|bool
     {
@@ -242,14 +256,13 @@ class ServiceServerProxy
             curl_setopt($ch, CURLOPT_POST, TRUE);
             $postData = json_encode($postData);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postData ? $postData : '');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
         }
         $result = curl_exec($ch);
         $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         $info = curl_getinfo($ch);
         if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
-            $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
+            $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Problems.';
             $this->messages[] = $this->messageHead . curl_error($ch);
             return false;
         }
@@ -276,9 +289,13 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "Command: {$command}";
         $result = [];
         $returnValue = 0;
+        $currentDir = getcwd();
         chdir($imPath);
         $this->messages[] = $this->messageHead . "PWD = " . getcwd();
         exec($command, $result, $returnValue);
+        if ($currentDir !== false) {
+            chdir($currentDir);
+        }
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
         error_log("Service Server tried to boot: {$command}");
     }
@@ -300,7 +317,6 @@ class ServiceServerProxy
      */
     private function startServer(): void
     {
-        $dq = '"';
         $this->messages[] = $this->messageHead . "startServer() called";
         $nodemon = IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon";
         $scriptPath = "src/js/Service_Server.js";
@@ -311,16 +327,21 @@ class ServiceServerProxy
         $scriptDir = dirname($scriptPath);
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
-        $options = "--watch {$scriptDir}";
+        $options = "--watch " . escapeshellarg($scriptDir);
         $hostName = $_SERVER['HTTP_HOST'] ?? '*';
-        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $hostName;
-        $cmd = "{$nodemon} {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
-        if ($this->serviceServerKey && $this->serviceServerCert) {
-            $cmd .= " {$dq}{$this->serviceServerKey}{$dq} ";
-            $cmd .= " {$dq}{$this->serviceServerCert}{$dq}";
-            $cmd .= "  {$dq}{$this->serviceServerCA}{$dq}";
+        if (!preg_match('/^[A-Za-z0-9.\-]+(:\d+)?$/', $hostName)) {
+            $this->messages[] = $this->messageHead . "Irregular Host header ({$hostName}) is ignored.";
+            $hostName = '*';
         }
-        $this->executeCommand("$cmd >> {$logFile} &");
+        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $hostName;
+        $cmd = escapeshellarg($nodemon) . " {$options} " . escapeshellarg($scriptPath) . " "
+            . escapeshellarg(strval($this->paramsPort)) . " " . escapeshellarg($originURL);
+        if ($this->serviceServerKey && $this->serviceServerCert) {
+            $cmd .= " " . escapeshellarg($this->serviceServerKey);
+            $cmd .= " " . escapeshellarg($this->serviceServerCert);
+            $cmd .= " " . escapeshellarg($this->serviceServerCA);
+        }
+        $this->executeCommand("{$cmd} >> " . escapeshellarg($logFile) . " &");
     }
 
     /**
@@ -339,14 +360,15 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . 'Validation start:' . $expression . ' with ' . var_export($values, true);
 
         $result = $this->callServer("eval", ["expression" => $expression, "values" => $values]);
-        if (!$result) {
+        if ($result === false) {
             return false;
         }
-        if (!str_contains(strval($result), 'true') && !str_contains(strval($result), 'false')) {
+        $trimmedResult = trim(strval($result));
+        if ($trimmedResult !== 'true' && $trimmedResult !== 'false') {
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }
-        return true;
+        return $trimmedResult === 'true';
     }
 
     /**
@@ -366,7 +388,7 @@ class ServiceServerProxy
         }
         $result = $this->callServer("trigger", ['clients' => $channels, 'operation' => $operation, 'data' => $data]);
         $logger->setDebugMessage("[ServiceServerProxy] callServer result={$result}");
-        return true;
+        return $result !== false;
     }
 
     /** Gets the version code of the service server.
@@ -374,8 +396,14 @@ class ServiceServerProxy
      */
     private function getSSVersionCode(): string
     {
+        if (!is_null($this->ssVersionCode)) {
+            return $this->ssVersionCode;
+        }
         $contents = file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json");
-        $composer = json_decode($contents ? $contents : '');
-        return hash("sha256", $composer->time . $composer->version);
+        $composer = json_decode($contents ?: '');
+        $time = (is_object($composer) && isset($composer->time)) ? $composer->time : '';
+        $version = (is_object($composer) && isset($composer->version)) ? $composer->version : '';
+        $this->ssVersionCode = hash("sha256", $time . $version);
+        return $this->ssVersionCode;
     }
 }

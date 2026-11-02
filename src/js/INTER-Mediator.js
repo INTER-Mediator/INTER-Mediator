@@ -301,7 +301,7 @@ const INTERMediator = {
             isContinue = INTERMediatorOnPage.syncBeforeUpdate(msg.data)
           }
           if (isContinue) {
-            if (!msg.justnotify) {
+            if (!(msg.data && msg.data.justnotify)) {
               IMLibContextPool.updateOnAnotherClientUpdated(msg.data)
             }
             if (INTERMediatorOnPage.syncAfterUpdate) {
@@ -314,7 +314,7 @@ const INTERMediator = {
             isContinue = INTERMediatorOnPage.syncBeforeCreate(msg.data)
           }
           if (isContinue) {
-            if (!msg.justnotify) {
+            if (!(msg.data && msg.data.justnotify)) {
               IMLibContextPool.updateOnAnotherClientCreated(msg.data)
             }
             if (INTERMediatorOnPage.syncAfterCreate) {

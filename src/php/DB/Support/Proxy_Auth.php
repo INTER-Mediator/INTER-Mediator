@@ -41,7 +41,6 @@ trait Proxy_Auth
      */
     public function collectAuthInfo(?array $options): void
     {
-        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('ldapExpiringSeconds', 3600));
         $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('samlExpiringSeconds', 3600));
         $this->credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', "");
         $this->passwordHash = Params::getParameterValue('passwordHash', 1);
@@ -72,7 +71,8 @@ trait Proxy_Auth
                 ?? Params::getParameterValue("method2FA", 'authenticator')));
         $this->dbSettings->setIsPassThrough2FA($options['authentication']['is-pass-through-2FA']
             ?? Params::getParameterValue("isPassThrough2FA", true));
-        $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
+        $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-code']
+            ?? $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", ($this->dbSettings->getMethod2FA() === 'email') ? 4 : 6);
 
         /* Authentication and Authorization Judgment */
@@ -175,10 +175,11 @@ trait Proxy_Auth
                     $this->signedUser = strval($samlLoginStatus[1]);
                     $this->logger->setDebugMessage("[Proxy_Auth][authenticationAndAuthorization] SAML Auth result: user={$this->signedUser}, "
                         . "additional={$additional}, attributes=" . var_export($SAMLAuth->getAttributes(), true));
-                    $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
-                    $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                    $httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
+                    $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($httpReferer);
+                    $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($httpReferer);
                     if (!$additional) {
-                        $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                        $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($httpReferer);
                     }
                     $this->paramAuthUser = $this->signedUser;
                     if ($this->signedUser) {
@@ -359,7 +360,8 @@ trait Proxy_Auth
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         if ($uid) {
             $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-            if (strlen($storedChallenge) === 48 && hash_equals($storedChallenge, $token)) { // ex.fc0d54312ce33c2fac19d758
+            if (is_string($storedChallenge) && strlen($storedChallenge) === 48
+                && hash_equals($storedChallenge, $token)) { // ex.fc0d54312ce33c2fac19d758
                 $returnValue = true;
             }
         }

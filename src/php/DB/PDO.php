@@ -524,7 +524,7 @@ class PDO extends DBClass
 //            . ", \ntimeFields = " . var_export($timeFields, true)
 //            . ", \ndateFields = " . var_export($dateFields, true));
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
-            $numericFields = array_merge($nullableFields, $tableInfo['numeric-fields']);
+            $numericFields = array_merge($numericFields, $tableInfo['numeric-fields']);
         }
         if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
             $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
@@ -593,11 +593,17 @@ class PDO extends DBClass
         $setClause = implode(',', $setClause);
         $queryClause = $this->getWhereClause('update',
             false, true, $signedUser, $bypassAuth);
-        if ($queryClause != '') {
-            $queryClause = "WHERE {$queryClause}";
+        if ($queryClause == '') {
+            $this->errorMessageStore('Don\'t update with no criteria. queryClause=' . $queryClause);
+            return false;
         }
+        $queryClause = "WHERE {$queryClause}";
         $sql = "{$this->handler->sqlUPDATECommand()}{$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
+        if (!$prepSQL) {
+            $this->errorMessageStore('[ERROR] Prepare failed. SQL:' . $sql);
+            return false;
+        }
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         $this->logger->setDebugMessage($prepSQL->queryString
@@ -851,7 +857,7 @@ class PDO extends DBClass
         }
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
-            $this->errorMessageStore('Don\'t delete with no ciriteria. queryClause=' . $queryClause);
+            $this->errorMessageStore('Don\'t delete with no criteria. queryClause=' . $queryClause);
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";
@@ -918,7 +924,7 @@ class PDO extends DBClass
         //======
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
-            $this->errorMessageStore('Don\'t copy with no ciriteria.');
+            $this->errorMessageStore('Don\'t copy with no criteria.');
             return null;
         }
         $defaultValues = array();
@@ -1038,7 +1044,7 @@ class PDO extends DBClass
             . $this->generateConditions($conditions);
         $result = $this->link->query($sql);
         if ($result === false) {
-            var_dump($this->link->errorInfo());
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[queryForTest] {
@@ -1075,7 +1081,7 @@ class PDO extends DBClass
             . $this->generateConditions($conditions);
         $result = $this->link->exec($sql);
         if ($result === false) {
-            var_dump($this->link->errorInfo());
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
             return false;
         }
         $this->logger->setDebugMessage("[deleteForTest] {

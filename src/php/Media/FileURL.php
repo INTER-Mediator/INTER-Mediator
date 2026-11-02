@@ -95,7 +95,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport, MediaProce
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         $mediaRootDir = Params::getParameterValue("mediaRootDir", null);
-        $allowedMediaFileRootDirs = Params::getParameterValue("allowedMediaFileRootDirs", [$mediaRootDir]);
+        $allowedMediaFileRootDirs = Params::getParameterValue("allowedMediaFileRootDirs", null) ?? [$mediaRootDir];
         $resolvedTarget = realpath($target);
         if ($resolvedTarget === false) {
             throw new Exception("[INTER-Mediator] The file doesn't exist: {$target}.");
