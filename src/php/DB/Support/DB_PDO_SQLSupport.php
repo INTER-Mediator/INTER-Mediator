@@ -61,8 +61,14 @@ trait DB_PDO_SQLSupport
     {
         $escapedValue = "(";
         $isFirst = true;
-        foreach (json_decode($value) as $item) {
-            $escapedValue .= (!$isFirst ? "," : "") . ($isNumeric ? $item : $this->link->quote($item));
+        $items = json_decode($value, true);
+        if (!is_array($items)) {
+            $items = [$items]; // A scalar or invalid value is treated as a single item.
+        }
+        foreach ($items as $item) {
+            $itemString = is_scalar($item) || is_null($item) ? strval($item) : strval(json_encode($item));
+            $escapedValue .= (!$isFirst ? "," : "")
+                . (($isNumeric && is_numeric($itemString)) ? $itemString : $this->link->quote($itemString));
             $isFirst = false;
         }
         $escapedValue .= ")";

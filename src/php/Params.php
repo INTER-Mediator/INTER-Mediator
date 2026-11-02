@@ -99,6 +99,10 @@ class Params
     /**
      * Retrieves the value of a parameter or an array of parameters.
     If the parameter does not exist, returns the default value.
+     * Note: If $vName is a single string and $defValue is an array, $defValue is treated as
+     * a list of fallback values (its first element is used), NOT as a single default value that
+     * happens to be an array. To supply an array itself as the default for a single parameter,
+     * pass it through a variable, e.g. `getParameterValue($name, null) ?? $arrayDefault`.
      * @param string|array<array-key, mixed> $vName Name or array of names in the parameter(s).
      * @param mixed $defValue Default value(s) to return if parameter is not set.
      * @return mixed Parameter value(s) or default value(s).

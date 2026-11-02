@@ -111,10 +111,6 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
         $themeManager = new Theme();
         $themeManager->processing($origin);
         $resultLog = $themeManager->getResultForLog();
-    } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) { // Upload progress
-        $fileUploader = new FileUploader();
-        $fileUploader->processInfo();
-        $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['media'])) { // Media accessing
         $dbProxyInstance = new DB\Proxy(false, false);
         $dbProxyInstance->initialize($dataSource, $options, $dbSpecification, $debug);

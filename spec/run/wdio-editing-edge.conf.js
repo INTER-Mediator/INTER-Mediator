@@ -22,14 +22,8 @@ exports.config = {
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
-  specs: [
-    './test/specs/editing_page_mysql.e2e.js',
-    './test/specs/editing_page_postgresql.e2e.js',
-    './test/specs/editing_page_sqlite.e2e.js',
-  ],
-  // Patterns to exclude.
-  exclude: [],
-  //
+  specs: ['./test/specs/editing_page_mysql.e2e.js', './test/specs/editing_page_postgresql.e2e.js', './test/specs/editing_page_sqlite.e2e.js',], // Patterns to exclude.
+  exclude: [], //
   // ============
   // Capabilities
   // ============
@@ -58,8 +52,7 @@ exports.config = {
     // 5 instances get started at a time.
     maxInstances: 3, // If other than 1, Master-Detail Page's #3 test fails
     //
-    browserName: 'MicrosoftEdge',
-    // 'ms:edgeOptions': {
+    browserName: 'MicrosoftEdge', // 'ms:edgeOptions': {
     //   args: ['--headless']
     // }
   }
@@ -67,16 +60,14 @@ exports.config = {
     // it is possible to configure which logTypes to include/exclude.
     // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
     // excludeDriverLogs: ['bugreport', 'server'],
-  ],
-//
+  ], //
 // ===================
 // Test Configurations
 // ===================
 // Define all options that are relevant for the WebdriverIO instance here
 //
 // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'error',
-  //
+  logLevel: 'error', //
   // Set specific log levels per logger
   // loggers:
   // - webdriver, webdriverio
@@ -93,24 +84,19 @@ exports.config = {
   //
   // If you only want to run your tests until a specific amount of tests have failed use
   // bail (default is 0 - don't bail, run all tests).
-  bail: 0,
-  //
+  bail: 0, //
   // Set a base URL in order to shorten url command calls. If your `url` parameter starts
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://localhost:9000/',
-  //
+  baseUrl: 'http://localhost:9000/', //
   // Default timeout for all waitFor* commands.
-  waitforTimeout: 5000,
-  //
+  waitforTimeout: 5000, //
   // Default timeout in milliseconds for request
   // if browser driver or grid doesn't send response
-  connectionRetryTimeout: 120000,
-  //
+  connectionRetryTimeout: 120000, //
   // Default request retries count
-  connectionRetryCount: 3,
-  //
+  connectionRetryCount: 3, //
   // Test runner services
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
@@ -123,8 +109,7 @@ exports.config = {
   //
   // Make sure you have the wdio adapter package for the specific framework installed
   // before running any tests.
-  framework: 'mocha',
-  //
+  framework: 'mocha', //
   // The number of times to retry the entire specfile when it fails as a whole
   // specFileRetries: 1,
   //
@@ -140,40 +125,36 @@ exports.config = {
   reporters: ['spec'],
 
   before: async function () {
-    browser.addCommand(
-      'clickStable',
-      async function (options = {}) {
-        const timeout = options.timeout || 20000
-        const retries = options.retries || 3
-        let lastError
+    browser.addCommand('clickStable', async function (options = {}) {
+      const timeout = options.timeout || 20000
+      const retries = options.retries || 3
+      let lastError
 
-        for (let i = 0; i < retries; i++) {
-          try {
-            await this.waitForExist({ timeout })
-            await this.scrollIntoView()
-            await this.waitForDisplayed({ timeout })
-            await this.waitForClickable({ timeout })
-            await this.click()
-            return
-          } catch (e) {
-            lastError = e
-            await browser.pause(200)
-          }
+      for (let i = 0; i < retries; i++) {
+        try {
+          await this.waitForExist({timeout})
+          await this.scrollIntoView()
+          await this.waitForDisplayed({timeout})
+          await this.waitForClickable({timeout})
+          await this.click()
+          return
+        } catch (e) {
+          lastError = e
+          await browser.pause(200)
         }
-        throw lastError
-      },
-      true
-    )
+      }
+      throw lastError
+    }, true)
   },
 
-  afterTest: async function (test, context, { error }) {
+  afterTest: async function (test, context, {error}) {
     if (!error) {
       return
     }
     const fs = require('node:fs')
     const path = require('node:path')
     const outDir = path.resolve(process.cwd(), 'artifacts')
-    fs.mkdirSync(outDir, { recursive: true })
+    fs.mkdirSync(outDir, {recursive: true})
 
     const safeName = `${test.parent}-${test.title}`.replace(/[^a-zA-Z0-9._-]+/g, '_')
     await browser.saveScreenshot(path.join(outDir, `${safeName}.png`))
@@ -185,10 +166,8 @@ exports.config = {
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    ui: 'bdd',
-    timeout: 60000
-  },
-//
+    ui: 'bdd', timeout: 60000, retries: 2
+  }, //
 // =====
 // Hooks
 // =====

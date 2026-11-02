@@ -323,6 +323,11 @@ abstract class DB_PDO_Handler
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
+            if ($result->rowCount() < 1) {
+                // No source record matched the condition, so nothing was inserted.
+                // Skip lastInsertIdAlt() because the sequence was never advanced in this session.
+                return null;
+            }
             $keyField = $tableInfo['key'] ?? 'id';
             $seqObject = $tableInfo['sequence'] ?? "{$tableName}_{$keyField}_seq";
             $returnValue = $this->lastInsertIdAlt($seqObject, $tableName);

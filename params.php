@@ -262,7 +262,7 @@ $notUseServiceServer = true;  // Default is TRUE!. It has to set false to work e
 /*
 $activateClientService = true; // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from a client.
-$serviceServerHost = "localhost";    // "" for public ip address.
+$serviceServerHost = "localhost";    // "" for the host name the browser accesses.
 $serviceServerPort = "11478";
 $serviceServerKey = "";  // Path of Key file for wss protocol **** wss protocol doesn't work so far.
 $serviceServerCert = ""; // Path of Cert file for wss protocol
@@ -273,7 +273,7 @@ $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The second value that detects the outdated registering records.
 $foreverLog = '/tmp/nodemon.log';
-*
+*/
 /* Operation Log
  * ===================
  * the table named 'operationlog' is required.

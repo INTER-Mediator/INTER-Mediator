@@ -451,10 +451,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->countQueryResult();
         }
-        if ($this->dbClass) {
+        if (is_null($result) && $this->dbClass) {
             $result = $this->dbClass->countQueryResult();
         }
-        return $result;
+        return intval($result ?? 0);
     }
 
     /** Get total count.
@@ -468,10 +468,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->getTotalCount();
         }
-        if ($this->dbClass) {
+        if (is_null($result) && $this->dbClass) {
             $result = $this->dbClass->getTotalCount();
         }
-        return $result;
+        return intval($result ?? 0);
     }
 
     /** Update DB.
@@ -488,7 +488,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
-                $returnBefore = $this->userExpanded->doBeforeUpdateDB(false);
+                $returnBefore = $this->userExpanded->doBeforeUpdateDB();
                 if ($returnBefore === false) {
                     throw new StopOperationException("[Proxy::updateDB] The method 'doBeforeUpdateDB' reports an error.");
                     //} else if (is_null($returnBefore)) {
