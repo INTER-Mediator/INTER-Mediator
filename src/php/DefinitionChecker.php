@@ -494,13 +494,6 @@ class DefinitionChecker
                     'field' => 'string',
                     'noset' => 'boolean',
                 ],
-                'copy' => [
-                    'user' => 'array',
-                    'group' => 'array',
-                    'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string',
-                    'noset' => 'boolean',
-                ],
                 'delete' => [
                     'user' => 'array',
                     'group' => 'array',
