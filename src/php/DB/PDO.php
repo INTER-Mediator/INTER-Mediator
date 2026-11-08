@@ -295,7 +295,7 @@ class PDO extends DBClass
         try {
             $this->link = new \PDO($dsnString);
         } catch (PDOException $ex) {
-            $maskedDsn = IMUtil::maskDsnPassword($dsnString ?? '');
+            $maskedDsn = IMUtil::maskDsnPassword($dsnString);
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $maskedDsn);
             return false;
         }
