@@ -255,7 +255,7 @@ class PDO extends DBClass
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
         } catch (PDOException $ex) {
-            $maskedDsn = IMUtil::maskDsnPassword($this->dbSettings->getDbSpecDSN());
+            $maskedDsn = IMUtil::maskDsnPassword($this->dbSettings->getDbSpecDSN() ?? '');
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
                 ", DSN=" . $maskedDsn .
                 ", User=" . $this->dbSettings->getDbSpecUser());
@@ -295,7 +295,7 @@ class PDO extends DBClass
         try {
             $this->link = new \PDO($dsnString);
         } catch (PDOException $ex) {
-            $maskedDsn = IMUtil::maskDsnPassword($dsnString);
+            $maskedDsn = IMUtil::maskDsnPassword($dsnString ?? '');
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $maskedDsn);
             return false;
         }
