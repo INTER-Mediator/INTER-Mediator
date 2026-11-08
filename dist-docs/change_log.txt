@@ -39,8 +39,8 @@ Ver.16 (in Development)
 - The field names in "key" and "specify-fields" values are now case-sensitive on PostgreSQL.
 - If any passwords are in a DSN, they are masked on ****. In the case of ';' included password, it will be
   mis-detected as a separator, but it is not a problem because just displaying in the logging strings.
-- [BUG FIX] The authorization of the copying a record requires the "copy" permission,
-  and it complies the 'create' permission.
+- [BUG FIX] Copying a record was authorized with the "delete" settings of the "authentication" key.
+  It now uses the "create" settings.
 - [BUG FIX] Fixed an issue where contexts requiring synchronization were not updated correctly when a context was
   updated after data modification, or when a context was rebuilt
 
