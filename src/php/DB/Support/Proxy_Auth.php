@@ -67,7 +67,8 @@ trait Proxy_Auth
             ?? Params::getParameterValue("isPassThrough2FA", true));
         $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-code']
             ?? $options['authentication']['digits-of-2FA-Code']
-            ?? Params::getParameterValue("digitsOf2FACode", ($this->dbSettings->getMethod2FA() === 'email') ? 4 : 6);
+            ?? Params::getParameterValue("digitsOf2FACode",
+                ($this->dbSettings->getMethod2FA() === 'email') ? 4 : 6);
 
         /* Authentication and Authorization Judgment */
         $challengeDSN = $this->dbSettings->getDbSpecDSNForIssuedHash();
@@ -76,8 +77,8 @@ trait Proxy_Auth
             $this->authDbClass->setUpSharedObjects($this);
             if ($this->authDbClass->setupWithDSN($challengeDSN)) {
                 $this->authDbClass->setupHandlers($challengeDSN);
-                $this->logger->setDebugMessage(
-                    "The class 'PDO' was instantiated for issuedhash with {$challengeDSN}.", 2);
+                $this->logger->setDebugMessage("The class 'PDO' was instantiated for issuedhash with "
+                    . $this->authDbClass->maskDsnPassword($challengeDSN) . ".", 2);
             } else {
                 $this->logger->setErrorMessage(
                     "Failed to connect to issuedhash database. Falling back to main database.");

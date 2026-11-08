@@ -264,7 +264,7 @@ class PDO extends DBClass
         foreach (explode(';', $paramsStr) as $pair) {
             $eqPos = strpos($pair, '=');
             if ($eqPos !== false) {
-                $key = substr($pair, 0, $eqPos);
+                $key = trim(substr($pair, 0, $eqPos));
                 $value = substr($pair, $eqPos + 1);
                 $result[$key] = $value;
             }
@@ -301,7 +301,7 @@ class PDO extends DBClass
      * @param string $dsn The DSN string to mask.
      * @return string The DSN string with password masked.
      */
-    private function maskDsnPassword(string $dsn): string
+    protected function maskDsnPassword(string $dsn): string
     {
         $params = $this->parseDsnToArray($dsn);
         $hasPassword = false;
@@ -867,7 +867,8 @@ class PDO extends DBClass
             $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
             $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
         }
-        if ($lastKeyValue === null || $lastKeyValue === false || $lastKeyValue === '') {
+        if ($lastKeyValue === null || $lastKeyValue === false || $lastKeyValue === ''
+            || $lastKeyValue === '0' || $lastKeyValue === 0) {
             // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid it to set non-zero value.
@@ -1005,7 +1006,7 @@ class PDO extends DBClass
             }
         }
         //======
-        $queryClause = $this->getWhereClause('create', false, true, $signedUser);
+        $queryClause = $this->getWhereClause('copy', false, true, $signedUser);
         if ($queryClause == '') {
             $this->errorMessageStore('Any criteria are required for the copy operation.');
             return null;
@@ -1096,6 +1097,9 @@ class PDO extends DBClass
      */
     private function isTrue($d): bool // $d is mixed
     {
+        if (is_bool($d)) {
+            return $d;
+        }
         if (is_null($d)) {
             return false;
         }
