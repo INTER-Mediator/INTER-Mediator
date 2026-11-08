@@ -78,7 +78,7 @@ trait Proxy_Auth
             if ($this->authDbClass->setupWithDSN($challengeDSN)) {
                 $this->authDbClass->setupHandlers($challengeDSN);
                 $this->logger->setDebugMessage("The class 'PDO' was instantiated for issuedhash with "
-                    . $this->authDbClass->maskDsnPassword($challengeDSN) . ".", 2);
+                    . IMUtil::maskDsnPassword($challengeDSN) . ".", 2);
             } else {
                 $this->logger->setErrorMessage(
                     "Failed to connect to issuedhash database. Falling back to main database.");

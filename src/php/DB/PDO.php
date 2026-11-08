@@ -241,83 +241,6 @@ class PDO extends DBClass
 //        return true;
     }
 
-    /** Parses a PDO DSN string into an associative array.
-     * @param string $dsn The DSN string to parse.
-     * @return array<string, string> Associative array of DSN components.
-     */
-    private function parseDsnToArray(string $dsn): array
-    {
-        $result = [];
-        $colonPos = strpos($dsn, ':');
-        if ($colonPos === false) {
-            $result['dsn'] = $dsn;
-            return $result;
-        }
-        $result['driver'] = substr($dsn, 0, $colonPos);
-        $paramsStr = substr($dsn, $colonPos + 1);
-        if (strpos($paramsStr, '=') === false) {
-            if ($paramsStr !== '') {
-                $result['path'] = $paramsStr;
-            }
-            return $result;
-        }
-        foreach (explode(';', $paramsStr) as $pair) {
-            $eqPos = strpos($pair, '=');
-            if ($eqPos !== false) {
-                $key = trim(substr($pair, 0, $eqPos));
-                $value = substr($pair, $eqPos + 1);
-                $result[$key] = $value;
-            }
-        }
-        return $result;
-    }
-
-    /** Builds a PDO DSN string from an associative array.
-     * @param array<string, string> $params Associative array of DSN components.
-     * @return string The DSN string.
-     */
-    private function buildDsnFromArray(array $params): string
-    {
-        if (isset($params['dsn'])) {
-            return $params['dsn'];
-        }
-        if (!isset($params['driver'])) {
-            return '';
-        }
-        $driver = $params['driver'];
-        unset($params['driver']);
-        if (isset($params['path']) && count($params) === 1) {
-            return $driver . ':' . $params['path'];
-        }
-        unset($params['path']);
-        $parts = [];
-        foreach ($params as $key => $value) {
-            $parts[] = "{$key}={$value}";
-        }
-        return $driver . ':' . implode(';', $parts);
-    }
-
-    /** Masks the password value in a PDO DSN string.
-     * @param string $dsn The DSN string to mask.
-     * @return string The DSN string with password masked.
-     */
-    protected function maskDsnPassword(string $dsn): string
-    {
-        $params = $this->parseDsnToArray($dsn);
-        $hasPassword = false;
-        foreach ($params as $key => $value) {
-            $lowerKey = strtolower($key);
-            if ($lowerKey === 'password' || $lowerKey === 'pwd' || $lowerKey === 'pass') {
-                $params[$key] = '***';
-                $hasPassword = true;
-            }
-        }
-        if (!$hasPassword) {
-            return $dsn;
-        }
-        return $this->buildDsnFromArray($params);
-    }
-
     /** Sets up the database connection.
      * @return bool
      */
@@ -332,7 +255,7 @@ class PDO extends DBClass
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
         } catch (PDOException $ex) {
-            $maskedDsn = $this->maskDsnPassword($this->dbSettings->getDbSpecDSN());
+            $maskedDsn = IMUtil::maskDsnPassword($this->dbSettings->getDbSpecDSN());
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
                 ", DSN=" . $maskedDsn .
                 ", User=" . $this->dbSettings->getDbSpecUser());
@@ -372,7 +295,7 @@ class PDO extends DBClass
         try {
             $this->link = new \PDO($dsnString);
         } catch (PDOException $ex) {
-            $maskedDsn = $this->maskDsnPassword($dsnString);
+            $maskedDsn = IMUtil::maskDsnPassword($dsnString);
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $maskedDsn);
             return false;
         }

@@ -222,6 +222,7 @@ trait DB_PDO_SQLSupport
             $targetEntity = $this->dbSettings->getEntityForRetrieve();
         } else if ($currentOperation === 'copy') { // For copy operation, we use 'create' keyword for authorization
             $isCopying = true;
+            $targetEntity = $this->dbSettings->getEntityForUpdate();
         } else {
             $targetEntity = $this->dbSettings->getEntityForUpdate();
         }

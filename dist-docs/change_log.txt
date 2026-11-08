@@ -36,7 +36,7 @@ Ver.16 (in Development)
 - An UPDATE statement with an empty WHERE clause is no longer issued, so that all records aren’t updated by mistake.
 - The key "digits-of-2FA-Code" in the authentication options of the definition file was renamed to
   "digits-of-2FA-code". The old name is still accepted.
-- The field names in "key" and "specify-fields" values are now case-insensitive.
+- The field names in "key" and "specify-fields" values are now case-sensitive.
 - [BUG FIX] Fixed an issue where contexts requiring synchronization were not updated correctly when a context was
   updated after data modification, or when a context was rebuilt
 
