@@ -1331,6 +1331,12 @@ execute "npm install -g n" do
   command "npm install -g n"
 end
 
+if node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
+  package 'libatomic' do
+    action :install  # required by Node.js installed by n
+  end
+end
+
 execute "n lts" do
   command "n lts"
 end
