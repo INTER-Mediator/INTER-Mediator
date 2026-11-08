@@ -22,9 +22,6 @@ use INTERMediator\DB\AuthFailCount;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
 use INTERMediator\DB\Support\ActionHandlers\ActionHandler;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
-use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -55,20 +52,17 @@ trait Proxy_Auth
         } else {
             $this->isPasskey = false;
         }
-//        $this->authExpired = $options['authentication']['authexpired']
-//            ?? Params::getParameterValue("authExpired", 3600);
-//        $this->realm = $options['authentication']['realm']
-//            ?? Params::getParameterValue("authRealm", '');
-        $is2FATesting = !!Params::getParameterValue("fixed2FACode", '');;
+        $is2FATesting = !!Params::getParameterValue("fixed2FACode", '');
         $this->required2FA = $options['authentication']['is-required-2FA']
             ?? Params::getParameterValue("isRequired2FA", '');
         $this->mailContext2FA = $options['authentication']['mail-context-2FA']
             ?? Params::getParameterValue("mailContext2FA", '');
         $this->dbSettings->setExpiringSeconds2FA($options['authentication']['expiring-seconds-2FA']
             ?? Params::getParameterValue("expiringSeconds2FA", 100000));
+        $method2FAValue = $options['authentication']['method-2FA']
+            ?? Params::getParameterValue("method2FA", 'authenticator');
         $this->dbSettings->setMethod2FA($is2FATesting ? 'testing'
-            : strtolower($options['authentication']['method-2FA']
-                ?? Params::getParameterValue("method2FA", 'authenticator')));
+            : strtolower(is_scalar($method2FAValue) ? strval($method2FAValue) : 'authenticator'));
         $this->dbSettings->setIsPassThrough2FA($options['authentication']['is-pass-through-2FA']
             ?? Params::getParameterValue("isPassThrough2FA", true));
         $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-code']
@@ -76,14 +70,19 @@ trait Proxy_Auth
             ?? Params::getParameterValue("digitsOf2FACode", ($this->dbSettings->getMethod2FA() === 'email') ? 4 : 6);
 
         /* Authentication and Authorization Judgment */
-        $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);
+        $challengeDSN = $this->dbSettings->getDbSpecDSNForIssuedHash();
         if (!is_null($challengeDSN)) {
             $this->authDbClass = new PDO();
             $this->authDbClass->setUpSharedObjects($this);
-            $this->authDbClass->setupWithDSN($challengeDSN);
-            $this->authDbClass->setupHandlers($challengeDSN);
-            $this->logger->setDebugMessage(
-                "The class 'PDO' was instantiated for issuedhash with {$challengeDSN}.", 2);
+            if ($this->authDbClass->setupWithDSN($challengeDSN)) {
+                $this->authDbClass->setupHandlers($challengeDSN);
+                $this->logger->setDebugMessage(
+                    "The class 'PDO' was instantiated for issuedhash with {$challengeDSN}.", 2);
+            } else {
+                $this->logger->setErrorMessage(
+                    "Failed to connect to issuedhash database. Falling back to main database.");
+                $this->authDbClass = $this->dbClass;
+            }
         } else {
             $this->authDbClass = $this->dbClass;
         }
@@ -210,7 +209,7 @@ trait Proxy_Auth
                 if (!$isAuthAccessing) {
                     $this->accessSetToNothing();
                 }
-                if ($authFail->isActiveBluteForce() || $authFail->isActiveInactivating()) {
+                if ($authFail->isActiveBruteForce() || $authFail->isActiveInactivating()) {
                     $authFail->addFailRecord($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $this->paramAuthUser);
                 }
             }
@@ -223,22 +222,15 @@ trait Proxy_Auth
         $authOptions = $this->dbSettings->getAuthentication();
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $rule1 = !is_null($authOptions);
-        //$rule2 = $this->isAuthAccessing();
         $rule3 = isset($tableInfo['authentication']['all']);
         $rule4 = isset($tableInfo['authentication'][$this->access]);
-        return $rule1 /*|| $rule2 */ || $rule3 || $rule4;
+        return $rule1 || $rule3 || $rule4;
     }
-
-//    private function isAuthAccessing(): bool
-//    {
-//        return $this->access === 'challenge' || $this->access === 'changepassword'
-//            || $this->access === 'credential' || $this->access === 'authenticated';
-//    }
 
     /** @return void
      */
     public
-    function accessSetToNothing()
+    function accessSetToNothing(): void
     {
         $this->dbSettings->setRequireAuthentication(true);
         $this->access = "nothing";
@@ -296,15 +288,15 @@ trait Proxy_Auth
     }
 
     /** @param string|null $username The username as the username field of authuser table.
-     * @return string
+     * @return string|null
      */
     public
     function authSupportGetSalt(?string $username): ?string
     {
         if (is_null($username)) {
-            return "";
+            return null;
         }
-        $hashedpw = $this->proxy->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+        $hashedpw = $this->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
         if ($hashedpw) {
             return substr($hashedpw, -8);
         }
@@ -326,24 +318,6 @@ trait Proxy_Auth
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId, $prefix);
     }
-
-// This method is just used to authenticate with database user
-
-    /** @param string $challenge
-     * @param string $clientId
-     * @return bool
-     */
-//    function checkChallenge(string $challenge, string $clientId): bool
-//    {
-//        $returnValue = false;
-//        $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
-//        // Database user mode is user_id=0
-//        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-//        if ($storedChallenge && strlen($storedChallenge) === 48 && $storedChallenge === $challenge) { // ex.fc0d54312ce33c2fac19d758
-//            $returnValue = true;
-//        }
-//        return $returnValue;
-//    }
 
     /** @param string $user
      * @param string $token

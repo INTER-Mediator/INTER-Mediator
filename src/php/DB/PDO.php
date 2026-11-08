@@ -241,6 +241,83 @@ class PDO extends DBClass
 //        return true;
     }
 
+    /** Parses a PDO DSN string into an associative array.
+     * @param string $dsn The DSN string to parse.
+     * @return array<string, string> Associative array of DSN components.
+     */
+    private function parseDsnToArray(string $dsn): array
+    {
+        $result = [];
+        $colonPos = strpos($dsn, ':');
+        if ($colonPos === false) {
+            $result['dsn'] = $dsn;
+            return $result;
+        }
+        $result['driver'] = substr($dsn, 0, $colonPos);
+        $paramsStr = substr($dsn, $colonPos + 1);
+        if (strpos($paramsStr, '=') === false) {
+            if ($paramsStr !== '') {
+                $result['path'] = $paramsStr;
+            }
+            return $result;
+        }
+        foreach (explode(';', $paramsStr) as $pair) {
+            $eqPos = strpos($pair, '=');
+            if ($eqPos !== false) {
+                $key = substr($pair, 0, $eqPos);
+                $value = substr($pair, $eqPos + 1);
+                $result[$key] = $value;
+            }
+        }
+        return $result;
+    }
+
+    /** Builds a PDO DSN string from an associative array.
+     * @param array<string, string> $params Associative array of DSN components.
+     * @return string The DSN string.
+     */
+    private function buildDsnFromArray(array $params): string
+    {
+        if (isset($params['dsn'])) {
+            return $params['dsn'];
+        }
+        if (!isset($params['driver'])) {
+            return '';
+        }
+        $driver = $params['driver'];
+        unset($params['driver']);
+        if (isset($params['path']) && count($params) === 1) {
+            return $driver . ':' . $params['path'];
+        }
+        unset($params['path']);
+        $parts = [];
+        foreach ($params as $key => $value) {
+            $parts[] = "{$key}={$value}";
+        }
+        return $driver . ':' . implode(';', $parts);
+    }
+
+    /** Masks the password value in a PDO DSN string.
+     * @param string $dsn The DSN string to mask.
+     * @return string The DSN string with password masked.
+     */
+    private function maskDsnPassword(string $dsn): string
+    {
+        $params = $this->parseDsnToArray($dsn);
+        $hasPassword = false;
+        foreach ($params as $key => $value) {
+            $lowerKey = strtolower($key);
+            if ($lowerKey === 'password' || $lowerKey === 'pwd' || $lowerKey === 'pass') {
+                $params[$key] = '***';
+                $hasPassword = true;
+            }
+        }
+        if (!$hasPassword) {
+            return $dsn;
+        }
+        return $this->buildDsnFromArray($params);
+    }
+
     /** Sets up the database connection.
      * @return bool
      */
@@ -255,8 +332,9 @@ class PDO extends DBClass
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
         } catch (PDOException $ex) {
+            $maskedDsn = $this->maskDsnPassword($this->dbSettings->getDbSpecDSN());
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
-                ", DSN=" . $this->dbSettings->getDbSpecDSN() .
+                ", DSN=" . $maskedDsn .
                 ", User=" . $this->dbSettings->getDbSpecUser());
             return false;
         }
@@ -294,7 +372,8 @@ class PDO extends DBClass
         try {
             $this->link = new \PDO($dsnString);
         } catch (PDOException $ex) {
-            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $dsnString);
+            $maskedDsn = $this->maskDsnPassword($dsnString);
+            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $maskedDsn);
             return false;
         }
         $this->isAlreadySetup = true;
@@ -359,7 +438,10 @@ class PDO extends DBClass
         }
         $fields = $isAggregate ? $this->dbSettings->getAggregationSelect()
             : (isset($tableInfo['specify-fields'])
-                ? implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
+                ? implode(',', array_filter(array_map(
+                    fn($f) => $this->handler->quotedEntityName($f),
+                    array_unique($this->dbSettings->getFieldsRequired() ?? [])
+                ))) : "*");
         $groupBy = ($isAggregate && $this->dbSettings->getAggregationGroupBy())
             ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
         $offset = $skipParam;
@@ -753,11 +835,11 @@ class PDO extends DBClass
             if (!$this->authHandler->getNoSetForAuthorization("create")) {
                 if ($authInfoTarget === 'field-user') {
                     $setColumnNames[] = $authInfoField;
-                    $setValues[] = strlen($signedUser) === 0 ? IMUtil::randomString(10) : $signedUser;
+                    $setValues[] = ($signedUser === null || strlen($signedUser) === 0) ? IMUtil::randomString(10) : $signedUser;
                 } else if ($authInfoTarget === 'field-group') {
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                     $setColumnNames[] = $authInfoField;
-                    $setValues[] = strlen($belongGroups[0]) === 0 ? IMUtil::randomString(10) : $belongGroups[0];
+                    $setValues[] = (empty($belongGroups) || strlen($belongGroups[0]) === 0) ? IMUtil::randomString(10) : $belongGroups[0];
                 }
             }
         }
@@ -785,7 +867,8 @@ class PDO extends DBClass
             $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
             $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
         }
-        if (/* $isReplace && */ !$lastKeyValue) { // lastInsertId returns 0 after replace command.
+        if ($lastKeyValue === null || $lastKeyValue === false || $lastKeyValue === '') {
+            // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid it to set non-zero value.
         }
@@ -795,7 +878,7 @@ class PDO extends DBClass
 
         if ($this->isRequiredUpdated) {
             $sql = $this->handler->sqlSELECTCommand() . " * FROM " . $tableName
-                . " WHERE " . $keyField . " = " . $this->link->quote($lastKeyValue);
+                . " WHERE " . $this->handler->quotedEntityName($keyField) . " = " . $this->link->quote($lastKeyValue);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             $this->errorHandlingPDO($sql);
@@ -922,9 +1005,9 @@ class PDO extends DBClass
             }
         }
         //======
-        $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
+        $queryClause = $this->getWhereClause('create', false, true, $signedUser);
         if ($queryClause == '') {
-            $this->errorMessageStore('Don\'t copy with no criteria.');
+            $this->errorMessageStore('Any criteria are required for the copy operation.');
             return null;
         }
         $defaultValues = array();
@@ -960,7 +1043,7 @@ class PDO extends DBClass
         //======
         if ($this->isRequiredUpdated) {
             $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($tableName)
-                . " WHERE " . $tableInfo['key'] . "=" . $this->link->quote($lastKeyValue);
+                . " WHERE " . $this->handler->quotedEntityName($tableInfo['key']) . "=" . $this->link->quote($lastKeyValue);
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             $this->errorHandlingPDO($sql);
@@ -1016,7 +1099,11 @@ class PDO extends DBClass
         if (is_null($d)) {
             return false;
         }
-        if (strtolower($d) == 'true' || strtolower($d) == 't') {
+        if (!is_string($d) && !is_numeric($d)) {
+            return false;
+        }
+        $str = strtolower((string)$d);
+        if ($str == 'true' || $str == 't') {
             return true;
         } else if (intval($d) > 0) {
             return true;
@@ -1031,7 +1118,7 @@ class PDO extends DBClass
      */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
-        if ($table == null) {
+        if ($table === '') {
             $this->errorMessageStore("The table doesn't specified.");
             return null;
         }
@@ -1068,7 +1155,7 @@ class PDO extends DBClass
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-        if ($table == null) {
+        if ($table === '') {
             $this->errorMessageStore("The table doesn't specified.");
             return false;
         }
@@ -1124,7 +1211,7 @@ class PDO extends DBClass
      */
     public function inTransaction(): bool
     {
-        return $this->link->inTransaction();
+        return $this->link !== null && $this->link->inTransaction();
     }
 
     /** Begins a transaction.
@@ -1132,7 +1219,9 @@ class PDO extends DBClass
      */
     public function beginTransaction(): void
     {
-        $this->link->beginTransaction();
+        if ($this->link !== null) {
+            $this->link->beginTransaction();
+        }
     }
 
     /** Commits a transaction.
@@ -1140,7 +1229,9 @@ class PDO extends DBClass
      */
     public function commitTransaction(): void
     {
-        $this->link->commit();
+        if ($this->link !== null) {
+            $this->link->commit();
+        }
     }
 
     /** Rolls back a transaction.
@@ -1148,7 +1239,9 @@ class PDO extends DBClass
      */
     public function rollbackTransaction(): void
     {
-        $this->link->rollBack();
+        if ($this->link !== null) {
+            $this->link->rollBack();
+        }
     }
 
     /**

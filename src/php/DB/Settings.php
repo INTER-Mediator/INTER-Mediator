@@ -48,6 +48,9 @@ class Settings
     /** @var string|null
      */
     private ?string $dbSpecDSN = null;
+    /** @var string|null
+     */
+    private ?string $dbSpecDSNForIssuedHash = null;
     /**
      * @var array<array-key, mixed>|null
      */
@@ -882,6 +885,23 @@ class Settings
     public function getDbSpecDSN(): ?string
     {
         return $this->dbSpecDSN;
+    }
+
+    /** Set the database specification DSN.
+     * @param string|null $str Database specification DSN for issuedhash table.
+     * @return void
+     */
+    public function setDbSpecDSNForIssuedHash(?string $str): void
+    {
+        $this->dbSpecDSNForIssuedHash = $str;
+    }
+
+    /** Get the database specification DSN for issuedhash table.
+     * @return string|null Database specification DSN.
+     */
+    public function getDbSpecDSNForIssuedHash(): ?string
+    {
+        return $this->dbSpecDSNForIssuedHash;
     }
 
     /**
