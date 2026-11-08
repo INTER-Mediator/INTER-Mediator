@@ -216,9 +216,13 @@ trait DB_PDO_SQLSupport
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
+        $isCopying = false;
         $primaryKey = $tableInfo['key'] ?? 'id';
         if ($currentOperation === 'read' || $currentOperation === 'query') {
             $targetEntity = $this->dbSettings->getEntityForRetrieve();
+        } else if ($currentOperation === 'copy') { // For copy operation, we use 'create' keyword for authorization
+            $isCopying = true;
+            $targetEntity = $this->dbSettings->getEntityForUpdate();
         } else {
             $targetEntity = $this->dbSettings->getEntityForUpdate();
         }
@@ -256,7 +260,7 @@ trait DB_PDO_SQLSupport
             }
         }
         $keywordAuth = (($currentOperation === "load") || ($currentOperation === "select"))
-            ? "read" : $currentOperation;
+            ? "read" : ($isCopying ? 'create' : $currentOperation);
         if (isset($tableInfo['authentication'])
             && ((isset($tableInfo['authentication']['all'])
                 || isset($tableInfo['authentication'][$keywordAuth])))
