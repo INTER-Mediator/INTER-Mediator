@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "42cd180cd1758c2101a8ac30d7f05af5",
+    "content-hash": "58d5441aaba515d79e5b36325ec14b8e",
     "packages": [
         {
             "name": "async-aws/core",
@@ -9927,7 +9927,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-28T22:38:53+00:00"
+            "time": "2026-10-28T22:38:53+00:00",
+            "published-time": "2026-10-28T22:39:06+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -11461,12 +11462,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.1",
-        "composer-plugin-api": "^2.0",
+        "composer-plugin-api": "^2.11",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-curl": "*",
@@ -11479,6 +11480,6 @@
         "ext-fileinfo": "*",
         "ext-bcmath": "*"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.11.0"
 }
