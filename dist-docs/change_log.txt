@@ -36,6 +36,11 @@ Ver.16 (in Development)
 - An UPDATE statement with an empty WHERE clause is no longer issued, so that all records aren’t updated by mistake.
 - The key "digits-of-2FA-Code" in the authentication options of the definition file was renamed to
   "digits-of-2FA-code". The old name is still accepted.
+- The field names in "key" and "specify-fields" values are now case-sensitive on PostgreSQL.
+- If any passwords are in a DSN, they are masked on ***. In the case of ';' included password, it will be
+  mis-detected as a separator, but it is not a problem because just displaying in the logging strings.
+- [BUG FIX] Copying a record was authorized with the "delete" settings of the "authentication" key.
+  It now uses the "create" settings.
 - [BUG FIX] Fixed an issue where contexts requiring synchronization were not updated correctly when a context was
   updated after data modification, or when a context was rebuilt
 
@@ -89,12 +94,12 @@ Ver.14 (June 16, 2025)
 - FX.php has code that using deprecated way in PHP 8.4, and various adjustments would be needed to make it work with
   PHP 8. However, there are currently no new projects using FX.php, we will discontinue support for FX.php and CWPKit.
 - The prompt for LLM-based AI programming is added to /dist-docs/promputs. You can try it with Windsurf.
-- Charting feature is implemented with chart.js. The new html attribute data-im-widget-alone has to be used for charging,
+- Charting feature is implemented with Chart.js. The new html attribute data-im-widget-alone has to be used for charging,
   and the value should be as like "chartjs@saleslog|bar|customer|数量,単価|qty,unitprice". The sample is
   /sample/Sample_webpage/char_MySQL.*.
 - Authentication with My Number Card is implemented as a provider for OAuth2. The sample code is another repository:
   https://github.com/INTER-Mediator/IMTesting_MyNumberCard.
-- GitHub Action php-legacy.yml was deleted. Also the INTER-Mediator-UnitTest_Legacy the unit test with PHP 7 was removed.
+- GitHub Action php-legacy.yml was deleted. Also, the INTER-Mediator-UnitTest_Legacy the unit test with PHP 7 was removed.
 - Any sensitive information as like a password or a key can store on any place other than repository. The variable $profileRoot
   of the params.php file specifies any path, and home directory are search path. For example, the ~/.im/credentials file
   is a example of profile and you can refer the $dbPassword variable in the params.php file.

@@ -279,7 +279,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function getDefaultKey(): ?string
     {
-        return $this->dbClass->specHandler->getDefaultKey();
+        if ($this->dbClass && $this->dbClass->specHandler) {
+            return $this->dbClass->specHandler->getDefaultKey();
+        }
+        return null;
     }
 
     /** Set stop notify and messaging.
@@ -325,6 +328,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /** Export output data as Jason.
+     * @deprecated Use exportOutputDataAsJSON() instead.
      * @return void
      */
     public function exportOutputDataAsJason(): void
@@ -432,7 +436,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setWarningMessage($e->getMessage());
             return null;
         } catch (Exception $e) {
-            error_log("[INTER-Mediator] Exception:[1] {$e->getMessage()} \nTrace:{$e->getTraceAsString()}");
             $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}"
                 . ($this->logger->getDebugLevel() ? " \nTrace:{$e->getTraceAsString()}" : ""));
             return null;
@@ -516,7 +519,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if (is_subclass_of($this->userExpanded, AfterUpdate::class)) {
                     $result = $this->userExpanded->doAfterUpdateToDB($result);
                 }
-                if (!$this->getUseSetDataToUpdatedRecord()) {
+                if (!$this->getUseSetDataToUpdatedRecord() && is_array($result)) {
                     $this->setUpdatedRecord($result);
                 }
             }
@@ -557,7 +560,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
         }
-        return $resultOfUpdate;
+        return $resultOfUpdate ?? false;
     }
 
     /** Create in DB.
@@ -602,7 +605,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if (is_subclass_of($this->userExpanded, AfterCreate::class)) {
                     $result = $this->userExpanded->doAfterCreateToDB($result);
                 }
-                if (!$this->getUseSetDataToUpdatedRecord()) {
+                if (!$this->getUseSetDataToUpdatedRecord() && is_array($result)) {
                     $this->setUpdatedRecord($result);
                 }
             }
@@ -701,7 +704,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setErrorMessage("Exception:[4] {$e->getMessage()}");
             return false;
         }
-        return $result;
+        return $result ?? false;
     }
 
     /** Copy in DB.
@@ -840,12 +843,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $context['option'] ?? ($dbSpec['option'] ?? Params::getParameterValue('dbOption', '')));
         $this->dbSettings->setCertVerifying(
             $context['cert-verifying'] ?? ($dbSpec['cert-verifying'] ?? Params::getParameterValue('certVerifying', true)));
-        if (isset($options['authentication']['issuedhash-dsn'])) {
-            $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
-        } else {
-            $this->dbSettings->setDbSpecDSN(
-                $context['dsn'] ?? ($dbSpec['dsn'] ?? Params::getParameterValue('dbDSN', '')));
-        }
+        $this->dbSettings->setDbSpecDSNForIssuedHash($options['authentication']['issuedhash-dsn']
+            ?? Params::getParameterValue('issuedHashDSN', null));
+        $this->dbSettings->setDbSpecDSN(
+            $context['dsn'] ?? ($dbSpec['dsn'] ?? Params::getParameterValue('dbDSN', '')));
 
         /* Setup Database Class's Object */
         $isDBClassNull = is_null($this->dbClass);
@@ -855,12 +856,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 return false;
             }
             $this->dbClass = new $dbClassName();
-            if ($this->dbClass == null) {
-                $this->logger->setErrorMessage("The database class [{
-                $dbClassName}] that you specify is not valid.");
-                echo implode('', $this->logger->getMessagesForJS());
-                return false;
-            }
             $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated . ", 2);
         }
         $this->dbClass->setUpSharedObjects($this);
@@ -964,7 +959,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         for ($count = 0; $count < 10000; $count++) {
             if (isset($this->PostData["sortkey{$count}field"])) {
-                $this->dbSettings->addExtraSortKey($this->PostData["sortkey{$count}field"], $this->PostData["sortkey{$count}direction"]);
+                $this->dbSettings->addExtraSortKey($this->PostData["sortkey{$count}field"], $this->PostData["sortkey{$count}direction"] ?? '');
             } else {
                 break;
             }
@@ -997,7 +992,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (!isset($this->PostData["assoc{$i}"])) {
                 break;
             }
-            $this->dbSettings->addAssociated($this->PostData["assoc{$i}"], $this->PostData["asfield{$i}"], $this->PostData["asvalue{$i}"]);
+            $this->dbSettings->addAssociated($this->PostData["assoc{$i}"], $this->PostData["asfield{$i}"] ?? '', $this->PostData["asvalue{$i}"] ?? '');
         }
 
         if (isset($options['smtp'])) {
@@ -1025,7 +1020,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->ignoreFiles = $ignoreFiles;
         $this->suppressMediaToken = true;
 
-        $this->access = is_null($access) ? $this->PostData['access'] : $access;
+        $this->access = is_null($access) ? ($this->PostData['access'] ?? '') : $access;
         $this->access = (($this->access == "select") || ($this->access == "load")) ? "read" : $this->access;
         $this->originalAccess = $this->access;
         $this->logger->setDebugMessage("[processingRequest] decided access={$this->access}", 2);
@@ -1048,7 +1043,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
-        if ($this->dbClass->getSortKeys()) {
+        if ($this->dbClass && $this->dbClass->getSortKeys()) {
             $this->addOutputData('sortKeys', $this->dbClass->getSortKeys());
         }
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
@@ -1328,7 +1323,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function setUpdatedRecord(array $record): void
     {
-        $this->dbClass->setUpdatedRecord($record);
+        if ($this->dbClass) {
+            $this->dbClass->setUpdatedRecord($record);
+        }
     }
 
     /** Set data to updated record.
@@ -1338,7 +1335,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function setDataToUpdatedRecord(string $field, null|string|int|float|bool $value, int $index = 0): void
     {
-        $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
+        if ($this->dbClass) {
+            $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
+        }
     }
 
     /** Get use set data to updated record.
@@ -1386,7 +1385,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function hasTransaction(): bool
     {
-        return $this->dbClass->hasTransaction();
+        if ($this->dbClass) {
+            return $this->dbClass->hasTransaction();
+        }
+        return false;
     }
 
     /** In transaction.
@@ -1394,35 +1396,46 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function inTransaction(): bool
     {
-        return $this->dbClass->inTransaction();
+        if ($this->dbClass) {
+            return $this->dbClass->inTransaction();
+        }
+        return false;
     }
 
     /** Begin transaction.
      */
     public function beginTransaction(): void
     {
-        $this->dbClass->beginTransaction();
+        if ($this->dbClass) {
+            $this->dbClass->beginTransaction();
+        }
     }
 
     /** Commit transaction.
      */
     public function commitTransaction(): void
     {
-        $this->dbClass->commitTransaction();
+        if ($this->dbClass) {
+            $this->dbClass->commitTransaction();
+        }
     }
 
     /** Rollback transaction.
      */
     public function rollbackTransaction(): void
     {
-        $this->dbClass->rollbackTransaction();
+        if ($this->dbClass) {
+            $this->dbClass->rollbackTransaction();
+        }
     }
 
     /** Close DB operation.
      */
     public function closeDBOperation(): void
     {
-        $this->dbClass->closeDBOperation();
+        if ($this->dbClass) {
+            $this->dbClass->closeDBOperation();
+        }
     }
 
     /** Normalized condition.
@@ -1445,7 +1458,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $isFrom = $this->dbSettings->getAggregationFrom();
         $isGroupBy = $this->dbSettings->getAggregationGroupBy();
         $isDBSupport = false;
-        if ($this->dbClass->specHandler) {
+        if ($this->dbClass && $this->dbClass->specHandler) {
             $isDBSupport = $this->dbClass->specHandler->isSupportAggregation();
         }
         if (!$isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
@@ -1468,6 +1481,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     public function getSortKeys(): array
     {
-        return $this->dbClass->getSortKeys();
+        if ($this->dbClass) {
+            return $this->dbClass->getSortKeys();
+        }
+        return [];
     }
 }
