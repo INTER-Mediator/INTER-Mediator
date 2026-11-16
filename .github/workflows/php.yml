@@ -10,8 +10,8 @@ on:
       - Ver.16-PHP8.1
       - Ver.16-PHP8.2
       - Ver.16-PHP8.3
-#      - Ver.16-PHP8.4
-#      - Ver.16-PHP8.5
+      - Ver.16-PHP8.4
+      - Ver.16-PHP8.5
 
 jobs:
   run:

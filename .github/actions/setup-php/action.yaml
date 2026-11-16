@@ -16,7 +16,7 @@ inputs:
   tools:
     description: 'Comma-separated list of tools to install'
     required: false
-    default: composer:2.10.0
+    default: composer:2.11.1
   coverage:
     description: 'The code-coverage driver you want to set up'
     required: false
