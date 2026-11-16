@@ -64,7 +64,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
             $operations = array('read', 'select', 'load');
         } else if (($operation === 'update') || ($operation === 'edit')) {
             $operations = array('update', 'edit');
-        } else if (($operation === 'create') || ($operation === 'new')) {
+        } else if (($operation === 'create') || ($operation === 'new') || ($operation === 'copy')) {
             $operations = array('create', 'new');
         } else if ($operation === 'delete') {
             $operations = array('delete');

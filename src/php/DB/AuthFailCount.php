@@ -58,7 +58,7 @@ class AuthFailCount
     /** Checks whether the brute-force attack protection feature is enabled.
      * @return bool True if the fail rate threshold is greater than 0, meaning protection is active.
      */
-    public function isActiveBluteForce(): bool
+    public function isActiveBruteForce(): bool
     {
         return $this->failRate > 0;
     }
@@ -81,7 +81,7 @@ class AuthFailCount
     {
         Logger::getInstance()->setDebugMessage("[AuthFailCount::isAcceptableAuthFailBruteForce] ip={$ip}, username={$username}", 2);
 
-        if ($this->isActiveBluteForce() && $this->failRate < $this->getFailCount($ip, $username)) {
+        if ($this->isActiveBruteForce() && $this->failRate < $this->getFailCount($ip, $username)) {
             return true;
         }
         return false;

@@ -10,7 +10,7 @@
 distDocDir=$(cd $(dirname "$0"); pwd)
 seedComposer="${distDocDir}/composer-seed/composer-"
 versions="8.1,8.2,8.3,8.4,8.5"
-composerVers="2.2.28,2.2.28,2.7.9,2.10.2,2.10.2"
+composerVers="2.11.1,2.11.1,2.11.1,2.11.1,2.11.1"
 originalPath=$(dirname "${distDocDir}")
 cd "${originalPath}"
 
