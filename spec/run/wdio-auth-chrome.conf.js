@@ -56,6 +56,8 @@ exports.config = {
   // from the same test should run tests.
   //
   maxInstances: 3,
+  // Headless Chrome needs no Xvfb; xvfb-run on Ubuntu 26.04 breaks the worker IPC (webdriverio#15685)
+  autoXvfb: false,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
