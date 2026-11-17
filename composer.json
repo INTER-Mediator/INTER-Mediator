@@ -103,6 +103,11 @@
       "simplesamlphp/composer-module-installer": true,
       "simplesamlphp/composer-xmlprovider-installer": true,
       "inter-mediator/inter-mediator": true
+    },
+    "policy": {
+      "cooldown": {
+        "period": "8 days"
+      }
     }
   },
   "github-oauth": {
